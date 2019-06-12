@@ -17,22 +17,9 @@
 
 通过管理后台的 "IM 服务"—>"API 调用"->"用户服务"->"获取 Token"，通过用户 id 获取 IMToken
 
-
-# 依赖 IMKit flutter plugin
-
-在项目的 `pubspec.yaml` 中写如下依赖
-
-```
-dependencies:
-  flutter:
-    sdk: flutter
-
-  rongcloud_im_plugin: ^0.0.1
-```
-
-然后在项目路径执行 `flutter packages get` 来下载 flutter plugin
-
 # 集成步骤
+
+将 `main.dart` 中的 `RongAppKey`、`userId`、`RongIMToken` 分别替换成上一步申请的
 
 
 ## 1.初始化 SDK

@@ -1,0 +1,43 @@
+group 'com.example.rongcloud_im_plugin'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.2.1'
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        jcenter()
+        mavenCentral()
+        maven {url  "https://dl.bintray.com/rongcloud/maven"}
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 16
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+}
+
+dependencies {
+    api 'cn.rongcloud.sdk:im_kit:2.9.17'
+    //im_kit必须依赖im_lib，所以需要加入对应依赖
+    api 'cn.rongcloud.sdk:im_lib:2.9.17'
+    implementation 'com.android.support:appcompat-v7:26.0.0'
+}
