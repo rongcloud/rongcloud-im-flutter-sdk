@@ -24,7 +24,7 @@ class MessageContent implements MessageCoding,MessageContentView,MessagePersiste
   }
 
   static int persistentFlag() {
-    return MessagePersistentFlagNone;
+    return RCMessagePersistentFlag.None;
   }
 
 }
@@ -49,6 +49,6 @@ class MessageContentView {
 
 class MessagePersistentCompatible {
   static int persistentFlag() {
-    return MessagePersistentFlagNone;
+    return RCMessagePersistentFlag.None;
   }
 }

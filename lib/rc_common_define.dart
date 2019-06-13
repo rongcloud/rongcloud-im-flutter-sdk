@@ -1,16 +1,22 @@
-// 会话类型 RCConversationType
-const int RCConversationTypePrivate = 1;
-const int RCConversationTypeGroup   = 3;
+// 会话类型
+class RCConversationType {
+  static const int Private = 1;
+  static const int Group = 3;
+}
 
 //method list
-const String MethodKeyInit = 'init';
-const String MethodKeyConfig = 'config';
-const String MethodKeyConnect = 'connect';
-const String MethodKeyPushToConversationList = 'pushToConversationList';
-const String MethodKeyPushToConversation = 'pushToConversation';
-const String MethodKeyRefrechUserInfo = 'refreshUserInfo';
-const String MethodKeySendMessage = 'sendMessage';
+class RCMethodKey {
+  static const String Init = 'init';
+  static const String Config = 'config';
+  static const String Connect = 'connect';
+  static const String PushToConversationList = 'pushToConversationList';
+  static const String PushToConversation = 'pushToConversation';
+  static const String RefrechUserInfo = 'refreshUserInfo';
+  static const String SendMessage = 'sendMessage';
+}
 
-//callback method list，以下方法是有 native 代码触发，由 flutter 处理
-const String MethodCallBackKeyRefrechUserInfo = 'refreshUserInfoCallBack';
-const String MethodCallBackKeyReceiveMessage = 'receiveMessageCallBack';
+//callback list //native 会触发此方法
+class RCMethodCallBackKey {
+  static const String RefrechUserInfo = 'refreshUserInfoCallBack';
+  static const String ReceiveMessage = 'receiveMessageCallBack';
+}

@@ -64,7 +64,7 @@ class _MyAppState extends State<MyApp> {
   //6.响应 native 的事件
   Future<dynamic> _handler(MethodCall methodCall) {
     //当 im SDK 需要展示用户信息的时候，会回调此方法
-    if (MethodCallBackKeyRefrechUserInfo == methodCall.method) {
+    if (RCMethodCallBackKey.RefrechUserInfo == methodCall.method) {
       //开发者需要将用户信息传递给 SDK
       //如果本地有该用户的信息，那么直接传递给 SDK
       //如果本地没有该用户的信息，从 APP 服务获取后传递给 SDK
@@ -72,7 +72,7 @@ class _MyAppState extends State<MyApp> {
       String name = "张三";
       String portraitUrl = "https://www.rongcloud.cn/pc/images/lizhi-icon.png";
       RongcloudImPlugin.refreshUserInfo(userId, name, portraitUrl);
-    } else if(MethodCallBackKeyReceiveMessage == methodCall.method) {
+    } else if(RCMethodCallBackKey.ReceiveMessage == methodCall.method) {
       //收到消息原生会触发此方法
       //todo 解析 map
       Map map = methodCall.arguments;
@@ -83,18 +83,18 @@ class _MyAppState extends State<MyApp> {
   }
 
   onPushToConversationList()  {
-    List conTypes = [RCConversationTypePrivate,RCConversationTypeGroup];
+    List conTypes = [RCConversationType.Private,RCConversationType.Group];
     RongcloudImPlugin.pushToConversationList(conTypes);
   }
 
   onPushToConversation() {
-    RongcloudImPlugin.pushToConversation(RCConversationTypePrivate,"asdf");
+    RongcloudImPlugin.pushToConversation(RCConversationType.Private,"asdf");
   }
 
   onSendMessage(){
       TextMessage txtMessage = new TextMessage();
       txtMessage.content = "这条消息来自 flutter";
-      RongcloudImPlugin.sendMessage(RCConversationTypePrivate, "asdf", txtMessage);
+      RongcloudImPlugin.sendMessage(RCConversationType.Private, "asdf", txtMessage);
   }
 
   @override

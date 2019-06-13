@@ -8,13 +8,13 @@ class RongcloudImPlugin {
   static final MethodChannel _channel = const MethodChannel('rongcloud_im_plugin');
 
   static void init(String appkey) {
-    _channel.invokeMethod(MethodKeyInit,appkey);
+    _channel.invokeMethod(RCMethodKey.Init,appkey);
   }
   static void config(Map conf) {
-    _channel.invokeMethod(MethodKeyConfig,conf);
+    _channel.invokeMethod(RCMethodKey.Config,conf);
   }
   static Future<int> connect(String token) async {
-    final int code = await _channel.invokeMethod(MethodKeyConnect,token);
+    final int code = await _channel.invokeMethod(RCMethodKey.Connect,token);
     return code;
   }
 
@@ -26,21 +26,21 @@ class RongcloudImPlugin {
     Map cMap = content.encode();
     String objName = content.getObjectName();
     Map map = {'conversationType':conversationType,'targetId':targetId,"content":cMap,"objectName":objName};
-    _channel.invokeMethod(MethodKeySendMessage,map);
+    _channel.invokeMethod(RCMethodKey.SendMessage,map);
   }
 
   static void pushToConversationList(List conTypes) {
-    _channel.invokeMethod(MethodKeyPushToConversationList,conTypes);
+    _channel.invokeMethod(RCMethodKey.PushToConversationList,conTypes);
   }
 
   static void pushToConversation(int conversationType,String targetId) {
     Map map = {'conversationType':conversationType,'targetId':targetId};
-    _channel.invokeMethod(MethodKeyPushToConversation,map);
+    _channel.invokeMethod(RCMethodKey.PushToConversation,map);
   }
 
   static void refreshUserInfo(String userId,String name,String portraitUrl) {
     Map map = {'userId':userId,'name':name,'portraitUrl':portraitUrl};
-    _channel.invokeMethod(MethodKeyRefrechUserInfo,map);
+    _channel.invokeMethod(RCMethodKey.RefrechUserInfo,map);
   }
 
   static void setRCNativeMethodCallHandler(Future<dynamic> handler(MethodCall call)) {
