@@ -9,6 +9,7 @@ static NSString *RCMethodKeyConnect = @"connect";
 static NSString *RCMethodKeyConfig = @"config";
 static NSString *RCMethodKeyPushToConversationList = @"pushToConversationList";
 static NSString *RCMethodKeyPushToConversation = @"pushToConversation";
+static NSString *RCMethodKeySendMessage = @"sendMessage";
 
 
 static NSString *RCMethodKeyFetchUserInfo = @"fetchUserInfo";

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'rc_common_define.dart';
+import 'message_content.dart';
 
 class RongcloudImPlugin {
   static final MethodChannel _channel = const MethodChannel('rongcloud_im_plugin');
@@ -19,6 +20,13 @@ class RongcloudImPlugin {
 
   static void updateCurrentUserInfo(String userId,String name,String portraitUrl) {
     refreshUserInfo(userId, name, portraitUrl);
+  }
+
+  static void sendMessage(int conversationType,String targetId,MessageContent content) {
+    Map cMap = content.encode();
+    String objName = content.getObjectName();
+    Map map = {'conversationType':conversationType,'targetId':targetId,"content":cMap,"objectName":objName};
+    _channel.invokeMethod(MethodKeySendMessage,map);
   }
 
   static void pushToConversationList(List conTypes) {

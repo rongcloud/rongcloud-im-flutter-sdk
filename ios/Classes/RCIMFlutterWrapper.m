@@ -12,6 +12,12 @@
 #import "RCFlutterChatViewController.h"
 #import "RCFlutterConfig.h"
 
+@interface RCMessageMapper : NSObject
++ (instancetype)sharedMapper;
+- (Class)messageClassWithTypeIdenfifier:(NSString *)identifier;
+- (RCMessageContent *)messageContentWithClass:(Class)messageClass fromData:(NSData *)jsonData;
+@end
+
 @interface RCIMFlutterWrapper ()<RCIMUserInfoDataSource>
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 @property (nonatomic, strong) RCFlutterConfig *config;
@@ -42,6 +48,8 @@
         [self pushToRCConversation:call.arguments];
     }else if([RCMethodKeyRefreshUserInfo isEqualToString:call.method]) {
         [self refreshUserInfo:call.arguments];
+    }else if([RCMethodKeySendMessage isEqualToString:call.method]) {
+        [self sendMessage:call.arguments];
     }else{
         result(FlutterMethodNotImplemented);
     }
@@ -122,6 +130,26 @@
             RCUserInfo *user = [[RCUserInfo alloc] initWithUserId:userId name:name portrait:portraitUrl];
             [[RCIM sharedRCIM] refreshUserInfoCache:user withUserId:userId];
         }
+        
+    }
+}
+
+- (void)sendMessage:(id)arg {
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        RCConversationType type = [param[@"conversationType"] integerValue];
+        NSString *targetId = param[@"targetId"];
+        NSDictionary *cDic = param[@"content"];
+        NSString *objName = param[@"objectName"];
+        NSData *data = [NSJSONSerialization dataWithJSONObject:cDic options:NSJSONWritingPrettyPrinted error:nil];
+        Class clazz = [[RCMessageMapper sharedMapper] messageClassWithTypeIdenfifier:objName];
+        
+        RCMessageContent *content = [[RCMessageMapper sharedMapper] messageContentWithClass:clazz fromData:data];
+        [[RCIM sharedRCIM] sendMessage:type targetId:targetId content:content pushContent:nil pushData:nil success:^(long messageId) {
+            
+        } error:^(RCErrorCode nErrorCode, long messageId) {
+            
+        }];
         
     }
 }

@@ -5,6 +5,7 @@ import 'dart:convert' show json;
 import 'package:flutter/services.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:rongcloud_im_plugin/rc_common_define.dart';
+import 'package:rongcloud_im_plugin/text_message.dart';
 
 void main() => runApp(MyApp());
 
@@ -61,7 +62,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   //6.响应 native 的事件
-  void _handler(MethodCall methodCall) {
+  Future<dynamic> _handler(MethodCall methodCall) {
     //当 im SDK 需要展示用户信息的时候，会回调此方法
     if (MethodCallBackKeyFetchUserInfo == methodCall.method) {
       //开发者需要将用户信息传递给 SDK
@@ -81,6 +82,12 @@ class _MyAppState extends State<MyApp> {
 
   onPushToConversation() {
     RongcloudImPlugin.pushToConversation(RCConversationTypePrivate,"asdf");
+  }
+
+  onSendMessage(){
+      TextMessage txtMessage = new TextMessage();
+      txtMessage.content = "这条消息来自 flutter";
+      RongcloudImPlugin.sendMessage(RCConversationTypePrivate, "asdf", txtMessage);
   }
 
   @override
@@ -121,6 +128,22 @@ class _MyAppState extends State<MyApp> {
                             child: RaisedButton(
                               onPressed: () => onPushToConversation(),
                               child: Text("onPushToConversation"),
+                              color: Colors.blueAccent,
+                              textColor: Colors.white,
+                            ),
+                          )
+                        ],
+                        
+                      )
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: RaisedButton(
+                              onPressed: () => onSendMessage(),
+                              child: Text("sendMessage"),
                               color: Colors.blueAccent,
                               textColor: Colors.white,
                             ),
