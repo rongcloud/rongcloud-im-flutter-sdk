@@ -12,4 +12,5 @@ const String MethodKeyRefrechUserInfo = 'refreshUserInfo';
 const String MethodKeySendMessage = 'sendMessage';
 
 //callback method list，以下方法是有 native 代码触发，由 flutter 处理
-const String MethodCallBackKeyFetchUserInfo = 'fetchUserInfo';
+const String MethodCallBackKeyRefrechUserInfo = 'refreshUserInfoCallBack';
+const String MethodCallBackKeyReceiveMessage = 'receiveMessageCallBack';

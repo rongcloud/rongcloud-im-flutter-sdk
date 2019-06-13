@@ -11,6 +11,7 @@
 #import "RCFlutterChatListViewController.h"
 #import "RCFlutterChatViewController.h"
 #import "RCFlutterConfig.h"
+#import "RCFlutterMessageFactory.h"
 
 @interface RCMessageMapper : NSObject
 + (instancetype)sharedMapper;
@@ -18,7 +19,7 @@
 - (RCMessageContent *)messageContentWithClass:(Class)messageClass fromData:(NSData *)jsonData;
 @end
 
-@interface RCIMFlutterWrapper ()<RCIMUserInfoDataSource>
+@interface RCIMFlutterWrapper ()<RCIMUserInfoDataSource,RCIMReceiveMessageDelegate>
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 @property (nonatomic, strong) RCFlutterConfig *config;
 @end
@@ -76,6 +77,7 @@
         [self updateIMConfig];
         
         [RCIM sharedRCIM].userInfoDataSource = self;
+        [RCIM sharedRCIM].receiveMessageDelegate = self;
     }else {
         NSLog(@"RCFlutterConfig 非法参数类型");
     }
@@ -156,7 +158,20 @@
 
 #pragma mark - RCIMUserInfoDataSource
 - (void)getUserInfoWithUserId:(NSString *)userId completion:(void (^)(RCUserInfo *))completion {
-    [self.channel invokeMethod:RCMethodKeyFetchUserInfo arguments:userId];
+    [self.channel invokeMethod:RCMethodCallBackKeyRefreshUserInfo arguments:userId];
+}
+
+#pragma mark - RCIMReceiveMessageDelegate
+- (void)onRCIMReceiveMessage:(RCMessage *)message left:(int)left {
+    @autoreleasepool {
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        NSDictionary *messageDic = [RCFlutterMessageFactory message2Dic:message];
+        [dic setObject:messageDic forKey:@"message"];
+        [dic setObject:@(left) forKey:@"left"];
+        
+//        self.channel inve
+    }
+    
 }
 
 #pragma mark - util

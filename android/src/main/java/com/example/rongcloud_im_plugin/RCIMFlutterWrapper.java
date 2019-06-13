@@ -245,7 +245,7 @@ public class RCIMFlutterWrapper {
     private class RCFlutterIMInfoProvider implements RongIM.UserInfoProvider {
         @Override
         public UserInfo getUserInfo(String s) {
-            mChannel.invokeMethod(RCMethodList.MethodKeyFetchUserInfo,s);
+            mChannel.invokeMethod(RCMethodList.MethodCallBackKeyRefrechUserInfo,s);
             return null;
         }
     }
