@@ -4,6 +4,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
+
+import org.json.JSONObject;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -14,13 +21,16 @@ import java.util.Set;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.rong.common.fwlog.FwLog;
 import io.rong.imkit.RongIM;
+import io.rong.imlib.MessageTag;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
+import io.rong.imlib.model.MessageContent;
+import io.rong.imlib.model.UnknownMessage;
 import io.rong.imlib.model.UserInfo;
-
+import io.rong.message.MessageHandler;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
-
 
 
 public class RCIMFlutterWrapper {
@@ -28,6 +38,12 @@ public class RCIMFlutterWrapper {
     private static Context mContext = null;
     private static MethodChannel mChannel = null;
     private static RCFlutterConfig mConfig = null;
+
+    private HashMap<String, Constructor<? extends MessageContent>> messageContentConstructorMap;
+
+    private RCIMFlutterWrapper() {
+        messageContentConstructorMap = new HashMap<>();
+    }
 
     private static class SingleHolder {
         static RCIMFlutterWrapper instance = new RCIMFlutterWrapper();
@@ -58,6 +74,8 @@ public class RCIMFlutterWrapper {
             pushToConversation(call.arguments);
         }else if(RCMethodList.MethodKeyRefrechUserInfo.equalsIgnoreCase(call.method)) {
             refreshUserInfo(call.arguments);
+        }else if(RCMethodList.MethodKeySendMessage.equalsIgnoreCase(call.method)) {
+            sendMessage(call.arguments);
         }
     }
 
@@ -105,6 +123,8 @@ public class RCIMFlutterWrapper {
                     result.success(new Integer(errorCode.getValue()));
                 }
             });
+
+            fetchAllMessages();
         }else {
 
         }
@@ -167,6 +187,55 @@ public class RCIMFlutterWrapper {
         }
     }
 
+    private void sendMessage(Object arg) {
+        if(arg instanceof  Map) {
+            Map map = (Map)arg;
+            Integer t = (Integer)map.get("conversationType");
+            Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
+            String targetId = (String)map.get("targetId");
+            Map cMap = (Map)map.get("content");
+            String objectName = (String)map.get("objectName");
+
+            JSONObject jsonObj = new JSONObject(map);
+
+            byte[] bytes = jsonObj.optString("content").getBytes() ;
+
+            MessageContent content = newMessageContent(objectName,bytes);
+
+            RongIM.getInstance().sendMessage(type, targetId, content, null, null, new RongIMClient.SendMessageCallback() {
+                @Override
+                public void onError(Integer integer, RongIMClient.ErrorCode errorCode) {
+
+                }
+
+                @Override
+                public void onSuccess(Integer integer) {
+
+                }
+            });
+
+        }
+    }
+
+
+    private void fetchAllMessages(){
+
+        RongIMClient client = RongIMClient.getInstance();
+        Field field = null;
+        try {
+            field = client.getClass().getDeclaredField("mRegCache");
+            field.setAccessible(true);
+            List<String> mRegCache = (List)field.get(client);
+            for(String className : mRegCache) {
+                registerMessageType(className);
+            }
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
     //util method
     public void updateIMConfig() {
         //后续 RCFlutterConfig 如果有什么参数，可以在此同步给 RongIM
@@ -179,6 +248,45 @@ public class RCIMFlutterWrapper {
             mChannel.invokeMethod(RCMethodList.MethodKeyFetchUserInfo,s);
             return null;
         }
+    }
+
+    public void registerMessageType(String className) {
+        try {
+            Class<? extends MessageContent> msgType = (Class<? extends MessageContent>) Class.forName(className);
+            MessageTag tag = msgType.getAnnotation(MessageTag.class);
+            if (tag != null) {
+                String objName = tag.value();
+                Constructor<? extends MessageContent> constructor = msgType.getDeclaredConstructor(byte[].class);
+                Constructor<? extends MessageHandler> handlerConstructor = tag.messageHandler().getConstructor(Context.class);
+                MessageHandler messageHandler = handlerConstructor.newInstance(mContext);
+                messageContentConstructorMap.put(objName, constructor);
+            }
+
+        } catch (Exception e) {
+            FwLog.write(FwLog.E, FwLog.MSG, "L-register_type-S", "class_name", className);
+            StringWriter stringWriter = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(stringWriter);
+            e.printStackTrace(printWriter);
+        }catch (Throwable throwable) {
+            FwLog.write(FwLog.E, FwLog.MSG, "L-regtype-E", null);
+        }
+    }
+
+    private MessageContent newMessageContent(String objectName, byte[] content) {
+        Constructor<? extends MessageContent> constructor = messageContentConstructorMap.get(objectName);
+        MessageContent result = null;
+
+        if (constructor == null || content == null) {
+            return new UnknownMessage(content);
+        }
+        try {
+            result = constructor.newInstance(content);
+        } catch (Exception e) {
+            // FwLog TBC.
+            result = new UnknownMessage(content);
+            FwLog.write(FwLog.F, FwLog.MSG, "L-decode_msg-E", "msg_type|stacks", objectName, FwLog.stackToString(e));
+        }
+        return result;
     }
 
 }
