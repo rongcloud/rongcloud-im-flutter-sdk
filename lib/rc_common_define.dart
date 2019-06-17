@@ -9,6 +9,7 @@ class RCMethodKey {
   static const String Init = 'init';
   static const String Config = 'config';
   static const String Connect = 'connect';
+  static const String Disconnect = 'disconnect';
   static const String PushToConversationList = 'pushToConversationList';
   static const String PushToConversation = 'pushToConversation';
   static const String RefrechUserInfo = 'refreshUserInfo';

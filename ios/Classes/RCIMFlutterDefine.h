@@ -6,6 +6,7 @@
 //
 static NSString *RCMethodKeyInit = @"init";
 static NSString *RCMethodKeyConnect = @"connect";
+static NSString *RCMethodKeyDisconnect = @"disconnect";
 static NSString *RCMethodKeyConfig = @"config";
 static NSString *RCMethodKeyPushToConversationList = @"pushToConversationList";
 static NSString *RCMethodKeyPushToConversation = @"pushToConversation";

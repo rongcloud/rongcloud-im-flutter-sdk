@@ -69,6 +69,8 @@ public class RCIMFlutterWrapper {
             config(call.arguments);
         }else if(RCMethodList.MethodKeyConnect.equalsIgnoreCase(call.method)){
             connect(call.arguments,result);
+        }else if(RCMethodList.MethodKeyDisconnect.equalsIgnoreCase(call.method)) {
+            disconnect(call.arguments);
         }else if(RCMethodList.MethodKeyPushToConversationList.equalsIgnoreCase(call.method)) {
             pushToConversationList(call.arguments);
         }else if(RCMethodList.MethodKeyPushToConversation.equalsIgnoreCase(call.method)) {
@@ -129,6 +131,17 @@ public class RCIMFlutterWrapper {
             setReceiveMessageListener();
         }else {
 
+        }
+    }
+
+    private void disconnect(Object arg) {
+        if(arg instanceof Boolean) {
+            boolean needPush = (boolean)arg;
+            if(needPush) {
+                RongIM.getInstance().disconnect();
+            }else {
+                RongIM.getInstance().logout();
+            }
         }
     }
 

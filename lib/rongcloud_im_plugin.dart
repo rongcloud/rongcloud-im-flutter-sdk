@@ -18,6 +18,10 @@ class RongcloudImPlugin {
     return code;
   }
 
+  static void disconnect(bool needPush) {
+    _channel.invokeMethod(RCMethodKey.Disconnect,needPush);
+  }
+
   static void updateCurrentUserInfo(String userId,String name,String portraitUrl) {
     refreshUserInfo(userId, name, portraitUrl);
   }

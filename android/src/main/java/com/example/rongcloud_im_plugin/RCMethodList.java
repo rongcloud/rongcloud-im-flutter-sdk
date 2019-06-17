@@ -5,6 +5,7 @@ public class RCMethodList {
     static String MethodKeyInit = "init";
     static String MethodKeyConfig = "config";
     static String MethodKeyConnect = "connect";
+    static String MethodKeyDisconnect = "disconnect";
     static String MethodKeyPushToConversationList = "pushToConversationList";
     static String MethodKeyPushToConversation = "pushToConversation";
     static String MethodKeyRefrechUserInfo = "refreshUserInfo";

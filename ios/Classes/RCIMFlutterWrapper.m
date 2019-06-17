@@ -43,6 +43,8 @@
         [self config:call.arguments];
     }else if([RCMethodKeyConnect isEqualToString:call.method]) {
         [self connectWithToken:call.arguments result:result];
+    }else if([RCMethodKeyDisconnect isEqualToString:call.method]) {
+        [self disconnect:call.arguments];
     }else if([RCMethodKeyPushToConversationList isEqualToString:call.method]){
         [self pushToRCConversationList:call.arguments];
     }else if([RCMethodKeyPushToConversation isEqualToString:call.method]){
@@ -100,6 +102,13 @@
         NSLog(@"appkey %@",(NSString *)arg);
     }else {
         NSLog(@"connect 非法参数类型");
+    }
+}
+
+- (void)disconnect:(id)arg  {
+    if([arg isKindOfClass:[NSNumber class]]) {
+        BOOL needPush = [((NSNumber *) arg) boolValue];
+        [[RCIM sharedRCIM] disconnect:needPush];
     }
 }
 
