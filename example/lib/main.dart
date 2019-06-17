@@ -83,10 +83,11 @@ class _MyAppState extends State<MyApp> {
       map.forEach((k,v){
         print(k+"=="+v);
       });
-      Map messageMap= map["message"];
-      Message msg = MessageFactory.instance.map2Message(messageMap);
+      String messageString= map["message"];
+      Message msg = MessageFactory.instance.string2Message(messageString);
       int left = map["left"];
-      print(msg.senderUserId);
+      print("senderUserId"+msg.senderUserId);
+      print("left"+left.toString());
     }
   }
 

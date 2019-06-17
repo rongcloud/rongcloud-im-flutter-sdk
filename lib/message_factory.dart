@@ -43,6 +43,11 @@ class MessageFactory extends Object {
     return message;
   }
 
+  Message string2Message(String msgJsonStr) {
+    Map map = json.decode(msgJsonStr);
+    return map2Message(map);
+  }
+
   Map message2Map(Message message) {
     Map map = new Map();
     return map;
