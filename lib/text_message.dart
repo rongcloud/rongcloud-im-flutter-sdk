@@ -1,20 +1,23 @@
-import 'package:rongcloud_im_plugin/status_define.dart';
-
+import 'rc_status_define.dart';
 import 'message_content.dart';
+import 'dart:convert' show json;
 
 class TextMessage extends MessageContent {
+  static const String objectName = "RC:TxtMsg";
+
   String content;
   String extra;
   @override
-  void decode(Map map) {
+  void decode(String jsonStr) {
+    Map map = json.decode(jsonStr.toString());
     this.content = map["content"];
     this.extra = map["extra"];
   }
 
   @override
-  Map encode() {
-    Map map = {"content":content,"extra":extra};
-    return map;
+  String encode() {
+    Map map = {"content":this.content,"extra":this.extra};
+    return json.encode(map);
   }
 
   @override
@@ -24,7 +27,7 @@ class TextMessage extends MessageContent {
 
   @override
   String getObjectName() {
-    return "RC:TxtMsg";
+    return objectName;
   }
 
   static int persistentFlag() {

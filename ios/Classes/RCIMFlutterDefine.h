@@ -12,6 +12,6 @@ static NSString *RCMethodKeyPushToConversation = @"pushToConversation";
 static NSString *RCMethodKeyRefreshUserInfo = @"refreshUserInfo";
 static NSString *RCMethodKeySendMessage = @"sendMessage";
 
-
+//callback iOS 通知 flutter
 static NSString *RCMethodCallBackKeyRefreshUserInfo = @"refreshUserInfoCallBack";
 static NSString *RCMethodCallBackKeyReceiveMessage = @"receiveMessageCallBack";

@@ -2,6 +2,8 @@ import 'dart:core';
 
 import 'message.dart';
 import 'message_content.dart';
+import 'text_message.dart';
+import 'dart:convert' show json;
 
 class MessageFactory extends Object {
   factory MessageFactory() =>_getInstance();
@@ -19,6 +21,25 @@ class MessageFactory extends Object {
 
   Message map2Message(Map map) {
     Message message = new Message();
+    message.conversationType = map["conversationType"];
+    message.targetId = map["targetId"];
+    message.messageId = map["messageId"];
+    message.messageDirection = map["messageDirection"];
+    message.senderUserId = map["senderUserId"];
+    message.receivedStatus = map["receivedStatus"];
+    message.sentStatus = map["sentStatus"];
+    message.sentTime = map["sentTime"];
+    message.objectName = map["objectName"];
+    message.messageUId = map["messageUId"];
+    String contenStr = map["content"];
+    MessageContent content = string2MessageContent(contenStr,message.objectName);
+    if(content != null) {
+      message.content = content;
+    }else {
+      print(message.objectName+":该消息不能被解析!!!");
+      Map map = json.decode(contenStr.toString());
+      message.originContentMap = map;
+    }
     return message;
   }
 
@@ -27,10 +48,15 @@ class MessageFactory extends Object {
     return map;
   }
   
-  MessageContent map2MessageContent(Map map) {
-    MessageContent content = new MessageContent();
+  MessageContent string2MessageContent(String contentS,String objectName) {
+    MessageContent content = null;
+    if(objectName == TextMessage.objectName) {
+      content = new TextMessage();
+      content.decode(contentS);
+    }
     return content;
   }
+
 
   Map messageContent2Map(MessageContent content) {
     Map map = new Map();

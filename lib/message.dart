@@ -11,5 +11,8 @@ class Message extends Object {
   int sentTime;
   String objectName;
   MessageContent content;
-  String messageUid;
+  String messageUId;
+  
+  //如果消息本身未被正确解析，那么会保存到该 map 中
+  Map originContentMap;
 }

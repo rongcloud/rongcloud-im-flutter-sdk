@@ -26,4 +26,10 @@
     [dic setObject:contentDic forKey:@"content"];
     return [dic copy];
 }
+
++ (NSString *)message2String:(RCMessage *)message {
+    NSDictionary *dic = [self message2Dic:message];
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dic options:0 error:nil];
+    return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+}
 @end

@@ -141,9 +141,9 @@
         NSDictionary *param = (NSDictionary *)arg;
         RCConversationType type = [param[@"conversationType"] integerValue];
         NSString *targetId = param[@"targetId"];
-        NSDictionary *cDic = param[@"content"];
+        NSString *contentStr = param[@"content"];
         NSString *objName = param[@"objectName"];
-        NSData *data = [NSJSONSerialization dataWithJSONObject:cDic options:NSJSONWritingPrettyPrinted error:nil];
+        NSData *data = [contentStr dataUsingEncoding:NSUTF8StringEncoding];
         Class clazz = [[RCMessageMapper sharedMapper] messageClassWithTypeIdenfifier:objName];
         
         RCMessageContent *content = [[RCMessageMapper sharedMapper] messageContentWithClass:clazz fromData:data];
@@ -165,11 +165,11 @@
 - (void)onRCIMReceiveMessage:(RCMessage *)message left:(int)left {
     @autoreleasepool {
         NSMutableDictionary *dic = [NSMutableDictionary new];
-        NSDictionary *messageDic = [RCFlutterMessageFactory message2Dic:message];
-        [dic setObject:messageDic forKey:@"message"];
+        NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+        [dic setObject:jsonString forKey:@"message"];
         [dic setObject:@(left) forKey:@"left"];
         
-//        self.channel inve
+        [self.channel invokeMethod:RCMethodCallBackKeyReceiveMessage arguments:dic];
     }
     
 }

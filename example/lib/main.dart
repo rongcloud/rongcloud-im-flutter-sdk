@@ -6,6 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:rongcloud_im_plugin/rc_common_define.dart';
 import 'package:rongcloud_im_plugin/text_message.dart';
+import 'package:rongcloud_im_plugin/message.dart';
+import 'package:rongcloud_im_plugin/message_factory.dart';
+
 
 void main() => runApp(MyApp());
 
@@ -15,6 +18,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+
+  static const String privateUserId = "asdf";
 
   @override
   void initState() {
@@ -74,11 +79,14 @@ class _MyAppState extends State<MyApp> {
       RongcloudImPlugin.refreshUserInfo(userId, name, portraitUrl);
     } else if(RCMethodCallBackKey.ReceiveMessage == methodCall.method) {
       //收到消息原生会触发此方法
-      //todo 解析 map
       Map map = methodCall.arguments;
       map.forEach((k,v){
         print(k+"=="+v);
       });
+      Map messageMap= map["message"];
+      Message msg = MessageFactory.instance.map2Message(messageMap);
+      int left = map["left"];
+      print(msg.senderUserId);
     }
   }
 
@@ -88,13 +96,13 @@ class _MyAppState extends State<MyApp> {
   }
 
   onPushToConversation() {
-    RongcloudImPlugin.pushToConversation(RCConversationType.Private,"asdf");
+    RongcloudImPlugin.pushToConversation(RCConversationType.Private,privateUserId);
   }
 
   onSendMessage(){
       TextMessage txtMessage = new TextMessage();
       txtMessage.content = "这条消息来自 flutter";
-      RongcloudImPlugin.sendMessage(RCConversationType.Private, "asdf", txtMessage);
+      RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, txtMessage);
   }
 
   @override

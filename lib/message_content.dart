@@ -1,13 +1,13 @@
-import 'status_define.dart';
+import 'rc_status_define.dart';
 
 class MessageContent implements MessageCoding,MessageContentView,MessagePersistentCompatible {
   @override
-  void decode(Map map) {
+  void decode(String jsonStr) {
     // TODO: implement decode
   }
 
   @override
-  Map encode() {
+  String encode() {
     // TODO: implement encode
     return null;
   }
@@ -30,10 +30,10 @@ class MessageContent implements MessageCoding,MessageContentView,MessagePersiste
 }
 
 class MessageCoding {
-  Map encode() {
+  String encode() {
     return null;
   }
-  void decode(Map map) {
+  void decode(String jsonStr) {
 
   }
   String getObjectName() {

@@ -26,6 +26,7 @@ import io.rong.imkit.RongIM;
 import io.rong.imlib.MessageTag;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
+import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
 import io.rong.imlib.model.UnknownMessage;
 import io.rong.imlib.model.UserInfo;
@@ -124,7 +125,8 @@ public class RCIMFlutterWrapper {
                 }
             });
 
-            fetchAllMessages();
+            fetchAllMessageMapper();
+            setReceiveMessageListener();
         }else {
 
         }
@@ -193,12 +195,10 @@ public class RCIMFlutterWrapper {
             Integer t = (Integer)map.get("conversationType");
             Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
             String targetId = (String)map.get("targetId");
-            Map cMap = (Map)map.get("content");
+            String contentStr = (String)map.get("content");
             String objectName = (String)map.get("objectName");
 
-            JSONObject jsonObj = new JSONObject(map);
-
-            byte[] bytes = jsonObj.optString("content").getBytes() ;
+            byte[] bytes = contentStr.getBytes() ;
 
             MessageContent content = newMessageContent(objectName,bytes);
 
@@ -218,7 +218,7 @@ public class RCIMFlutterWrapper {
     }
 
 
-    private void fetchAllMessages(){
+    private void fetchAllMessageMapper(){
 
         RongIMClient client = RongIMClient.getInstance();
         Field field = null;
@@ -248,6 +248,22 @@ public class RCIMFlutterWrapper {
             mChannel.invokeMethod(RCMethodList.MethodCallBackKeyRefrechUserInfo,s);
             return null;
         }
+    }
+
+    private void setReceiveMessageListener() {
+
+        RongIM.setOnReceiveMessageListener(new RongIMClient.OnReceiveMessageListener() {
+            @Override
+            public boolean onReceived(Message message, int i) {
+                String messageS = MessageFactory.getInstance().message2String(message);
+                Map map = new HashMap();
+                map.put("message",messageS);
+                map.put("left",i);
+                mChannel.invokeMethod(RCMethodList.MethodCallBackKeyReceiveMessage,map);
+
+                return false;
+            }
+        });
     }
 
     public void registerMessageType(String className) {
