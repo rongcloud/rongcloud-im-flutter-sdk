@@ -11,8 +11,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RCFlutterMessageFactory : NSObject
-
-+ (NSDictionary *)message2Dic:(RCMessage *)message;
 + (NSString *)message2String:(RCMessage *)message;
 @end
 

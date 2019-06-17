@@ -22,11 +22,11 @@ class RongcloudImPlugin {
     refreshUserInfo(userId, name, portraitUrl);
   }
 
-  static void sendMessage(int conversationType,String targetId,MessageContent content) {
+  static Future sendMessage(int conversationType,String targetId,MessageContent content) async{
     String jsonStr = content.encode();
     String objName = content.getObjectName();
     Map map = {'conversationType':conversationType,'targetId':targetId,"content":jsonStr,"objectName":objName};
-    _channel.invokeMethod(RCMethodKey.SendMessage,map);
+    return await _channel.invokeMethod(RCMethodKey.SendMessage,map);
   }
 
   static void pushToConversationList(List conTypes) {

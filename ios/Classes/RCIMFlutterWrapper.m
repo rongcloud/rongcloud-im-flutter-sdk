@@ -50,7 +50,7 @@
     }else if([RCMethodKeyRefreshUserInfo isEqualToString:call.method]) {
         [self refreshUserInfo:call.arguments];
     }else if([RCMethodKeySendMessage isEqualToString:call.method]) {
-        [self sendMessage:call.arguments];
+        [self sendMessage:call.arguments result:result];
     }else{
         result(FlutterMethodNotImplemented);
     }
@@ -136,7 +136,7 @@
     }
 }
 
-- (void)sendMessage:(id)arg {
+- (void)sendMessage:(id)arg result:(FlutterResult)result{
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
         RCConversationType type = [param[@"conversationType"] integerValue];
@@ -147,12 +147,23 @@
         Class clazz = [[RCMessageMapper sharedMapper] messageClassWithTypeIdenfifier:objName];
         
         RCMessageContent *content = [[RCMessageMapper sharedMapper] messageContentWithClass:clazz fromData:data];
-        [[RCIM sharedRCIM] sendMessage:type targetId:targetId content:content pushContent:nil pushData:nil success:^(long messageId) {
-            
+        __weak typeof(self) ws = self;
+        RCMessage *message = [[RCIM sharedRCIM] sendMessage:type targetId:targetId content:content pushContent:nil pushData:nil success:^(long messageId) {
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:@(messageId) forKey:@"messageId"];
+            [dic setObject:@(SentStatus_SENT) forKey:@"status"];
+            [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
         } error:^(RCErrorCode nErrorCode, long messageId) {
-            
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:@(messageId) forKey:@"messageId"];
+            [dic setObject:@(SentStatus_FAILED) forKey:@"status"];
+            [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
         }];
-        
+        NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:jsonString forKey:@"message"];
+        [dic setObject:@(SentStatus_SENDING) forKey:@"status"];
+        result(dic);
     }
 }
 

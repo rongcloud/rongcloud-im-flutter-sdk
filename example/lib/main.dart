@@ -86,6 +86,13 @@ class _MyAppState extends State<MyApp> {
       print("left="+left.toString());
       Message msg = MessageFactory.instance.string2Message(messageString);
       print("senderUserId="+msg.senderUserId);
+    }else if(RCMethodCallBackKey.SendMessage == methodCall.method) {
+      //发送消息会触发此回调，通知 flutter 层消息发送结果
+      // {"messageId":12,"status":30}
+      // messageId 为本地数据库自增字段
+      // status 结果参见 RCMessageSentStatus 的枚举值
+      Map map = methodCall.arguments;
+      print("message sent result "+ map.toString());
     }
   }
 

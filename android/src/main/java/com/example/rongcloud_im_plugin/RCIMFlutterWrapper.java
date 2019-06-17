@@ -76,7 +76,7 @@ public class RCIMFlutterWrapper {
         }else if(RCMethodList.MethodKeyRefrechUserInfo.equalsIgnoreCase(call.method)) {
             refreshUserInfo(call.arguments);
         }else if(RCMethodList.MethodKeySendMessage.equalsIgnoreCase(call.method)) {
-            sendMessage(call.arguments);
+            sendMessage(call.arguments,result);
         }
     }
 
@@ -189,7 +189,7 @@ public class RCIMFlutterWrapper {
         }
     }
 
-    private void sendMessage(Object arg) {
+    private void sendMessage(Object arg, final Result result) {
         if(arg instanceof  Map) {
             Map map = (Map)arg;
             Integer t = (Integer)map.get("conversationType");
@@ -202,17 +202,29 @@ public class RCIMFlutterWrapper {
 
             MessageContent content = newMessageContent(objectName,bytes);
 
-            RongIM.getInstance().sendMessage(type, targetId, content, null, null, new RongIMClient.SendMessageCallback() {
+            Message message = RongIM.getInstance().sendMessage(type, targetId, content, null, null, new RongIMClient.SendMessageCallback() {
                 @Override
-                public void onError(Integer integer, RongIMClient.ErrorCode errorCode) {
-
+                public void onError(Integer messageId, RongIMClient.ErrorCode errorCode) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("messageId",messageId);
+                    resultMap.put("status",20);
+                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage,resultMap);
                 }
 
                 @Override
-                public void onSuccess(Integer integer) {
-
+                public void onSuccess(Integer messageId) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("messageId",messageId);
+                    resultMap.put("status",30);
+                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage,resultMap);
                 }
             });
+
+            String messageS = MessageFactory.getInstance().message2String(message);
+            Map msgMap = new HashMap();
+            msgMap.put("message",messageS);
+            msgMap.put("status",Message.SentStatus.SENDING);
+            mChannel.invokeMethod(RCMethodList.MethodCallBackKeyReceiveMessage,map);
 
         }
     }

@@ -11,6 +11,7 @@ public class RCMethodList {
     static String MethodKeySendMessage = "sendMessage";
 
     //callback method list，以下方法是有 native 代码触发，有 flutter 处理
+    static String MethodCallBackKeySendMessage = "sendMessageCallBack";
     static String MethodCallBackKeyRefrechUserInfo = "refreshUserInfoCallBack";
     static String MethodCallBackKeyReceiveMessage = "receiveMessageCallBack";
 }

@@ -19,7 +19,7 @@
     [dic setObject:@(message.sentStatus) forKey:@"sentStatus"];
     [dic setObject:@(message.sentTime) forKey:@"sentTime"];
     [dic setObject:message.objectName forKey:@"objectName"];
-    [dic setObject:message.messageUId forKey:@"messageUId"];
+    [dic setObject:message.messageUId?:@"" forKey:@"messageUId"];
     RCMessageContent *content = message.content;
     NSData *data = content.encode;
     NSString *contentStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];

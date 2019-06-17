@@ -17,6 +17,7 @@ class RCMethodKey {
 
 //callback list //native 会触发此方法
 class RCMethodCallBackKey {
+  static const String SendMessage = 'sendMessageCallBack';
   static const String RefrechUserInfo = 'refreshUserInfoCallBack';
   static const String ReceiveMessage = 'receiveMessageCallBack';
 }
