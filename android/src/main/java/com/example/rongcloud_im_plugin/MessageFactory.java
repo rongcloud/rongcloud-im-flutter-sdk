@@ -36,7 +36,14 @@ public class MessageFactory {
         MessageContent content = message.getContent();
         byte[] data = content.encode();
         String jsonS = new String(data);
-        return jsonS;
+
+        map.put("content",jsonS);
+
+        JSONObject jObj = new JSONObject(map);
+
+        String jStr = jObj.toString();
+
+        return jStr;
     }
 }
 

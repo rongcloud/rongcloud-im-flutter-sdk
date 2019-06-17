@@ -19,7 +19,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
 
-  static const String privateUserId = "asdf";
+  static const String privateUserId = "ios";
 
   @override
   void initState() {
@@ -33,9 +33,9 @@ class _MyAppState extends State<MyApp> {
     //融云 appkey
     String RongAppKey = 'pvxdm17jxjaor';
     //用户 id
-    String userId = 'userIdQi';
+    String userId = 'android';
     //通过用户 id 生成的对应融云 token
-    String RongIMToken = 'K+QzuboSatXXKa/8kYq6Kfq0NjWIjsdt0GZV7tNIOO1o2Snzhmxn9rwMw6wbSpi1osBWaKOrcNWew9va/4xFgCTriz7oKQ7T';
+    String RongIMToken = '/GAO1QE3NeKdxZ8EFWZnXSBpWcymqs7mr0LfCBn63cWXAWvMuW73BKKASyaZmGFGhVYuRiYRxSacloyurITSuw==';
 
     //1.初始化 im SDK
     RongcloudImPlugin.init(RongAppKey);
@@ -80,14 +80,12 @@ class _MyAppState extends State<MyApp> {
     } else if(RCMethodCallBackKey.ReceiveMessage == methodCall.method) {
       //收到消息原生会触发此方法
       Map map = methodCall.arguments;
-      map.forEach((k,v){
-        print(k+"=="+v);
-      });
+      print("messageMap="+map.toString());
       String messageString= map["message"];
-      Message msg = MessageFactory.instance.string2Message(messageString);
       int left = map["left"];
-      print("senderUserId"+msg.senderUserId);
-      print("left"+left.toString());
+      print("left="+left.toString());
+      Message msg = MessageFactory.instance.string2Message(messageString);
+      print("senderUserId="+msg.senderUserId);
     }
   }
 

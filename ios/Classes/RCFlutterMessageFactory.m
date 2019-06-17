@@ -22,8 +22,8 @@
     [dic setObject:message.messageUId forKey:@"messageUId"];
     RCMessageContent *content = message.content;
     NSData *data = content.encode;
-    NSDictionary *contentDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
-    [dic setObject:contentDic forKey:@"content"];
+    NSString *contentStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    [dic setObject:contentStr forKey:@"content"];
     return [dic copy];
 }
 
