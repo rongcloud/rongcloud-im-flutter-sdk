@@ -81,9 +81,9 @@ class _MyAppState extends State<MyApp> {
       //收到消息原生会触发此方法
       Map map = methodCall.arguments;
       print("messageMap="+map.toString());
-      String messageString= map["message"];
       int left = map["left"];
       print("left="+left.toString());
+      String messageString= map["message"];
       Message msg = MessageFactory.instance.string2Message(messageString);
       print("senderUserId="+msg.senderUserId);
     }else if(RCMethodCallBackKey.SendMessage == methodCall.method) {
@@ -105,10 +105,14 @@ class _MyAppState extends State<MyApp> {
     RongcloudImPlugin.pushToConversation(RCConversationType.Private,privateUserId);
   }
 
-  onSendMessage(){
+  onSendMessage() async{
       TextMessage txtMessage = new TextMessage();
       txtMessage.content = "这条消息来自 flutter";
-      RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, txtMessage);
+      Map map = await RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, txtMessage);
+      String messageString= map["message"];
+      Message msg = MessageFactory.instance.string2Message(messageString);
+      print("send message start "+map.toString());
+      print("send message start senderUserId = "+msg.senderUserId);
   }
 
   @override

@@ -223,9 +223,8 @@ public class RCIMFlutterWrapper {
             String messageS = MessageFactory.getInstance().message2String(message);
             Map msgMap = new HashMap();
             msgMap.put("message",messageS);
-            msgMap.put("status",Message.SentStatus.SENDING);
-            mChannel.invokeMethod(RCMethodList.MethodCallBackKeyReceiveMessage,map);
-
+            msgMap.put("status",10);
+            result.success(msgMap);
         }
     }
 
