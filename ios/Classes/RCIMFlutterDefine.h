@@ -21,3 +21,4 @@ static NSString *RCMethodCallBackKeyRefreshUserInfo = @"refreshUserInfoCallBack"
 static NSString *RCMethodCallBackKeyReceiveMessage = @"receiveMessageCallBack";
 static NSString *RCMethodCallBackKeyJoinChatRoom = @"joinChatRoomCallBack";
 static NSString *RCMethodCallBackKeyQuitChatRoom = @"quitChatRoomCallBack";
+static NSString *RCMethodCallBackKeyUploadMediaProgress = @"uploadMediaProgressCallBack";

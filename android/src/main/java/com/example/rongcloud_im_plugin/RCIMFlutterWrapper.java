@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.util.Log;
 
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.PrintWriter;
@@ -25,11 +26,13 @@ import io.rong.common.fwlog.FwLog;
 import io.rong.imkit.RongIM;
 import io.rong.imlib.MessageTag;
 import io.rong.imlib.RongIMClient;
+import io.rong.imlib.RongIMClient.SendImageMessageCallback;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
 import io.rong.imlib.model.UnknownMessage;
 import io.rong.imlib.model.UserInfo;
+import io.rong.message.ImageMessage;
 import io.rong.message.MessageHandler;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
@@ -209,11 +212,15 @@ public class RCIMFlutterWrapper {
     private void sendMessage(Object arg, final Result result) {
         if(arg instanceof  Map) {
             Map map = (Map)arg;
+            String objectName = (String)map.get("objectName");
+            if(isMediaMessage(objectName)) {
+                sendMediaMessage(arg,result);
+                return;
+            }
             Integer t = (Integer)map.get("conversationType");
             Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
             String targetId = (String)map.get("targetId");
             String contentStr = (String)map.get("content");
-            String objectName = (String)map.get("objectName");
 
             byte[] bytes = contentStr.getBytes() ;
 
@@ -245,6 +252,72 @@ public class RCIMFlutterWrapper {
         }
     }
 
+    private void sendMediaMessage(Object arg, final Result result) {
+        if(arg instanceof  Map) {
+            Map map = (Map)arg;
+            String objectName = (String)map.get("objectName");
+            Integer t = (Integer)map.get("conversationType");
+            Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
+            String targetId = (String)map.get("targetId");
+            String contentStr = (String)map.get("content");
+
+
+            MessageContent content = null;
+            if(objectName.equalsIgnoreCase("RC:ImgMsg")) {
+                try {
+                    JSONObject jsonObject = new JSONObject(contentStr);
+                    String localPath =  (String)jsonObject.get("localPath");
+                    Uri uri = Uri.parse(localPath);
+                    content = ImageMessage.obtain(uri,uri,true);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }else {
+
+            }
+
+            if(content == null) {
+                Log.e("sendMediaMessage","不支持该消息类型");
+                return;
+            }
+
+            RongIM.getInstance().sendImageMessage(type, targetId, content, null, null, new SendImageMessageCallback() {
+                @Override
+                public void onAttached(Message message) {
+                    String messageS = MessageFactory.getInstance().message2String(message);
+                    Map msgMap = new HashMap();
+                    msgMap.put("message",messageS);
+                    msgMap.put("status",10);
+                    result.success(msgMap);
+                }
+
+                @Override
+                public void onError(Message message, RongIMClient.ErrorCode errorCode) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("messageId",message.getMessageId());
+                    resultMap.put("status",20);
+                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage,resultMap);
+                }
+
+                @Override
+                public void onSuccess(Message message) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("messageId",message.getMessageId());
+                    resultMap.put("status",30);
+                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage,resultMap);
+                }
+
+                @Override
+                public void onProgress(Message message, int i) {
+                    Map map = new HashMap();
+                    map.put("messageId",message.getMessageId());
+                    map.put("progress",i);
+                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeyUploadMediaProgress,map);
+                }
+            });
+        }
+    }
+
     private void joinChatRoom(Object arg) {
         if(arg instanceof Map) {
             Map map = (Map)arg;
@@ -273,16 +346,22 @@ public class RCIMFlutterWrapper {
     private void quitChatRoom(Object arg) {
         if(arg instanceof Map) {
             Map map = (Map)arg;
-            String targetId = (String)map.get("targetId");
+            final String targetId = (String)map.get("targetId");
             RongIMClient.getInstance().quitChatRoom(targetId, new RongIMClient.OperationCallback() {
                 @Override
                 public void onSuccess() {
-
+                    Map callBackMap = new HashMap();
+                    callBackMap.put("targetId",targetId);
+                    callBackMap.put("status",0);
+                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeyQuitChatRoom,callBackMap);
                 }
 
                 @Override
                 public void onError(RongIMClient.ErrorCode errorCode) {
-
+                    Map callBackMap = new HashMap();
+                    callBackMap.put("targetId",targetId);
+                    callBackMap.put("status",1);
+                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeyQuitChatRoom,callBackMap);
                 }
             });
         }
@@ -335,6 +414,13 @@ public class RCIMFlutterWrapper {
                 return false;
             }
         });
+    }
+
+    private boolean isMediaMessage(String objName) {
+        if(objName.equalsIgnoreCase("RC:ImgMsg")) {
+            return true;
+        }
+        return false;
     }
 
     public void registerMessageType(String className) {

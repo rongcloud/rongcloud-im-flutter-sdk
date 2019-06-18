@@ -152,10 +152,14 @@
 - (void)sendMessage:(id)arg result:(FlutterResult)result{
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
+        NSString *objName = param[@"objectName"];
+        if([self isMediaMessage:objName]) {
+            [self sendMediaMessage:arg result:result];
+            return;
+        }
         RCConversationType type = [param[@"conversationType"] integerValue];
         NSString *targetId = param[@"targetId"];
         NSString *contentStr = param[@"content"];
-        NSString *objName = param[@"objectName"];
         NSData *data = [contentStr dataUsingEncoding:NSUTF8StringEncoding];
         Class clazz = [[RCMessageMapper sharedMapper] messageClassWithTypeIdenfifier:objName];
         
@@ -178,6 +182,49 @@
         [dic setObject:@(SentStatus_SENDING) forKey:@"status"];
         result(dic);
     }
+}
+
+- (void)sendMediaMessage:(id)arg result:(FlutterResult)result {
+    NSDictionary *param = (NSDictionary *)arg;
+    NSString *objName = param[@"objectName"];
+    RCConversationType type = [param[@"conversationType"] integerValue];
+    NSString *targetId = param[@"targetId"];
+    NSString *contentStr = param[@"content"];
+    RCMessageContent *content = nil;
+    if([objName isEqualToString:@"RC:ImgMsg"]) {
+        NSData *data = [contentStr dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *msgDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+        NSString *localPath = [msgDic valueForKey:@"localPath"];
+        content = [RCImageMessage messageWithImageURI:localPath];
+    }else {
+        NSLog(@"%s 非法的媒体消息类型",__func__);
+        return;
+    }
+    
+    __weak typeof(self) ws = self;
+    RCMessage *message =  [[RCIM sharedRCIM] sendMediaMessage:type targetId:targetId content:content pushContent:nil pushData:nil progress:^(int progress, long messageId) {
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:@(messageId) forKey:@"messageId"];
+        [dic setObject:@(progress) forKey:@"progress"];
+        [ws.channel invokeMethod:RCMethodCallBackKeyUploadMediaProgress arguments:dic];
+    } success:^(long messageId) {
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:@(messageId) forKey:@"messageId"];
+        [dic setObject:@(SentStatus_SENT) forKey:@"status"];
+        [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
+    } error:^(RCErrorCode errorCode, long messageId) {
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:@(messageId) forKey:@"messageId"];
+        [dic setObject:@(SentStatus_FAILED) forKey:@"status"];
+        [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
+    } cancel:^(long messageId) {
+        
+    }];
+    NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+    NSMutableDictionary *dic = [NSMutableDictionary new];
+    [dic setObject:jsonString forKey:@"message"];
+    [dic setObject:@(SentStatus_SENDING) forKey:@"status"];
+    result(dic);
 }
 
 - (void)joinChatRoom:(id)arg {
@@ -245,6 +292,13 @@
 }
 
 #pragma mark - private method
+
+- (BOOL)isMediaMessage:(NSString *)objName {
+    if([objName isEqualToString:@"RC:ImgMsg"]) {
+        return YES;
+    }
+    return NO;
+}
 
 - (void)pushToVC:(UIViewController *)vc {
     UIViewController *rootVC = [UIApplication sharedApplication].keyWindow.rootViewController;

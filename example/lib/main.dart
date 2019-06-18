@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:rongcloud_im_plugin/rc_common_define.dart';
 import 'package:rongcloud_im_plugin/text_message.dart';
+import 'package:rongcloud_im_plugin/image_message.dart';
 import 'package:rongcloud_im_plugin/message.dart';
 import 'package:rongcloud_im_plugin/message_factory.dart';
 
@@ -111,6 +112,11 @@ class _MyAppState extends State<MyApp> {
       //{"targetId":targetId,"status":0};
       Map map = methodCall.arguments;
       print("quit chatroom resulut ="+map.toString());
+    }else if(RCMethodCallBackKey.UploadMediaProgress == methodCall.method) {
+      //上传图片进度的回调
+      //{"messageId",messageId,"progress",99}
+      Map map = methodCall.arguments;
+      print("upload image message progress = "+map.toString());
     }
   }
 
@@ -131,6 +137,16 @@ class _MyAppState extends State<MyApp> {
       Message msg = MessageFactory.instance.string2Message(messageString);
       print("send message start "+map.toString());
       print("send message start senderUserId = "+msg.senderUserId);
+  }
+
+  onSendImageMessage() async {
+    ImageMessage imgMessage = new ImageMessage();
+    imgMessage.localPath = "image/local/path.jpg";
+    Map map = await RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, imgMessage);
+    String messageString = map["message"];
+    Message msg = MessageFactory.instance.string2Message(messageString);
+    print("send image message start "+map.toString());
+    print("send image message start senderUserId = "+msg.senderUserId);
   }
 
   @override

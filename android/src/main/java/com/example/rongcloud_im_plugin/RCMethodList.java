@@ -19,4 +19,5 @@ public class RCMethodList {
     static String MethodCallBackKeyReceiveMessage = "receiveMessageCallBack";
     static String MethodCallBackKeyJoinChatRoom = "joinChatRoomCallBack";
     static String MethodCallBackKeyQuitChatRoom = "quitChatRoomCallBack";
+    static String MethodCallBackKeyUploadMediaProgress = "uploadMediaProgressCallBack";
 }
