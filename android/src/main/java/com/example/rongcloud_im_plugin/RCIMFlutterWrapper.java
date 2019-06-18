@@ -79,6 +79,10 @@ public class RCIMFlutterWrapper {
             refreshUserInfo(call.arguments);
         }else if(RCMethodList.MethodKeySendMessage.equalsIgnoreCase(call.method)) {
             sendMessage(call.arguments,result);
+        }else if(RCMethodList.MethodKeyJoinChatRoom.equalsIgnoreCase(call.method)) {
+            joinChatRoom(call.arguments);
+        }else if(RCMethodList.MethodKeyQuitChatRoom.equalsIgnoreCase(call.method)) {
+            quitChatRoom(call.arguments);
         }
     }
 
@@ -238,6 +242,49 @@ public class RCIMFlutterWrapper {
             msgMap.put("message",messageS);
             msgMap.put("status",10);
             result.success(msgMap);
+        }
+    }
+
+    private void joinChatRoom(Object arg) {
+        if(arg instanceof Map) {
+            Map map = (Map)arg;
+            final String targetId = (String)map.get("targetId");
+            int msgCount = (int)map.get("messageCount");
+            RongIMClient.getInstance().joinChatRoom(targetId, msgCount, new RongIMClient.OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    Map callBackMap = new HashMap();
+                    callBackMap.put("targetId",targetId);
+                    callBackMap.put("status",0);
+                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeyJoinChatRoom,callBackMap);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    Map callBackMap = new HashMap();
+                    callBackMap.put("targetId",targetId);
+                    callBackMap.put("status",1);
+                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeyJoinChatRoom,callBackMap);
+                }
+            });
+        }
+    }
+
+    private void quitChatRoom(Object arg) {
+        if(arg instanceof Map) {
+            Map map = (Map)arg;
+            String targetId = (String)map.get("targetId");
+            RongIMClient.getInstance().quitChatRoom(targetId, new RongIMClient.OperationCallback() {
+                @Override
+                public void onSuccess() {
+
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+
+                }
+            });
         }
     }
 

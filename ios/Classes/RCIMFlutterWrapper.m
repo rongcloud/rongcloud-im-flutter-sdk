@@ -53,7 +53,11 @@
         [self refreshUserInfo:call.arguments];
     }else if([RCMethodKeySendMessage isEqualToString:call.method]) {
         [self sendMessage:call.arguments result:result];
-    }else{
+    }else if([RCMethodKeyJoinChatRoom isEqualToString:call.method]) {
+        [self joinChatRoom:call.arguments];
+    }else if([RCMethodKeyQuitChatRoom isEqualToString:call.method]) {
+        [self quitChatRoom:call.arguments];
+    }else {
         result(FlutterMethodNotImplemented);
     }
 }
@@ -173,6 +177,47 @@
         [dic setObject:jsonString forKey:@"message"];
         [dic setObject:@(SentStatus_SENDING) forKey:@"status"];
         result(dic);
+    }
+}
+
+- (void)joinChatRoom:(id)arg {
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *dic = (NSDictionary *)arg;
+        NSString *targetId = dic[@"targetId"];
+        int msgCount = [dic[@"messageCount"] intValue];
+        
+        __weak typeof(self) ws = self;
+        [[RCIMClient sharedRCIMClient] joinChatRoom:targetId messageCount:msgCount success:^{
+            NSMutableDictionary *callbackDic = [NSMutableDictionary new];
+            [callbackDic setValue:targetId forKey:@"targetId"];
+            [callbackDic setValue:@(0) forKey:@"status"];
+            [ws.channel invokeMethod:RCMethodCallBackKeyJoinChatRoom arguments:callbackDic];
+        } error:^(RCErrorCode status) {
+            NSMutableDictionary *callbackDic = [NSMutableDictionary new];
+            [callbackDic setValue:targetId forKey:@"targetId"];
+            [callbackDic setValue:@(1) forKey:@"status"];
+            [ws.channel invokeMethod:RCMethodCallBackKeyJoinChatRoom arguments:callbackDic];
+        }];
+    }
+}
+
+- (void)quitChatRoom:(id)arg {
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *dic = (NSDictionary *)arg;
+        NSString *targetId = dic[@"targetId"];
+        
+        __weak typeof(self) ws = self;
+        [[RCIMClient sharedRCIMClient] quitChatRoom:targetId success:^{
+            NSMutableDictionary *callbackDic = [NSMutableDictionary new];
+            [callbackDic setValue:targetId forKey:@"targetId"];
+            [callbackDic setValue:@(0) forKey:@"status"];
+            [ws.channel invokeMethod:RCMethodCallBackKeyQuitChatRoom arguments:callbackDic];
+        } error:^(RCErrorCode status) {
+            NSMutableDictionary *callbackDic = [NSMutableDictionary new];
+            [callbackDic setValue:targetId forKey:@"targetId"];
+            [callbackDic setValue:@(1) forKey:@"status"];
+            [ws.channel invokeMethod:RCMethodCallBackKeyQuitChatRoom arguments:callbackDic];
+        }];
     }
 }
 

@@ -8,11 +8,15 @@ public class RCMethodList {
     static String MethodKeyDisconnect = "disconnect";
     static String MethodKeyPushToConversationList = "pushToConversationList";
     static String MethodKeyPushToConversation = "pushToConversation";
-    static String MethodKeyRefrechUserInfo = "refreshUserInfo";
     static String MethodKeySendMessage = "sendMessage";
+    static String MethodKeyRefrechUserInfo = "refreshUserInfo";
+    static String MethodKeyJoinChatRoom = "joinChatRoom";
+    static String MethodKeyQuitChatRoom = "quitChatRoom";
 
     //callback method list，以下方法是有 native 代码触发，有 flutter 处理
     static String MethodCallBackKeySendMessage = "sendMessageCallBack";
     static String MethodCallBackKeyRefrechUserInfo = "refreshUserInfoCallBack";
     static String MethodCallBackKeyReceiveMessage = "receiveMessageCallBack";
+    static String MethodCallBackKeyJoinChatRoom = "joinChatRoomCallBack";
+    static String MethodCallBackKeyQuitChatRoom = "quitChatRoomCallBack";
 }

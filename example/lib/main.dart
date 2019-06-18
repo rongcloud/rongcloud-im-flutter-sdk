@@ -85,6 +85,10 @@ class _MyAppState extends State<MyApp> {
       print("left="+left.toString());
       String messageString= map["message"];
       Message msg = MessageFactory.instance.string2Message(messageString);
+
+      //会话类型，单聊/群聊/聊天室
+      print("conversationType = "+msg.conversationType.toString());
+      print("targetId = "+msg.targetId);
       print("senderUserId="+msg.senderUserId);
     }else if(RCMethodCallBackKey.SendMessage == methodCall.method) {
       //发送消息会触发此回调，通知 flutter 层消息发送结果
@@ -93,6 +97,20 @@ class _MyAppState extends State<MyApp> {
       // status 结果参见 RCMessageSentStatus 的枚举值
       Map map = methodCall.arguments;
       print("message sent result "+ map.toString());
+    }else if(RCMethodCallBackKey.JoinChatRoom == methodCall.method) {
+      //加入聊天室的回调
+      //targetId 聊天室 id
+      //status 参见 RCOperationStatus
+      //{"targetId":targetId,"status":0};
+      Map map = methodCall.arguments;
+      print("join chatroom resulut ="+map.toString());
+    }else if(RCMethodCallBackKey.QuitChatRoom == methodCall.method) {
+      //退出聊天室的回调
+      //targetId 聊天室 id
+      //status 参见 RCOperationStatus
+      //{"targetId":targetId,"status":0};
+      Map map = methodCall.arguments;
+      print("quit chatroom resulut ="+map.toString());
     }
   }
 

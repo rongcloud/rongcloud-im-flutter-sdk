@@ -33,6 +33,16 @@ class RongcloudImPlugin {
     return _channel.invokeMethod(RCMethodKey.SendMessage,map);
   }
 
+  static void joinChatRoom(String targetId,int messageCount) {
+    Map map = {"targetId":targetId,"messageCount":messageCount};
+    _channel.invokeMethod(RCMethodKey.JoinChatRoom,map);
+  }
+
+  static void quitChatRoom(String targetId) {
+    Map map = {"targetId":targetId};
+    _channel.invokeMethod(RCMethodKey.QuitChatRoom,map);
+  }
+
   static void pushToConversationList(List conTypes) {
     _channel.invokeMethod(RCMethodKey.PushToConversationList,conTypes);
   }

@@ -12,3 +12,9 @@ class RCMessageSentStatus {
   static const int Failed = 20;//发送失败
   static const int Sent = 30;//发送成功
 }
+
+//回调状态
+class RCOperationStatus {
+  static const int Success = 0;
+  static const int Failed = 1;
+}
