@@ -10,6 +10,7 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+    <key>io.flutter.embedded_views_preview</key><true/>
 	<key>CFBundleName</key>
 	<string>rongcloud_im_plugin_example</string>
 	<key>CFBundlePackageType</key>

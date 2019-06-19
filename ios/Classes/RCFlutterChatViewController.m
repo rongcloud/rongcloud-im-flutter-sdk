@@ -18,6 +18,9 @@
     // Do any additional setup after loading the view.
 }
 
+- (RCMessageContent *)willSendMessage:(RCMessageContent *)messageContent {
+    return messageContent;
+}
 /*
 #pragma mark - Navigation
 

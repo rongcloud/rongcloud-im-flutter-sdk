@@ -1,5 +1,6 @@
 #import "RongcloudImPlugin.h"
 #import "RCIMFlutterWrapper.h"
+#import "RCFlutterViewFactory.h"
 
 @implementation RongcloudImPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
@@ -9,6 +10,7 @@
   RongcloudImPlugin* instance = [[RongcloudImPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
   [[RCIMFlutterWrapper sharedWrapper] addFlutterChannel:channel];
+    [registrar registerViewFactory:[[RCFlutterViewFactory alloc] initWithMessenger:registrar.messenger] withId:@"rc_chat_view"];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
