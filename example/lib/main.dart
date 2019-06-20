@@ -10,8 +10,7 @@ import 'package:rongcloud_im_plugin/image_message.dart';
 import 'package:rongcloud_im_plugin/message.dart';
 import 'package:rongcloud_im_plugin/message_factory.dart';
 
-import 'chat.dart';
-import 'index.dart';
+import 'test_message.dart';
 
 
 void main() => runApp(MyApp());
@@ -152,106 +151,107 @@ class _MyAppState extends State<MyApp> {
     print("send image message start senderUserId = "+msg.senderUserId);
   }
 
-  onPushPlatformView() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => new ChatPage(
-          
-        )));
+  onSendTestMessage() async {
+    TestMessage testMessage = new TestMessage();
+    testMessage.content = "这条消息是 flutter 内自定义的消息，还需要再原生的页面注册";
+    Map map = await RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, testMessage);
+    String messageString = map["message"];
+    Message msg = MessageFactory.instance.string2Message(messageString);
+    print("send test message start "+map.toString());
+    print("send test message start senderUserId = "+msg.senderUserId);
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: IndexPage(),
-    );
     // return MaterialApp(
-    //   home: Scaffold(
-    //     appBar: AppBar(
-    //       title: const Text('Plugin example app'),
-    //     ),
-    //     body: Center(
-    //       child: Container(
-    //           padding: EdgeInsets.symmetric(horizontal: 20),
-    //           height: 400,
-    //           child: Column(
-    //             children: <Widget>[
-    //               Row(children: <Widget>[]),
-    //               Padding(
-    //                   padding: EdgeInsets.symmetric(vertical: 20),
-    //                   child: Row(
-    //                     children: <Widget>[
-    //                       Expanded(
-    //                         child: RaisedButton(
-    //                           onPressed: () => onPushToConversationList(),
-    //                           child: Text("onPushToConversationList"),
-    //                           color: Colors.blueAccent,
-    //                           textColor: Colors.white,
-    //                         ),
-    //                       )
-    //                     ],
-                        
-    //                   )
-    //                 ),
-    //               Padding(
-    //                   padding: EdgeInsets.symmetric(vertical: 20),
-    //                   child: Row(
-    //                     children: <Widget>[
-    //                       Expanded(
-    //                         child: RaisedButton(
-    //                           onPressed: () => onPushToConversation(),
-    //                           child: Text("onPushToConversation"),
-    //                           color: Colors.blueAccent,
-    //                           textColor: Colors.white,
-    //                         ),
-    //                       )
-    //                     ],
-                        
-    //                   )
-    //                 ),
-    //                 Padding(
-    //                   padding: EdgeInsets.symmetric(vertical: 20),
-    //                   child: Row(
-    //                     children: <Widget>[
-    //                       Expanded(
-    //                         child: RaisedButton(
-    //                           onPressed: () => onSendMessage(),
-    //                           child: Text("sendMessage"),
-    //                           color: Colors.blueAccent,
-    //                           textColor: Colors.white,
-    //                         ),
-    //                       )
-    //                     ],
-                        
-    //                   )
-    //                 ),
-    //                 Padding(
-    //                   padding: EdgeInsets.symmetric(vertical: 20),
-    //                   child: Row(
-    //                     children: <Widget>[
-    //                       Expanded(
-    //                         child: RaisedButton(
-    //                           onPressed: () => onPushPlatformView(),
-    //                           child: Text("onPushPlatformView"),
-    //                           color: Colors.blueAccent,
-    //                           textColor: Colors.white,
-    //                         ),
-    //                       )
-    //                     ],
-                        
-    //                   )
-    //                 )
-    //             ],
-    //           )
-    //           ),
-    //     ),
+    //   title: 'Flutter Demo',
+    //   theme: ThemeData(
+    //     primarySwatch: Colors.blue,
     //   ),
+    //   home: IndexPage(),
     // );
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Plugin example app'),
+        ),
+        body: Center(
+          child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              height: 400,
+              child: Column(
+                children: <Widget>[
+                  Row(children: <Widget>[]),
+                  Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: RaisedButton(
+                              onPressed: () => onPushToConversationList(),
+                              child: Text("onPushToConversationList"),
+                              color: Colors.blueAccent,
+                              textColor: Colors.white,
+                            ),
+                          )
+                        ],
+                        
+                      )
+                    ),
+                  Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: RaisedButton(
+                              onPressed: () => onPushToConversation(),
+                              child: Text("onPushToConversation"),
+                              color: Colors.blueAccent,
+                              textColor: Colors.white,
+                            ),
+                          )
+                        ],
+                        
+                      )
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: RaisedButton(
+                              onPressed: () => onSendMessage(),
+                              child: Text("sendMessage"),
+                              color: Colors.blueAccent,
+                              textColor: Colors.white,
+                            ),
+                          )
+                        ],
+                        
+                      )
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: RaisedButton(
+                              onPressed: () => onSendTestMessage(),
+                              child: Text("onSendTestMessage"),
+                              color: Colors.blueAccent,
+                              textColor: Colors.white,
+                            ),
+                          )
+                        ],
+                        
+                      )
+                    )
+                ],
+              )
+              ),
+        ),
+      ),
+    );
   }
   
 }
