@@ -54,6 +54,17 @@ class _RCChatViewPageState extends State<RCChatViewPage> {
         },
         creationParamsCodec: new StandardMessageCodec(),
       );
+    }else if(defaultTargetPlatform == TargetPlatform.android) {
+      return AndroidView(
+        viewType: "rc_chat_view",
+        onPlatformViewCreated:_onPlatformViewCreated,
+        creationParams: <String,dynamic>{
+          "conversationType":conversationType,
+          "targetId":targetId,
+
+        },
+        creationParamsCodec: new StandardMessageCodec(),
+      );
     }
     return Text('chat view 还不支持 $defaultTargetPlatform ');
   }

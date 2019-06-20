@@ -1,5 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'chat.dart';
+
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:rongcloud_im_plugin/rc_common_define.dart';
 
 class IndexPage extends StatefulWidget {
   @override
@@ -23,12 +27,16 @@ class IndexState extends State<IndexPage> {
   }
 
   onPushPlatformView() {
-    Navigator.push(
+    if(defaultTargetPlatform == TargetPlatform.iOS)  {
+      Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => new ChatPage(
           
         )));
+    }else if(defaultTargetPlatform == TargetPlatform.android) {
+      RongcloudImPlugin.pushToConversation(RCConversationType.Private, "afasdf");
+    }
   }
 
   @override

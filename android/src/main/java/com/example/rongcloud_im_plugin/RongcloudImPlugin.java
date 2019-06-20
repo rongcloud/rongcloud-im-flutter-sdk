@@ -14,6 +14,7 @@ public class RongcloudImPlugin implements MethodCallHandler {
     channel.setMethodCallHandler(new RongcloudImPlugin());
     RCIMFlutterWrapper.getInstance().saveContext(registrar.context());
     RCIMFlutterWrapper.getInstance().saveChannel(channel);
+    registrar.platformViewRegistry().registerViewFactory("rc_chat_view", new ChatViewFactory(registrar.messenger()));
   }
 
   @Override

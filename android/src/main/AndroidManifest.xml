@@ -6,6 +6,23 @@
         android:supportsRtl="true">
 
         <!--会话界面-->
+        <activity
+            android:name="com.example.rongcloud_im_plugin.ConversationActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustResize">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:scheme="rong"
+                    android:host="com.example.rongcloud_im_plugin"
+                    android:pathPrefix="/conversation/"
+                    />
+            </intent-filter>
+        </activity>
 
         <!--会话列表界面-->
     </application>
