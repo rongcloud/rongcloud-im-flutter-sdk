@@ -12,6 +12,7 @@ public class RCMethodList {
     static String MethodKeyRefrechUserInfo = "refreshUserInfo";
     static String MethodKeyJoinChatRoom = "joinChatRoom";
     static String MethodKeyQuitChatRoom = "quitChatRoom";
+    static String MethodKeyGetHistoryMessage ="getHistoryMessage";
 
     //callback method list，以下方法是有 native 代码触发，有 flutter 处理
     static String MethodCallBackKeySendMessage = "sendMessageCallBack";

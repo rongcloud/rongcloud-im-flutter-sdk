@@ -161,6 +161,14 @@ class _MyAppState extends State<MyApp> {
     print("send test message start senderUserId = "+msg.senderUserId);
   }
 
+  onGetHistoryMessages() async {
+    List msgs = await RongcloudImPlugin.getHistoryMessage(RCConversationType.Private, privateUserId, 0, 10);
+    print("get history message");
+    for(Message m in msgs) {
+      print("sentTime = "+m.sentTime.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // return MaterialApp(
@@ -238,6 +246,22 @@ class _MyAppState extends State<MyApp> {
                             child: RaisedButton(
                               onPressed: () => onSendTestMessage(),
                               child: Text("onSendTestMessage"),
+                              color: Colors.blueAccent,
+                              textColor: Colors.white,
+                            ),
+                          )
+                        ],
+                        
+                      )
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: RaisedButton(
+                              onPressed: () => onGetHistoryMessages(),
+                              child: Text("onGetHistoryMessages"),
                               color: Colors.blueAccent,
                               textColor: Colors.white,
                             ),

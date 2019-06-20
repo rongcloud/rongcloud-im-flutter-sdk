@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:rongcloud_im_plugin/message.dart';
+import 'message_factory.dart';
 import 'rc_common_define.dart';
 import 'message_content.dart';
 
@@ -31,6 +33,17 @@ class RongcloudImPlugin {
     String objName = content.getObjectName();
     Map map = {'conversationType':conversationType,'targetId':targetId,"content":jsonStr,"objectName":objName};
     return _channel.invokeMethod(RCMethodKey.SendMessage,map);
+  }
+
+  static Future<List> getHistoryMessage(int conversationType,String targetId,int messageId,int count) async {
+    Map map = {'conversationType':conversationType,'targetId':targetId,"messageId":messageId,"count":count};
+    List list = await _channel.invokeMethod(RCMethodKey.GetHistoryMessage,map);
+    List msgList = new List();
+    for(String msgStr in list) {
+        Message msg = MessageFactory.instance.string2Message(msgStr);
+        msgList.add(msg);
+    }
+    return msgList;
   }
 
   static void joinChatRoom(String targetId,int messageCount) {

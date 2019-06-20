@@ -17,6 +17,7 @@ class RCMethodKey {
   static const String RefrechUserInfo = 'refreshUserInfo';
   static const String JoinChatRoom = 'joinChatRoom';
   static const String QuitChatRoom = 'quitChatRoom';
+  static const String GetHistoryMessage = 'getHistoryMessage';
 }
 
 //callback list //native 会触发此方法

@@ -57,9 +57,13 @@
         [self joinChatRoom:call.arguments];
     }else if([RCMethodKeyQuitChatRoom isEqualToString:call.method]) {
         [self quitChatRoom:call.arguments];
-    }else {
-        result(FlutterMethodNotImplemented);
+    }else if([RCMethodKeyGetHistoryMessage isEqualToString:call.method]) {
+        [self getHistoryMessage:call.arguments result:result];
     }
+    
+//    else {
+//        result(FlutterMethodNotImplemented);
+//    }
 }
 
 #pragma mark - selector
@@ -265,6 +269,23 @@
             [callbackDic setValue:@(1) forKey:@"status"];
             [ws.channel invokeMethod:RCMethodCallBackKeyQuitChatRoom arguments:callbackDic];
         }];
+    }
+}
+
+- (void)getHistoryMessage:(id)arg result:(FlutterResult)result {
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *dic = (NSDictionary *)arg;
+        RCConversationType type = [dic[@"conversationType"] integerValue];
+        NSString *targetId = dic[@"targetId"];
+        int messageId = [dic[@"messageId"] intValue];
+        int count = [dic[@"count"] intValue];
+        NSArray <RCMessage *> *msgs = [[RCIMClient sharedRCIMClient] getHistoryMessages:type targetId:targetId oldestMessageId:messageId count:count];
+        NSMutableArray *msgsArray = [NSMutableArray new];
+        for(RCMessage *message in msgs) {
+            NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+            [msgsArray addObject:jsonString];
+        }
+        result(msgsArray);
     }
 }
 

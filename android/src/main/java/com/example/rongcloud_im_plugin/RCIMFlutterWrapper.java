@@ -12,6 +12,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -86,6 +87,8 @@ public class RCIMFlutterWrapper {
             joinChatRoom(call.arguments);
         }else if(RCMethodList.MethodKeyQuitChatRoom.equalsIgnoreCase(call.method)) {
             quitChatRoom(call.arguments);
+        }else if(RCMethodList.MethodKeyGetHistoryMessage.equalsIgnoreCase(call.method)) {
+            getHistoryMessage(call.arguments,result);
         }
     }
 
@@ -362,6 +365,34 @@ public class RCIMFlutterWrapper {
                     callBackMap.put("targetId",targetId);
                     callBackMap.put("status",1);
                     mChannel.invokeMethod(RCMethodList.MethodCallBackKeyQuitChatRoom,callBackMap);
+                }
+            });
+        }
+    }
+
+    private void getHistoryMessage(Object arg, final Result result) {
+        if(arg instanceof Map) {
+            Map map = (Map)arg;
+            Integer t = (Integer)map.get("conversationType");
+            Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
+            String targetId = (String)map.get("targetId");
+            final Integer messageId = (Integer)map.get("messageId");
+            Integer count = (Integer)map.get("count");
+            RongIM.getInstance().getHistoryMessages(type, targetId, messageId, count, new RongIMClient.ResultCallback<List<Message>>() {
+                @Override
+                public void onSuccess(List<Message> messages) {
+                    List list = new ArrayList();
+                    for(Message msg : messages) {
+                        String messageS = MessageFactory.getInstance().message2String(msg);
+                        list.add(messageS);
+                    }
+                    result.success(list);
+
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+
                 }
             });
         }
