@@ -3,8 +3,6 @@ package com.example.rongcloud_im_plugin;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
-
 import io.rong.imkit.fragment.ConversationFragment;
 import io.rong.imlib.model.Conversation;
 
