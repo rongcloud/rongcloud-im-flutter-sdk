@@ -16,6 +16,7 @@ static NSString *RCMethodKeyJoinChatRoom = @"joinChatRoom";
 static NSString *RCMethodKeyQuitChatRoom = @"quitChatRoom";
 static NSString *RCMethodKeyGetHistoryMessage = @"getHistoryMessage";
 static NSString *RCMethodKeyGetConversationList = @"getConversationList";
+static NSString *RCMethodKeyGetChatRoomInfo = @"getChatRoomInfo";
 
 //callback iOS 通知 flutter
 static NSString *RCMethodCallBackKeySendMessage = @"sendMessageCallBack";

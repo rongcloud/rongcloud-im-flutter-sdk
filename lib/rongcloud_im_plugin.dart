@@ -69,6 +69,9 @@ class RongcloudImPlugin {
 
   // memeberCount 最大 20
   static Future getChatRoomInfo(String targetId,int memeberCount,int memberOrder) async {
+    if(memeberCount > 20) {
+      memeberCount = 20;
+    }
     Map map = {"targetId":targetId,"memeberCount":memeberCount,"memberOrder":memberOrder};
     Map resultMap = await _channel.invokeMethod(RCMethodKey.GetChatRoomInfo,map);
     return MessageFactory.instance.map2ChatRoomInfo(resultMap);

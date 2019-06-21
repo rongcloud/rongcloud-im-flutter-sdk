@@ -20,6 +20,28 @@
     return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 }
 
++ (NSDictionary *)chatRoomInfo2Dictionary:(RCChatRoomInfo *)chatRoomInfo {
+    NSMutableDictionary *resultDic = [NSMutableDictionary new];
+    if(!chatRoomInfo) {
+        return resultDic;
+    }
+    [resultDic setObject:chatRoomInfo.targetId forKey:@"targetId"];
+    [resultDic setObject:@(chatRoomInfo.memberOrder) forKey:@"memberOrder"];
+    [resultDic setObject:@(chatRoomInfo.totalMemberCount) forKey:@"totalMemeberCount"];
+    
+    NSMutableArray *memArr = [NSMutableArray new];
+    for(RCChatRoomMemberInfo *mem in chatRoomInfo.memberInfoArray) {
+        NSMutableDictionary *mDic = [NSMutableDictionary new];
+        [mDic setObject:mem.userId forKey:@"userId"];
+        [mDic setObject:@(mem.joinTime) forKey:@"joinTime"];
+        [memArr addObject:mDic];
+    }
+    
+    [resultDic setObject:memArr forKey:@"memberInfoList"];
+    
+    return resultDic;
+}
+
 + (NSDictionary *)message2Dic:(RCMessage *)message {
     NSMutableDictionary *dic = [NSMutableDictionary new];
     [dic setObject:@(message.conversationType) forKey:@"conversationType"];

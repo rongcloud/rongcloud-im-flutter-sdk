@@ -61,6 +61,8 @@
         [self getHistoryMessage:call.arguments result:result];
     }else if([RCMethodKeyGetConversationList isEqualToString:call.method]) {
         [self getConversationList:result];
+    }else if([RCMethodKeyGetChatRoomInfo isEqualToString:call.method]) {
+        [self getChatRoomInfo:call.arguments result:result];
     }
     
 //    else {
@@ -299,6 +301,22 @@
         [arr addObject:conStr];
     }
     result(arr);
+}
+
+- (void)getChatRoomInfo:(id)arg result:(FlutterResult)result {
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *dic = (NSDictionary *)arg;
+        NSString *targetId = dic[@"targetId"];
+        int memberCount = [dic[@"memeberCount"] intValue];
+        int memberOrder = [dic[@"memberOrder"] intValue];
+        [[RCIMClient sharedRCIMClient] getChatRoomInfo:targetId count:memberCount order:memberOrder success:^(RCChatRoomInfo *chatRoomInfo) {
+            NSDictionary *resultDic = [RCFlutterMessageFactory chatRoomInfo2Dictionary:chatRoomInfo];
+            result(resultDic);
+        } error:^(RCErrorCode status) {
+            result(nil);
+        }];
+        
+    }
 }
 
 #pragma mark - RCIMUserInfoDataSource
