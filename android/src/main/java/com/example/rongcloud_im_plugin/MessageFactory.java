@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
 
@@ -22,13 +23,13 @@ public class MessageFactory {
 
     public String message2String(Message message) {
         Map map = new HashMap();
-        map.put("conversationType",message.getConversationType());
+        map.put("conversationType",message.getConversationType().getValue());
         map.put("targetId",message.getTargetId());
         map.put("messageId",message.getMessageId());
-        map.put("messageDirection",message.getMessageDirection());
+        map.put("messageDirection",message.getMessageDirection().getValue());
         map.put("senderUserId",message.getSenderUserId());
-        map.put("receivedStatus",message.getReceivedStatus());
-        map.put("sentStatus",message.getSentStatus());
+        map.put("receivedStatus",message.getReceivedStatus().getFlag());
+        map.put("sentStatus",message.getSentStatus().getValue());
         map.put("sentTime",message.getSentTime());
         map.put("objectName",message.getObjectName());
         String uid = message.getUId();
@@ -47,6 +48,30 @@ public class MessageFactory {
 
         String jStr = jObj.toString();
 
+        return jStr;
+    }
+
+    public String conversation2String(Conversation conversation) {
+        Map map = new HashMap();
+        map.put("conversationType",conversation.getConversationType().getValue());
+        map.put("targetId",conversation.getTargetId());
+        map.put("unreadMessageCount",conversation.getUnreadMessageCount());
+        map.put("receivedStatus",conversation.getReceivedStatus().getFlag());
+        map.put("sentStatus",conversation.getSentStatus().getValue());
+        map.put("sentTime",conversation.getSentTime());
+        map.put("objectName",conversation.getObjectName());
+        map.put("senderUserId",conversation.getSenderUserId());
+        map.put("latestMessageId",conversation.getLatestMessageId());
+
+        MessageContent content = conversation.getLatestMessage();
+        byte[] data = content.encode();
+        String jsonS = new String(data);
+
+        map.put("content",jsonS);
+
+        JSONObject jObj = new JSONObject(map);
+
+        String jStr = jObj.toString();
         return jStr;
     }
 }

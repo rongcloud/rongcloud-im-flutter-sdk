@@ -9,6 +9,7 @@ import 'package:rongcloud_im_plugin/text_message.dart';
 import 'package:rongcloud_im_plugin/image_message.dart';
 import 'package:rongcloud_im_plugin/message.dart';
 import 'package:rongcloud_im_plugin/message_factory.dart';
+import 'package:rongcloud_im_plugin/conversation.dart';
 
 import 'test_message.dart';
 
@@ -169,6 +170,13 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  onGetConversationList() async {
+    List cons = await RongcloudImPlugin.getConversationList();
+    for(Conversation con in cons) {
+      print("conversation latestMessageId " + con.latestMessageId.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // return MaterialApp(
@@ -185,13 +193,13 @@ class _MyAppState extends State<MyApp> {
         ),
         body: Center(
           child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              height: 400,
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              height: 500,
               child: Column(
                 children: <Widget>[
                   Row(children: <Widget>[]),
                   Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
+                      padding: EdgeInsets.symmetric(vertical: 10),
                       child: Row(
                         children: <Widget>[
                           Expanded(
@@ -207,7 +215,7 @@ class _MyAppState extends State<MyApp> {
                       )
                     ),
                   Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
+                      padding: EdgeInsets.symmetric(vertical: 10),
                       child: Row(
                         children: <Widget>[
                           Expanded(
@@ -223,7 +231,7 @@ class _MyAppState extends State<MyApp> {
                       )
                     ),
                     Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
+                      padding: EdgeInsets.symmetric(vertical: 10),
                       child: Row(
                         children: <Widget>[
                           Expanded(
@@ -239,7 +247,7 @@ class _MyAppState extends State<MyApp> {
                       )
                     ),
                     Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
+                      padding: EdgeInsets.symmetric(vertical: 10),
                       child: Row(
                         children: <Widget>[
                           Expanded(
@@ -255,13 +263,29 @@ class _MyAppState extends State<MyApp> {
                       )
                     ),
                     Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
+                      padding: EdgeInsets.symmetric(vertical: 10),
                       child: Row(
                         children: <Widget>[
                           Expanded(
                             child: RaisedButton(
                               onPressed: () => onGetHistoryMessages(),
                               child: Text("onGetHistoryMessages"),
+                              color: Colors.blueAccent,
+                              textColor: Colors.white,
+                            ),
+                          )
+                        ],
+                        
+                      )
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: RaisedButton(
+                              onPressed: () => onGetConversationList(),
+                              child: Text("onGetConversationList"),
                               color: Colors.blueAccent,
                               textColor: Colors.white,
                             ),

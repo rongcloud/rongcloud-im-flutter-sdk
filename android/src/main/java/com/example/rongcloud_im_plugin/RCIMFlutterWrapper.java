@@ -89,6 +89,8 @@ public class RCIMFlutterWrapper {
             quitChatRoom(call.arguments);
         }else if(RCMethodList.MethodKeyGetHistoryMessage.equalsIgnoreCase(call.method)) {
             getHistoryMessage(call.arguments,result);
+        }else if(RCMethodList.MethodKeyGetConversationList.equalsIgnoreCase(call.method)) {
+            getConversationList(result);
         }
     }
 
@@ -392,10 +394,29 @@ public class RCIMFlutterWrapper {
 
                 @Override
                 public void onError(RongIMClient.ErrorCode errorCode) {
-
+                    result.success(null);
                 }
             });
         }
+    }
+
+    private void getConversationList(final Result result) {
+        RongIM.getInstance().getConversationList(new RongIMClient.ResultCallback<List<Conversation>>() {
+            @Override
+            public void onSuccess(List<Conversation> conversations) {
+                List l = new ArrayList();
+                for(Conversation con : conversations) {
+                    String conStr = MessageFactory.getInstance().conversation2String(con);
+                    l.add(conStr);
+                }
+                result.success(l);
+            }
+
+            @Override
+            public void onError(RongIMClient.ErrorCode errorCode) {
+                result.success(null);
+            }
+        });
     }
 
 

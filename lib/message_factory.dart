@@ -3,6 +3,7 @@ import 'dart:core';
 import 'message.dart';
 import 'message_content.dart';
 import 'text_message.dart';
+import 'conversation.dart';
 import 'dart:convert' show json;
 
 class MessageFactory extends Object {
@@ -17,6 +18,16 @@ class MessageFactory extends Object {
       _instance = new MessageFactory._internal();
     }
     return _instance;
+  }
+
+  Message string2Message(String msgJsonStr) {
+    Map map = json.decode(msgJsonStr);
+    return map2Message(map);
+  }
+
+  Conversation string2Conversation(String conJsonStr) {
+    Map map = json.decode(conJsonStr);
+    return map2Conversation(map);
   }
 
   Message map2Message(Map map) {
@@ -43,14 +54,28 @@ class MessageFactory extends Object {
     return message;
   }
 
-  Message string2Message(String msgJsonStr) {
-    Map map = json.decode(msgJsonStr);
-    return map2Message(map);
-  }
+  Conversation map2Conversation(Map map) {
+    Conversation con = new Conversation();
+    con.conversationType = map["conversationType"];
+    con.targetId = map["targetId"];
+    con.unreadMessageCount = map["unreadMessageCount"];
+    con.receivedStatus = map["receivedStatus"];
+    con.sentStatus = map["sentStatus"];
+    con.sentTime = map["sentTime"];
+    con.objectName = map["objectName"];
+    con.senderUserId = map["senderUserId"];
+    con.latestMessageId = map["latestMessageId"];
 
-  Map message2Map(Message message) {
-    Map map = new Map();
-    return map;
+    String contenStr = map["content"];
+    MessageContent content = string2MessageContent(contenStr,con.objectName);
+    if(content != null) {
+      con.latestMessageContent = content;
+    }else {
+      print(con.objectName+":该消息不能被解析!消息内容被保存在 Conversation.originContentMap 中");
+      Map map = json.decode(contenStr.toString());
+      con.originContentMap = map;
+    }
+    return con;
   }
   
   MessageContent string2MessageContent(String contentS,String objectName) {

@@ -59,6 +59,8 @@
         [self quitChatRoom:call.arguments];
     }else if([RCMethodKeyGetHistoryMessage isEqualToString:call.method]) {
         [self getHistoryMessage:call.arguments result:result];
+    }else if([RCMethodKeyGetConversationList isEqualToString:call.method]) {
+        [self getConversationList:result];
     }
     
 //    else {
@@ -287,6 +289,16 @@
         }
         result(msgsArray);
     }
+}
+
+- (void)getConversationList:(FlutterResult)result {
+    NSArray *conversations = [[RCIMClient sharedRCIMClient] getConversationList:@[@(ConversationType_PRIVATE),@(ConversationType_GROUP)]];
+    NSMutableArray *arr = [NSMutableArray new];
+    for(RCConversation *con in conversations) {
+        NSString *conStr = [RCFlutterMessageFactory conversation2String:con];
+        [arr addObject:conStr];
+    }
+    result(arr);
 }
 
 #pragma mark - RCIMUserInfoDataSource

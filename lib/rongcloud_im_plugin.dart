@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:rongcloud_im_plugin/conversation.dart';
 import 'package:rongcloud_im_plugin/message.dart';
 import 'message_factory.dart';
 import 'rc_common_define.dart';
@@ -44,6 +45,16 @@ class RongcloudImPlugin {
         msgList.add(msg);
     }
     return msgList;
+  }
+
+  static Future<List> getConversationList() async {
+    List list = await _channel.invokeMethod(RCMethodKey.GetConversationList);
+    List conList = new List();
+    for(String conStr in list) {
+      Conversation con = MessageFactory.instance.string2Conversation(conStr);
+      conList.add(con);
+    }
+    return conList;
   }
 
   static void joinChatRoom(String targetId,int messageCount) {

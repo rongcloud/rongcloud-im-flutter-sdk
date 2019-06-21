@@ -18,6 +18,7 @@ class RCMethodKey {
   static const String JoinChatRoom = 'joinChatRoom';
   static const String QuitChatRoom = 'quitChatRoom';
   static const String GetHistoryMessage = 'getHistoryMessage';
+  static const String GetConversationList = 'getConversationList';
 }
 
 //callback list //native 会触发此方法
