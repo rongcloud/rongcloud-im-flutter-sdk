@@ -1,5 +1,7 @@
 import 'dart:core';
 
+import 'package:rongcloud_im_plugin/image_message.dart';
+
 import 'message.dart';
 import 'message_content.dart';
 import 'text_message.dart';
@@ -82,6 +84,9 @@ class MessageFactory extends Object {
     MessageContent content = null;
     if(objectName == TextMessage.objectName) {
       content = new TextMessage();
+      content.decode(contentS);
+    }else if(objectName == ImageMessage.objectName) {
+      content = new ImageMessage();
       content.decode(contentS);
     }
     return content;

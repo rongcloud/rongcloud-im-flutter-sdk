@@ -123,15 +123,6 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  onPushToConversationList()  {
-    List conTypes = [RCConversationType.Private,RCConversationType.Group];
-    RongcloudImPlugin.pushToConversationList(conTypes);
-  }
-
-  onPushToConversation() {
-    RongcloudImPlugin.pushToConversation(RCConversationType.Private,privateUserId);
-  }
-
   onSendMessage() async{
       TextMessage txtMessage = new TextMessage();
       txtMessage.content = "这条消息来自 flutter";
@@ -177,6 +168,14 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  onJoinChatRoom() {
+
+  }
+
+  onGetChatRoomInfo() {
+
+  }
+
   @override
   Widget build(BuildContext context) {
     // return MaterialApp(
@@ -198,38 +197,6 @@ class _MyAppState extends State<MyApp> {
               child: Column(
                 children: <Widget>[
                   Row(children: <Widget>[]),
-                  Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      child: Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: RaisedButton(
-                              onPressed: () => onPushToConversationList(),
-                              child: Text("onPushToConversationList"),
-                              color: Colors.blueAccent,
-                              textColor: Colors.white,
-                            ),
-                          )
-                        ],
-                        
-                      )
-                    ),
-                  Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      child: Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: RaisedButton(
-                              onPressed: () => onPushToConversation(),
-                              child: Text("onPushToConversation"),
-                              color: Colors.blueAccent,
-                              textColor: Colors.white,
-                            ),
-                          )
-                        ],
-                        
-                      )
-                    ),
                     Padding(
                       padding: EdgeInsets.symmetric(vertical: 10),
                       child: Row(
@@ -286,6 +253,38 @@ class _MyAppState extends State<MyApp> {
                             child: RaisedButton(
                               onPressed: () => onGetConversationList(),
                               child: Text("onGetConversationList"),
+                              color: Colors.blueAccent,
+                              textColor: Colors.white,
+                            ),
+                          )
+                        ],
+                        
+                      )
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: RaisedButton(
+                              onPressed: () => onJoinChatRoom(),
+                              child: Text("onJoinChatRoom"),
+                              color: Colors.blueAccent,
+                              textColor: Colors.white,
+                            ),
+                          )
+                        ],
+                        
+                      )
+                    ),
+                  Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: RaisedButton(
+                              onPressed: () => onGetChatRoomInfo(),
+                              child: Text("onGetChatRoomInfo"),
                               color: Colors.blueAccent,
                               textColor: Colors.white,
                             ),

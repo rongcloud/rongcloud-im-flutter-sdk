@@ -7,11 +7,15 @@ class ImageMessage extends MessageContent {
 
   String localPath;
   String extra;
+  String content;
+  String imageUri;
 
   @override
   void decode(String jsonStr) {
     Map map = json.decode(jsonStr.toString());
     this.localPath = map["localPath"];
+    this.content = map["content"];
+    this.imageUri = map["imageUri"];
     this.extra = map["extra"];
   }
 
