@@ -30,3 +30,7 @@
 
 * 增加获取会话列表的接口；修复安卓获取消息的 conversationType 为 null 的问题
 
+## 0.0.9
+
+* 更新 iOS 为 static framework
+
