@@ -10,6 +10,8 @@ import 'package:rongcloud_im_plugin/image_message.dart';
 import 'package:rongcloud_im_plugin/message.dart';
 import 'package:rongcloud_im_plugin/message_factory.dart';
 import 'package:rongcloud_im_plugin/conversation.dart';
+import 'package:rongcloud_im_plugin/rc_status_define.dart';
+import 'package:rongcloud_im_plugin/chatroom_info.dart';
 
 import 'test_message.dart';
 
@@ -169,11 +171,12 @@ class _MyAppState extends State<MyApp> {
   }
 
   onJoinChatRoom() {
-
+    RongcloudImPlugin.joinChatRoom("testchatroomId", 10);
   }
 
-  onGetChatRoomInfo() {
-
+  onGetChatRoomInfo() async {
+    ChatRoomInfo chatRoomInfo = await RongcloudImPlugin.getChatRoomInfo("testchatroomId", 10, RCChatRoomMemberOrder.Desc);
+    print("onGetChatRoomInfo targetId ="+chatRoomInfo.targetId);
   }
 
   @override

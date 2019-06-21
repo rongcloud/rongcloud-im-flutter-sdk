@@ -67,6 +67,13 @@ class RongcloudImPlugin {
     _channel.invokeMethod(RCMethodKey.QuitChatRoom,map);
   }
 
+  // memeberCount 最大 20
+  static Future getChatRoomInfo(String targetId,int memeberCount,int memberOrder) async {
+    Map map = {"targetId":targetId,"memeberCount":memeberCount,"memberOrder":memberOrder};
+    Map resultMap = await _channel.invokeMethod(RCMethodKey.GetChatRoomInfo,map);
+    return MessageFactory.instance.map2ChatRoomInfo(resultMap);
+  }
+
   // static void pushToConversationList(List conTypes) {
   //   _channel.invokeMethod(RCMethodKey.PushToConversationList,conTypes);
   // }

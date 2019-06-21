@@ -35,7 +35,7 @@ class IndexState extends State<IndexPage> {
           
         )));
     }else if(defaultTargetPlatform == TargetPlatform.android) {
-      RongcloudImPlugin.pushToConversation(RCConversationType.Private, "afasdf");
+      // RongcloudImPlugin.pushToConversation(RCConversationType.Private, "afasdf");
     }
   }
 

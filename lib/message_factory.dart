@@ -6,6 +6,7 @@ import 'message.dart';
 import 'message_content.dart';
 import 'text_message.dart';
 import 'conversation.dart';
+import 'chatroom_info.dart';
 import 'dart:convert' show json;
 
 class MessageFactory extends Object {
@@ -30,6 +31,26 @@ class MessageFactory extends Object {
   Conversation string2Conversation(String conJsonStr) {
     Map map = json.decode(conJsonStr);
     return map2Conversation(map);
+  }
+
+  ChatRoomInfo map2ChatRoomInfo(Map map) {
+    ChatRoomInfo chatRoomInfo = new ChatRoomInfo();
+    chatRoomInfo.targetId = map["targetId"];
+    chatRoomInfo.memberOrder = map["memberOrder"];
+    chatRoomInfo.totalMemeberCount = map["totalMemeberCount"];
+    List memList = new List();
+    for(Map memMap in map["memberInfoList"]) {
+        memList.add(map2ChatRoomMemberInfo(memMap));
+    }
+    chatRoomInfo.memberInfoList = memList;
+    return chatRoomInfo;
+  }
+
+  ChatRoomMemberInfo map2ChatRoomMemberInfo(Map map) {
+    ChatRoomMemberInfo chatRoomMemberInfo = new ChatRoomMemberInfo();
+    chatRoomMemberInfo.userId = map["userId"];
+    chatRoomMemberInfo.joinTime = map["joinTime"];
+    return chatRoomMemberInfo;
   }
 
   Message map2Message(Map map) {
@@ -79,6 +100,7 @@ class MessageFactory extends Object {
     }
     return con;
   }
+
   
   MessageContent string2MessageContent(String contentS,String objectName) {
     MessageContent content = null;

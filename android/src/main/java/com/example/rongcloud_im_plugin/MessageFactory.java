@@ -1,12 +1,18 @@
 package com.example.rongcloud_im_plugin;
 
 
+import com.google.gson.JsonObject;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import io.rong.imlib.model.ChatRoomInfo;
+import io.rong.imlib.model.ChatRoomMemberInfo;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
@@ -73,6 +79,24 @@ public class MessageFactory {
 
         String jStr = jObj.toString();
         return jStr;
+    }
+
+    public Map chatRoom2Map(ChatRoomInfo chatRoomInfo) {
+        Map map = new HashMap();
+        map.put("targetId",chatRoomInfo.getChatRoomId());
+        map.put("memberOrder",chatRoomInfo.getMemberOrder().getValue());
+        map.put("totalMemeberCount",chatRoomInfo.getTotalMemberCount());
+
+        List memList = new ArrayList();
+        for(ChatRoomMemberInfo memInfo : chatRoomInfo.getMemberInfo()) {
+            Map memMap = new HashMap();
+            memMap.put("userId",memInfo.getUserId());
+            memMap.put("joinTime",memInfo.getJoinTime());
+            memList.add(memMap);
+        }
+        map.put("memberInfoList",memList);
+
+        return map;
     }
 }
 

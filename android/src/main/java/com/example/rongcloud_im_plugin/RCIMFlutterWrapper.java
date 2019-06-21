@@ -28,6 +28,7 @@ import io.rong.imkit.RongIM;
 import io.rong.imlib.MessageTag;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.RongIMClient.SendImageMessageCallback;
+import io.rong.imlib.model.ChatRoomInfo;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
@@ -91,6 +92,8 @@ public class RCIMFlutterWrapper {
             getHistoryMessage(call.arguments,result);
         }else if(RCMethodList.MethodKeyGetConversationList.equalsIgnoreCase(call.method)) {
             getConversationList(result);
+        }else if(RCMethodList.MethodKeyGetChatRoomInfo.equalsIgnoreCase(call.method)) {
+            getChatRoomInfo(call.arguments,result);
         }
     }
 
@@ -417,6 +420,31 @@ public class RCIMFlutterWrapper {
                 result.success(null);
             }
         });
+    }
+
+    private void getChatRoomInfo(Object arg, final Result result) {
+        if(arg instanceof Map) {
+            Map map = (Map)arg;
+            String targetId = (String)map.get("targetId");
+            Integer memberCount = (Integer)map.get("memeberCount");
+            Integer order = (Integer)map.get("memberOrder");
+            ChatRoomInfo.ChatRoomMemberOrder memberOrder = ChatRoomInfo.ChatRoomMemberOrder.RC_CHAT_ROOM_MEMBER_ASC;
+            if(order.intValue() == 2) {
+                memberOrder = ChatRoomInfo.ChatRoomMemberOrder.RC_CHAT_ROOM_MEMBER_DESC;
+            }
+            RongIMClient.getInstance().getChatRoomInfo(targetId, memberCount.intValue(), memberOrder, new RongIMClient.ResultCallback<ChatRoomInfo>() {
+                @Override
+                public void onSuccess(ChatRoomInfo chatRoomInfo) {
+                    Map resultMap = MessageFactory.getInstance().chatRoom2Map(chatRoomInfo);
+                    result.success(resultMap);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    result.success(null);
+                }
+            });
+        }
     }
 
 

@@ -34,3 +34,9 @@ class RCOperationStatus {
   static const int Success = 0;
   static const int Failed = 1;
 }
+
+//聊天室成员顺序
+class RCChatRoomMemberOrder {
+  static const int Asc = 1;//升序，最早加入
+  static const int Desc = 2;//降序，最晚加入
+}
