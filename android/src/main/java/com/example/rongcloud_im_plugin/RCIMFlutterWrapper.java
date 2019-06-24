@@ -311,6 +311,10 @@ public class RCIMFlutterWrapper {
 
                 @Override
                 public void onSuccess(Message message) {
+                    if(message == null) {
+                        result.success(null);
+                        return;
+                    }
                     Map resultMap = new HashMap();
                     resultMap.put("messageId",message.getMessageId());
                     resultMap.put("status",30);
@@ -388,6 +392,10 @@ public class RCIMFlutterWrapper {
             RongIM.getInstance().getHistoryMessages(type, targetId, messageId, count, new RongIMClient.ResultCallback<List<Message>>() {
                 @Override
                 public void onSuccess(List<Message> messages) {
+                    if(messages == null) {
+                        result.success(null);
+                        return;
+                    }
                     List list = new ArrayList();
                     for(Message msg : messages) {
                         String messageS = MessageFactory.getInstance().message2String(msg);
@@ -409,6 +417,10 @@ public class RCIMFlutterWrapper {
         RongIM.getInstance().getConversationList(new RongIMClient.ResultCallback<List<Conversation>>() {
             @Override
             public void onSuccess(List<Conversation> conversations) {
+                if(conversations == null) {
+                    result.success(null);
+                    return ;
+                }
                 List l = new ArrayList();
                 for(Conversation con : conversations) {
                     String conStr = MessageFactory.getInstance().conversation2String(con);
@@ -437,6 +449,10 @@ public class RCIMFlutterWrapper {
             RongIMClient.getInstance().getChatRoomInfo(targetId, memberCount.intValue(), memberOrder, new RongIMClient.ResultCallback<ChatRoomInfo>() {
                 @Override
                 public void onSuccess(ChatRoomInfo chatRoomInfo) {
+                    if(chatRoomInfo == null) {
+                        result.success(null);
+                        return;
+                    }
                     Map resultMap = MessageFactory.getInstance().chatRoom2Map(chatRoomInfo);
                     result.success(resultMap);
                 }
