@@ -94,6 +94,8 @@ public class RCIMFlutterWrapper {
             getConversationList(result);
         }else if(RCMethodList.MethodKeyGetChatRoomInfo.equalsIgnoreCase(call.method)) {
             getChatRoomInfo(call.arguments,result);
+        }else if(RCMethodList.MethodKeyClearMessagesUnreadStatus.equalsIgnoreCase(call.method)) {
+            clearMessagesUnreadStatus(call.arguments,result);
         }
     }
 
@@ -444,6 +446,27 @@ public class RCIMFlutterWrapper {
                     result.success(null);
                 }
             });
+        }
+    }
+
+    private void clearMessagesUnreadStatus(Object arg,final Result result) {
+        if(arg instanceof Map) {
+            Map map = (Map)arg;
+            Integer t = (Integer)map.get("conversationType");
+            Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
+            String targetId = (String)map.get("targetId");
+            RongIM.getInstance().clearMessagesUnreadStatus(type, targetId, new RongIMClient.ResultCallback<Boolean>() {
+                @Override
+                public void onSuccess(Boolean aBoolean) {
+                    result.success(true);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    result.success(false);
+                }
+            });
+
         }
     }
 

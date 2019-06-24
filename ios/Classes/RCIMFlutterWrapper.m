@@ -63,6 +63,8 @@
         [self getConversationList:result];
     }else if([RCMethodKeyGetChatRoomInfo isEqualToString:call.method]) {
         [self getChatRoomInfo:call.arguments result:result];
+    }else if([RCMethodKeyClearMessagesUnreadStatus isEqualToString:call.method]) {
+        [self clearMessagesUnreadStatus:call.arguments result:result];
     }
     
 //    else {
@@ -316,6 +318,16 @@
             result(nil);
         }];
         
+    }
+}
+
+- (void)clearMessagesUnreadStatus:(id)arg result:(FlutterResult)result {
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *dic = (NSDictionary *)arg;
+        RCConversationType type = (RCConversationType)dic[@"conversationType"];
+        NSString *targetId = dic[@"targetId"];
+        BOOL rc = [[RCIMClient sharedRCIMClient] clearMessagesUnreadStatus:type targetId:targetId];
+        result([NSNumber numberWithBool:rc]);
     }
 }
 

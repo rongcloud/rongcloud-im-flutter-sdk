@@ -57,6 +57,12 @@ class RongcloudImPlugin {
     return conList;
   }
 
+  static Future<bool> clearMessagesUnreadStatus(int conversationType,String targetId) async {
+    Map map = {'conversationType':conversationType,'targetId':targetId};
+    bool rc = await _channel.invokeMethod(RCMethodKey.ClearMessagesUnreadStatus,map);
+    return rc;
+  }
+
   static void joinChatRoom(String targetId,int messageCount) {
     Map map = {"targetId":targetId,"messageCount":messageCount};
     _channel.invokeMethod(RCMethodKey.JoinChatRoom,map);
