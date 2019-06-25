@@ -53,3 +53,7 @@
 ## 0.0.14
 
 * 注掉 release 模式无法被找到的 theme
+
+## 0.0.15
+
+* 删除 style.xml 中问题注释，保证 android 编译
