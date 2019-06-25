@@ -39,6 +39,9 @@ class RongcloudImPlugin {
   static Future<List> getHistoryMessage(int conversationType,String targetId,int messageId,int count) async {
     Map map = {'conversationType':conversationType,'targetId':targetId,"messageId":messageId,"count":count};
     List list = await _channel.invokeMethod(RCMethodKey.GetHistoryMessage,map);
+    if(list == null) {
+      return null;
+    }
     List msgList = new List();
     for(String msgStr in list) {
         Message msg = MessageFactory.instance.string2Message(msgStr);
@@ -49,6 +52,9 @@ class RongcloudImPlugin {
 
   static Future<List> getConversationList() async {
     List list = await _channel.invokeMethod(RCMethodKey.GetConversationList);
+    if(list == null) {
+      return null;
+    }
     List conList = new List();
     for(String conStr in list) {
       Conversation con = MessageFactory.instance.string2Conversation(conStr);
