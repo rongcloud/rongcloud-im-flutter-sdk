@@ -49,3 +49,7 @@
 ## 0.0.13
 
 * 删除 android 配置文件依赖的错误 theme : release 模式找不到这个 theme
+
+## 0.0.14
+
+* 注掉 release 模式无法被找到的 theme
