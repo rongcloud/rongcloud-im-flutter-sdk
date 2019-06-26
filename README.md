@@ -1,6 +1,6 @@
-# 融云 IMKit flutter plugin
+# 融云 IM flutter plugin
 
-本文档讲解了如何使用 IMKit 的 flutter plugin
+本文档讲解了如何使用 IM 的 flutter plugin
 
 [flutter 官网](https://flutter.dev/)
 
@@ -27,7 +27,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  rongcloud_im_plugin: ^0.0.1
+  rongcloud_im_plugin: ^0.0.16
 ```
 
 然后在项目路径执行 `flutter packages get` 来下载 flutter plugin
@@ -84,10 +84,7 @@ RongcloudImPlugin.disconnect(bool needPush)
 onSendMessage() async{
       TextMessage txtMessage = new TextMessage();
       txtMessage.content = "这条消息来自 flutter";
-      Map map = await RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, txtMessage);
-      String messageString= map["message"];
-      Message msg = MessageFactory.instance.string2Message(messageString);
-      print("send message start "+map.toString());
+      Message msg = await RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, txtMessage);
       print("send message start senderUserId = "+msg.senderUserId);
   }
 ```
@@ -97,10 +94,7 @@ onSendMessage() async{
 onSendImageMessage() async {
     ImageMessage imgMessage = new ImageMessage();
     imgMessage.localPath = "image/local/path.jpg";
-    Map map = await RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, imgMessage);
-    String messageString = map["message"];
-    Message msg = MessageFactory.instance.string2Message(messageString);
-    print("send image message start "+map.toString());
+    Message msg = await RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, imgMessage);
     print("send image message start senderUserId = "+msg.senderUserId);
   }
 
