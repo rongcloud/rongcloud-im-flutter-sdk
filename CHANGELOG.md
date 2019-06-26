@@ -62,3 +62,8 @@
 ## 0.0.16
 
 * 更新 readme 文档；sendMessage 接口由返回 map，改为返回 Message
+
+
+## 0.0.17
+
+* 更新 readme 文档
