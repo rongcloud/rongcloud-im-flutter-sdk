@@ -128,30 +128,21 @@ class _MyAppState extends State<MyApp> {
   onSendMessage() async{
       TextMessage txtMessage = new TextMessage();
       txtMessage.content = "这条消息来自 flutter";
-      Map map = await RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, txtMessage);
-      String messageString= map["message"];
-      Message msg = MessageFactory.instance.string2Message(messageString);
-      print("send message start "+map.toString());
+      Message msg = await RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, txtMessage);
       print("send message start senderUserId = "+msg.senderUserId);
   }
 
   onSendImageMessage() async {
     ImageMessage imgMessage = new ImageMessage();
     imgMessage.localPath = "image/local/path.jpg";
-    Map map = await RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, imgMessage);
-    String messageString = map["message"];
-    Message msg = MessageFactory.instance.string2Message(messageString);
-    print("send image message start "+map.toString());
+    Message msg = await RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, imgMessage);
     print("send image message start senderUserId = "+msg.senderUserId);
   }
 
   onSendTestMessage() async {
     TestMessage testMessage = new TestMessage();
     testMessage.content = "这条消息是 flutter 内自定义的消息，还需要再原生的页面注册";
-    Map map = await RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, testMessage);
-    String messageString = map["message"];
-    Message msg = MessageFactory.instance.string2Message(messageString);
-    print("send test message start "+map.toString());
+    Message msg = await RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, testMessage);
     print("send test message start senderUserId = "+msg.senderUserId);
   }
 
@@ -172,6 +163,10 @@ class _MyAppState extends State<MyApp> {
 
   onJoinChatRoom() {
     RongcloudImPlugin.joinChatRoom("testchatroomId", 10);
+  }
+
+  onQuitChatRoom() {
+    RongcloudImPlugin.quitChatRoom("testchatroomId");
   }
 
   onGetChatRoomInfo() async {

@@ -70,22 +70,90 @@ print(rc);
 
 # API 调用
 
-## 进入会话列表
-
-参数为会话列表需要展示的回话类型，默认为单/群聊
+## 断开 IM 连接
 
 ```
-List conTypes = [RCConversationTypePrivate,RCConversationTypeGroup];
-RongcloudImPlugin.pushToConversationList(conTypes);
+RongcloudImPlugin.disconnect(bool needPush)
 ```
 
-##  进入会话页面
+## 发送消息
 
-第一个参数为会话类型，支持单/群聊，第二个参数为会话 id
+发送文本消息
 
 ```
-RongcloudImPlugin.pushToConversation(RCConversationTypePrivate,"asdf");
+onSendMessage() async{
+      TextMessage txtMessage = new TextMessage();
+      txtMessage.content = "这条消息来自 flutter";
+      Map map = await RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, txtMessage);
+      String messageString= map["message"];
+      Message msg = MessageFactory.instance.string2Message(messageString);
+      print("send message start "+map.toString());
+      print("send message start senderUserId = "+msg.senderUserId);
+  }
 ```
+发送图片消息
+
+```
+onSendImageMessage() async {
+    ImageMessage imgMessage = new ImageMessage();
+    imgMessage.localPath = "image/local/path.jpg";
+    Map map = await RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, imgMessage);
+    String messageString = map["message"];
+    Message msg = MessageFactory.instance.string2Message(messageString);
+    print("send image message start "+map.toString());
+    print("send image message start senderUserId = "+msg.senderUserId);
+  }
+
+```
+
+## 获取历史消息
+
+```
+onGetHistoryMessages() async {
+    List msgs = await RongcloudImPlugin.getHistoryMessage(RCConversationType.Private, privateUserId, 0, 10);
+    print("get history message");
+    for(Message m in msgs) {
+      print("sentTime = "+m.sentTime.toString());
+    }
+  }
+```
+
+## 获取会话列表
+
+```
+onGetConversationList() async {
+    List cons = await RongcloudImPlugin.getConversationList();
+    for(Conversation con in cons) {
+      print("conversation latestMessageId " + con.latestMessageId.toString());
+    }
+  }
+```
+
+## 加入聊天室
+
+```
+onJoinChatRoom() {
+    RongcloudImPlugin.joinChatRoom("testchatroomId", 10);
+  }
+```
+
+## 退出聊天室
+
+```
+onQuitChatRoom() {
+    RongcloudImPlugin.quitChatRoom("testchatroomId");
+  }
+```
+
+## 获取聊天室信息
+
+```
+onGetChatRoomInfo() async {
+    ChatRoomInfo chatRoomInfo = await RongcloudImPlugin.getChatRoomInfo("testchatroomId", 10, RCChatRoomMemberOrder.Desc);
+    print("onGetChatRoomInfo targetId ="+chatRoomInfo.targetId);
+  }
+```
+
 
 ## 设置 native 调用的 handler，并响应
 
@@ -100,14 +168,53 @@ RongcloudImPlugin.setRCNativeMethodCallHandler(_handler);
 ```
 Future<dynamic> _handler(MethodCall methodCall) {
     //当 im SDK 需要展示用户信息的时候，会回调此方法
-    if (MethodCallBackKeyFetchUserInfo == methodCall.method) {
+    if (RCMethodCallBackKey.RefrechUserInfo == methodCall.method) {
       //开发者需要将用户信息传递给 SDK
-      //如果本地没有该用户的信息，从 APP 服务获取后传递给 SDK
       //如果本地有该用户的信息，那么直接传递给 SDK
+      //如果本地没有该用户的信息，从 APP 服务获取后传递给 SDK
       String userId = methodCall.arguments;
       String name = "张三";
       String portraitUrl = "https://www.rongcloud.cn/pc/images/lizhi-icon.png";
       RongcloudImPlugin.refreshUserInfo(userId, name, portraitUrl);
-    } 
+    } else if(RCMethodCallBackKey.ReceiveMessage == methodCall.method) {
+      //收到消息原生会触发此方法
+      Map map = methodCall.arguments;
+      print("messageMap="+map.toString());
+      int left = map["left"];
+      print("left="+left.toString());
+      String messageString= map["message"];
+      Message msg = MessageFactory.instance.string2Message(messageString);
+
+      //会话类型，单聊/群聊/聊天室
+      print("conversationType = "+msg.conversationType.toString());
+      print("targetId = "+msg.targetId);
+      print("senderUserId="+msg.senderUserId);
+    }else if(RCMethodCallBackKey.SendMessage == methodCall.method) {
+      //发送消息会触发此回调，通知 flutter 层消息发送结果
+      // {"messageId":12,"status":30}
+      // messageId 为本地数据库自增字段
+      // status 结果参见 RCMessageSentStatus 的枚举值
+      Map map = methodCall.arguments;
+      print("message sent result "+ map.toString());
+    }else if(RCMethodCallBackKey.JoinChatRoom == methodCall.method) {
+      //加入聊天室的回调
+      //targetId 聊天室 id
+      //status 参见 RCOperationStatus
+      //{"targetId":targetId,"status":0};
+      Map map = methodCall.arguments;
+      print("join chatroom resulut ="+map.toString());
+    }else if(RCMethodCallBackKey.QuitChatRoom == methodCall.method) {
+      //退出聊天室的回调
+      //targetId 聊天室 id
+      //status 参见 RCOperationStatus
+      //{"targetId":targetId,"status":0};
+      Map map = methodCall.arguments;
+      print("quit chatroom resulut ="+map.toString());
+    }else if(RCMethodCallBackKey.UploadMediaProgress == methodCall.method) {
+      //上传图片进度的回调
+      //{"messageId",messageId,"progress",99}
+      Map map = methodCall.arguments;
+      print("upload image message progress = "+map.toString());
+    }
   }
 ```
