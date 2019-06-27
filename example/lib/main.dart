@@ -7,6 +7,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:rongcloud_im_plugin/rc_common_define.dart';
 import 'package:rongcloud_im_plugin/text_message.dart';
 import 'package:rongcloud_im_plugin/image_message.dart';
+import 'package:rongcloud_im_plugin/voice_message.dart';
 import 'package:rongcloud_im_plugin/message.dart';
 import 'package:rongcloud_im_plugin/message_factory.dart';
 import 'package:rongcloud_im_plugin/conversation.dart';
@@ -139,6 +140,14 @@ class _MyAppState extends State<MyApp> {
     print("send image message start senderUserId = "+msg.senderUserId);
   }
 
+  onSendVoiceMessage() async {
+    VoiceMessage voiceMsg = new VoiceMessage();
+    voiceMsg.localPath = "voice/local/path";
+    voiceMsg.duration = 13;
+    Message msg = await RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, voiceMsg);
+    print("send voice message start senderUserId = "+msg.senderUserId);
+  }
+
   onSendTestMessage() async {
     TestMessage testMessage = new TestMessage();
     testMessage.content = "这条消息是 flutter 内自定义的消息，还需要再原生的页面注册";
@@ -203,6 +212,22 @@ class _MyAppState extends State<MyApp> {
                             child: RaisedButton(
                               onPressed: () => onSendMessage(),
                               child: Text("sendMessage"),
+                              color: Colors.blueAccent,
+                              textColor: Colors.white,
+                            ),
+                          )
+                        ],
+                        
+                      )
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: RaisedButton(
+                              onPressed: () => onSendVoiceMessage(),
+                              child: Text("onSendVoiceMessage"),
                               color: Colors.blueAccent,
                               textColor: Colors.white,
                             ),

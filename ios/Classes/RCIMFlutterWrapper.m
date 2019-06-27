@@ -173,7 +173,18 @@
         NSData *data = [contentStr dataUsingEncoding:NSUTF8StringEncoding];
         Class clazz = [[RCMessageMapper sharedMapper] messageClassWithTypeIdenfifier:objName];
         
-        RCMessageContent *content = [[RCMessageMapper sharedMapper] messageContentWithClass:clazz fromData:data];
+        RCMessageContent *content = nil;
+        if([objName isEqualToString:RCVoiceMessageTypeIdentifier]) {
+            content = [self getVoiceMessage:data];
+        }else {
+             content = [[RCMessageMapper sharedMapper] messageContentWithClass:clazz fromData:data];
+        }
+        if(content == nil) {
+            NSLog(@"该消息无法构建:%@",param);
+            result(nil);
+            return;
+        }
+        
         __weak typeof(self) ws = self;
         RCMessage *message = [[RCIM sharedRCIM] sendMessage:type targetId:targetId content:content pushContent:nil pushData:nil success:^(long messageId) {
             NSMutableDictionary *dic = [NSMutableDictionary new];
@@ -352,6 +363,19 @@
 #pragma mark - util
 - (void)updateIMConfig {
     [RCIM sharedRCIM].enablePersistentUserInfoCache = self.config.enablePersistentUserInfoCache;
+}
+
+- (RCMessageContent *)getVoiceMessage:(NSData *)data {
+    NSDictionary *contentDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+    NSString *localPath = contentDic[@"localPath"];
+    int duration = [contentDic[@"duration"] intValue];
+    if(![[NSFileManager defaultManager] fileExistsAtPath:localPath]) {
+        NSLog(@"创建语音消息失败：语音文件路径不存在:%@",localPath);
+        return nil;
+    }
+    NSData *voiceData= [NSData dataWithContentsOfFile:localPath];
+    RCVoiceMessage *msg = [RCVoiceMessage messageWithAudio:voiceData duration:duration];
+    return msg;
 }
 
 #pragma mark - private method

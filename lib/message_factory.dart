@@ -1,13 +1,14 @@
 import 'dart:core';
-
-import 'package:rongcloud_im_plugin/image_message.dart';
+import 'dart:convert' show json;
 
 import 'message.dart';
-import 'message_content.dart';
-import 'text_message.dart';
 import 'conversation.dart';
 import 'chatroom_info.dart';
-import 'dart:convert' show json;
+
+import 'message_content.dart';
+import 'text_message.dart';
+import 'image_message.dart';
+import 'voice_message.dart';
 
 class MessageFactory extends Object {
   factory MessageFactory() =>_getInstance();
@@ -109,6 +110,9 @@ class MessageFactory extends Object {
       content.decode(contentS);
     }else if(objectName == ImageMessage.objectName) {
       content = new ImageMessage();
+      content.decode(contentS);
+    }else if(objectName == VoiceMessage.objectName) {
+      content = new VoiceMessage();
       content.decode(contentS);
     }
     return content;

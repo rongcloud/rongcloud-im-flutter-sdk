@@ -36,6 +36,8 @@ import io.rong.imlib.model.UnknownMessage;
 import io.rong.imlib.model.UserInfo;
 import io.rong.message.ImageMessage;
 import io.rong.message.MessageHandler;
+import io.rong.message.VoiceMessage;
+
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 
@@ -234,7 +236,27 @@ public class RCIMFlutterWrapper {
 
             byte[] bytes = contentStr.getBytes() ;
 
-            MessageContent content = newMessageContent(objectName,bytes);
+            MessageContent content = null;
+            if(isVoiceMessage(objectName)) {
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(contentStr);
+                    String localPath = jsonObject.getString("localPath");
+                    int duration = jsonObject.getInt("duration");
+                    Uri uri = Uri.parse(localPath);
+                    content = VoiceMessage.obtain(uri,duration);
+                } catch (JSONException e) {
+                    //do nothing
+                }
+            }else {
+                content = newMessageContent(objectName,bytes);
+            }
+
+            if(content == null) {
+                Log.e("该消息无法构建",map.toString());
+                result.success(null);
+                return;
+            }
 
             Message message = RongIM.getInstance().sendMessage(type, targetId, content, null, null, new RongIMClient.SendMessageCallback() {
                 @Override
@@ -537,6 +559,13 @@ public class RCIMFlutterWrapper {
 
     private boolean isMediaMessage(String objName) {
         if(objName.equalsIgnoreCase("RC:ImgMsg")) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isVoiceMessage(String objName) {
+        if(objName.equalsIgnoreCase("RC:VcMsg")) {
             return true;
         }
         return false;
