@@ -99,9 +99,10 @@ class _MyAppState extends State<MyApp> {
       print("senderUserId="+msg.senderUserId);
     }else if(RCMethodCallBackKey.SendMessage == methodCall.method) {
       //发送消息会触发此回调，通知 flutter 层消息发送结果
-      // {"messageId":12,"status":30}
+      // {"messageId":12,"status":30,"code":0}
       // messageId 为本地数据库自增字段
       // status 结果参见 RCMessageSentStatus 的枚举值
+      // code 错误码，消息发送成功为 0 ，发送失败则为具体错误码 如 23408
       Map map = methodCall.arguments;
       print("message sent result "+ map.toString());
     }else if(RCMethodCallBackKey.JoinChatRoom == methodCall.method) {
