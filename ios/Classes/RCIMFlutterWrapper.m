@@ -190,11 +190,13 @@
             NSMutableDictionary *dic = [NSMutableDictionary new];
             [dic setObject:@(messageId) forKey:@"messageId"];
             [dic setObject:@(SentStatus_SENT) forKey:@"status"];
+            [dic setObject:@(0) forKey:@"code"];
             [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
         } error:^(RCErrorCode nErrorCode, long messageId) {
             NSMutableDictionary *dic = [NSMutableDictionary new];
             [dic setObject:@(messageId) forKey:@"messageId"];
             [dic setObject:@(SentStatus_FAILED) forKey:@"status"];
+            [dic setObject:@(nErrorCode) forKey:@"code"];
             [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
         }];
         NSString *jsonString = [RCFlutterMessageFactory message2String:message];
@@ -232,11 +234,13 @@
         NSMutableDictionary *dic = [NSMutableDictionary new];
         [dic setObject:@(messageId) forKey:@"messageId"];
         [dic setObject:@(SentStatus_SENT) forKey:@"status"];
+        [dic setObject:@(0) forKey:@"code"];
         [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
     } error:^(RCErrorCode errorCode, long messageId) {
         NSMutableDictionary *dic = [NSMutableDictionary new];
         [dic setObject:@(messageId) forKey:@"messageId"];
         [dic setObject:@(SentStatus_FAILED) forKey:@"status"];
+        [dic setObject:@(errorCode) forKey:@"code"];
         [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
     } cancel:^(long messageId) {
         
