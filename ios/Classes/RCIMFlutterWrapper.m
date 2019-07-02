@@ -104,7 +104,7 @@
         NSLog(@"connect start");
         NSString *token = (NSString *)arg;
         [[RCIM sharedRCIM] connectWithToken:token success:^(NSString *userId) {
-            result(0);
+            result(@(0));
             NSLog(@"connect end success");
         } error:^(RCConnectErrorCode status) {
             result(@(status));
