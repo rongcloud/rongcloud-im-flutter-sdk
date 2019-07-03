@@ -52,6 +52,14 @@ class _MyAppState extends State<MyApp> {
     Map confMap = json.decode(confString.toString());
     RongcloudImPlugin.config(confMap);
 
+    //设置导航服务器和上传文件服务器信息
+    //必须在 init 之后 ，connect 之前调用
+    //1、如果使用https，则设置为https://cn.xxx.com:port或https://cn.xxx.com格式，其中域名部分也可以是IP，如果不指定端口，将默认使用443端口。
+    //2、如果使用http，则设置为cn.xxx.com:port或cn.xxx.com格式，其中域名部分也可以是IP，如果不指定端口，将默认使用80端口。
+    // String naviServer = "";
+    // String fileServer = "";
+    // RongcloudImPlugin.setServerInfo(naviServer, fileServer);
+
     //3.连接 im SDK
     int rc = await RongcloudImPlugin.connect(RongIMToken);
     print('connect result');

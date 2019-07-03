@@ -106,6 +106,11 @@ class RongcloudImPlugin {
     _channel.invokeMethod(RCMethodKey.RefrechUserInfo,map);
   }
 
+  static void setServerInfo(String naviServer,String fileServer) {
+    Map map = {"naviServer":naviServer,"fileServer":fileServer};
+    _channel.invokeMethod(RCMethodKey.SetServerInfo,map);
+  }
+
   static void setRCNativeMethodCallHandler(Future<dynamic> handler(MethodCall call)) {
     _channel.setMethodCallHandler(handler);
   }

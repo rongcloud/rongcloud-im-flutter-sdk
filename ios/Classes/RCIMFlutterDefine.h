@@ -18,6 +18,7 @@ static NSString *RCMethodKeyGetHistoryMessage = @"getHistoryMessage";
 static NSString *RCMethodKeyGetConversationList = @"getConversationList";
 static NSString *RCMethodKeyGetChatRoomInfo = @"getChatRoomInfo";
 static NSString *RCMethodKeyClearMessagesUnreadStatus = @"clearMessagesUnreadStatus";
+static NSString *RCMethodKeySetServerInfo = @"setServerInfo";
 
 //callback iOS 通知 flutter
 static NSString *RCMethodCallBackKeySendMessage = @"sendMessageCallBack";

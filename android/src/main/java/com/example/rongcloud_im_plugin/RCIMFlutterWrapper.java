@@ -74,6 +74,8 @@ public class RCIMFlutterWrapper {
             initRCIM(call.arguments);
         }else if(RCMethodList.MethodKeyConfig.equalsIgnoreCase(call.method)) {
             config(call.arguments);
+        }else if(RCMethodList.MethodKeySetServerInfo.equalsIgnoreCase(call.method)){
+            setServerInfo(call.arguments);
         }else if(RCMethodList.MethodKeyConnect.equalsIgnoreCase(call.method)){
             connect(call.arguments,result);
         }else if(RCMethodList.MethodKeyDisconnect.equalsIgnoreCase(call.method)) {
@@ -123,6 +125,15 @@ public class RCIMFlutterWrapper {
             RongIM.setUserInfoProvider(new RCFlutterIMInfoProvider() ,config.isEnablePersistentUserInfoCache());
         }else {
 
+        }
+    }
+
+    private void setServerInfo(Object arg) {
+        if(arg instanceof Map) {
+            Map map = (Map)arg;
+            String naviServer = (String)map.get("naviServer");
+            String fileServer = (String)map.get("fileServer");
+            RongIMClient.setServerInfo(naviServer,fileServer);
         }
     }
 

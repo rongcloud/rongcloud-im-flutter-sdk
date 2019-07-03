@@ -41,6 +41,8 @@
         [self initWithRCIMAppKey:call.arguments];
     }else if([RCMethodKeyConfig isEqualToString:call.method]){
         [self config:call.arguments];
+    }else if([RCMethodKeySetServerInfo isEqualToString:call.method]) {
+        [self setServerInfo:call.arguments];
     }else if([RCMethodKeyConnect isEqualToString:call.method]) {
         [self connectWithToken:call.arguments result:result];
     }else if([RCMethodKeyDisconnect isEqualToString:call.method]) {
@@ -96,6 +98,15 @@
         [RCIM sharedRCIM].receiveMessageDelegate = self;
     }else {
         NSLog(@"RCFlutterConfig 非法参数类型");
+    }
+}
+
+- (void)setServerInfo:(id)arg {
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *dic = (NSDictionary *)arg;
+        NSString *naviServer = dic[@"naviServer"];
+        NSString *fileServer = dic[@"fileServer"];
+        [[RCIMClient sharedRCIMClient] setServerInfo:naviServer fileServer:fileServer];
     }
 }
 

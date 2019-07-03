@@ -22,6 +22,7 @@ class RCMethodKey {
   static const String GetConversationList = 'getConversationList';
   static const String GetChatRoomInfo = 'getChatRoomInfo';
   static const String ClearMessagesUnreadStatus = 'clearMessagesUnreadStatus';
+  static const String SetServerInfo = 'setServerInfo';
 }
 
 //callback list //native 会触发此方法
