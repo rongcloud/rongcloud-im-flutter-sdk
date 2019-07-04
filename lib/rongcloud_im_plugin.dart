@@ -34,6 +34,9 @@ class RongcloudImPlugin {
     String objName = content.getObjectName();
     Map map = {'conversationType':conversationType,'targetId':targetId,"content":jsonStr,"objectName":objName};
     Map resultMap = await _channel.invokeMethod(RCMethodKey.SendMessage,map);
+    if(resultMap == null) {
+      return null;
+    }
     String messageString = resultMap["message"];
     Message msg = MessageFactory.instance.string2Message(messageString);
     return msg;

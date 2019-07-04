@@ -154,7 +154,9 @@ class _MyAppState extends State<MyApp> {
     voiceMsg.localPath = "voice/local/path";
     voiceMsg.duration = 13;
     Message msg = await RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, voiceMsg);
-    print("send voice message start senderUserId = "+msg.senderUserId);
+    if(msg != null) {
+      print("send voice message start senderUserId = "+msg.senderUserId);
+    }
   }
 
   onSendTestMessage() async {
