@@ -2,6 +2,8 @@ package com.example.rongcloud_im_plugin;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 
@@ -46,11 +48,13 @@ public class RCIMFlutterWrapper {
     private static Context mContext = null;
     private static MethodChannel mChannel = null;
     private static RCFlutterConfig mConfig = null;
+    private Handler mMainHandler = null;
 
     private HashMap<String, Constructor<? extends MessageContent>> messageContentConstructorMap;
 
     private RCIMFlutterWrapper() {
         messageContentConstructorMap = new HashMap<>();
+        mMainHandler = new Handler(Looper.getMainLooper());
     }
 
     private static class SingleHolder {
@@ -560,12 +564,18 @@ public class RCIMFlutterWrapper {
 
         RongIM.setOnReceiveMessageListener(new RongIMClient.OnReceiveMessageListener() {
             @Override
-            public boolean onReceived(Message message, int i) {
-                String messageS = MessageFactory.getInstance().message2String(message);
-                Map map = new HashMap();
-                map.put("message",messageS);
-                map.put("left",i);
-                mChannel.invokeMethod(RCMethodList.MethodCallBackKeyReceiveMessage,map);
+            public boolean onReceived(final Message message,final int i) {
+
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        String messageS = MessageFactory.getInstance().message2String(message);
+                        final Map map = new HashMap();
+                        map.put("message",messageS);
+                        map.put("left",i);
+                        mChannel.invokeMethod(RCMethodList.MethodCallBackKeyReceiveMessage,map);
+                    }
+                });
 
                 return false;
             }
