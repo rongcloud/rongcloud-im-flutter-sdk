@@ -1,9 +1,6 @@
 package com.example.rongcloud_im_plugin;
 
 
-import com.google.gson.JsonObject;
-
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;

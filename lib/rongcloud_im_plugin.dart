@@ -92,15 +92,6 @@ class RongcloudImPlugin {
     return MessageFactory.instance.map2ChatRoomInfo(resultMap);
   }
 
-  // static void pushToConversationList(List conTypes) {
-  //   _channel.invokeMethod(RCMethodKey.PushToConversationList,conTypes);
-  // }
-
-  // static void pushToConversation(int conversationType,String targetId) {
-  //   Map map = {'conversationType':conversationType,'targetId':targetId};
-  //   _channel.invokeMethod(RCMethodKey.PushToConversation,map);
-  // }
-
   static void refreshUserInfo(String userId,String name,String portraitUrl) {
     Map map = {'userId':userId,'name':name,'portraitUrl':portraitUrl};
     _channel.invokeMethod(RCMethodKey.RefrechUserInfo,map);

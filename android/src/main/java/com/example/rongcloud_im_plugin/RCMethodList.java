@@ -6,8 +6,6 @@ public class RCMethodList {
     static String MethodKeyConfig = "config";
     static String MethodKeyConnect = "connect";
     static String MethodKeyDisconnect = "disconnect";
-    static String MethodKeyPushToConversationList = "pushToConversationList";
-    static String MethodKeyPushToConversation = "pushToConversation";
     static String MethodKeySendMessage = "sendMessage";
     static String MethodKeyRefrechUserInfo = "refreshUserInfo";
     static String MethodKeyJoinChatRoom = "joinChatRoom";

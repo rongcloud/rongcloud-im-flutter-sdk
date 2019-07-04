@@ -84,10 +84,6 @@ public class RCIMFlutterWrapper {
             connect(call.arguments,result);
         }else if(RCMethodList.MethodKeyDisconnect.equalsIgnoreCase(call.method)) {
             disconnect(call.arguments);
-        }else if(RCMethodList.MethodKeyPushToConversationList.equalsIgnoreCase(call.method)) {
-            pushToConversationList(call.arguments);
-        }else if(RCMethodList.MethodKeyPushToConversation.equalsIgnoreCase(call.method)) {
-            pushToConversation(call.arguments);
         }else if(RCMethodList.MethodKeyRefrechUserInfo.equalsIgnoreCase(call.method)) {
             refreshUserInfo(call.arguments);
         }else if(RCMethodList.MethodKeySendMessage.equalsIgnoreCase(call.method)) {
@@ -176,50 +172,6 @@ public class RCIMFlutterWrapper {
             }else {
                 RongIM.getInstance().logout();
             }
-        }
-    }
-
-    private void pushToConversationList(Object arg) {
-        if(arg instanceof List) {
-            List list = (List)arg;
-            Map<String,Boolean> map = new HashMap<>();
-            for(Object obj : list) {
-                Integer t = Integer.parseInt(obj.toString());
-                Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
-                map.put(type.getName(),false);
-            }
-            Uri.Builder builder = Uri.parse("rong://" + "com.example.rongcloud_im_plugin").buildUpon().appendPath("conversationlist");
-            if (map != null && map.size() > 0) {
-                Set<String> keys = map.keySet();
-                Iterator var5 = keys.iterator();
-
-                while(var5.hasNext()) {
-                    String key = (String)var5.next();
-                    builder.appendQueryParameter(key, (Boolean)map.get(key) ? "true" : "false");
-                }
-            }
-            Intent intent = new Intent(Intent.ACTION_VIEW, builder.build());
-            intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-            mContext.startActivity(intent);
-        }else {
-
-        }
-    }
-
-    private void pushToConversation(Object arg) {
-        if(arg instanceof Map) {
-            Map map = (Map)arg;
-            Integer t = (Integer)map.get("conversationType");
-            Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
-            String targetId = (String)map.get("targetId");
-            Uri uri = Uri.parse("rong://" + "com.example.rongcloud_im_plugin").buildUpon()
-                    .appendPath("conversation").appendPath(type.getName().toLowerCase(Locale.US))
-                    .appendQueryParameter("targetId", targetId).appendQueryParameter("title", "").build();
-            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-            mContext.startActivity(intent);
-        }else {
-
         }
     }
 

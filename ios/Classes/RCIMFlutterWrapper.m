@@ -8,8 +8,6 @@
 #import "RCIMFlutterWrapper.h"
 #import <RongIMKit/RongIMKit.h>
 #import "RCIMFlutterDefine.h"
-#import "RCFlutterChatListViewController.h"
-#import "RCFlutterChatViewController.h"
 #import "RCFlutterConfig.h"
 #import "RCFlutterMessageFactory.h"
 
@@ -47,10 +45,6 @@
         [self connectWithToken:call.arguments result:result];
     }else if([RCMethodKeyDisconnect isEqualToString:call.method]) {
         [self disconnect:call.arguments];
-    }else if([RCMethodKeyPushToConversationList isEqualToString:call.method]){
-        [self pushToRCConversationList:call.arguments];
-    }else if([RCMethodKeyPushToConversation isEqualToString:call.method]){
-        [self pushToRCConversation:call.arguments];
     }else if([RCMethodKeyRefreshUserInfo isEqualToString:call.method]) {
         [self refreshUserInfo:call.arguments];
     }else if([RCMethodKeySendMessage isEqualToString:call.method]) {
@@ -134,25 +128,6 @@
     if([arg isKindOfClass:[NSNumber class]]) {
         BOOL needPush = [((NSNumber *) arg) boolValue];
         [[RCIM sharedRCIM] disconnect:needPush];
-    }
-}
-
-- (void)pushToRCConversationList:(id)arg {
-    if([arg isKindOfClass:[NSArray class]]) {
-        NSArray *conTypes = (NSArray *)arg;
-        RCFlutterChatListViewController *vc = [[RCFlutterChatListViewController alloc] init];
-        vc.displayConversationTypeArray = conTypes;
-        [self pushToVC:vc];
-    }
-}
-
-- (void)pushToRCConversation:(id)arg {
-    if([arg isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *param = (NSDictionary *)arg;
-        RCConversationType type = [param[@"conversationType"] integerValue];
-        NSString *targetId = param[@"targetId"];
-        RCFlutterChatViewController *vc = [[RCFlutterChatViewController alloc] initWithConversationType:type targetId:targetId];
-        [self pushToVC:vc];
     }
 }
 
