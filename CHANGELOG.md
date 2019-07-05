@@ -1,3 +1,7 @@
+## 0.0.22
+
+* 解决 iOS 清空未读数失败的问题
+
 ## 0.0.21
 
 * 解决 Android 接收消息在非 UI 线程通过 MethodChannel 返回数据导致的 `java.lang.RuntimeException: Methods marked with @UiThread must be executed on the main thread. Current thread: Binder:9497_1`
