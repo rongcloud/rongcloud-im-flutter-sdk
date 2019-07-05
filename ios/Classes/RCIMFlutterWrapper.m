@@ -325,7 +325,7 @@
 - (void)clearMessagesUnreadStatus:(id)arg result:(FlutterResult)result {
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *dic = (NSDictionary *)arg;
-        RCConversationType type = (RCConversationType)dic[@"conversationType"];
+        RCConversationType type = (RCConversationType)[dic[@"conversationType"] integerValue];
         NSString *targetId = dic[@"targetId"];
         BOOL rc = [[RCIMClient sharedRCIMClient] clearMessagesUnreadStatus:type targetId:targetId];
         result([NSNumber numberWithBool:rc]);
