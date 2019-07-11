@@ -6,6 +6,7 @@ import 'message.dart';
 import 'message_factory.dart';
 import 'rc_common_define.dart';
 import 'message_content.dart';
+import 'connection_status_convert.dart';
 
 class RongcloudImPlugin {
   static final MethodChannel _channel = const MethodChannel('rongcloud_im_plugin');
@@ -70,7 +71,7 @@ class RongcloudImPlugin {
 
   ///发送消息
   ///
-  ///[conversationType] 会话类型，参见 [RCConversationType]
+  ///[conversationType] 会话类型，参见枚举 [RCConversationType]
   ///
   ///[targetId] 会话 id
   ///
@@ -90,7 +91,7 @@ class RongcloudImPlugin {
 
   ///获取历史消息
   ///
-  ///[conversationType] 会话类型，参见 [RCConversationType]
+  ///[conversationType] 会话类型，参见枚举 [RCConversationType]
   ///
   ///[targetId] 会话 id
   ///
@@ -127,7 +128,7 @@ class RongcloudImPlugin {
 
   ///清除会话的未读消息
   ///
-  ///[conversationType] 会话类型，参见 [RCConversationType]
+  ///[conversationType] 会话类型，参见枚举 [RCConversationType]
   ///
   ///[targetId] 会话 id
   static Future<bool> clearMessagesUnreadStatus(int conversationType,String targetId) async {
@@ -166,7 +167,7 @@ class RongcloudImPlugin {
   ///
   ///[memeberCount] 需要获取的聊天室成员个数 0<=memeberCount<=20
   ///
-  ///[memberOrder] 获取的成员加入聊天室的顺序，参见 [RCChatRoomMemberOrder]
+  ///[memberOrder] 获取的成员加入聊天室的顺序，参见枚举 [RCChatRoomMemberOrder]
   ///
   static Future getChatRoomInfo(String targetId,int memeberCount,int memberOrder) async {
     if(memeberCount > 20) {
@@ -182,7 +183,7 @@ class RongcloudImPlugin {
   /// messages:获取到的历史消息数组,
   /// isRemaining:是否还有剩余消息 YES 表示还有剩余，NO 表示无剩余
   ///
-  /// [conversationType]  会话类型，参见 [RCConversationType]
+  /// [conversationType]  会话类型，参见枚举 [RCConversationType]
   ///
   /// [targetId]          聊天室的会话ID
   ///
@@ -211,13 +212,13 @@ class RongcloudImPlugin {
 
   /// 插入一条收到的消息
   ///
-  /// [conversationType] 会话类型，参见 [RCConversationType]
+  /// [conversationType] 会话类型，参见枚举 [RCConversationType]
   /// 
   /// [targetId] 会话 id
   /// 
   /// [senderUserId] 发送者 id
   /// 
-  /// [receivedStatus] 接收状态 参见 [RCReceivedStatus]
+  /// [receivedStatus] 接收状态 参见枚举 [RCReceivedStatus]
   /// 
   /// [content] 消息内容，参见 [MessageContent]
   /// 
@@ -239,11 +240,11 @@ class RongcloudImPlugin {
 
   ///插入一条发出的消息
   ///
-  /// [conversationType] 会话类型，参见 [RCConversationType]
+  /// [conversationType] 会话类型，参见枚举 [RCConversationType]
   /// 
   /// [targetId] 会话 id
   /// 
-  /// [sendStatus] 发送状态，参见 [RCSentStatus]
+  /// [sendStatus] 发送状态，参见枚举 [RCSentStatus]
   /// 
   /// [content] 消息内容，参见 [MessageContent]
   /// 
@@ -275,7 +276,7 @@ class RongcloudImPlugin {
 
   /// 获取单个会话的未读数
   ///
-  /// [conversationType] 会话类型，参见 [RCConversationType]
+  /// [conversationType] 会话类型，参见枚举 [RCConversationType]
   /// 
   /// [targetId] 会话 id
   /// 
@@ -290,7 +291,7 @@ class RongcloudImPlugin {
 
   /// 批量获取特定某些会话的未读数
   ///
-  /// [conversationTypeList] 会话类型数组，参见 [RCConversationType]
+  /// [conversationTypeList] 会话类型数组，参见枚举 [RCConversationType]
   /// 
   /// [isContain] 是否包含免打扰会话
   /// 
@@ -302,6 +303,7 @@ class RongcloudImPlugin {
       finished(unreadMap["count"],unreadMap["code"]);
     }
   }
+
 
   static void setConversationNotificationStatus(int conversation, String targetId, bool isBlocked, Function (int code, int status) finished) async {
     Map map = {"conversation":conversation, "targetId":targetId, "isBlocked":isBlocked};
@@ -318,12 +320,16 @@ class RongcloudImPlugin {
       finished(statusMap["status"],statusMap["code"]);
     }
   }
+  ///连接状态发生变更
+  ///
+  /// [connectionStatus] 连接状态，具体参见枚举 [RCConnectionStatus]
+  static Function (int connectionStatus) onConnectionStatusChange;
 
   ///调用发送消息接口 [sendMessage] 结果的回调
   ///
   /// [messageId]  消息 id
   /// 
-  /// [status] 消息发送状态，参见 [RCSentStatus]
+  /// [status] 消息发送状态，参见枚举 [RCSentStatus]
   /// 
   /// [code] 具体的错误码，0 代表成功
   static Function (int messageId,int status,int code) onMessageSend;
@@ -339,14 +345,14 @@ class RongcloudImPlugin {
   ///
   ///[targetId] 聊天室 id
   ///
-  ///[status] 参见 [RCOperationStatus]
+  ///[status] 参见枚举 [RCOperationStatus]
   static Function (String targetId,int status) onJoinChatRoom;
 
   ///退出聊天的回调
   ///
   ///[targetId] 聊天室 id
   ///
-  ///[status] 参见 [RCOperationStatus]
+  ///[status] 参见枚举 [RCOperationStatus]
   static Function (String targetId,int status) onQuitChatRoom;
 
   ///发送媒体消息（图片/语音消息）的媒体上传进度
@@ -407,6 +413,15 @@ class RongcloudImPlugin {
           int messageId = map["messageId"];
           int progress = map["progress"];
           onUploadMediaProgress(messageId,progress);
+        }
+        break;
+
+      case RCMethodCallBackKey.ConnectionStatusChange:
+        if(onConnectionStatusChange != null) {
+          Map map = call.arguments;
+          int code = map["status"];
+          int status = ConnectionStatusConvert.convert(code);
+          onConnectionStatusChange(status);
         }
         break;
      }
