@@ -343,11 +343,11 @@
             NSMutableDictionary *callbackDic = [NSMutableDictionary new];
             [callbackDic setObject:@(0) forKey:@"code"];
             [callbackDic setObject:msgsArray forKey:@"messages"];
-            [ws.channel invokeMethod:RCMethodCallBackKeyGetRemoteHistoryMessages arguments:callbackDic];
+            result(callbackDic);
         } error:^(RCErrorCode status) {
             NSMutableDictionary *callbackDic = [NSMutableDictionary new];
             [callbackDic setObject:@(status) forKey:@"code"];
-            [ws.channel invokeMethod:RCMethodCallBackKeyGetRemoteHistoryMessages arguments:callbackDic];
+            result(callbackDic);
         }];
     }
 }

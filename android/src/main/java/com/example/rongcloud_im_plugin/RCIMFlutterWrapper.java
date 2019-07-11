@@ -106,7 +106,7 @@ public class RCIMFlutterWrapper {
         }else if (RCMethodList.MethodKeyInsertOutgoingMessage.equalsIgnoreCase(call.method)) {
             insertOutgoingMessage(call.arguments,result);
         }else if (RCMethodList.MethodCallBackKeygetRemoteHistoryMessages.equalsIgnoreCase(call.method)) {
-            getRemoteHistoryMessages(call.arguments);
+            getRemoteHistoryMessages(call.arguments,result);
         }else if (RCMethodList.MethodKeyGetTotalUnreadCount.equalsIgnoreCase(call.method)) {
             getTotalUnreadCount(result);
         }else if (RCMethodList.MethodKeyGetUnreadCountTargetId.equalsIgnoreCase(call.method)) {
@@ -796,7 +796,7 @@ public class RCIMFlutterWrapper {
         return result;
     }
 
-    public void getRemoteHistoryMessages(Object arg){
+    public void getRemoteHistoryMessages(Object arg, final Result result){
         if (arg instanceof Map) {
             final Map map = (Map)arg;
             Integer t = (Integer)map.get("conversationType");
@@ -811,8 +811,8 @@ public class RCIMFlutterWrapper {
                     if(messages == null) {
                         Map callBackMap = new HashMap();
                         callBackMap.put("code",0);
-                        callBackMap.put("messages",null);
-                        mChannel.invokeMethod(RCMethodList.MethodCallBackKeygetRemoteHistoryMessages,callBackMap);
+                        callBackMap.put("messages",new ArrayList());
+                        result.success(callBackMap);
                         return;
                     }
                     List list = new ArrayList();
@@ -823,14 +823,14 @@ public class RCIMFlutterWrapper {
                     Map callBackMap = new HashMap();
                     callBackMap.put("code",0);
                     callBackMap.put("messages",list);
-                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeygetRemoteHistoryMessages,callBackMap);
+                    result.success(callBackMap);
                 }
 
                 @Override
                 public void onError(RongIMClient.ErrorCode errorCode) {
                     Map callBackMap = new HashMap();
                     callBackMap.put("code",errorCode);
-                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeygetRemoteHistoryMessages,callBackMap);
+                    result.success(callBackMap);
                 }
             });
         }
