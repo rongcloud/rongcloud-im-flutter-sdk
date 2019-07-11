@@ -115,6 +115,8 @@ public class RCIMFlutterWrapper {
             removeConversation(call.arguments,result);
         }else if (RCMethodList.MethodKeyGetBlockedConversationList.equalsIgnoreCase(call.method)) {
             getBlockedConversationList(call.arguments,result);
+        }else if (RCMethodList.MethodKeySetConversationToTop.equalsIgnoreCase(call.method)) {
+            setConversationToTop(call.arguments,result);
         }
         else {
             result.notImplemented();
@@ -962,6 +964,33 @@ public class RCIMFlutterWrapper {
                     Map resultMap =  new HashMap();
                     resultMap.put("code",errorCode.getValue());
                     result.success(resultMap);
+                }
+            });
+        }
+    }
+
+    private void setConversationToTop(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map map = (Map) arg;
+            Integer t = (Integer) map.get("conversationType");
+            Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
+            String targetId = (String) map.get("targetId");
+            boolean isTop = (boolean)map.get("isTop");
+
+            RongIMClient.getInstance().setConversationToTop(type, targetId, isTop, new RongIMClient.ResultCallback<Boolean>() {
+                @Override
+                public void onSuccess(Boolean aBoolean) {
+                    Map msgMap = new HashMap();
+                    msgMap.put("status", aBoolean);
+                    msgMap.put("code", 0);
+                    result.success(msgMap);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    Map msgMap = new HashMap();
+                    msgMap.put("code", errorCode.getValue());
+                    result.success(msgMap);
                 }
             });
         }

@@ -351,6 +351,13 @@ class RongcloudImPlugin {
     }
   }
 
+  static void setConversationToTop(int conversationType, String targetId, bool isTop, Function (bool status, int code) finished) async {
+    Map map = {"conversationType":conversationType, "targetId":targetId, "targetId":targetId};
+    Map conversationMap = await _channel.invokeMethod(RCMethodKey.SetConversationToTop,map);
+    if (finished != null) {
+      finished(conversationMap["status"],conversationMap["code"]);
+    }
+  }
   ///连接状态发生变更
   ///
   /// [connectionStatus] 连接状态，具体参见枚举 [RCConnectionStatus]

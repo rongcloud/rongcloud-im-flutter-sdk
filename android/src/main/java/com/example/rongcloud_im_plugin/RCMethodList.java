@@ -25,6 +25,7 @@ public class RCMethodList {
     static String MethodKeyGetConversationNotificationStatus = "getConversationNotificationStatus";
     static String MethodKeyRemoveConversation = "RemoveConversation";
     static String MethodKeyGetBlockedConversationList = "getBlockedConversationList";
+    static String MethodKeySetConversationToTop = "setConversationToTop";
 
 
     //callback method list，以下方法是有 native 代码触发，有 flutter 处理

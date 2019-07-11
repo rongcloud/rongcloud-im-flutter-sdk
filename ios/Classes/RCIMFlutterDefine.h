@@ -27,6 +27,7 @@ static NSString *RCMethodKeySetConversationNotificationStatus = @"setConversatio
 static NSString *RCMethodKeyGetConversationNotificationStatus = @"getConversationNotificationStatus";
 static NSString *RCMethodKeyRemoveConversation = @"RemoveConversation";
 static NSString *RCMethodKeyGetBlockedConversationList = @"getBlockedConversationList";
+static NSString *RCMethodKeySetConversationToTop = @"setConversationToTop";
 
 
 //callback iOS 通知 flutter

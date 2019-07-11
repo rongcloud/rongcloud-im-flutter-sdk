@@ -80,6 +80,8 @@
         [self removeConversation:call.arguments result:result];
     }else if ([RCMethodKeyGetBlockedConversationList isEqualToString:call.method]) {
         [self getBlockedConversationList:call.arguments result:result];
+    }else if ([RCMethodKeySetConversationToTop isEqualToString:call.method]) {
+        [self setConversationToTop:call.arguments result:result];
     }else {
         result(FlutterMethodNotImplemented);
     }
@@ -558,7 +560,19 @@
     }
 }
 
+#pragma mark - 会话置顶
 
+- (void)setConversationToTop:(id)arg result:(FlutterResult)result {
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        RCConversationType type = [param[@"conversationType"] integerValue];
+        NSString *targetId = param[@"targetId"];
+        BOOL isTop = [param[@"isTop"] boolValue];
+        
+        BOOL status = [[RCIMClient sharedRCIMClient] setConversationToTop:type targetId:targetId isTop:isTop];
+        result(@{@"status":@(status),@"code":@(0)});
+    }
+}
 
 
 #pragma mark - RCIMClientReceiveMessageDelegate
