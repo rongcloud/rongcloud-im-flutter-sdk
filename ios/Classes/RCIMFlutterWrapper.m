@@ -6,7 +6,6 @@
 //
 
 #import "RCIMFlutterWrapper.h"
-#import <RongIMKit/RongIMKit.h>
 #import "RCIMFlutterDefine.h"
 #import "RCFlutterConfig.h"
 #import "RCFlutterMessageFactory.h"
@@ -17,7 +16,7 @@
 - (RCMessageContent *)messageContentWithClass:(Class)messageClass fromData:(NSData *)jsonData;
 @end
 
-@interface RCIMFlutterWrapper ()<RCIMUserInfoDataSource,RCIMReceiveMessageDelegate>
+@interface RCIMFlutterWrapper ()<RCIMClientReceiveMessageDelegate>
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 @property (nonatomic, strong) RCFlutterConfig *config;
 @end
@@ -90,7 +89,9 @@
 - (void)initWithRCIMAppKey:(id)arg {
     if([arg isKindOfClass:[NSString class]]) {
         NSString *appkey = (NSString *)arg;
-        [[RCIM sharedRCIM] initWithAppKey:appkey];
+        [[RCIMClient sharedRCIMClient] initWithAppKey:appkey];
+        
+        [[RCIMClient sharedRCIMClient] setReceiveMessageDelegate:self object:nil];
         NSLog(@"appkey %@",(NSString *)arg);
     }else {
         NSLog(@"init 非法参数类型");
@@ -106,8 +107,6 @@
         NSLog(@"RCFlutterConfig %@",conf);
         [self updateIMConfig];
         
-        [RCIM sharedRCIM].userInfoDataSource = self;
-        [RCIM sharedRCIM].receiveMessageDelegate = self;
     }else {
         NSLog(@"RCFlutterConfig 非法参数类型");
     }
@@ -126,7 +125,7 @@
     if([arg isKindOfClass:[NSString class]]) {
         NSLog(@"connect start");
         NSString *token = (NSString *)arg;
-        [[RCIM sharedRCIM] connectWithToken:token success:^(NSString *userId) {
+        [[RCIMClient sharedRCIMClient] connectWithToken:token success:^(NSString *userId) {
             result(@(0));
             NSLog(@"connect end success");
         } error:^(RCConnectErrorCode status) {
@@ -145,7 +144,7 @@
 - (void)disconnect:(id)arg  {
     if([arg isKindOfClass:[NSNumber class]]) {
         BOOL needPush = [((NSNumber *) arg) boolValue];
-        [[RCIM sharedRCIM] disconnect:needPush];
+        [[RCIMClient sharedRCIMClient] disconnect:needPush];
     }
 }
 
@@ -170,9 +169,8 @@
         NSString *portraitUrl = param[@"portraitUrl"];
         if(userId.length >=0) {
             RCUserInfo *user = [[RCUserInfo alloc] initWithUserId:userId name:name portrait:portraitUrl];
-            [[RCIM sharedRCIM] refreshUserInfoCache:user withUserId:userId];
+//            [[RCIMClient sharedRCIMClient] refreshUserInfoCache:user withUserId:userId];
         }
-        
     }
 }
 
@@ -203,7 +201,7 @@
         }
         
         __weak typeof(self) ws = self;
-        RCMessage *message = [[RCIM sharedRCIM] sendMessage:type targetId:targetId content:content pushContent:nil pushData:nil success:^(long messageId) {
+        RCMessage *message = [[RCIMClient sharedRCIMClient] sendMessage:type targetId:targetId content:content pushContent:nil pushData:nil success:^(long messageId) {
             NSMutableDictionary *dic = [NSMutableDictionary new];
             [dic setObject:@(messageId) forKey:@"messageId"];
             [dic setObject:@(SentStatus_SENT) forKey:@"status"];
@@ -242,7 +240,7 @@
     }
     
     __weak typeof(self) ws = self;
-    RCMessage *message =  [[RCIM sharedRCIM] sendMediaMessage:type targetId:targetId content:content pushContent:nil pushData:nil progress:^(int progress, long messageId) {
+    RCMessage *message =  [[RCIMClient sharedRCIMClient] sendMediaMessage:type targetId:targetId content:content pushContent:nil pushData:nil progress:^(int progress, long messageId) {
         NSMutableDictionary *dic = [NSMutableDictionary new];
         [dic setObject:@(messageId) forKey:@"messageId"];
         [dic setObject:@(progress) forKey:@"progress"];
@@ -497,28 +495,21 @@
 }
 
 
-
-#pragma mark - RCIMUserInfoDataSource
-- (void)getUserInfoWithUserId:(NSString *)userId completion:(void (^)(RCUserInfo *))completion {
-    [self.channel invokeMethod:RCMethodCallBackKeyRefreshUserInfo arguments:userId];
-}
-
-#pragma mark - RCIMReceiveMessageDelegate
-- (void)onRCIMReceiveMessage:(RCMessage *)message left:(int)left {
+#pragma mark - RCIMClientReceiveMessageDelegate
+- (void)onReceived:(RCMessage *)message left:(int)nLeft object:(id)object {
     @autoreleasepool {
         NSMutableDictionary *dic = [NSMutableDictionary new];
         NSString *jsonString = [RCFlutterMessageFactory message2String:message];
         [dic setObject:jsonString forKey:@"message"];
-        [dic setObject:@(left) forKey:@"left"];
+        [dic setObject:@(nLeft) forKey:@"left"];
         
         [self.channel invokeMethod:RCMethodCallBackKeyReceiveMessage arguments:dic];
     }
-    
 }
 
 #pragma mark - util
 - (void)updateIMConfig {
-    [RCIM sharedRCIM].enablePersistentUserInfoCache = self.config.enablePersistentUserInfoCache;
+//    [RCIM sharedRCIM].enablePersistentUserInfoCache = self.config.enablePersistentUserInfoCache;
 }
 
 - (RCMessageContent *)getVoiceMessage:(NSData *)data {

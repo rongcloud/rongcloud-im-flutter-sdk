@@ -28,7 +28,6 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.rong.common.fwlog.FwLog;
-import io.rong.imkit.RongIM;
 import io.rong.imlib.MessageTag;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.RongIMClient.SendImageMessageCallback;
@@ -41,8 +40,6 @@ import io.rong.imlib.model.UserInfo;
 import io.rong.message.ImageMessage;
 import io.rong.message.MessageHandler;
 import io.rong.message.VoiceMessage;
-
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 
 public class RCIMFlutterWrapper {
@@ -124,7 +121,7 @@ public class RCIMFlutterWrapper {
     private void initRCIM(Object arg) {
         if(arg instanceof String) {
             String appkey = String.valueOf(arg);
-            RongIM.init(mContext,appkey);
+            RongIMClient.init(mContext,appkey);
         }else {
             Log.e("RCIM flutter init", "非法参数");
         }
@@ -139,7 +136,6 @@ public class RCIMFlutterWrapper {
 
             updateIMConfig();
 
-            RongIM.setUserInfoProvider(new RCFlutterIMInfoProvider() ,config.isEnablePersistentUserInfoCache());
         }else {
 
         }
@@ -157,7 +153,7 @@ public class RCIMFlutterWrapper {
     private void connect(Object arg, final Result result) {
         if(arg instanceof String) {
             String token = String.valueOf(arg);
-            RongIM.connect(token, new RongIMClient.ConnectCallback() {
+            RongIMClient.connect(token, new RongIMClient.ConnectCallback() {
                 @Override
                 public void onTokenIncorrect() {
                     result.success(new Integer(31004));
@@ -185,24 +181,24 @@ public class RCIMFlutterWrapper {
         if(arg instanceof Boolean) {
             boolean needPush = (boolean)arg;
             if(needPush) {
-                RongIM.getInstance().disconnect();
+                RongIMClient.getInstance().disconnect();
             }else {
-                RongIM.getInstance().logout();
+                RongIMClient.getInstance().logout();
             }
         }
     }
 
     private void refreshUserInfo(Object arg) {
-        if(arg instanceof Map) {
-            Map map = (Map)arg;
-            String userId = (String) map.get("userId");
-            String name = (String)map.get("name");
-            String portraitUri = (String) map.get("portraitUrl");
-            UserInfo userInfo = new UserInfo(userId,name, Uri.parse(portraitUri));
-            RongIM.getInstance().refreshUserInfoCache(userInfo);
-        }else {
-
-        }
+//        if(arg instanceof Map) {
+//            Map map = (Map)arg;
+//            String userId = (String) map.get("userId");
+//            String name = (String)map.get("name");
+//            String portraitUri = (String) map.get("portraitUrl");
+//            UserInfo userInfo = new UserInfo(userId,name, Uri.parse(portraitUri));
+//            RongIMClient.getInstance().refreshUserInfoCache(userInfo);
+//        }else {
+//
+//        }
     }
 
     /// 未实现此方法 imlib 层没有此方法
@@ -253,7 +249,7 @@ public class RCIMFlutterWrapper {
                 return;
             }
 
-            Message message = RongIM.getInstance().sendMessage(type, targetId, content, null, null, new RongIMClient.SendMessageCallback() {
+            Message message = RongIMClient.getInstance().sendMessage(type, targetId, content, null, null, new RongIMClient.SendMessageCallback() {
                 @Override
                 public void onError(Integer messageId, RongIMClient.ErrorCode errorCode) {
                     Map resultMap = new HashMap();
@@ -310,7 +306,7 @@ public class RCIMFlutterWrapper {
                 return;
             }
 
-            RongIM.getInstance().sendImageMessage(type, targetId, content, null, null, new SendImageMessageCallback() {
+            RongIMClient.getInstance().sendImageMessage(type, targetId, content, null, null, new SendImageMessageCallback() {
                 @Override
                 public void onAttached(Message message) {
                     String messageS = MessageFactory.getInstance().message2String(message);
@@ -410,7 +406,7 @@ public class RCIMFlutterWrapper {
             String targetId = (String)map.get("targetId");
             final Integer messageId = (Integer)map.get("messageId");
             Integer count = (Integer)map.get("count");
-            RongIM.getInstance().getHistoryMessages(type, targetId, messageId, count, new RongIMClient.ResultCallback<List<Message>>() {
+            RongIMClient.getInstance().getHistoryMessages(type, targetId, messageId, count, new RongIMClient.ResultCallback<List<Message>>() {
                 @Override
                 public void onSuccess(List<Message> messages) {
                     if(messages == null) {
@@ -435,7 +431,7 @@ public class RCIMFlutterWrapper {
     }
 
     private void getConversationList(final Result result) {
-        RongIM.getInstance().getConversationList(new RongIMClient.ResultCallback<List<Conversation>>() {
+        RongIMClient.getInstance().getConversationList(new RongIMClient.ResultCallback<List<Conversation>>() {
             @Override
             public void onSuccess(List<Conversation> conversations) {
                 if(conversations == null) {
@@ -492,7 +488,7 @@ public class RCIMFlutterWrapper {
             Integer t = (Integer)map.get("conversationType");
             Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
             String targetId = (String)map.get("targetId");
-            RongIM.getInstance().clearMessagesUnreadStatus(type, targetId, new RongIMClient.ResultCallback<Boolean>() {
+            RongIMClient.getInstance().clearMessagesUnreadStatus(type, targetId, new RongIMClient.ResultCallback<Boolean>() {
                 @Override
                 public void onSuccess(Boolean aBoolean) {
                     result.success(true);
@@ -724,18 +720,10 @@ public class RCIMFlutterWrapper {
         //后续 RCFlutterConfig 如果有什么参数，可以在此同步给 RongIM
     }
 
-    //RongIM UserInfoProvider
-    private class RCFlutterIMInfoProvider implements RongIM.UserInfoProvider {
-        @Override
-        public UserInfo getUserInfo(String s) {
-            mChannel.invokeMethod(RCMethodList.MethodCallBackKeyRefrechUserInfo,s);
-            return null;
-        }
-    }
 
     private void setReceiveMessageListener() {
 
-        RongIM.setOnReceiveMessageListener(new RongIMClient.OnReceiveMessageListener() {
+        RongIMClient.setOnReceiveMessageListener(new RongIMClient.OnReceiveMessageListener() {
             @Override
             public boolean onReceived(final Message message,final int i) {
 

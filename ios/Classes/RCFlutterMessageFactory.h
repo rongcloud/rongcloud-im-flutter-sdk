@@ -6,7 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <RongIMKit/RongIMKit.h>
+#import <RongIMLib/RongIMLib.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

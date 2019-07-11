@@ -60,8 +60,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    api 'cn.rongcloud.sdk:im_kit:2.9.17'
-    //im_kit必须依赖im_lib，所以需要加入对应依赖
     api 'cn.rongcloud.sdk:im_lib:2.9.17'
 
     implementation 'com.android.support:appcompat-v7:26.0.0'
