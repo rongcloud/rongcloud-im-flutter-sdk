@@ -127,6 +127,10 @@ public class RCIMFlutterWrapper {
         if(arg instanceof String) {
             String appkey = String.valueOf(arg);
             RongIMClient.init(mContext,appkey);
+
+
+            setReceiveMessageListener();
+            setConnectStatusListener();
         }else {
             Log.e("RCIM flutter init", "非法参数");
         }
@@ -176,7 +180,6 @@ public class RCIMFlutterWrapper {
             });
 
             fetchAllMessageMapper();
-            setReceiveMessageListener();
         }else {
 
         }
@@ -754,6 +757,17 @@ public class RCIMFlutterWrapper {
                 });
 
                 return false;
+            }
+        });
+    }
+
+    private void setConnectStatusListener() {
+        RongIMClient.setConnectionStatusListener(new RongIMClient.ConnectionStatusListener() {
+            @Override
+            public void onChanged(ConnectionStatus connectionStatus) {
+                Map map = new HashMap();
+                map.put("status",connectionStatus.getValue());
+                mChannel.invokeMethod(RCMethodList.MethodCallBackKeyConnectionStatusChange,map);
             }
         });
     }

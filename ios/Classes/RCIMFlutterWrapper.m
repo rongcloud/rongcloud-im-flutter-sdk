@@ -16,7 +16,7 @@
 - (RCMessageContent *)messageContentWithClass:(Class)messageClass fromData:(NSData *)jsonData;
 @end
 
-@interface RCIMFlutterWrapper ()<RCIMClientReceiveMessageDelegate>
+@interface RCIMFlutterWrapper ()<RCIMClientReceiveMessageDelegate,RCConnectionStatusChangeDelegate>
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 @property (nonatomic, strong) RCFlutterConfig *config;
 @end
@@ -92,6 +92,7 @@
         [[RCIMClient sharedRCIMClient] initWithAppKey:appkey];
         
         [[RCIMClient sharedRCIMClient] setReceiveMessageDelegate:self object:nil];
+        [[RCIMClient sharedRCIMClient] setRCConnectionStatusChangeDelegate:self];
         NSLog(@"appkey %@",(NSString *)arg);
     }else {
         NSLog(@"init 非法参数类型");
@@ -528,6 +529,12 @@
         
         [self.channel invokeMethod:RCMethodCallBackKeyReceiveMessage arguments:dic];
     }
+}
+
+#pragma mark - RCConnectionStatusChangeDelegate
+- (void)onConnectionStatusChanged:(RCConnectionStatus)status {
+    NSDictionary *dic = @{@"status":@(status)};
+    [self.channel invokeMethod:RCMethodCallBackKeyConnectionStatusChange arguments:dic];
 }
 
 #pragma mark - util
