@@ -311,6 +311,14 @@ class RongcloudImPlugin {
     }
   }
 
+  static void getConversationNotificationStatus(int conversation, String targetId, Function (int code, int status) finished) async {
+    Map map = {"conversation":conversation, "targetId":targetId};
+    Map statusMap = await _channel.invokeMethod(RCMethodKey.SetConversationNotificationStatus,map);
+    if (finished != null) {
+      finished(statusMap["status"],statusMap["code"]);
+    }
+  }
+
   ///调用发送消息接口 [sendMessage] 结果的回调
   ///
   /// [messageId]  消息 id

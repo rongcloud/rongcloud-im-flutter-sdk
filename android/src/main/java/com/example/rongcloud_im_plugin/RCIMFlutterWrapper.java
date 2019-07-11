@@ -116,6 +116,8 @@ public class RCIMFlutterWrapper {
             getUnreadCountConversationTypeList(call.arguments,result);
         }else if (RCMethodList.MethodKeySetConversationNotificationStatus.equalsIgnoreCase(call.method)) {
             setConversationNotificationStatus(call.arguments,result);
+        }else if (RCMethodList.MethodKeyGetConversationNotificationStatus.equalsIgnoreCase(call.method)) {
+            getConversationNotificationStatus(call.arguments,result);
         }
 
     }
@@ -881,6 +883,32 @@ public class RCIMFlutterWrapper {
             });
         }
 
+    }
+
+    private void getConversationNotificationStatus(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map map = (Map)arg;
+            Integer t = (Integer)map.get("conversationType");
+            Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
+            String targetId = (String)map.get("targetId");
+
+            RongIMClient.getInstance().getConversationNotificationStatus(type, targetId, new RongIMClient.ResultCallback<Conversation.ConversationNotificationStatus>() {
+                @Override
+                public void onSuccess(Conversation.ConversationNotificationStatus conversationNotificationStatus) {
+                    Map msgMap = new HashMap();
+                    msgMap.put("status",conversationNotificationStatus);
+                    msgMap.put("code",0);
+                    result.success(msgMap);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    Map msgMap = new HashMap();
+                    msgMap.put("code",errorCode);
+                    result.success(msgMap);
+                }
+            });
+        }
     }
 
 }

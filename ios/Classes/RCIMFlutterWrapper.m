@@ -73,7 +73,9 @@
     }else if ([RCMethodKeyGetUnreadCountTargetId isEqualToString:call.method]) {
         [self getUnreadCountTargetId:call.arguments result:result];
     }else if ([RCMethodKeySetConversationNotificationStatus isEqualToString:call.method]) {
-        [self getUnreadCountConversationTypeList:call.arguments result:result];
+        [self setConversationNotificationStatus:call.arguments result:result];
+    }else if ([RCMethodKeyGetConversationNotificationStatus isEqualToString:call.method]) {
+        [self getConversationNotificationStatus:call.arguments result:result];
     }
     
 //    else {
@@ -510,6 +512,21 @@
         BOOL isBlocked = [param[@"isblocked"] boolValue];
         
         [[RCIMClient sharedRCIMClient] setConversationNotificationStatus:type targetId:targetId isBlocked:isBlocked success:^(RCConversationNotificationStatus nStatus) {
+            result(@{@"status":@(nStatus),@"code":@(0)});
+        } error:^(RCErrorCode status) {
+            result(@{@"code":@(status)});
+        }];
+    }
+}
+
+- (void)getConversationNotificationStatus:(id)arg result:(FlutterResult)result {
+    
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        RCConversationType type = [param[@"conversationType"] integerValue];
+        NSString *targetId = param[@"targetId"];
+        
+        [[RCIMClient sharedRCIMClient] getConversationNotificationStatus:type targetId:targetId success:^(RCConversationNotificationStatus nStatus) {
             result(@{@"status":@(nStatus),@"code":@(0)});
         } error:^(RCErrorCode status) {
             result(@{@"code":@(status)});
