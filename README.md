@@ -73,6 +73,7 @@ print(rc);
 ## 断开 IM 连接
 
 ```
+//needPush 断开连接之后是否需要远程推送
 RongcloudImPlugin.disconnect(bool needPush)
 ```
 
@@ -100,7 +101,36 @@ onSendImageMessage() async {
 
 ```
 
-## 获取历史消息
+发送结果回调
+
+```
+//消息发送结果回调
+    RongcloudImPlugin.onMessageSend = (int messageId,int status,int code) {
+      print("send message messsageId:"+messageId.toString()+" status:"+status.toString()+" code:"+code.toString());
+    };
+```
+
+媒体消息媒体文件上传进度
+
+```
+//媒体消息（图片/语音消息）上传媒体进度的回调
+    RongcloudImPlugin.onUploadMediaProgress = (int messageId,int progress) {
+      print("upload media messsageId:"+messageId.toString()+" progress:"+progress.toString());
+    };
+```
+
+## 接收消息
+
+```
+//消息接收回调
+    RongcloudImPlugin.onMessageReceived = (Message msg,int left) {
+      print("receive message messsageId:"+msg.messageId.toString()+" left:"+left.toString());
+    };
+```
+
+## 历史消息
+
+获取本地历史消息
 
 ```
 onGetHistoryMessages() async {
@@ -112,7 +142,40 @@ onGetHistoryMessages() async {
   }
 ```
 
-## 获取会话列表
+获取远端历史消息
+
+```
+RongcloudImPlugin.getRemoteHistoryMessages(1, "1001", 0, 20,(List<Message> msgList,int code) {
+      if(code == 0) {
+        for(Message msg in msgList) {
+          print("getRemoteHistoryMessages  success "+ msg.messageId.toString());
+        }
+      }else {
+        print("getRemoteHistoryMessages error "+code.toString());
+      }
+    });
+```
+
+插入发出的消息
+
+```
+RongcloudImPlugin.insertOutgoingMessage(RCConversationType.Private, "1001", 10, msgT, 0, (msg,code){
+      print("insertOutgoingMessage " + msg.content.encode() + " code " + code.toString());
+
+    });
+```
+
+插入收到的消息
+
+```
+RongcloudImPlugin.insertIncomingMessage(RCConversationType.Private, "1002", "1002", 1, msgT , 0, (msg,code){
+      print("insertIncomingMessage " + msg.content.encode() + " code " + code.toString());
+    });
+```
+
+## 会话列表
+
+获取会话列表
 
 ```
 onGetConversationList() async {
@@ -123,6 +186,16 @@ onGetConversationList() async {
   }
 ```
 
+删除指定会话
+
+```
+RongcloudImPlugin.removeConversation(RCConversationType.Private, "1001", (success) {
+      if(success) {
+        print("删除会话成功");
+      }
+    });
+```
+
 ## 加入聊天室
 
 ```
@@ -131,12 +204,29 @@ onJoinChatRoom() {
   }
 ```
 
+加入聊天室回调
+
+```
+//加入聊天室结果回调
+    RongcloudImPlugin.onJoinChatRoom = (String targetId,int status) {
+      print("join chatroom:"+targetId+" status:"+status.toString());
+    };
+```
+
 ## 退出聊天室
 
 ```
 onQuitChatRoom() {
     RongcloudImPlugin.quitChatRoom("testchatroomId");
   }
+```
+
+退出聊天室回调
+```
+//退出聊天室结果回调
+    RongcloudImPlugin.onQuitChatRoom = (String targetId,int status) {
+      print("quit chatroom:"+targetId+" status:"+status.toString());
+    };
 ```
 
 ## 获取聊天室信息
@@ -149,66 +239,4 @@ onGetChatRoomInfo() async {
 ```
 
 
-## 设置 native 调用的 handler，并响应
-
-设置 handler
-
-```
-RongcloudImPlugin.setRCNativeMethodCallHandler(_handler);
-```
-
-响应 handler
-
-```
-Future<dynamic> _handler(MethodCall methodCall) {
-    //当 im SDK 需要展示用户信息的时候，会回调此方法
-    if (RCMethodCallBackKey.RefrechUserInfo == methodCall.method) {
-      //开发者需要将用户信息传递给 SDK
-      //如果本地有该用户的信息，那么直接传递给 SDK
-      //如果本地没有该用户的信息，从 APP 服务获取后传递给 SDK
-      String userId = methodCall.arguments;
-      String name = "张三";
-      String portraitUrl = "https://www.rongcloud.cn/pc/images/lizhi-icon.png";
-      RongcloudImPlugin.refreshUserInfo(userId, name, portraitUrl);
-    } else if(RCMethodCallBackKey.ReceiveMessage == methodCall.method) {
-      //收到消息原生会触发此方法
-      Map map = methodCall.arguments;
-      print("messageMap="+map.toString());
-      int left = map["left"];
-      print("left="+left.toString());
-      String messageString= map["message"];
-      Message msg = MessageFactory.instance.string2Message(messageString);
-
-      //会话类型，单聊/群聊/聊天室
-      print("conversationType = "+msg.conversationType.toString());
-      print("targetId = "+msg.targetId);
-      print("senderUserId="+msg.senderUserId);
-    }else if(RCMethodCallBackKey.SendMessage == methodCall.method) {
-      //发送消息会触发此回调，通知 flutter 层消息发送结果
-      // {"messageId":12,"status":30}
-      // messageId 为本地数据库自增字段
-      // status 结果参见 RCMessageSentStatus 的枚举值
-      Map map = methodCall.arguments;
-      print("message sent result "+ map.toString());
-    }else if(RCMethodCallBackKey.JoinChatRoom == methodCall.method) {
-      //加入聊天室的回调
-      //targetId 聊天室 id
-      //status 参见 RCOperationStatus
-      //{"targetId":targetId,"status":0};
-      Map map = methodCall.arguments;
-      print("join chatroom resulut ="+map.toString());
-    }else if(RCMethodCallBackKey.QuitChatRoom == methodCall.method) {
-      //退出聊天室的回调
-      //targetId 聊天室 id
-      //status 参见 RCOperationStatus
-      //{"targetId":targetId,"status":0};
-      Map map = methodCall.arguments;
-      print("quit chatroom resulut ="+map.toString());
-    }else if(RCMethodCallBackKey.UploadMediaProgress == methodCall.method) {
-      //上传图片进度的回调
-      //{"messageId",messageId,"progress",99}
-      Map map = methodCall.arguments;
-      print("upload image message progress = "+map.toString());
-    }
-  }
-```
+更多接口请[参考](https://github.com/rongcloud/rongcloud-imkit-flutter-sdk)

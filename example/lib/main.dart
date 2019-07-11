@@ -64,7 +64,7 @@ class _MyAppState extends State<MyApp> {
       print("getTotalUnreadCount " + num.toString() + " code " + code.toString());
     });
 
-    RongcloudImPlugin.getUnreadCount(1, '1001', (num,code) {
+    RongcloudImPlugin.getUnreadCount(RCConversationType.Private, '1001', (num,code) {
       print("getUnreadCount " + num.toString() + " code " + code.toString());
     });
 
@@ -77,13 +77,19 @@ class _MyAppState extends State<MyApp> {
     // setState to update our non-existent appearance.
     TextMessage msgT = new TextMessage();
     msgT.content = "xxxxxxxxx";
-    RongcloudImPlugin.insertIncomingMessage(1, "1002", "1002", 1, msgT , 0, (msg,code){
+    RongcloudImPlugin.insertIncomingMessage(RCConversationType.Private, "1002", "1002", 1, msgT , 0, (msg,code){
       print("insertIncomingMessage " + msg.content.encode() + " code " + code.toString());
     });
 
-    RongcloudImPlugin.insertOutgoingMessage(1, "1001", 10, msgT, 0, (msg,code){
+    RongcloudImPlugin.insertOutgoingMessage(RCConversationType.Private, "1001", 10, msgT, 0, (msg,code){
       print("insertOutgoingMessage " + msg.content.encode() + " code " + code.toString());
 
+    });
+
+    RongcloudImPlugin.removeConversation(RCConversationType.Private, "1001", (success) {
+      if(success) {
+        print("删除会话成功");
+      }
     });
 
     setState(() {});
@@ -172,7 +178,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   onGetRemoteMessage() {
-    RongcloudImPlugin.getRemoteHistoryMessages(1, "1001", 0, 20,(List<Message> msgList,int code) {
+    RongcloudImPlugin.getRemoteHistoryMessages(RCConversationType.Private, "1001", 0, 20,(List<Message> msgList,int code) {
       if(code == 0) {
         for(Message msg in msgList) {
           print("getRemoteHistoryMessages  success "+ msg.messageId.toString());
