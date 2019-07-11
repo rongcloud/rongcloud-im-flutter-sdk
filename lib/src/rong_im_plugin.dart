@@ -303,6 +303,14 @@ class RongcloudImPlugin {
     }
   }
 
+  static void setConversationNotificationStatus(int conversation, String targetId, bool isBlocked, Function (int code, int status) finished) async {
+    Map map = {"conversation":conversation, "targetId":targetId, "isBlocked":isBlocked};
+    Map statusMap = await _channel.invokeMethod(RCMethodKey.SetConversationNotificationStatus,map);
+    if (finished != null) {
+      finished(statusMap["status"],statusMap["code"]);
+    }
+  }
+
   ///调用发送消息接口 [sendMessage] 结果的回调
   ///
   /// [messageId]  消息 id
@@ -339,6 +347,8 @@ class RongcloudImPlugin {
   ///
   ///[progress] 上传进度 0~100
   static Function (int messageId,int progress) onUploadMediaProgress;
+
+
 
   ///响应原生的事件
   ///

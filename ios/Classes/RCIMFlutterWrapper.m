@@ -72,7 +72,7 @@
         [self getTotalUnreadCount:result];
     }else if ([RCMethodKeyGetUnreadCountTargetId isEqualToString:call.method]) {
         [self getUnreadCountTargetId:call.arguments result:result];
-    }else if ([RCMethodKeyGetUnreadCountConversationTypeList isEqualToString:call.method]) {
+    }else if ([RCMethodKeySetConversationNotificationStatus isEqualToString:call.method]) {
         [self getUnreadCountConversationTypeList:call.arguments result:result];
     }
     
@@ -497,6 +497,23 @@
         BOOL isContain = [param[@"isContain"] boolValue];
         int count = [[RCIMClient sharedRCIMClient] getUnreadCount:typeArray containBlocked:isContain];
         result(@{@"count":@(count),@"code":@(0)});
+    }
+}
+
+#pragma mark - 会话提醒
+
+- (void)setConversationNotificationStatus:(id)arg result:(FlutterResult)result {
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        RCConversationType type = [param[@"conversationType"] integerValue];
+        NSString *targetId = param[@"targetId"];
+        BOOL isBlocked = [param[@"isblocked"] boolValue];
+        
+        [[RCIMClient sharedRCIMClient] setConversationNotificationStatus:type targetId:targetId isBlocked:isBlocked success:^(RCConversationNotificationStatus nStatus) {
+            result(@{@"status":@(nStatus),@"code":@(0)});
+        } error:^(RCErrorCode status) {
+            result(@{@"code":@(status)});
+        }];
     }
 }
 

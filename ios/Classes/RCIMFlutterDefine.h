@@ -23,6 +23,7 @@ static NSString *RCMethodKeyInsertOutgoingMessage = @"insertOutgoingMessage";
 static NSString *RCMethodKeyGetTotalUnreadCount = @"getTotalUnreadCount";
 static NSString *RCMethodKeyGetUnreadCountTargetId = @"getUnreadCountTargetId";
 static NSString *RCMethodKeyGetUnreadCountConversationTypeList = @"getUnreadCountConversationTypeList";
+static NSString *RCMethodKeySetConversationNotificationStatus = @"setConversationNotificationStatus";
 
 
 

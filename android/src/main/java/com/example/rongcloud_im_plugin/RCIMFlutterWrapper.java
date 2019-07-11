@@ -114,8 +114,12 @@ public class RCIMFlutterWrapper {
             getUnreadCountTargetId(call.arguments,result);
         }else if (RCMethodList.MethodKeyGetUnreadCountConversationTypeList.equalsIgnoreCase(call.method)) {
             getUnreadCountConversationTypeList(call.arguments,result);
+        }else if (RCMethodList.MethodKeySetConversationNotificationStatus.equalsIgnoreCase(call.method)) {
+            setConversationNotificationStatus(call.arguments,result);
         }
+
     }
+
 
 
     //private method
@@ -845,6 +849,38 @@ public class RCIMFlutterWrapper {
                 }
             });
         }
+    }
+
+    private void setConversationNotificationStatus(Object arg, final Result result) {
+
+        if (arg instanceof Map) {
+            Map map = (Map)arg;
+            Integer t = (Integer)map.get("conversationType");
+            Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
+            String targetId = (String)map.get("targetId");
+            boolean isBlocked = (boolean)map.get("isBlocked");
+            int blockValue = isBlocked ? 0 : 1;
+
+            Conversation.ConversationNotificationStatus status = Conversation.ConversationNotificationStatus.setValue(blockValue);
+
+            RongIMClient.getInstance().setConversationNotificationStatus(type, targetId, status, new RongIMClient.ResultCallback<Conversation.ConversationNotificationStatus>() {
+                @Override
+                public void onSuccess(Conversation.ConversationNotificationStatus conversationNotificationStatus) {
+                    Map msgMap = new HashMap();
+                    msgMap.put("status",conversationNotificationStatus);
+                    msgMap.put("code",0);
+                    result.success(msgMap);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    Map msgMap = new HashMap();
+                    msgMap.put("code",errorCode);
+                    result.success(msgMap);
+                }
+            });
+        }
+
     }
 
 }
