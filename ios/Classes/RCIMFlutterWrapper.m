@@ -574,6 +574,18 @@
     }
 }
 
+- (void)getTopConversationList:(id)arg result:(FlutterResult)result {
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        NSArray *typeArray = param[@"conversationTypeList"];
+        
+        NSArray *conversationArray = [[RCIMClient sharedRCIMClient] getTopConversationList:typeArray];
+        result(@{@"conversationList":conversationArray,@"code":@(0)});
+    }
+}
+
+
+
 
 #pragma mark - RCIMClientReceiveMessageDelegate
 - (void)onReceived:(RCMessage *)message left:(int)nLeft object:(id)object {

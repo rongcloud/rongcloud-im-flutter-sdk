@@ -319,15 +319,26 @@ class RongcloudImPlugin {
     }
   }
 
-
-  static void setConversationNotificationStatus(int conversation, String targetId, bool isBlocked, Function (int code, int status) finished) async {
-    Map map = {"conversation":conversation, "targetId":targetId, "isBlocked":isBlocked};
+  /// 设置会话的提醒状态
+  ///
+  /// [conversationType] 会话类型，参见枚举 [RCConversationType]
+  ///
+  /// [targetId] 会话 id
+  ///
+  /// [finished] 回调结果，code 为 0 代表正常
+  static void setConversationNotificationStatus(int conversationType, String targetId, bool isBlocked, Function (int code, int status) finished) async {
+    Map map = {"conversationType":conversationType, "targetId":targetId, "isBlocked":isBlocked};
     Map statusMap = await _channel.invokeMethod(RCMethodKey.SetConversationNotificationStatus,map);
     if (finished != null) {
       finished(statusMap["status"],statusMap["code"]);
     }
   }
 
+  /// [conversationType] 会话类型，参见枚举 [RCConversationType]
+  ///
+  /// [targetId] 会话 id
+  ///
+  /// [finished] 回调结果，code 为 0 代表正常
   static void getConversationNotificationStatus(int conversation, String targetId, Function (int code, int status) finished) async {
     Map map = {"conversation":conversation, "targetId":targetId};
     Map statusMap = await _channel.invokeMethod(RCMethodKey.SetConversationNotificationStatus,map);
@@ -336,6 +347,11 @@ class RongcloudImPlugin {
     }
   }
 
+  /// 批量获取特定某些会话的未读数
+  ///
+  /// [conversationTypeList] 会话类型数组，参见枚举 [RCConversationType]
+  ///
+  /// [finished] 回调结果，code 为 0 代表正常
   static void getBlockedConversationList(List<int> conversationTypeList, Function (List<Conversation> convertionList,int code) finished) async {
     Map map = {"conversationTypeList":conversationTypeList};
     Map conversationMap = await _channel.invokeMethod(RCMethodKey.GetBlockedConversationList,map);
@@ -351,6 +367,14 @@ class RongcloudImPlugin {
     }
   }
 
+  ///设置会话置顶
+  /// [conversationType] 会话类型，参见枚举 [RCConversationType]
+  ///
+  /// [targetId] 会话 id
+  ///
+  /// [isTop] 是否设置置顶
+  ///
+  /// [finished] 回调结果，code 为 0 代表正常
   static void setConversationToTop(int conversationType, String targetId, bool isTop, Function (bool status, int code) finished) async {
     Map map = {"conversationType":conversationType, "targetId":targetId, "targetId":targetId};
     Map conversationMap = await _channel.invokeMethod(RCMethodKey.SetConversationToTop,map);
@@ -358,6 +382,23 @@ class RongcloudImPlugin {
       finished(conversationMap["status"],conversationMap["code"]);
     }
   }
+
+  /// TODO 安卓没有此接口
+  static void getTopConversationList(List<int> conversationTypeList, Function (List<Conversation> convertionList,int code) finished) async {
+    Map map = {"conversationTypeList":conversationTypeList};
+    Map conversationMap = await _channel.invokeMethod(RCMethodKey.GetTopConversationList,map);
+
+    List conversationList = conversationMap["conversationMap"];
+    List conList = new List();
+    for(String conStr in conversationList) {
+      Conversation con = MessageFactory.instance.string2Conversation(conStr);
+      conList.add(con);
+    }
+    if (finished != null) {
+      finished(conList,conversationMap["code"]);
+    }
+  }
+
   ///连接状态发生变更
   ///
   /// [connectionStatus] 连接状态，具体参见枚举 [RCConnectionStatus]

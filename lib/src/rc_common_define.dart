@@ -32,6 +32,7 @@ class RCMethodKey {
   static const String RemoveConversation = 'RemoveConversation';
   static const String GetBlockedConversationList = 'getBlockedConversationList';
   static const String SetConversationToTop = 'setConversationToTop';
+  static const String GetTopConversationList = 'getTopConversationList';
 
 }
 
