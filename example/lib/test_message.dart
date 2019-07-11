@@ -30,8 +30,4 @@ class TestMessage extends MessageContent {
   String getObjectName() {
     return objectName;
   }
-
-  static int persistentFlag() {
-    return RCMessagePersistentFlag.IsPersisted | RCMessagePersistentFlag.IsCounted;
-  }
 }

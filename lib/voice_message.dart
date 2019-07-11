@@ -1,14 +1,16 @@
-import 'rc_status_define.dart';
-import 'message_content.dart';
 import 'dart:convert' show json;
+import 'message_content.dart';
 
 class VoiceMessage extends MessageContent {
-  static const String objectName = "RC:VcMsg";
 
-  String localPath;
-  int duration;//语音时长，单位 s
+  static const String objectName = "RC:HQVCMsg";
+
+  int duration;
   String extra;
-  String content;//base 64 字符串
+  String content;
+  String localPath;
+  Uri remoteUri;
+
 
   @override
   void decode(String jsonStr) {
@@ -16,11 +18,13 @@ class VoiceMessage extends MessageContent {
     this.content = map["content"];
     this.duration = map["duration"];
     this.extra = map["extra"];
+    this.localPath = map["extra"];
+    this.remoteUri = map["extra"];
   }
 
   @override
   String encode() {
-    Map map = {"localPath":this.localPath,"duration":this.duration,"extra":this.extra};
+    Map map = {"localPath":this.localPath,"duration":this.duration,"extra":this.extra,"localPath":this.localPath,"localPath":this.remoteUri};
     return json.encode(map);
   }
 
@@ -32,9 +36,5 @@ class VoiceMessage extends MessageContent {
   @override
   String getObjectName() {
     return objectName;
-  }
-
-  static int persistentFlag() {
-    return RCMessagePersistentFlag.IsPersisted | RCMessagePersistentFlag.IsCounted;
   }
 }

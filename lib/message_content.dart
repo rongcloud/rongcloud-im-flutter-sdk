@@ -1,6 +1,7 @@
 import 'rc_status_define.dart';
 
-class MessageContent implements MessageCoding,MessageContentView,MessagePersistentCompatible {
+class MessageContent
+    implements MessageCoding, MessageContentView {
   @override
   void decode(String jsonStr) {
     // TODO: implement decode
@@ -22,33 +23,21 @@ class MessageContent implements MessageCoding,MessageContentView,MessagePersiste
   String getObjectName() {
     return null;
   }
-
-  static int persistentFlag() {
-    return RCMessagePersistentFlag.None;
-  }
-
 }
 
 class MessageCoding {
   String encode() {
     return null;
   }
-  void decode(String jsonStr) {
 
-  }
+  void decode(String jsonStr) {}
   String getObjectName() {
     return null;
   }
 }
 
 class MessageContentView {
-  String conversationDigest(){
+  String conversationDigest() {
     return null;
-  }
-}
-
-class MessagePersistentCompatible {
-  static int persistentFlag() {
-    return RCMessagePersistentFlag.None;
   }
 }

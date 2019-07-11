@@ -30,7 +30,4 @@ class TextMessage extends MessageContent {
     return objectName;
   }
 
-  static int persistentFlag() {
-    return RCMessagePersistentFlag.IsPersisted | RCMessagePersistentFlag.IsCounted;
-  }
 }

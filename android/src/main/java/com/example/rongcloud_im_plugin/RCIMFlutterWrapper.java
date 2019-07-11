@@ -37,6 +37,7 @@ import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
 import io.rong.imlib.model.UnknownMessage;
 import io.rong.imlib.model.UserInfo;
+import io.rong.message.HQVoiceMessage;
 import io.rong.message.ImageMessage;
 import io.rong.message.MessageHandler;
 import io.rong.message.VoiceMessage;
@@ -297,7 +298,17 @@ public class RCIMFlutterWrapper {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-            }else {
+            } else if (objectName.equalsIgnoreCase("RC:HQVCMsg")){
+                try {
+                    JSONObject jsonObject = new JSONObject(contentStr);
+                    String localPath =  (String)jsonObject.get("localPath");
+                    Uri uri = Uri.parse(localPath);
+                    int duration = (Integer) jsonObject.get("duration");
+                    content = HQVoiceMessage.obtain(uri,duration);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else {
 
             }
 
