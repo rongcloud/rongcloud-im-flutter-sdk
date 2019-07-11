@@ -18,13 +18,13 @@ class VoiceMessage extends MessageContent {
     this.content = map["content"];
     this.duration = map["duration"];
     this.extra = map["extra"];
-    this.localPath = map["extra"];
-    this.remoteUri = map["extra"];
+    this.localPath = map["localPath"];
+    this.remoteUri = map["remoteUrl"];
   }
 
   @override
   String encode() {
-    Map map = {"localPath":this.localPath,"duration":this.duration,"extra":this.extra,"localPath":this.localPath,"localPath":this.remoteUri};
+    Map map = {"content":this.content,"duration":this.duration,"extra":this.extra,"localPath":this.localPath,"remoteUrl":this.remoteUri};
     return json.encode(map);
   }
 
