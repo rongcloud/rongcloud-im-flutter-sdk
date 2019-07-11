@@ -335,6 +335,22 @@ class RongcloudImPlugin {
       finished(statusMap["status"],statusMap["code"]);
     }
   }
+
+  static void getBlockedConversationList(List<int> conversationTypeList, Function (List<Conversation> convertionList,int code) finished) async {
+    Map map = {"conversationTypeList":conversationTypeList};
+    Map conversationMap = await _channel.invokeMethod(RCMethodKey.GetBlockedConversationList,map);
+    
+    List conversationList = conversationMap["conversationMap"];
+    List conList = new List();
+    for(String conStr in conversationList) {
+      Conversation con = MessageFactory.instance.string2Conversation(conStr);
+      conList.add(con);
+    }
+    if (finished != null) {
+      finished(conList,conversationMap["code"]);
+    }
+  }
+
   ///连接状态发生变更
   ///
   /// [connectionStatus] 连接状态，具体参见枚举 [RCConnectionStatus]

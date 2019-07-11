@@ -113,6 +113,8 @@ public class RCIMFlutterWrapper {
             getConversationNotificationStatus(call.arguments,result);
         }else if (RCMethodList.MethodKeyRemoveConversation.equalsIgnoreCase(call.method)) {
             removeConversation(call.arguments,result);
+        }else if (RCMethodList.MethodKeyGetBlockedConversationList.equalsIgnoreCase(call.method)) {
+            getBlockedConversationList(call.arguments,result);
         }
         else {
             result.notImplemented();
@@ -549,7 +551,7 @@ public class RCIMFlutterWrapper {
                 public void onError(RongIMClient.ErrorCode errorCode) {
                     Map msgMap = new HashMap();
                     msgMap.put("count",0);
-                    msgMap.put("code",errorCode);
+                    msgMap.put("code",errorCode.getValue());
                     result.success(msgMap);
                 }
             });
@@ -577,7 +579,7 @@ public class RCIMFlutterWrapper {
                 public void onError(RongIMClient.ErrorCode errorCode) {
                     Map msgMap = new HashMap();
                     msgMap.put("count",0);
-                    msgMap.put("code",errorCode);
+                    msgMap.put("code",errorCode.getValue());
                     result.success(msgMap);
                 }
             });
@@ -597,7 +599,7 @@ public class RCIMFlutterWrapper {
             public void onError(RongIMClient.ErrorCode errorCode) {
                 Map msgMap = new HashMap();
                 msgMap.put("count",0);
-                msgMap.put("code",errorCode);
+                msgMap.put("code",errorCode.getValue());
                 result.success(msgMap);
             }
         });
@@ -651,7 +653,7 @@ public class RCIMFlutterWrapper {
                 @Override
                 public void onError(RongIMClient.ErrorCode errorCode) {
                     Map msgMap = new HashMap();
-                    msgMap.put("status",errorCode);
+                    msgMap.put("status",errorCode.getValue());
                     result.success(msgMap);
                 }
             });
@@ -708,7 +710,7 @@ public class RCIMFlutterWrapper {
                 @Override
                 public void onError(RongIMClient.ErrorCode errorCode) {
                     Map msgMap = new HashMap();
-                    msgMap.put("status",errorCode);
+                    msgMap.put("status",errorCode.getValue());
                     result.success(msgMap);
                 }
             });
@@ -889,7 +891,7 @@ public class RCIMFlutterWrapper {
                 @Override
                 public void onError(RongIMClient.ErrorCode errorCode) {
                     Map msgMap = new HashMap();
-                    msgMap.put("code",errorCode);
+                    msgMap.put("code",errorCode.getValue());
                     result.success(msgMap);
                 }
             });
@@ -915,9 +917,51 @@ public class RCIMFlutterWrapper {
 
                 public void onError(RongIMClient.ErrorCode errorCode) {
                     Map msgMap = new HashMap();
-                    msgMap.put("code", errorCode);
+                    msgMap.put("code", errorCode.getValue());
                     result.success(msgMap);
 
+                }
+            });
+        }
+    }
+
+    private void getBlockedConversationList(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map map = (Map) arg;
+            List conversationTypeList = (List)map.get("conversationTypeList");
+
+            Conversation.ConversationType[] types = new Conversation.ConversationType[conversationTypeList.size()];
+            for (int i=0;i<conversationTypeList.size();i++) {
+                Integer t = (Integer)conversationTypeList.get(i);
+                Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
+                types[i] = type;
+            }
+
+            RongIMClient.getInstance().getBlockedConversationList(new RongIMClient.ResultCallback<List<Conversation>>() {
+                @Override
+                public void onSuccess(List<Conversation> conversations) {
+
+                    if(conversations == null) {
+                        result.success(null);
+                        return ;
+                    }
+                    List l = new ArrayList();
+                    for(Conversation con : conversations) {
+                        String conStr = MessageFactory.getInstance().conversation2String(con);
+                        l.add(conStr);
+                    }
+
+                    Map resultMap =  new HashMap();
+                    resultMap.put("conversationList",l);
+                    resultMap.put("code",0);
+                    result.success(resultMap);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    Map resultMap =  new HashMap();
+                    resultMap.put("code",errorCode.getValue());
+                    result.success(resultMap);
                 }
             });
         }

@@ -76,11 +76,11 @@
         [self setConversationNotificationStatus:call.arguments result:result];
     }else if ([RCMethodKeyGetConversationNotificationStatus isEqualToString:call.method]) {
         [self getConversationNotificationStatus:call.arguments result:result];
-        [self getUnreadCountConversationTypeList:call.arguments result:result];
     }else if ([RCMethodKeyRemoveConversation isEqualToString:call.method]) {
         [self removeConversation:call.arguments result:result];
-    }
-    else {
+    }else if ([RCMethodKeyGetBlockedConversationList isEqualToString:call.method]) {
+        [self getBlockedConversationList:call.arguments result:result];
+    }else {
         result(FlutterMethodNotImplemented);
     }
 
@@ -547,6 +547,18 @@
         }];
     }
 }
+
+- (void)getBlockedConversationList:(id)arg result:(FlutterResult)result {
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        NSArray *typeArray = param[@"conversationTypeList"];
+  
+       NSArray *conversationArray = [[RCIMClient sharedRCIMClient] getBlockedConversationList:typeArray];
+       result(@{@"conversationList":conversationArray,@"code":@(0)});
+    }
+}
+
+
 
 
 #pragma mark - RCIMClientReceiveMessageDelegate
