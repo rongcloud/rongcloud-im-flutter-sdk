@@ -17,6 +17,14 @@ static NSString *RCMethodKeyGetConversationList = @"getConversationList";
 static NSString *RCMethodKeyGetChatRoomInfo = @"getChatRoomInfo";
 static NSString *RCMethodKeyClearMessagesUnreadStatus = @"clearMessagesUnreadStatus";
 static NSString *RCMethodKeySetServerInfo = @"setServerInfo";
+static NSString *RCMethodKeySetCurrentUserInfo = @"setCurrentUserInfo";
+static NSString *RCMethodKeyInsertIncomingMessage = @"insertIncomingMessage";
+static NSString *RCMethodKeyInsertOutgoingMessage = @"insertOutgoingMessage";
+static NSString *RCMethodKeyGetTotalUnreadCount = @"getTotalUnreadCount";
+static NSString *RCMethodKeyGetUnreadCountTargetId = @"getUnreadCountTargetId";
+static NSString *RCMethodKeyGetUnreadCountConversationTypeList = @"getUnreadCountConversationTypeList";
+
+
 
 //callback iOS 通知 flutter
 static NSString *RCMethodCallBackKeySendMessage = @"sendMessageCallBack";
@@ -25,3 +33,6 @@ static NSString *RCMethodCallBackKeyReceiveMessage = @"receiveMessageCallBack";
 static NSString *RCMethodCallBackKeyJoinChatRoom = @"joinChatRoomCallBack";
 static NSString *RCMethodCallBackKeyQuitChatRoom = @"quitChatRoomCallBack";
 static NSString *RCMethodCallBackKeyUploadMediaProgress = @"uploadMediaProgressCallBack";
+static NSString *RCMethodCallBackKeyGetRemoteHistoryMessages = @"getRemoteHistoryMessagesCallBack";
+
+
