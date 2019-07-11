@@ -76,11 +76,13 @@
         [self setConversationNotificationStatus:call.arguments result:result];
     }else if ([RCMethodKeyGetConversationNotificationStatus isEqualToString:call.method]) {
         [self getConversationNotificationStatus:call.arguments result:result];
+        [self getUnreadCountConversationTypeList:call.arguments result:result];
+    }else if ([RCMethodKeyRemoveConversation isEqualToString:call.method]) {
+        [self removeConversation:call.arguments result:result];
     }
-    
-//    else {
-//        result(FlutterMethodNotImplemented);
-//    }
+    else {
+        result(FlutterMethodNotImplemented);
+    }
 
 }
 
@@ -502,6 +504,17 @@
         result(@{@"count":@(count),@"code":@(0)});
     }
 }
+
+- (void)removeConversation:(id)arg result:(FlutterResult)result {
+    if ([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        RCConversationType type =  [param[@"conversationType"] integerValue];
+        NSString *targetId = param[@"targetId"];
+        BOOL success = [[RCIMClient sharedRCIMClient] removeConversation:type targetId:targetId];
+        result(@(success));
+    }
+}
+
 
 #pragma mark - 会话提醒
 

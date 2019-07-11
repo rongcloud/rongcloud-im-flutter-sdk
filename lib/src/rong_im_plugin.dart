@@ -126,6 +126,21 @@ class RongcloudImPlugin {
     return conList;
   }
 
+  ///删除指定会话
+  ///
+  ///[conversationType] 会话类型，参见枚举 [RCConversationType]
+  ///
+  ///[targetId] 会话 id
+  ///
+  ///[finished] 回调结果，告知结果成功与否
+  static void removeConversation(int conversationType,String targetId,Function(bool success) finished) async {
+    Map map = {'conversationType':conversationType,'targetId':targetId};
+    bool success = await _channel.invokeMethod(RCMethodKey.RemoveConversation,map);
+    if(finished != null) {
+      finished(success);
+    }
+  }
+
   ///清除会话的未读消息
   ///
   ///[conversationType] 会话类型，参见枚举 [RCConversationType]

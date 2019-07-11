@@ -29,6 +29,7 @@ class RCMethodKey {
   static const String GetUnreadCountConversationTypeList = 'getUnreadCountConversationTypeList';
   static const String SetConversationNotificationStatus = 'setConversationNotificationStatus';
   static const String GetConversationNotificationStatus = 'getConversationNotificationStatus';
+  static const String RemoveConversation = 'RemoveConversation';
 
 }
 

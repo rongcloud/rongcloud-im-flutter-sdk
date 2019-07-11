@@ -1,6 +1,5 @@
 package com.example.rongcloud_im_plugin;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -12,18 +11,12 @@ import org.json.JSONObject;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.security.acl.LastOwnerException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
-
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
@@ -118,6 +111,11 @@ public class RCIMFlutterWrapper {
             setConversationNotificationStatus(call.arguments,result);
         }else if (RCMethodList.MethodKeyGetConversationNotificationStatus.equalsIgnoreCase(call.method)) {
             getConversationNotificationStatus(call.arguments,result);
+        }else if (RCMethodList.MethodKeyRemoveConversation.equalsIgnoreCase(call.method)) {
+            removeConversation(call.arguments,result);
+        }
+        else {
+            result.notImplemented();
         }
 
     }
@@ -910,16 +908,36 @@ public class RCIMFlutterWrapper {
                 @Override
                 public void onSuccess(Conversation.ConversationNotificationStatus conversationNotificationStatus) {
                     Map msgMap = new HashMap();
-                    msgMap.put("status",conversationNotificationStatus);
-                    msgMap.put("code",0);
+                    msgMap.put("status", conversationNotificationStatus);
+                    msgMap.put("code", 0);
                     result.success(msgMap);
+                }
+
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    Map msgMap = new HashMap();
+                    msgMap.put("code", errorCode);
+                    result.success(msgMap);
+
+                }
+            });
+        }
+    }
+
+    private void removeConversation(Object arg, final Result result)  {
+        if (arg instanceof Map) {
+            Map map = (Map) arg;
+            Integer t = (Integer) map.get("conversationType");
+            Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
+            String targetId = (String) map.get("targetId");
+            RongIMClient.getInstance().removeConversation(type, targetId, new RongIMClient.ResultCallback<Boolean>() {
+                @Override
+                public void onSuccess(Boolean aBoolean) {
+                    result.success(true);
                 }
 
                 @Override
                 public void onError(RongIMClient.ErrorCode errorCode) {
-                    Map msgMap = new HashMap();
-                    msgMap.put("code",errorCode);
-                    result.success(msgMap);
+                    result.success(false);
                 }
             });
         }

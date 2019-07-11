@@ -23,7 +23,7 @@ public class RCMethodList {
     static String MethodKeyGetUnreadCountConversationTypeList = "getUnreadCountConversationTypeList";
     static String MethodKeySetConversationNotificationStatus = "setConversationNotificationStatus";
     static String MethodKeyGetConversationNotificationStatus = "getConversationNotificationStatus";
-
+    static String MethodKeyRemoveConversation = "RemoveConversation";
 
 
     //callback method list，以下方法是有 native 代码触发，有 flutter 处理

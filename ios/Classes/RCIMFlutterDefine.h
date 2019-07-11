@@ -25,6 +25,7 @@ static NSString *RCMethodKeyGetUnreadCountTargetId = @"getUnreadCountTargetId";
 static NSString *RCMethodKeyGetUnreadCountConversationTypeList = @"getUnreadCountConversationTypeList";
 static NSString *RCMethodKeySetConversationNotificationStatus = @"setConversationNotificationStatus";
 static NSString *RCMethodKeyGetConversationNotificationStatus = @"getConversationNotificationStatus";
+static NSString *RCMethodKeyRemoveConversation = @"RemoveConversation";
 
 
 
