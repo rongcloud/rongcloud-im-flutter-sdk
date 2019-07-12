@@ -60,6 +60,9 @@ class _MyAppState extends State<MyApp> {
     //5.设置监听回调，处理 native 层传递过来的事件
     _addNativeEventHandler();
 
+    List conversationList = await RongcloudImPlugin.getConversationList();
+    print("getConversationList + " + conversationList.toString());
+
     RongcloudImPlugin.getTotalUnreadCount((num, code) {
       print("getTotalUnreadCount " + num.toString() + " code " + code.toString());
     });
@@ -68,9 +71,15 @@ class _MyAppState extends State<MyApp> {
       print("getUnreadCount " + num.toString() + " code " + code.toString());
     });
 
-    RongcloudImPlugin.getUnreadCountConversationTypeList([1,2], true, (num,code){
+    RongcloudImPlugin.getUnreadCountConversationTypeList([RCConversationType.Private,RCConversationType.Group], true, (num,code){
       print("getUnreadCountConversationTypeList " + num.toString() + " code " + code.toString());
     });
+
+    VoiceMessage voiceMsg = new VoiceMessage();
+    voiceMsg.localPath = "path/voice_20190712.mp4";
+    voiceMsg.duration = 5;
+    Message msg = await RongcloudImPlugin.sendMessage(RCConversationType.Private, "1002", voiceMsg);
+    print("sendVoiceMessage " + msg.messageId.toString());
 
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
@@ -83,12 +92,25 @@ class _MyAppState extends State<MyApp> {
 
     RongcloudImPlugin.insertOutgoingMessage(RCConversationType.Private, "1001", 10, msgT, 0, (msg,code){
       print("insertOutgoingMessage " + msg.content.encode() + " code " + code.toString());
-
     });
+
+
+    List msgList = await RongcloudImPlugin.getHistoryMessage(RCConversationType.Private, "1002", 0, 0);
+    print("getHistoryMessage " + msgList.length.toString());
 
     RongcloudImPlugin.removeConversation(RCConversationType.Private, "1001", (success) {
       if(success) {
         print("删除会话成功");
+      }
+    });
+
+    RongcloudImPlugin.getBlockedConversationList([RCConversationType.Private,RCConversationType.Group], (List<Conversation> conversationList, int code) {
+      if(code == 0 && conversationList != null) {
+        for(Conversation con in conversationList) {
+          print("getBlockedConversationList  success "+ con.targetId.toString());
+        }
+      }else {
+        print("getBlockedConversationList error "+code.toString());
       }
     });
 
@@ -179,9 +201,11 @@ class _MyAppState extends State<MyApp> {
 
   onGetRemoteMessage() {
     RongcloudImPlugin.getRemoteHistoryMessages(RCConversationType.Private, "1001", 0, 20,(List<Message> msgList,int code) {
-      if(code == 0) {
-        for(Message msg in msgList) {
-          print("getRemoteHistoryMessages  success "+ msg.messageId.toString());
+      if(code == 0 && msgList != null) {
+        if (msgList.length > 0) {
+          for(Message msg in msgList) {
+            print("getRemoteHistoryMessages  success "+ msg.messageId.toString());
+          }
         }
       }else {
         print("getRemoteHistoryMessages error "+code.toString());

@@ -252,6 +252,12 @@ class RongcloudImPlugin {
     List l = new List();
     if (code == 0) {
       List msgStrList = resultMap["messages"];
+      if (msgStrList == null) {
+        if (finished != null) {
+          finished(null, code);
+        }
+        return;
+      }
       for (String msgStr in msgStrList) {
         Message m = MessageFactory.instance.string2Message(msgStr);
         l.add(m);
@@ -426,10 +432,18 @@ class RongcloudImPlugin {
     Map conversationMap = await _channel.invokeMethod(RCMethodKey.GetBlockedConversationList, map);
 
     List conversationList = conversationMap["conversationMap"];
+    if(conversationList == null) {
+      if (finished != null) {
+        finished(null, conversationMap["code"]);
+      }
+      return;
+    }
     List conList = new List();
-    for (String conStr in conversationList) {
-      Conversation con = MessageFactory.instance.string2Conversation(conStr);
-      conList.add(con);
+    if (conversationList.length > 0) {
+      for (String conStr in conversationList) {
+        Conversation con = MessageFactory.instance.string2Conversation(conStr);
+        conList.add(con);
+      }
     }
     if (finished != null) {
       finished(conList, conversationMap["code"]);

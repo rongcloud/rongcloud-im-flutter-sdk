@@ -609,6 +609,7 @@
         NSArray *typeArray = param[@"conversationTypeList"];
   
        NSArray *conversationArray = [[RCIMClient sharedRCIMClient] getBlockedConversationList:typeArray];
+        
        result(@{@"conversationList":conversationArray,@"code":@(0)});
     }
 }
