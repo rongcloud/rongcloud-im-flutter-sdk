@@ -25,6 +25,9 @@ class MessageFactory extends Object {
   }
 
   Message string2Message(String msgJsonStr) {
+    if(msgJsonStr == null) {
+      return null;
+    }
     Map map = json.decode(msgJsonStr);
     return map2Message(map);
   }
@@ -86,6 +89,7 @@ class MessageFactory extends Object {
     con.receivedStatus = map["receivedStatus"];
     con.sentStatus = map["sentStatus"];
     con.sentTime = map["sentTime"];
+    con.isTop = map["isTop"];
     con.objectName = map["objectName"];
     con.senderUserId = map["senderUserId"];
     con.latestMessageId = map["latestMessageId"];

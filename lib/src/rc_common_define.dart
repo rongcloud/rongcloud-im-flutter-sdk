@@ -13,7 +13,7 @@ class RCMethodKey {
   static const String Connect = 'connect';
   static const String Disconnect = 'disconnect';
   static const String SendMessage = 'sendMessage';
-  static const String RefrechUserInfo = 'refreshUserInfo';
+  static const String RefreshUserInfo = 'refreshUserInfo';
   static const String JoinChatRoom = 'joinChatRoom';
   static const String QuitChatRoom = 'quitChatRoom';
   static const String GetHistoryMessage = 'getHistoryMessage';
@@ -21,14 +21,30 @@ class RCMethodKey {
   static const String GetChatRoomInfo = 'getChatRoomInfo';
   static const String ClearMessagesUnreadStatus = 'clearMessagesUnreadStatus';
   static const String SetServerInfo = 'setServerInfo';
+  static const String SetCurrentUserInfo = 'setCurrentUserInfo';
+  static const String InsertIncomingMessage = 'insertIncomingMessage';
+  static const String InsertOutgoingMessage = 'insertOutgoingMessage';
+  static const String GetTotalUnreadCount = 'getTotalUnreadCount';
+  static const String GetUnreadCountTargetId = 'getUnreadCountTargetId';
+  static const String GetUnreadCountConversationTypeList = 'getUnreadCountConversationTypeList';
+  static const String SetConversationNotificationStatus = 'setConversationNotificationStatus';
+  static const String GetConversationNotificationStatus = 'getConversationNotificationStatus';
+  static const String RemoveConversation = 'RemoveConversation';
+  static const String GetBlockedConversationList = 'getBlockedConversationList';
+  static const String SetConversationToTop = 'setConversationToTop';
+  static const String GetTopConversationList = 'getTopConversationList';
+
 }
 
 //callback list //native 会触发此方法
 class RCMethodCallBackKey {
   static const String SendMessage = 'sendMessageCallBack';
-  static const String RefrechUserInfo = 'refreshUserInfoCallBack';
+  static const String RefreshUserInfo = 'refreshUserInfoCallBack';
   static const String ReceiveMessage = 'receiveMessageCallBack';
   static const String JoinChatRoom = 'joinChatRoomCallBack';
   static const String QuitChatRoom = 'quitChatRoomCallBack';
   static const String UploadMediaProgress = 'uploadMediaProgressCallBack';
+  static const String GetRemoteHistoryMessages = 'getRemoteHistoryMessagesCallBack';
+  static const String ConnectionStatusChange = 'ConnectionStatusChangeCallBack';
+
 }

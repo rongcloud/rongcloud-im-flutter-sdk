@@ -1,10 +1,4 @@
-//消息存储标识
-class RCMessagePersistentFlag {
-  static const int None = 0;
-  static const int IsPersisted = 1;
-  static const int IsCounted = 3;
-  static const int Status = 16;
-}
+
 
 //消息发送状态
 class RCSentStatus {
@@ -39,4 +33,13 @@ class RCOperationStatus {
 class RCChatRoomMemberOrder {
   static const int Asc = 1;//升序，最早加入
   static const int Desc = 2;//降序，最晚加入
+}
+
+class RCConnectionStatus {
+  static const int Connected = 0;//连接成功
+  static const int Connecting = 1;//连接中
+  static const int KickedByOtherClient = 2;//该账号在其他设备登录，导致当前设备掉线
+  static const int NetworkUnavailable = 3;//网络不可用
+  static const int TokenIncorrect = 4;//token 非法，此时无法连接 im，需重新获取 token
+  static const int UserBlocked = 5;//用户被封禁
 }

@@ -69,6 +69,7 @@
     [dic setObject:@(conversation.receivedStatus) forKey:@"receivedStatus"];
     [dic setObject:@(conversation.sentStatus) forKey:@"sentStatus"];
     [dic setObject:@(conversation.sentTime) forKey:@"sentTime"];
+    [dic setObject:@(conversation.isTop) forKey:@"isTop"];
     [dic setObject:conversation.objectName forKey:@"objectName"];
     [dic setObject:conversation.senderUserId forKey:@"senderUserId"];
     [dic setObject:@(conversation.lastestMessageId) forKey:@"latestMessageId"];
@@ -76,7 +77,6 @@
     NSData *data = content.encode;
     NSString *contentStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     [dic setObject:contentStr forKey:@"content"];
-    return [dic copy];
     return [dic copy];
 }
 @end

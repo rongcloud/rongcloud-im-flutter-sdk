@@ -15,6 +15,20 @@ public class RCMethodList {
     static String MethodKeyGetChatRoomInfo ="getChatRoomInfo";
     static String MethodKeyClearMessagesUnreadStatus ="clearMessagesUnreadStatus";
     static String MethodKeySetServerInfo ="setServerInfo";
+    static String MethodKeySetCurrentUserInfo = "setCurrentUserInfo";
+    static String MethodKeyInsertIncomingMessage = "insertIncomingMessage";
+    static String MethodKeyInsertOutgoingMessage = "insertOutgoingMessage";
+    static String MethodKeyGetTotalUnreadCount = "getTotalUnreadCount";
+    static String MethodKeyGetUnreadCountTargetId = "getUnreadCountTargetId";
+    static String MethodKeyGetUnreadCountConversationTypeList = "getUnreadCountConversationTypeList";
+    static String MethodKeySetConversationNotificationStatus = "setConversationNotificationStatus";
+    static String MethodKeyGetConversationNotificationStatus = "getConversationNotificationStatus";
+    static String MethodKeyRemoveConversation = "RemoveConversation";
+    static String MethodKeyGetBlockedConversationList = "getBlockedConversationList";
+    static String MethodKeySetConversationToTop = "setConversationToTop";
+    static String MethodKeyGetTopConversationList = "getTopConversationList";
+
+
 
     //callback method list，以下方法是有 native 代码触发，有 flutter 处理
     static String MethodCallBackKeySendMessage = "sendMessageCallBack";
@@ -23,4 +37,7 @@ public class RCMethodList {
     static String MethodCallBackKeyJoinChatRoom = "joinChatRoomCallBack";
     static String MethodCallBackKeyQuitChatRoom = "quitChatRoomCallBack";
     static String MethodCallBackKeyUploadMediaProgress = "uploadMediaProgressCallBack";
+    static String MethodCallBackKeygetRemoteHistoryMessages = "getRemoteHistoryMessagesCallBack";
+    static String MethodCallBackKeyConnectionStatusChange = "ConnectionStatusChangeCallBack";
+
 }

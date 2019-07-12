@@ -1,21 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:convert' show json;
-
 import 'package:flutter/services.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:rongcloud_im_plugin/rc_common_define.dart';
-import 'package:rongcloud_im_plugin/text_message.dart';
-import 'package:rongcloud_im_plugin/image_message.dart';
-import 'package:rongcloud_im_plugin/voice_message.dart';
-import 'package:rongcloud_im_plugin/message.dart';
-import 'package:rongcloud_im_plugin/message_factory.dart';
-import 'package:rongcloud_im_plugin/conversation.dart';
-import 'package:rongcloud_im_plugin/rc_status_define.dart';
-import 'package:rongcloud_im_plugin/chatroom_info.dart';
 
 import 'test_message.dart';
-
 
 void main() => runApp(MyApp());
 
@@ -25,7 +14,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   static const String privateUserId = "ios";
 
   @override
@@ -36,7 +24,6 @@ class _MyAppState extends State<MyApp> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-
     //融云 appkey
     String RongAppKey = 'pvxdm17jxjaor';
     //用户 id
@@ -48,7 +35,8 @@ class _MyAppState extends State<MyApp> {
     RongcloudImPlugin.init(RongAppKey);
 
     //2.配置 im SDK
-    String confString = await DefaultAssetBundle.of(context).loadString("assets/RCFlutterConf.json");
+    String confString = await DefaultAssetBundle.of(context)
+        .loadString("assets/RCFlutterConf.json");
     Map confMap = json.decode(confString.toString());
     RongcloudImPlugin.config(confMap);
 
@@ -70,113 +58,140 @@ class _MyAppState extends State<MyApp> {
     RongcloudImPlugin.updateCurrentUserInfo(userId, "李四", portraitUrl);
 
     //5.设置监听回调，处理 native 层传递过来的事件
-    RongcloudImPlugin.setRCNativeMethodCallHandler(_handler);
+    _addNativeEventHandler();
+
+    List conversationList = await RongcloudImPlugin.getConversationList();
+    print("getConversationList + " + conversationList.toString());
+
+    RongcloudImPlugin.getTotalUnreadCount((num, code) {
+      print("getTotalUnreadCount " + num.toString() + " code " + code.toString());
+    });
+
+    RongcloudImPlugin.getUnreadCount(RCConversationType.Private, '1001', (num,code) {
+      print("getUnreadCount " + num.toString() + " code " + code.toString());
+    });
+
+    RongcloudImPlugin.getUnreadCountConversationTypeList([RCConversationType.Private,RCConversationType.Group], true, (num,code){
+      print("getUnreadCountConversationTypeList " + num.toString() + " code " + code.toString());
+    });
+
+    //发送语音消息
+    // VoiceMessage voiceMsg = new VoiceMessage();
+    // voiceMsg.localPath = "local/path/to/voice/file";
+    // voiceMsg.duration = 5;
+    // Message msg = await RongcloudImPlugin.sendMessage(RCConversationType.Private, "1002", voiceMsg);
+    // print("sendVoiceMessage " + msg.messageId.toString());
 
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
-
-    setState(() {
-
+    TextMessage msgT = new TextMessage();
+    msgT.content = "xxxxxxxxx";
+    RongcloudImPlugin.insertIncomingMessage(RCConversationType.Private, "1002", "1002", 1, msgT , 0, (msg,code){
+      print("insertIncomingMessage " + msg.content.encode() + " code " + code.toString());
     });
+
+    RongcloudImPlugin.insertOutgoingMessage(RCConversationType.Private, "1001", 10, msgT, 0, (msg,code){
+      print("insertOutgoingMessage " + msg.content.encode() + " code " + code.toString());
+    });
+
+
+    List msgList = await RongcloudImPlugin.getHistoryMessage(RCConversationType.Private, "1002", 0, 0);
+    print("getHistoryMessage " + msgList.length.toString());
+
+    RongcloudImPlugin.removeConversation(RCConversationType.Private, "1001", (success) {
+      if(success) {
+        print("删除会话成功");
+      }
+    });
+
+    RongcloudImPlugin.getBlockedConversationList([RCConversationType.Private,RCConversationType.Group], (List<Conversation> conversationList, int code) {
+      if(code == 0 && conversationList != null) {
+        for(Conversation con in conversationList) {
+          print("getBlockedConversationList  success "+ con.targetId.toString());
+        }
+      }else {
+        print("getBlockedConversationList error "+code.toString());
+      }
+    });
+
+    setState(() {});
   }
 
-  //6.响应 native 的事件
-  Future<dynamic> _handler(MethodCall methodCall) {
-    //当 im SDK 需要展示用户信息的时候，会回调此方法
-    if (RCMethodCallBackKey.RefrechUserInfo == methodCall.method) {
-      //开发者需要将用户信息传递给 SDK
-      //如果本地有该用户的信息，那么直接传递给 SDK
-      //如果本地没有该用户的信息，从 APP 服务获取后传递给 SDK
-      String userId = methodCall.arguments;
-      String name = "张三";
-      String portraitUrl = "https://www.rongcloud.cn/pc/images/lizhi-icon.png";
-      RongcloudImPlugin.refreshUserInfo(userId, name, portraitUrl);
-    } else if(RCMethodCallBackKey.ReceiveMessage == methodCall.method) {
-      //收到消息原生会触发此方法
-      Map map = methodCall.arguments;
-      print("messageMap="+map.toString());
-      int left = map["left"];
-      print("left="+left.toString());
-      String messageString= map["message"];
-      Message msg = MessageFactory.instance.string2Message(messageString);
+  _addNativeEventHandler() {
+    //消息发送结果回调
+    RongcloudImPlugin.onMessageSend = (int messageId,int status,int code) {
+      print("send message messsageId:"+messageId.toString()+" status:"+status.toString()+" code:"+code.toString());
+    };
 
-      //会话类型，单聊/群聊/聊天室
-      print("conversationType = "+msg.conversationType.toString());
-      print("targetId = "+msg.targetId);
-      print("senderUserId="+msg.senderUserId);
-    }else if(RCMethodCallBackKey.SendMessage == methodCall.method) {
-      //发送消息会触发此回调，通知 flutter 层消息发送结果
-      // {"messageId":12,"status":30,"code":0}
-      // messageId 为本地数据库自增字段
-      // status 结果参见 RCMessageSentStatus 的枚举值
-      // code 错误码，消息发送成功为 0 ，发送失败则为具体错误码 如 23408
-      Map map = methodCall.arguments;
-      print("message sent result "+ map.toString());
-    }else if(RCMethodCallBackKey.JoinChatRoom == methodCall.method) {
-      //加入聊天室的回调
-      //targetId 聊天室 id
-      //status 参见 RCOperationStatus
-      //{"targetId":targetId,"status":0};
-      Map map = methodCall.arguments;
-      print("join chatroom resulut ="+map.toString());
-    }else if(RCMethodCallBackKey.QuitChatRoom == methodCall.method) {
-      //退出聊天室的回调
-      //targetId 聊天室 id
-      //status 参见 RCOperationStatus
-      //{"targetId":targetId,"status":0};
-      Map map = methodCall.arguments;
-      print("quit chatroom resulut ="+map.toString());
-    }else if(RCMethodCallBackKey.UploadMediaProgress == methodCall.method) {
-      //上传图片进度的回调
-      //{"messageId",messageId,"progress",99}
-      Map map = methodCall.arguments;
-      print("upload image message progress = "+map.toString());
-    }
+    //消息接收回调
+    RongcloudImPlugin.onMessageReceived = (Message msg,int left) {
+      print("receive message messsageId:"+msg.messageId.toString()+" left:"+left.toString());
+    };
+
+    //媒体消息（图片/语音消息）上传媒体进度的回调
+    RongcloudImPlugin.onUploadMediaProgress = (int messageId,int progress) {
+      print("upload media messsageId:"+messageId.toString()+" progress:"+progress.toString());
+    };
+
+    //加入聊天室结果回调
+    RongcloudImPlugin.onJoinChatRoom = (String targetId,int status) {
+      print("join chatroom:"+targetId+" status:"+status.toString());
+    };
+
+    //退出聊天室结果回调
+    RongcloudImPlugin.onQuitChatRoom = (String targetId,int status) {
+      print("quit chatroom:"+targetId+" status:"+status.toString());
+    };
   }
 
-  onSendMessage() async{
-      TextMessage txtMessage = new TextMessage();
-      txtMessage.content = "这条消息来自 flutter";
-      Message msg = await RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, txtMessage);
-      print("send message start senderUserId = "+msg.senderUserId);
+  onSendMessage() async {
+    TextMessage txtMessage = new TextMessage();
+    txtMessage.content = "这条消息来自 flutter";
+    Message msg = await RongcloudImPlugin.sendMessage(
+        RCConversationType.Private, privateUserId, txtMessage);
+    print("send message start senderUserId = " + msg.senderUserId);
   }
 
   onSendImageMessage() async {
-    ImageMessage imgMessage = new ImageMessage();
-    imgMessage.localPath = "image/local/path.jpg";
-    Message msg = await RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, imgMessage);
-    print("send image message start senderUserId = "+msg.senderUserId);
+    // ImageMessage imgMessage = new ImageMessage();
+    // imgMessage.localPath = "image/local/path.jpg";
+    // Message msg = await RongcloudImPlugin.sendMessage(
+    //     RCConversationType.Private, privateUserId, imgMessage);
+    // print("send image message start senderUserId = " + msg.senderUserId);
   }
 
   onSendVoiceMessage() async {
     VoiceMessage voiceMsg = new VoiceMessage();
     voiceMsg.localPath = "voice/local/path";
     voiceMsg.duration = 13;
-    Message msg = await RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, voiceMsg);
-    if(msg != null) {
-      print("send voice message start senderUserId = "+msg.senderUserId);
+    Message msg = await RongcloudImPlugin.sendMessage(
+        RCConversationType.Private, privateUserId, voiceMsg);
+    if (msg != null) {
+      print("send voice message start senderUserId = " + msg.senderUserId);
     }
   }
 
   onSendTestMessage() async {
     TestMessage testMessage = new TestMessage();
     testMessage.content = "这条消息是 flutter 内自定义的消息，还需要再原生的页面注册";
-    Message msg = await RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, testMessage);
-    print("send test message start senderUserId = "+msg.senderUserId);
+    Message msg = await RongcloudImPlugin.sendMessage(
+        RCConversationType.Private, privateUserId, testMessage);
+    print("send test message start senderUserId = " + msg.senderUserId);
   }
 
   onGetHistoryMessages() async {
-    List msgs = await RongcloudImPlugin.getHistoryMessage(RCConversationType.Private, privateUserId, 0, 10);
+    List msgs = await RongcloudImPlugin.getHistoryMessage(
+        RCConversationType.Private, privateUserId, 0, 10);
     print("get history message");
-    for(Message m in msgs) {
-      print("sentTime = "+m.sentTime.toString());
+    for (Message m in msgs) {
+      print("sentTime = " + m.sentTime.toString());
     }
   }
 
   onGetConversationList() async {
     List cons = await RongcloudImPlugin.getConversationList();
-    for(Conversation con in cons) {
+    for (Conversation con in cons) {
       print("conversation latestMessageId " + con.latestMessageId.toString());
     }
   }
@@ -185,13 +200,28 @@ class _MyAppState extends State<MyApp> {
     RongcloudImPlugin.joinChatRoom("testchatroomId", 10);
   }
 
+  onGetRemoteMessage() {
+    RongcloudImPlugin.getRemoteHistoryMessages(RCConversationType.Private, "1001", 0, 20,(List<Message> msgList,int code) {
+      if(code == 0 && msgList != null) {
+        if (msgList.length > 0) {
+          for(Message msg in msgList) {
+            print("getRemoteHistoryMessages  success "+ msg.messageId.toString());
+          }
+        }
+      }else {
+        print("getRemoteHistoryMessages error "+code.toString());
+      }
+    });
+  }
+
   onQuitChatRoom() {
     RongcloudImPlugin.quitChatRoom("testchatroomId");
   }
 
   onGetChatRoomInfo() async {
-    ChatRoomInfo chatRoomInfo = await RongcloudImPlugin.getChatRoomInfo("testchatroomId", 10, RCChatRoomMemberOrder.Desc);
-    print("onGetChatRoomInfo targetId ="+chatRoomInfo.targetId);
+    ChatRoomInfo chatRoomInfo = await RongcloudImPlugin.getChatRoomInfo(
+        "testchatroomId", 10, RCChatRoomMemberOrder.Desc);
+    print("onGetChatRoomInfo targetId =" + chatRoomInfo.targetId);
   }
 
   @override
@@ -211,11 +241,11 @@ class _MyAppState extends State<MyApp> {
         body: Center(
           child: Container(
               padding: EdgeInsets.symmetric(horizontal: 10),
-              height: 500,
+              height: 700,
               child: Column(
                 children: <Widget>[
                   Row(children: <Widget>[]),
-                    Padding(
+                  Padding(
                       padding: EdgeInsets.symmetric(vertical: 10),
                       child: Row(
                         children: <Widget>[
@@ -228,10 +258,8 @@ class _MyAppState extends State<MyApp> {
                             ),
                           )
                         ],
-                        
-                      )
-                    ),
-                    Padding(
+                      )),
+                  Padding(
                       padding: EdgeInsets.symmetric(vertical: 10),
                       child: Row(
                         children: <Widget>[
@@ -244,10 +272,8 @@ class _MyAppState extends State<MyApp> {
                             ),
                           )
                         ],
-                        
-                      )
-                    ),
-                    Padding(
+                      )),
+                  Padding(
                       padding: EdgeInsets.symmetric(vertical: 10),
                       child: Row(
                         children: <Widget>[
@@ -260,10 +286,8 @@ class _MyAppState extends State<MyApp> {
                             ),
                           )
                         ],
-                        
-                      )
-                    ),
-                    Padding(
+                      )),
+                  Padding(
                       padding: EdgeInsets.symmetric(vertical: 10),
                       child: Row(
                         children: <Widget>[
@@ -276,10 +300,8 @@ class _MyAppState extends State<MyApp> {
                             ),
                           )
                         ],
-                        
-                      )
-                    ),
-                    Padding(
+                      )),
+                  Padding(
                       padding: EdgeInsets.symmetric(vertical: 10),
                       child: Row(
                         children: <Widget>[
@@ -292,10 +314,8 @@ class _MyAppState extends State<MyApp> {
                             ),
                           )
                         ],
-                        
-                      )
-                    ),
-                    Padding(
+                      )),
+                  Padding(
                       padding: EdgeInsets.symmetric(vertical: 10),
                       child: Row(
                         children: <Widget>[
@@ -308,9 +328,21 @@ class _MyAppState extends State<MyApp> {
                             ),
                           )
                         ],
-                        
-                      )
-                    ),
+                      )),
+                  Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: RaisedButton(
+                              onPressed: () => onGetRemoteMessage(),
+                              child: Text("onGetRemoteMessage"),
+                              color: Colors.blueAccent,
+                              textColor: Colors.white,
+                            ),
+                          )
+                        ],
+                      )),
                   Padding(
                       padding: EdgeInsets.symmetric(vertical: 10),
                       child: Row(
@@ -324,15 +356,11 @@ class _MyAppState extends State<MyApp> {
                             ),
                           )
                         ],
-                        
-                      )
-                    )
+                      ))
                 ],
-              )
-              ),
+              )),
         ),
       ),
     );
   }
-  
 }

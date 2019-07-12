@@ -1,5 +1,4 @@
-import 'package:rongcloud_im_plugin/rc_status_define.dart';
-import 'package:rongcloud_im_plugin/message_content.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'dart:convert' show json;
 
 //app 层的测试消息
@@ -29,9 +28,5 @@ class TestMessage extends MessageContent {
   @override
   String getObjectName() {
     return objectName;
-  }
-
-  static int persistentFlag() {
-    return RCMessagePersistentFlag.IsPersisted | RCMessagePersistentFlag.IsCounted;
   }
 }

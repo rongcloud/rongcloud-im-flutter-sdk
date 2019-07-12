@@ -9,6 +9,10 @@ class TextMessage extends MessageContent {
   String extra;
   @override
   void decode(String jsonStr) {
+    if(jsonStr == null) {
+      print("[RC-Flutter-IM] Flutter TextMessage deocde error: no content");
+      return;
+    }
     Map map = json.decode(jsonStr.toString());
     this.content = map["content"];
     this.extra = map["extra"];
@@ -30,7 +34,4 @@ class TextMessage extends MessageContent {
     return objectName;
   }
 
-  static int persistentFlag() {
-    return RCMessagePersistentFlag.IsPersisted | RCMessagePersistentFlag.IsCounted;
-  }
 }

@@ -62,15 +62,20 @@ public class MessageFactory {
         map.put("receivedStatus",conversation.getReceivedStatus().getFlag());
         map.put("sentStatus",conversation.getSentStatus().getValue());
         map.put("sentTime",conversation.getSentTime());
+        map.put("isTop",conversation.isTop());
         map.put("objectName",conversation.getObjectName());
         map.put("senderUserId",conversation.getSenderUserId());
         map.put("latestMessageId",conversation.getLatestMessageId());
 
         MessageContent content = conversation.getLatestMessage();
-        byte[] data = content.encode();
-        String jsonS = new String(data);
+        if(content != null) {
+            byte[] data = content.encode();
+            String jsonS = new String(data);
+            map.put("content",jsonS);
+        }else {
+//            map.put("content","");
+        }
 
-        map.put("content",jsonS);
 
         JSONObject jObj = new JSONObject(map);
 
