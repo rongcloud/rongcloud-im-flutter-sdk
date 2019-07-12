@@ -68,10 +68,14 @@ public class MessageFactory {
         map.put("latestMessageId",conversation.getLatestMessageId());
 
         MessageContent content = conversation.getLatestMessage();
-        byte[] data = content.encode();
-        String jsonS = new String(data);
+        if(content != null) {
+            byte[] data = content.encode();
+            String jsonS = new String(data);
+            map.put("content",jsonS);
+        }else {
+//            map.put("content","");
+        }
 
-        map.put("content",jsonS);
 
         JSONObject jObj = new JSONObject(map);
 

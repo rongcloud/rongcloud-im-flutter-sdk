@@ -25,6 +25,9 @@ class MessageFactory extends Object {
   }
 
   Message string2Message(String msgJsonStr) {
+    if(msgJsonStr == null) {
+      return null;
+    }
     Map map = json.decode(msgJsonStr);
     return map2Message(map);
   }

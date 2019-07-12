@@ -1105,7 +1105,7 @@ public class RCIMFlutterWrapper {
     }
 
     private boolean isMediaMessage(String objName) {
-        if(objName.equalsIgnoreCase("RC:ImgMsg")) {
+        if(objName.equalsIgnoreCase("RC:ImgMsg") || objName.equalsIgnoreCase("RC:HQVCMsg")) {
             return true;
         }
         return false;

@@ -14,6 +14,10 @@ class VoiceMessage extends MessageContent {
 
   @override
   void decode(String jsonStr) {
+    if(jsonStr == null) {
+      print("[RC-Flutter-IM] Flutter VoiceMessage deocde error: no content");
+      return;
+    }
     Map map = json.decode(jsonStr.toString());
     this.content = map["content"];
     this.duration = map["duration"];

@@ -75,11 +75,12 @@ class _MyAppState extends State<MyApp> {
       print("getUnreadCountConversationTypeList " + num.toString() + " code " + code.toString());
     });
 
-    VoiceMessage voiceMsg = new VoiceMessage();
-    voiceMsg.localPath = "path/voice_20190712.mp4";
-    voiceMsg.duration = 5;
-    Message msg = await RongcloudImPlugin.sendMessage(RCConversationType.Private, "1002", voiceMsg);
-    print("sendVoiceMessage " + msg.messageId.toString());
+    //发送语音消息
+    // VoiceMessage voiceMsg = new VoiceMessage();
+    // voiceMsg.localPath = "local/path/to/voice/file";
+    // voiceMsg.duration = 5;
+    // Message msg = await RongcloudImPlugin.sendMessage(RCConversationType.Private, "1002", voiceMsg);
+    // print("sendVoiceMessage " + msg.messageId.toString());
 
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
@@ -153,11 +154,11 @@ class _MyAppState extends State<MyApp> {
   }
 
   onSendImageMessage() async {
-    ImageMessage imgMessage = new ImageMessage();
-    imgMessage.localPath = "image/local/path.jpg";
-    Message msg = await RongcloudImPlugin.sendMessage(
-        RCConversationType.Private, privateUserId, imgMessage);
-    print("send image message start senderUserId = " + msg.senderUserId);
+    // ImageMessage imgMessage = new ImageMessage();
+    // imgMessage.localPath = "image/local/path.jpg";
+    // Message msg = await RongcloudImPlugin.sendMessage(
+    //     RCConversationType.Private, privateUserId, imgMessage);
+    // print("send image message start senderUserId = " + msg.senderUserId);
   }
 
   onSendVoiceMessage() async {

@@ -252,12 +252,6 @@ class RongcloudImPlugin {
     List l = new List();
     if (code == 0) {
       List msgStrList = resultMap["messages"];
-      if (msgStrList == null) {
-        if (finished != null) {
-          finished(null, code);
-        }
-        return;
-      }
       for (String msgStr in msgStrList) {
         Message m = MessageFactory.instance.string2Message(msgStr);
         l.add(m);
@@ -439,11 +433,9 @@ class RongcloudImPlugin {
       return;
     }
     List conList = new List();
-    if (conversationList.length > 0) {
-      for (String conStr in conversationList) {
-        Conversation con = MessageFactory.instance.string2Conversation(conStr);
-        conList.add(con);
-      }
+    for (String conStr in conversationList) {
+      Conversation con = MessageFactory.instance.string2Conversation(conStr);
+      conList.add(con);
     }
     if (finished != null) {
       finished(conList, conversationMap["code"]);
