@@ -384,7 +384,7 @@ class RongcloudImPlugin {
   /// [targetId] 会话 id
   ///
   /// [finished] 回调结果，code 为 0 代表正常
-  static void setConversationNotificationStatus(int conversationType, String targetId, bool isBlocked, Function(int code, int status) finished) async {
+  static void setConversationNotificationStatus(int conversationType, String targetId, bool isBlocked, Function(int status, int code) finished) async {
     Map map = {
       "conversationType": conversationType,
       "targetId": targetId,
@@ -403,7 +403,7 @@ class RongcloudImPlugin {
   /// [targetId] 会话 id
   ///
   /// [finished] 回调结果，code 为 0 代表正常
-  static void getConversationNotificationStatus(int conversation, String targetId, Function(int code, int status) finished) async {
+  static void getConversationNotificationStatus(int conversation, String targetId, Function(int status, int code) finished) async {
     Map map = {
       "conversation": conversation,
       "targetId": targetId
