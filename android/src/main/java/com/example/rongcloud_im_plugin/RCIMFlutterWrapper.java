@@ -678,7 +678,7 @@ public class RCIMFlutterWrapper {
             String targetId = (String)map.get("targetId");
             Integer st = (Integer) map.get("sendStatus");
             Message.SentStatus sendStatus = Message.SentStatus.setValue(st.intValue());
-            Long sendTime = (Long)map.get("sendTime");
+            Integer sendTime = (Integer)map.get("sendTime");
 
             String contentStr = (String)map.get("content");
 
@@ -706,8 +706,7 @@ public class RCIMFlutterWrapper {
                 result.success(msgMap);
                 return;
             }
-
-            RongIMClient.getInstance().insertOutgoingMessage(type, targetId, sendStatus, content, new RongIMClient.ResultCallback<Message>() {
+            RongIMClient.getInstance().insertOutgoingMessage(type, targetId, sendStatus, content, sendTime.longValue(), new RongIMClient.ResultCallback<Message>() {
                 @Override
                 public void onSuccess(Message message) {
                     RCLog.i(LOG_TAG+" success");
@@ -739,10 +738,10 @@ public class RCIMFlutterWrapper {
             Integer t = (Integer)map.get("conversationType");
             Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
             String targetId = (String)map.get("targetId");
-            Integer st = (Integer)map.get("receivedStatus");
-            Message.ReceivedStatus receivedStatus = new Message.ReceivedStatus(st);
+            Integer st = (Integer)map.get("rececivedStatus");
+            Message.ReceivedStatus receivedStatus = new Message.ReceivedStatus(st.intValue());
             String senderUserId = (String)map.get("senderUserId");
-            Long sendTime = (Long)map.get("sendTime");
+            Integer sendTime = (Integer)map.get("sendTime");
 
             String contentStr = (String)map.get("content");
 
@@ -771,7 +770,7 @@ public class RCIMFlutterWrapper {
                 return;
             }
 
-            RongIMClient.getInstance().insertIncomingMessage(type, targetId, senderUserId, receivedStatus, content, sendTime, new RongIMClient.ResultCallback<Message>() {
+            RongIMClient.getInstance().insertIncomingMessage(type, targetId, senderUserId, receivedStatus, content, sendTime.longValue(), new RongIMClient.ResultCallback<Message>() {
                 @Override
                 public void onSuccess(Message message) {
                     RCLog.i(LOG_TAG+" success");
