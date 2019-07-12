@@ -83,6 +83,8 @@
         [self getBlockedConversationList:call.arguments result:result];
     }else if ([RCMethodKeySetConversationToTop isEqualToString:call.method]) {
         [self setConversationToTop:call.arguments result:result];
+    }else if ([RCMethodKeyGetUnreadCountConversationTypeList isEqualToString:call.method]) {
+        [self getUnreadCountConversationTypeList:call.arguments result:result];
     }else {
         result(FlutterMethodNotImplemented);
     }

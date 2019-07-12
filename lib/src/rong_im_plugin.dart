@@ -456,24 +456,24 @@ class RongcloudImPlugin {
       finished(conversationMap["status"], conversationMap["code"]);
     }
   }
-
-  /// TODO 安卓没有此接口
-  static void getTopConversationList(List<int> conversationTypeList, Function(List<Conversation> convertionList, int code) finished) async {
-    Map map = {
-      "conversationTypeList": conversationTypeList
-    };
-    Map conversationMap = await _channel.invokeMethod(RCMethodKey.GetTopConversationList, map);
-
-    List conversationList = conversationMap["conversationMap"];
-    List conList = new List();
-    for (String conStr in conversationList) {
-      Conversation con = MessageFactory.instance.string2Conversation(conStr);
-      conList.add(con);
-    }
-    if (finished != null) {
-      finished(conList, conversationMap["code"]);
-    }
-  }
+//
+//  /// TODO 安卓没有此接口
+//  static void getTopConversationList(List<int> conversationTypeList, Function(List<Conversation> convertionList, int code) finished) async {
+//    Map map = {
+//      "conversationTypeList": conversationTypeList
+//    };
+//    Map conversationMap = await _channel.invokeMethod(RCMethodKey.GetTopConversationList, map);
+//
+//    List conversationList = conversationMap["conversationMap"];
+//    List conList = new List();
+//    for (String conStr in conversationList) {
+//      Conversation con = MessageFactory.instance.string2Conversation(conStr);
+//      conList.add(con);
+//    }
+//    if (finished != null) {
+//      finished(conList, conversationMap["code"]);
+//    }
+//  }
 
   ///连接状态发生变更
   ///

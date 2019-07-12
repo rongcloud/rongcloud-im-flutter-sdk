@@ -62,6 +62,7 @@ public class MessageFactory {
         map.put("receivedStatus",conversation.getReceivedStatus().getFlag());
         map.put("sentStatus",conversation.getSentStatus().getValue());
         map.put("sentTime",conversation.getSentTime());
+        map.put("isTop",conversation.isTop());
         map.put("objectName",conversation.getObjectName());
         map.put("senderUserId",conversation.getSenderUserId());
         map.put("latestMessageId",conversation.getLatestMessageId());

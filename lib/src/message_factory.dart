@@ -86,6 +86,7 @@ class MessageFactory extends Object {
     con.receivedStatus = map["receivedStatus"];
     con.sentStatus = map["sentStatus"];
     con.sentTime = map["sentTime"];
+    con.isTop = map["isTop"];
     con.objectName = map["objectName"];
     con.senderUserId = map["senderUserId"];
     con.latestMessageId = map["latestMessageId"];
