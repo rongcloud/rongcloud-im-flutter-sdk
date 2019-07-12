@@ -9,6 +9,7 @@
 #import "RCIMFlutterDefine.h"
 #import "RCFlutterConfig.h"
 #import "RCFlutterMessageFactory.h"
+#import "RCIMFlutterLog.h"
 
 @interface RCMessageMapper : NSObject
 + (instancetype)sharedMapper;
@@ -93,19 +94,22 @@
 
 #pragma mark - selector
 - (void)initWithRCIMAppKey:(id)arg {
+    NSString *LOG_TAG =  @"init";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSString class]]) {
         NSString *appkey = (NSString *)arg;
         [[RCIMClient sharedRCIMClient] initWithAppKey:appkey];
         
         [[RCIMClient sharedRCIMClient] setReceiveMessageDelegate:self object:nil];
         [[RCIMClient sharedRCIMClient] setRCConnectionStatusChangeDelegate:self];
-        NSLog(@"appkey %@",(NSString *)arg);
     }else {
         NSLog(@"init 非法参数类型");
     }
 }
 
 - (void)config:(id)arg {
+    NSString *LOG_TAG =  @"config";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *conf = (NSDictionary *)arg;
         RCFlutterConfig *config = [[RCFlutterConfig alloc] init];
@@ -120,6 +124,8 @@
 }
 
 - (void)setServerInfo:(id)arg {
+    NSString *LOG_TAG =  @"setServerInfo";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *dic = (NSDictionary *)arg;
         NSString *naviServer = dic[@"naviServer"];
@@ -129,26 +135,26 @@
 }
 
 - (void)connectWithToken:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"connect";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSString class]]) {
-        NSLog(@"connect start");
         NSString *token = (NSString *)arg;
         [[RCIMClient sharedRCIMClient] connectWithToken:token success:^(NSString *userId) {
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
             result(@(0));
-            NSLog(@"connect end success");
         } error:^(RCConnectErrorCode status) {
+            [RCLog i:[NSString stringWithFormat:@"%@ fail %@",LOG_TAG,@(status)]];
             result(@(status));
-            NSLog(@"connect end error %@",@(status));
         } tokenIncorrect:^{
+            [RCLog i:[NSString stringWithFormat:@"%@ fail %@",LOG_TAG,@(RC_CONN_TOKEN_INCORRECT)]];
             result(@(RC_CONN_TOKEN_INCORRECT));
-            NSLog(@"connect end error %@",@(RC_CONN_TOKEN_INCORRECT));
         }];
-        NSLog(@"appkey %@",(NSString *)arg);
-    }else {
-        NSLog(@"connect 非法参数类型");
     }
 }
 
 - (void)disconnect:(id)arg  {
+    NSString *LOG_TAG =  @"disconnect";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSNumber class]]) {
         BOOL needPush = [((NSNumber *) arg) boolValue];
         [[RCIMClient sharedRCIMClient] disconnect:needPush];
@@ -182,6 +188,8 @@
 }
 
 - (void)sendMessage:(id)arg result:(FlutterResult)result{
+    NSString *LOG_TAG =  @"sendMessage";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
         NSString *objName = param[@"objectName"];
@@ -202,19 +210,21 @@
              content = [[RCMessageMapper sharedMapper] messageContentWithClass:clazz fromData:data];
         }
         if(content == nil) {
-            NSLog(@"该消息无法构建:%@",param);
+            [RCLog e:[NSString stringWithFormat:@"%@  message content is nil",LOG_TAG]];
             result(nil);
             return;
         }
         
         __weak typeof(self) ws = self;
         RCMessage *message = [[RCIMClient sharedRCIMClient] sendMessage:type targetId:targetId content:content pushContent:nil pushData:nil success:^(long messageId) {
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
             NSMutableDictionary *dic = [NSMutableDictionary new];
             [dic setObject:@(messageId) forKey:@"messageId"];
             [dic setObject:@(SentStatus_SENT) forKey:@"status"];
             [dic setObject:@(0) forKey:@"code"];
             [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
         } error:^(RCErrorCode nErrorCode, long messageId) {
+            [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(nErrorCode)]];
             NSMutableDictionary *dic = [NSMutableDictionary new];
             [dic setObject:@(messageId) forKey:@"messageId"];
             [dic setObject:@(SentStatus_FAILED) forKey:@"status"];
@@ -281,6 +291,8 @@
 }
 
 - (void)joinChatRoom:(id)arg {
+    NSString *LOG_TAG =  @"joinChatRoom";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *dic = (NSDictionary *)arg;
         NSString *targetId = dic[@"targetId"];
@@ -288,11 +300,13 @@
         
         __weak typeof(self) ws = self;
         [[RCIMClient sharedRCIMClient] joinChatRoom:targetId messageCount:msgCount success:^{
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
             NSMutableDictionary *callbackDic = [NSMutableDictionary new];
             [callbackDic setValue:targetId forKey:@"targetId"];
             [callbackDic setValue:@(0) forKey:@"status"];
             [ws.channel invokeMethod:RCMethodCallBackKeyJoinChatRoom arguments:callbackDic];
         } error:^(RCErrorCode status) {
+            [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(status)]];
             NSMutableDictionary *callbackDic = [NSMutableDictionary new];
             [callbackDic setValue:targetId forKey:@"targetId"];
             [callbackDic setValue:@(status) forKey:@"status"];
@@ -302,17 +316,21 @@
 }
 
 - (void)quitChatRoom:(id)arg {
+    NSString *LOG_TAG =  @"quitChatRoom";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *dic = (NSDictionary *)arg;
         NSString *targetId = dic[@"targetId"];
         
         __weak typeof(self) ws = self;
         [[RCIMClient sharedRCIMClient] quitChatRoom:targetId success:^{
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
             NSMutableDictionary *callbackDic = [NSMutableDictionary new];
             [callbackDic setValue:targetId forKey:@"targetId"];
             [callbackDic setValue:@(0) forKey:@"status"];
             [ws.channel invokeMethod:RCMethodCallBackKeyQuitChatRoom arguments:callbackDic];
         } error:^(RCErrorCode status) {
+            [RCLog i:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(status)]];
             NSMutableDictionary *callbackDic = [NSMutableDictionary new];
             [callbackDic setValue:targetId forKey:@"targetId"];
             [callbackDic setValue:@(status) forKey:@"status"];
@@ -322,6 +340,8 @@
 }
 
 - (void)getHistoryMessage:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"getHistoryMessage";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *dic = (NSDictionary *)arg;
         RCConversationType type = [dic[@"conversationType"] integerValue];
@@ -339,6 +359,8 @@
 }
 
 - (void)getRemoteHistoryMessages:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"getRemoteHistoryMessages";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if ([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *dic = (NSDictionary *)arg;
         RCConversationType type = [dic[@"conversationType"] integerValue];
@@ -346,8 +368,8 @@
         long recordTime = [dic[@"recordTime"] longValue];
         int count = [dic[@"count"] intValue];
         
-        __weak typeof(self) ws = self;
         [[RCIMClient sharedRCIMClient] getRemoteHistoryMessages:type targetId:targetId recordTime:recordTime count:count success:^(NSArray *messages, BOOL isRemaining) {
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
             NSMutableArray *msgsArray = [NSMutableArray new];
             for(RCMessage *message in messages) {
                 NSString *jsonString = [RCFlutterMessageFactory message2String:message];
@@ -358,6 +380,7 @@
             [callbackDic setObject:msgsArray forKey:@"messages"];
             result(callbackDic);
         } error:^(RCErrorCode status) {
+            [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(status)]];
             NSMutableDictionary *callbackDic = [NSMutableDictionary new];
             [callbackDic setObject:@(status) forKey:@"code"];
             result(callbackDic);
@@ -366,6 +389,8 @@
 }
 
 - (void)getConversationList:(FlutterResult)result {
+    NSString *LOG_TAG =  @"getConversationList";
+    [RCLog i:[NSString stringWithFormat:@"%@ start",LOG_TAG]];
     NSArray *conversations = [[RCIMClient sharedRCIMClient] getConversationList:@[@(ConversationType_PRIVATE),@(ConversationType_GROUP)]];
     NSMutableArray *arr = [NSMutableArray new];
     for(RCConversation *con in conversations) {
@@ -376,15 +401,19 @@
 }
 
 - (void)getChatRoomInfo:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"getChatRoomInfo";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *dic = (NSDictionary *)arg;
         NSString *targetId = dic[@"targetId"];
         int memberCount = [dic[@"memeberCount"] intValue];
         int memberOrder = [dic[@"memberOrder"] intValue];
         [[RCIMClient sharedRCIMClient] getChatRoomInfo:targetId count:memberCount order:memberOrder success:^(RCChatRoomInfo *chatRoomInfo) {
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
             NSDictionary *resultDic = [RCFlutterMessageFactory chatRoomInfo2Dictionary:chatRoomInfo];
             result(resultDic);
         } error:^(RCErrorCode status) {
+            [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(status)]];
             result(nil);
         }];
         
@@ -392,6 +421,8 @@
 }
 
 - (void)clearMessagesUnreadStatus:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"clearMessagesUnreadStatus";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *dic = (NSDictionary *)arg;
         RCConversationType type = (RCConversationType)dic[@"conversationType"];
@@ -405,7 +436,8 @@
 #pragma mark - 插入消息
 
 - (void)insertOutgoingMessage:(id)arg result:(FlutterResult)result {
-    
+    NSString *LOG_TAG =  @"insertOutgoingMessage";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if ([arg isKindOfClass:[NSDictionary class]]) {
         
         NSDictionary *param = (NSDictionary *)arg;
@@ -424,7 +456,7 @@
             content = [[RCMessageMapper sharedMapper] messageContentWithClass:clazz fromData:data];
         }
         if(content == nil) {
-            NSLog(@"该消息无法构建:%@",param);
+            [RCLog e:[NSString stringWithFormat:@"%@ message content is nil",LOG_TAG]];
             result(@{@"code":@(INVALID_PARAMETER)});
             return;
         }
@@ -442,6 +474,8 @@
 }
 
 - (void)insertIncomingMessage:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"insertIncomingMessage";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if ([arg isKindOfClass:[NSDictionary class]]) {
         
         NSDictionary *param = (NSDictionary *)arg;
@@ -461,7 +495,7 @@
             content = [[RCMessageMapper sharedMapper] messageContentWithClass:clazz fromData:data];
         }
         if(content == nil) {
-            NSLog(@"该消息无法构建:%@",param);
+            [RCLog e:[NSString stringWithFormat:@"%@ message content is nil",LOG_TAG]];
             result(@{@"code":@(INVALID_PARAMETER)});
             return;
         }
@@ -480,11 +514,15 @@
 #pragma mark -- 未读数
 
 - (void)getTotalUnreadCount:(FlutterResult)result{
+    NSString *LOG_TAG =  @"getTotalUnreadCount";
+    [RCLog i:[NSString stringWithFormat:@"%@ start",LOG_TAG]];
     int count = [[RCIMClient sharedRCIMClient] getTotalUnreadCount];
     result(@{@"count":@(count),@"code":@(0)});
 }
 
 - (void)getUnreadCountTargetId:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"getUnreadCountTargetId";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if ([arg isKindOfClass:[NSDictionary class]]) {
         
         NSDictionary *param = (NSDictionary *)arg;
@@ -497,6 +535,8 @@
 }
 
 - (void)getUnreadCountConversationTypeList:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"getUnreadCountConversationTypeList";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if ([arg isKindOfClass:[NSDictionary class]]) {
         
         NSDictionary *param = (NSDictionary *)arg;
@@ -508,6 +548,8 @@
 }
 
 - (void)removeConversation:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"removeConversation";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if ([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
         RCConversationType type =  [param[@"conversationType"] integerValue];
@@ -521,6 +563,8 @@
 #pragma mark - 会话提醒
 
 - (void)setConversationNotificationStatus:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"setConversationNotificationStatus";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
         RCConversationType type = [param[@"conversationType"] integerValue];
@@ -528,29 +572,36 @@
         BOOL isBlocked = [param[@"isblocked"] boolValue];
         
         [[RCIMClient sharedRCIMClient] setConversationNotificationStatus:type targetId:targetId isBlocked:isBlocked success:^(RCConversationNotificationStatus nStatus) {
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
             result(@{@"status":@(nStatus),@"code":@(0)});
         } error:^(RCErrorCode status) {
+            [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(status)]];
             result(@{@"code":@(status)});
         }];
     }
 }
 
 - (void)getConversationNotificationStatus:(id)arg result:(FlutterResult)result {
-    
+    NSString *LOG_TAG =  @"getConversationNotificationStatus";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
         RCConversationType type = [param[@"conversationType"] integerValue];
         NSString *targetId = param[@"targetId"];
         
         [[RCIMClient sharedRCIMClient] getConversationNotificationStatus:type targetId:targetId success:^(RCConversationNotificationStatus nStatus) {
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
             result(@{@"status":@(nStatus),@"code":@(0)});
         } error:^(RCErrorCode status) {
+            [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(status)]];
             result(@{@"code":@(status)});
         }];
     }
 }
 
 - (void)getBlockedConversationList:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"getBlockedConversationList";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
         NSArray *typeArray = param[@"conversationTypeList"];
@@ -563,6 +614,8 @@
 #pragma mark - 会话置顶
 
 - (void)setConversationToTop:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"setConversationToTop";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
         RCConversationType type = [param[@"conversationType"] integerValue];
@@ -575,6 +628,8 @@
 }
 
 - (void)getTopConversationList:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"getTopConversationList";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
         NSArray *typeArray = param[@"conversationTypeList"];
@@ -601,6 +656,8 @@
 
 #pragma mark - RCConnectionStatusChangeDelegate
 - (void)onConnectionStatusChanged:(RCConnectionStatus)status {
+    NSString *LOG_TAG =  @"onConnectionStatusChanged";
+    [RCLog i:[NSString stringWithFormat:@"%@",LOG_TAG]];
     NSDictionary *dic = @{@"status":@(status)};
     [self.channel invokeMethod:RCMethodCallBackKeyConnectionStatusChange arguments:dic];
 }
