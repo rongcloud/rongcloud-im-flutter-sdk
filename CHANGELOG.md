@@ -1,3 +1,16 @@
+## 0.9.0
+
+* 新增接口：`插入收到的消息`,`插入发出的消息`,`获取所有未读`,`获取单个会话未读`,`获取指定会话类型的未读`,`删除会话`,`连接状态回调`,`免打扰接口`,`置顶会话`
+
+* 变更接口：将所有的 iOS、Android 的回调从 handler 中移除，改为通过 Function 返回 ，如接受消息的回调改为下面的方式，具体可以参见 `RongcloudImPlugin`
+
+```
+//消息接收回调
+    RongcloudImPlugin.onMessageReceived = (Message msg,int left) {
+      print("receive message messsageId:"+msg.messageId.toString()+" left:"+left.toString());
+    };
+```
+
 ## 0.0.22
 
 * 解决 iOS 清空未读数失败的问题
