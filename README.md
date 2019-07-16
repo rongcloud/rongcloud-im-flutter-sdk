@@ -1,8 +1,8 @@
 # 融云 IM flutter plugin
 
-本文档讲解了如何使用 IM 的 flutter plugin
+本文档讲解了如何使用 IM 的 Flutter Plugin，基于融云 iOS/Android 平台的 IMLib SDK
 
-[flutter 官网](https://flutter.dev/)
+[Flutter 官网](https://flutter.dev/)
 
 [融云 iOS 文档集成](https://www.rongcloud.cn/docs/ios.html)
 
@@ -18,7 +18,7 @@
 通过管理后台的 "IM 服务"—>"API 调用"->"用户服务"->"获取 Token"，通过用户 id 获取 IMToken
 
 
-# 依赖 IMKit flutter plugin
+# 依赖 IM Flutter plugin
 
 在项目的 `pubspec.yaml` 中写如下依赖
 
@@ -30,7 +30,7 @@ dependencies:
   rongcloud_im_plugin: ^0.9.0
 ```
 
-然后在项目路径执行 `flutter packages get` 来下载 flutter plugin
+然后在项目路径执行 `flutter packages get` 来下载 Flutter Plugin
 
 # 集成步骤
 
@@ -239,4 +239,4 @@ onGetChatRoomInfo() async {
 ```
 
 
-更多接口请[参考](https://github.com/rongcloud/rongcloud-imkit-flutter-sdk)
+更多接口请[参考](https://github.com/rongcloud/rongcloud-im-flutter-sdk)
