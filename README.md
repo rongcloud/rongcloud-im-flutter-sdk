@@ -27,7 +27,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  rongcloud_im_plugin: ^0.9.0
+  rongcloud_im_plugin: ^0.9.1
 ```
 
 然后在项目路径执行 `flutter packages get` 来下载 Flutter Plugin
@@ -179,7 +179,8 @@ RongcloudImPlugin.insertIncomingMessage(RCConversationType.Private, "1002", "100
 
 ```
 onGetConversationList() async {
-    List cons = await RongcloudImPlugin.getConversationList();
+    List conversationList = await RongcloudImPlugin.getConversationList([RCConversationType.Private,RCConversationType.Group,RCConversationType.System]);
+
     for(Conversation con in cons) {
       print("conversation latestMessageId " + con.latestMessageId.toString());
     }
