@@ -60,7 +60,7 @@ class _MyAppState extends State<MyApp> {
     //5.设置监听回调，处理 native 层传递过来的事件
     _addNativeEventHandler();
 
-    List conversationList = await RongcloudImPlugin.getConversationList([RCConversationType.Private,RCConversationType.Group]);
+    List conversationList = await RongcloudImPlugin.getConversationList([RCConversationType.Private,RCConversationType.Group,RCConversationType.System]);
     print("getConversationList + " + conversationList.toString());
 
     RongcloudImPlugin.getTotalUnreadCount((num, code) {
@@ -88,11 +88,21 @@ class _MyAppState extends State<MyApp> {
     TextMessage msgT = new TextMessage();
     msgT.content = "xxxxxxxxx";
     RongcloudImPlugin.insertIncomingMessage(RCConversationType.Private, "1002", "1002", 1, msgT , 0, (msg,code){
-      print("insertIncomingMessage " + msg.content.encode() + " code " + code.toString());
+
+      if (msg != null) {
+        print("insertIncomingMessage " + msg.content.encode() + " code " + code.toString());
+      }else {
+        print("insertIncomingMessage error  "  + code.toString());
+      }
     });
 
     RongcloudImPlugin.insertOutgoingMessage(RCConversationType.Private, "1001", 10, msgT, 0, (msg,code){
-      print("insertOutgoingMessage " + msg.content.encode() + " code " + code.toString());
+      if (msg != null) {
+        print("insertOutgoingMessage " + msg.content.encode() + " code " + code.toString());
+      }else {
+        print("insertOutgoingMessage error  "  + code.toString());
+      }
+
     });
 
 
@@ -190,9 +200,14 @@ class _MyAppState extends State<MyApp> {
   }
 
   onGetConversationList() async {
-    List cons = await RongcloudImPlugin.getConversationList([RCConversationType.Private,RCConversationType.Group]);
+    List cons = await RongcloudImPlugin.getConversationList([RCConversationType.Private,RCConversationType.Group,RCConversationType.System]);
+
+    if (cons == null) {
+      print("conversation == null");
+      return;
+    }
     for (Conversation con in cons) {
-      print("conversation latestMessageId " + con.latestMessageId.toString());
+      print("conversation latestMessageId " + con.latestMessageId.toString() + " type " + con.conversationType.toString());
     }
   }
 

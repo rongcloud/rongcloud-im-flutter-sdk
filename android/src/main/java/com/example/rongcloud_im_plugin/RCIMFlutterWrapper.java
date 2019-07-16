@@ -715,7 +715,7 @@ public class RCIMFlutterWrapper {
             if (content == null) {
                 RCLog.e(LOG_TAG+" message content is null");
                 Map msgMap = new HashMap();
-                msgMap.put("status",RongIMClient.ErrorCode.PARAMETER_ERROR.getValue());
+                msgMap.put("code",RongIMClient.ErrorCode.PARAMETER_ERROR.getValue());
                 result.success(msgMap);
                 return;
             }
@@ -726,7 +726,7 @@ public class RCIMFlutterWrapper {
                     String messageS = MessageFactory.getInstance().message2String(message);
                     Map msgMap = new HashMap();
                     msgMap.put("message",messageS);
-                    msgMap.put("status",0);
+                    msgMap.put("code",0);
                     result.success(msgMap);
                 }
 
@@ -734,7 +734,7 @@ public class RCIMFlutterWrapper {
                 public void onError(RongIMClient.ErrorCode errorCode) {
                     RCLog.e(LOG_TAG+String.valueOf(errorCode.getValue()));
                     Map msgMap = new HashMap();
-                    msgMap.put("status",errorCode.getValue());
+                    msgMap.put("code",errorCode.getValue());
                     result.success(msgMap);
                 }
             });
@@ -778,7 +778,7 @@ public class RCIMFlutterWrapper {
             if (content == null) {
                 RCLog.e(LOG_TAG+" message content is null");
                 Map msgMap = new HashMap();
-                msgMap.put("status",RongIMClient.ErrorCode.PARAMETER_ERROR.getValue());
+                msgMap.put("code",RongIMClient.ErrorCode.PARAMETER_ERROR.getValue());
                 result.success(msgMap);
                 return;
             }
@@ -790,7 +790,7 @@ public class RCIMFlutterWrapper {
                     String messageS = MessageFactory.getInstance().message2String(message);
                     Map msgMap = new HashMap();
                     msgMap.put("message",messageS);
-                    msgMap.put("status",0);
+                    msgMap.put("code",0);
                     result.success(msgMap);
                 }
 
@@ -798,7 +798,7 @@ public class RCIMFlutterWrapper {
                 public void onError(RongIMClient.ErrorCode errorCode) {
                     RCLog.e(LOG_TAG+String.valueOf(errorCode.getValue()));
                     Map msgMap = new HashMap();
-                    msgMap.put("status",errorCode.getValue());
+                    msgMap.put("code",errorCode.getValue());
                     result.success(msgMap);
                 }
             });
@@ -842,7 +842,7 @@ public class RCIMFlutterWrapper {
                 public void onError(RongIMClient.ErrorCode errorCode) {
                     RCLog.e(LOG_TAG+String.valueOf(errorCode.getValue()));
                     Map callBackMap = new HashMap();
-                    callBackMap.put("code",errorCode);
+                    callBackMap.put("code",errorCode.getValue());
                     result.success(callBackMap);
                 }
             });

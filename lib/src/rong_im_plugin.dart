@@ -269,16 +269,26 @@ class RongcloudImPlugin {
     };
     Map resultMap = await _channel.invokeMethod(RCMethodCallBackKey.GetRemoteHistoryMessages, map);
     int code = resultMap["code"];
-    List l = new List();
     if (code == 0) {
       List msgStrList = resultMap["messages"];
+      if (msgStrList == null) {
+        if (finished != null) {
+          finished(null, code);
+        }
+        return;
+      }
+      List l = new List();
       for (String msgStr in msgStrList) {
         Message m = MessageFactory.instance.string2Message(msgStr);
         l.add(m);
       }
-    }
-    if (finished != null) {
-      finished(l, code);
+      if (finished != null) {
+        finished(l, code);
+      }
+    }else {
+      if (finished != null) {
+        finished(null, code);
+      }
     }
   }
 
@@ -312,6 +322,12 @@ class RongcloudImPlugin {
     Map msgMap = await _channel.invokeMethod(RCMethodKey.InsertIncomingMessage, map);
     String msgString = msgMap["message"];
     int code = msgMap["code"];
+    if (msgString == null) {
+      if (finished != null) {
+        finished(null, code);
+      }
+      return;
+    }
     Message message = MessageFactory.instance.string2Message(msgString);
     if (finished != null) {
       finished(message, code);
@@ -344,8 +360,14 @@ class RongcloudImPlugin {
     };
     Map msgMap = await _channel.invokeMethod(RCMethodKey.InsertOutgoingMessage, map);
     String msgString = msgMap["message"];
-    Message message = MessageFactory.instance.string2Message(msgString);
     int code = msgMap["code"];
+    if (msgString == null) {
+      if (finished != null) {
+        finished(null, code);
+      }
+      return;
+    }
+    Message message = MessageFactory.instance.string2Message(msgString);
     if (finished != null) {
       finished(message, code);
     }
