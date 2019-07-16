@@ -56,7 +56,7 @@
     }else if([RCMethodKeyGetHistoryMessage isEqualToString:call.method]) {
         [self getHistoryMessage:call.arguments result:result];
     }else if([RCMethodKeyGetConversationList isEqualToString:call.method]) {
-        [self getConversationList:result];
+        [self getConversationList:call.arguments result:result];
     }else if([RCMethodKeyGetChatRoomInfo isEqualToString:call.method]) {
         [self getChatRoomInfo:call.arguments result:result];
     }else if([RCMethodKeyClearMessagesUnreadStatus isEqualToString:call.method]) {
@@ -390,16 +390,21 @@
     }
 }
 
-- (void)getConversationList:(FlutterResult)result {
+- (void)getConversationList:(id)arg result:(FlutterResult)result {
     NSString *LOG_TAG =  @"getConversationList";
     [RCLog i:[NSString stringWithFormat:@"%@ start",LOG_TAG]];
-    NSArray *conversations = [[RCIMClient sharedRCIMClient] getConversationList:@[@(ConversationType_PRIVATE),@(ConversationType_GROUP)]];
-    NSMutableArray *arr = [NSMutableArray new];
-    for(RCConversation *con in conversations) {
-        NSString *conStr = [RCFlutterMessageFactory conversation2String:con];
-        [arr addObject:conStr];
+    if ([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        NSArray *typeArray = param[@"conversationTypeList"];
+        
+        NSArray *conversations = [[RCIMClient sharedRCIMClient] getConversationList:typeArray];
+        NSMutableArray *arr = [NSMutableArray new];
+        for(RCConversation *con in conversations) {
+            NSString *conStr = [RCFlutterMessageFactory conversation2String:con];
+            [arr addObject:conStr];
+        }
+        result(arr);
     }
-    result(arr);
 }
 
 - (void)getChatRoomInfo:(id)arg result:(FlutterResult)result {

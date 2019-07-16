@@ -60,7 +60,7 @@ class _MyAppState extends State<MyApp> {
     //5.设置监听回调，处理 native 层传递过来的事件
     _addNativeEventHandler();
 
-    List conversationList = await RongcloudImPlugin.getConversationList();
+    List conversationList = await RongcloudImPlugin.getConversationList([RCConversationType.Private,RCConversationType.Group]);
     print("getConversationList + " + conversationList.toString());
 
     RongcloudImPlugin.getTotalUnreadCount((num, code) {
@@ -190,7 +190,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   onGetConversationList() async {
-    List cons = await RongcloudImPlugin.getConversationList();
+    List cons = await RongcloudImPlugin.getConversationList([RCConversationType.Private,RCConversationType.Group]);
     for (Conversation con in cons) {
       print("conversation latestMessageId " + con.latestMessageId.toString());
     }
