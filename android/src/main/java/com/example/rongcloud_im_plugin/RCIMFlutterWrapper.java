@@ -179,20 +179,37 @@ public class RCIMFlutterWrapper {
             RongIMClient.connect(token, new RongIMClient.ConnectCallback() {
                 @Override
                 public void onTokenIncorrect() {
-                    RCLog.e("connect "+String.valueOf(31004));
-                    result.success(new Integer(31004));
+                    mMainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            RCLog.e("connect "+String.valueOf(31004));
+                            result.success(new Integer(31004));
+                        }
+                    });
                 }
 
                 @Override
                 public void onSuccess(String s) {
-                    RCLog.i("connect success");
-                    result.success(new Integer(0));
+                    mMainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            RCLog.i("connect success");
+                            result.success(new Integer(0));
+                        }
+                    });
                 }
 
                 @Override
                 public void onError(RongIMClient.ErrorCode errorCode) {
-                    RCLog.e("connect "+String.valueOf(errorCode.getValue()));
-                    result.success(new Integer(errorCode.getValue()));
+                    final RongIMClient.ErrorCode code = errorCode;
+                    mMainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            RCLog.e("connect "+String.valueOf(code.getValue()));
+                            result.success(new Integer(code.getValue()));
+                        }
+                    });
+
                 }
             });
 
