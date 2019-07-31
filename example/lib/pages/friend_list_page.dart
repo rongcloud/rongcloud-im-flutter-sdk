@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 
@@ -14,35 +13,39 @@ class FriendListPage extends StatefulWidget {
   }
 }
 
-
 class _FriendListPageState extends State<FriendListPage> {
-
-@override
+  @override
   void initState() {
     super.initState();
     addIMhandler();
   }
 
   addIMhandler() async {
-    RongcloudImPlugin.onMessageSend = (int messageId, int status, int code) async {
-      List msgs = await RongcloudImPlugin.getHistoryMessage(RCConversationType.Private, "test", messageId, 15);
-      for(Message msg in msgs) {
-        if(msg.content is ImageMessage) {
-          ImageMessage imgMsg =  msg.content;
-          print("imgMsg "+imgMsg.imageUri);
+    RongcloudImPlugin.onMessageSend =
+        (int messageId, int status, int code) async {
+      List msgs = await RongcloudImPlugin.getHistoryMessage(
+          RCConversationType.Private, "test", messageId, 15);
+      for (Message msg in msgs) {
+        if (msg.content is ImageMessage) {
+          ImageMessage imgMsg = msg.content;
+          print("imgMsg " + imgMsg.imageUri);
         }
       }
     };
   }
 
-
   getImages() async {
     File imgfile = await ImagePicker.pickImage(source: ImageSource.gallery);
-    String imgPath = "file:/"+imgfile.path;
-    print("imagepath "+imgPath);
+    String imgPath = imgfile.path;
+    if (TargetPlatform.android == defaultTargetPlatform) {
+       imgPath = "file:/" + imgfile.path;
+    }
+
+    print("imagepath " + imgPath);
     ImageMessage imgMsg = new ImageMessage();
     imgMsg.localPath = imgPath;
-    Message msg = await RongcloudImPlugin.sendMessage(RCConversationType.Private, "test", imgMsg);
+    Message msg = await RongcloudImPlugin.sendMessage(
+        RCConversationType.Private, "test", imgMsg);
   }
 
   @override
@@ -58,5 +61,4 @@ class _FriendListPageState extends State<FriendListPage> {
       ),
     );
   }
-  
 }

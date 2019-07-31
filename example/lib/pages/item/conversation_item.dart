@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'user_portrait.dart';
+import 'message_item_factory.dart';
 
 class ConversationItem extends StatefulWidget {
   Message message = null;
@@ -67,7 +68,7 @@ class _ConversationItemState extends State<ConversationItem> {
   }
 
   Widget textContent() {
-    TextMessage txtMsg = message.content;
+    // TextMessage txtMsg = message.content;
     return Row(
       children: <Widget>[
         Expanded(
@@ -76,12 +77,7 @@ class _ConversationItemState extends State<ConversationItem> {
             alignment: message.messageDirection == 1
                 ? Alignment.centerRight
                 : Alignment.centerLeft,
-            child: RichText(
-              text: TextSpan(
-                  text: '${txtMsg.content}',
-                  style: TextStyle(color: Colors.red)),
-              softWrap: true,
-            ),
+            child: MessageItemFactory(message: message)
           ),
         )
       ],
