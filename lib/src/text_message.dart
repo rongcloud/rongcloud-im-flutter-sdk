@@ -7,6 +7,14 @@ class TextMessage extends MessageContent {
 
   String content;
   String extra;
+
+  ///构造方法
+  ///
+  /// content 文本内容
+  TextMessage(String content) {
+    this.content = content;
+  }
+
   @override
   void decode(String jsonStr) {
     if(jsonStr == null) {

@@ -11,6 +11,15 @@ class VoiceMessage extends MessageContent {
   String localPath;
   Uri remoteUri;
 
+  ///构造方法
+  ///
+  /// localPath 本地路径，必须以 file:// 开头
+  ///
+  /// duration 语音时长，单位 秒
+  VoiceMessage(String localPath,int duration) {
+    this.localPath = localPath;
+    this.duration = duration;
+  }
 
   @override
   void decode(String jsonStr) {
