@@ -122,7 +122,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
       // _rightArea.add(new Icon(ICons.MUTE_ICON,color: Colors.transparent,size: ScreenUtil().setSp(30),));
     }
     return Container(
-      width:ScreenUtil().setWidth(80),
+      width:ScreenUtil().setWidth(120),
       margin: EdgeInsets.only(right: ScreenUtil().setWidth(10.0)),
       child: Column(
         mainAxisAlignment:  MainAxisAlignment.center,
