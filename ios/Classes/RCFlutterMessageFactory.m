@@ -55,10 +55,22 @@
     [dic setObject:message.objectName forKey:@"objectName"];
     [dic setObject:message.messageUId?:@"" forKey:@"messageUId"];
     RCMessageContent *content = message.content;
+    content = [self convertLocalPathIfNeed:content];
     NSData *data = content.encode;
     NSString *contentStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     [dic setObject:contentStr forKey:@"content"];
     return [dic copy];
+}
+
++ (RCMessageContent *)convertLocalPathIfNeed:(RCMessageContent *)content {
+    if([content isKindOfClass:[RCMediaMessageContent class]]) {
+        RCMediaMessageContent *msg = (RCMediaMessageContent *)content;
+        if ([RCUtilities isLocalPath:msg.localPath]) {
+            msg.localPath = [RCUtilities getCorrectedFilePath:msg.localPath];
+        }
+        content = msg;
+    }
+    return content;
 }
 
 + (NSDictionary *)conversation2Dic:(RCConversation *)conversation {
