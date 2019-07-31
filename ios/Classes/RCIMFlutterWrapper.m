@@ -691,7 +691,7 @@
 #pragma mark - private method
 
 - (BOOL)isMediaMessage:(NSString *)objName {
-    if([objName isEqualToString:@"RC:ImgMsg"]) {
+    if([objName isEqualToString:@"RC:ImgMsg"] || [objName isEqualToString:@"RC:HQVCMsg"]) {
         return YES;
     }
     return NO;
