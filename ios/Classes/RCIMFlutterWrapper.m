@@ -55,6 +55,8 @@
         [self quitChatRoom:call.arguments];
     }else if([RCMethodKeyGetHistoryMessage isEqualToString:call.method]) {
         [self getHistoryMessage:call.arguments result:result];
+    }else if ([RCMethodKeyGetMessage isEqualToString:call.method]) {
+        [self getMessage:call.arguments result:result];
     }else if([RCMethodKeyGetConversationList isEqualToString:call.method]) {
         [self getConversationList:call.arguments result:result];
     }else if([RCMethodKeyGetChatRoomInfo isEqualToString:call.method]) {
@@ -357,6 +359,18 @@
             [msgsArray addObject:jsonString];
         }
         result(msgsArray);
+    }
+}
+
+- (void)getMessage:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"getMessage";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *dic = (NSDictionary *)arg;
+        int messageId = [dic[@"messageId"] intValue];
+        RCMessage *message = [[RCIMClient sharedRCIMClient] getMessage:messageId];
+        NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+        result(jsonString);
     }
 }
 

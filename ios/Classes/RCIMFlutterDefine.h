@@ -13,6 +13,7 @@ static NSString *RCMethodKeyRefreshUserInfo = @"refreshUserInfo";
 static NSString *RCMethodKeyJoinChatRoom = @"joinChatRoom";
 static NSString *RCMethodKeyQuitChatRoom = @"quitChatRoom";
 static NSString *RCMethodKeyGetHistoryMessage = @"getHistoryMessage";
+static NSString *RCMethodKeyGetMessage = @"GetMessage";
 static NSString *RCMethodKeyGetConversationList = @"getConversationList";
 static NSString *RCMethodKeyGetChatRoomInfo = @"getChatRoomInfo";
 static NSString *RCMethodKeyClearMessagesUnreadStatus = @"clearMessagesUnreadStatus";

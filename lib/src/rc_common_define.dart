@@ -17,6 +17,7 @@ class RCMethodKey {
   static const String JoinChatRoom = 'joinChatRoom';
   static const String QuitChatRoom = 'quitChatRoom';
   static const String GetHistoryMessage = 'getHistoryMessage';
+  static const String GetMessage = 'GetMessage';
   static const String GetConversationList = 'getConversationList';
   static const String GetChatRoomInfo = 'getChatRoomInfo';
   static const String ClearMessagesUnreadStatus = 'clearMessagesUnreadStatus';

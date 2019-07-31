@@ -87,6 +87,8 @@ public class RCIMFlutterWrapper {
             quitChatRoom(call.arguments);
         }else if (RCMethodList.MethodKeyGetHistoryMessage.equalsIgnoreCase(call.method)) {
             getHistoryMessage(call.arguments,result);
+        }else if (RCMethodList.MethodKeyGetMessage.equalsIgnoreCase(call.method)) {
+            getMessage(call.arguments,result);
         }else if (RCMethodList.MethodKeyGetConversationList.equalsIgnoreCase(call.method)) {
             getConversationList(call.arguments,result);
         }else if (RCMethodList.MethodKeyGetChatRoomInfo.equalsIgnoreCase(call.method)) {
@@ -494,6 +496,29 @@ public class RCIMFlutterWrapper {
                     }
                     result.success(list);
 
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    RCLog.e(LOG_TAG+String.valueOf(errorCode.getValue()));
+                    result.success(null);
+                }
+            });
+        }
+    }
+
+    private void getMessage(Object arg, final Result result) {
+        final String LOG_TAG = "getMessage";
+        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+        if (arg instanceof Map) {
+            Map map = (Map) arg;
+            Integer mId = (Integer)map.get("messageId");
+            RongIMClient.getInstance().getMessage(mId.intValue(), new RongIMClient.ResultCallback<Message>() {
+                @Override
+                public void onSuccess(Message message) {
+                    RCLog.i(LOG_TAG+" success ");
+                    String messageS = MessageFactory.getInstance().message2String(message);
+                    result.success(messageS);
                 }
 
                 @Override

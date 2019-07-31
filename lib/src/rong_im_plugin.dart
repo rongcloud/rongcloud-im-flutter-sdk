@@ -129,6 +129,19 @@ class RongcloudImPlugin {
     return msgList;
   }
 
+  ///获取本地单条消息
+  ///
+  ///[messageId] 消息 id
+  static Future<Message> getMessage(int messageId) async {
+    Map map = {"messageId":messageId};
+    String msgStr = await _channel.invokeMethod(RCMethodKey.GetMessage,map);
+    if(msgStr == null) {
+      return null;
+    }
+    Message msg = MessageFactory.instance.string2Message(msgStr);
+    return msg;
+  }
+
 //  ///获取会话列表
 //  static Future<List> getConversationList() async {
 //    List list = await _channel.invokeMethod(RCMethodKey.GetConversationList);
