@@ -8,11 +8,11 @@ class TextMessage extends MessageContent {
   String content;
   String extra;
 
-  ///构造方法
-  ///
-  /// content 文本内容
-  TextMessage(String content) {
-    this.content = content;
+  /// [content] 文本内容
+  static TextMessage build(String content) {
+    TextMessage msg = new TextMessage();
+    msg.content = content;
+    return msg;
   }
 
   @override

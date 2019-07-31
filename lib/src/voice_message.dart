@@ -11,14 +11,14 @@ class VoiceMessage extends MessageContent {
   String localPath;
   Uri remoteUri;
 
-  ///构造方法
+  /// [localPath] 本地路径，必须以 file:// 开头
   ///
-  /// localPath 本地路径，必须以 file:// 开头
-  ///
-  /// duration 语音时长，单位 秒
-  VoiceMessage(String localPath,int duration) {
-    this.localPath = localPath;
-    this.duration = duration;
+  /// [duration] 语音时长，单位 秒
+  static VoiceMessage build(String localPath,int duration) {
+    VoiceMessage msg = new VoiceMessage();
+    msg.localPath = localPath;
+    msg.duration = duration;
+    return msg;
   }
 
   @override

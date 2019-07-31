@@ -10,11 +10,12 @@ class ImageMessage extends MessageContent {
   String content;
   String imageUri;
 
-  ///构造方法
-  ///
-  /// localPath 本地路径，必须以 file:// 开头
-  ImageMessage(String localPath) {
-    this.localPath = localPath;
+
+  /// [localPath] 本地路径，必须以 file:// 开头
+  static ImageMessage build(String localPath) {
+    ImageMessage msg = new ImageMessage();
+    msg.localPath = localPath;
+    return msg;
   }
 
   @override
