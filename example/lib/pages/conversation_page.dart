@@ -4,33 +4,33 @@ import 'item/conversation_item.dart';
 import 'item/bottom_inputBar.dart';
 
 class ConversationPage extends StatefulWidget {
+  final Map arguments;
+  ConversationPage({Key key, this.arguments}) : super(key: key);
+
   @override
-  State<StatefulWidget> createState() {
-    return new _ConversationPageState();
-  }
+  State<StatefulWidget> createState() =>
+      _ConversationPageState(arguments: this.arguments);
 }
 
 class _ConversationPageState extends State<ConversationPage> {
+  Map arguments;
   int conversationType;
   String targetId;
   List msgList = new List();
+  _ConversationPageState({this.arguments});
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    print('0000000');
+    conversationType = arguments["coversationType"];
+    targetId = arguments["targetId"];
     onGetHistoryMessages();
   }
 
   onGetHistoryMessages() async {
-    // Map arg = ModalRoute.of(context).settings.arguments;
-    // conversationType = arg["coversationType"];
-    // targetId = arg["targetId"];
     List msgs = await RongcloudImPlugin.getHistoryMessage(
-        RCConversationType.Private, '2002', 0, 10);
+        conversationType, targetId, 0, 10);
     print("get history message");
-
     setState(() {
       msgList = msgs;
     });
@@ -38,15 +38,6 @@ class _ConversationPageState extends State<ConversationPage> {
 
   @override
   Widget build(BuildContext context) {
-    Map arg = ModalRoute.of(context).settings.arguments;
-    conversationType = arg["coversationType"];
-    targetId = arg["targetId"];
-    print("push to conversation page: conversationType " +
-        conversationType.toString() +
-        "  targetId " +
-        targetId);
-
-    // TODO: implement build
     return Scaffold(
       appBar: AppBar(
         title: Text('与${targetId}的会话'),

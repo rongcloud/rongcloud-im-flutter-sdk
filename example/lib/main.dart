@@ -20,7 +20,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      routes: Routers.routerMap(context),
+      onGenerateRoute: onGenerateRoute,
       theme: ThemeData(primaryColor: Colors.blue),
       home: HomePage(),
     );
