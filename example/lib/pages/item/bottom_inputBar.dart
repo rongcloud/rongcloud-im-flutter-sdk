@@ -20,10 +20,13 @@ class _BottomInputBarState extends State<BottomInputBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 90,
+
         color: Colors.yellow,
         padding: EdgeInsets.fromLTRB(30, 20, 30, 10),
         child: TextField(onSubmitted: _clickSendMessage),
         );
   }
 }
+
+
+

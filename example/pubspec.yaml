@@ -18,6 +18,8 @@ dependencies:
   audio_recorder: ^1.0.1
   path_provider: ^1.2.0
   permission_handler: '^3.2.0'
+  pull_to_refresh: ^1.5.2
+
 
 dev_dependencies:
   flutter_test:
