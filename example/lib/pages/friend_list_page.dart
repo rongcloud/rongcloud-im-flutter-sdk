@@ -34,7 +34,7 @@ class _FriendListPageState extends State<FriendListPage> {
             print("voice remoteUrl "+msg.remoteUrl);
           }else if(message.content is ImageMessage) {
             ImageMessage msg = message.content;
-            print("image localPath "+msg.localPath);
+            print("image localPath "+(msg.localPath == null? "":msg.localPath));
             print("image remoteUrl "+msg.imageUri);
           }
     };
@@ -44,7 +44,7 @@ class _FriendListPageState extends State<FriendListPage> {
     File imgfile = await ImagePicker.pickImage(source: ImageSource.gallery);
     String imgPath = imgfile.path;
     if (TargetPlatform.android == defaultTargetPlatform) {
-       imgPath = "file:/" + imgfile.path;
+       imgPath = "file://" + imgfile.path;
     }
 
     print("imagepath " + imgPath);
