@@ -21,7 +21,7 @@ class _ConversationPageState extends State<ConversationPage> {
   String targetId;
   List msgList = new List();
   _ConversationPageState({this.arguments});
-  ScrollController _controller = ScrollController(); 
+  ScrollController _controller = ScrollController();
   @override
   void initState() {
     super.initState();
@@ -29,20 +29,18 @@ class _ConversationPageState extends State<ConversationPage> {
     targetId = arguments["targetId"];
     _addIMHandler();
     onGetHistoryMessages();
-    _controller.addListener((){
-      print('scroller 最大值 addListener maxScrollExtent${_controller.position.maxScrollExtent}');
+    _controller.addListener(() {
+      print(
+          'scroller 最大值 addListener maxScrollExtent${_controller.position.maxScrollExtent}');
       print('scroller 最大值 addListener pixels${_controller.position.pixels}');
-
     });
     print("get history message11111");
-
-
   }
 
   @override
-  void didUpdateWidget (Widget oldWidget) {
+  void didUpdateWidget(Widget oldWidget) {
     super.didUpdateWidget(oldWidget);
-          print('scroller 最大值 oldWidget ${_controller.position.maxScrollExtent}');
+    print('scroller 最大值 oldWidget ${_controller.position.maxScrollExtent}');
   }
 
   _addIMHandler() {
@@ -51,14 +49,13 @@ class _ConversationPageState extends State<ConversationPage> {
         msgList.add(msg);
       }
       //  _controller.jumpTo(0);
-      setState(() {
-      });
-Timer(Duration(milliseconds: 100), () => _controller.jumpTo(_controller.position.maxScrollExtent));
+      setState(() {});
+      Timer(Duration(milliseconds: 100),
+          () => _controller.jumpTo(_controller.position.maxScrollExtent));
     };
   }
 
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: true);
+  RefreshController _refreshController = RefreshController();
 
   onGetHistoryMessages() async {
     List msgs = await RongcloudImPlugin.getHistoryMessage(
@@ -74,14 +71,15 @@ Timer(Duration(milliseconds: 100), () => _controller.jumpTo(_controller.position
 
     setState(() {
       msgList = msg;
-          print('scroller   setState 1${_controller.position.maxScrollExtent}');
+      print('scroller   setState 1${_controller.position.maxScrollExtent}');
     });
 
-    print('scroller 最大值onGetHistoryMessages ${_controller.position.maxScrollExtent}');
+    print(
+        'scroller 最大值onGetHistoryMessages ${_controller.position.maxScrollExtent}');
     // _controller.jumpTo(_controller.position.maxScrollExtent);
 
-Timer(Duration(milliseconds: 10), () => _controller.jumpTo(_controller.position.maxScrollExtent));
-
+    Timer(Duration(milliseconds: 10),
+        () => _controller.jumpTo(_controller.position.maxScrollExtent));
   }
 
   void _onRefresh() async {
@@ -112,26 +110,30 @@ Timer(Duration(milliseconds: 10), () => _controller.jumpTo(_controller.position.
         title: Text('与${targetId}的会话'),
       ),
       body: Column(
-            children: <Widget>[
-              Expanded(
-                child: ListView.builder(
-                  key: UniqueKey(),
-                    controller: _controller,
-                    itemCount: msgList.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (msgList.length != null && msgList.length > 0) {
-                        return ConversationItem(msgList[index]);
-                      } else {
-                        return null;
-                      }
-                    },
-                  ),
-                
-                
+        children: <Widget>[
+          Expanded(
+            child: SmartRefresher(
+              enablePullDown: true,
+
+              onRefresh: _onRefresh,
+              child: ListView.builder(
+                key: UniqueKey(),
+                controller: _controller,
+                itemCount: msgList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  if (msgList.length != null && msgList.length > 0) {
+                    return ConversationItem(msgList[index]);
+                  } else {
+                    return null;
+                  }
+                },
               ),
-              // BottomInputBar(),
-            ],
+              controller: _refreshController,
+            ),
           ),
+          // BottomInputBar(),
+        ],
+      ),
     );
   }
 
