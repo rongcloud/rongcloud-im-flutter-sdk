@@ -1,4 +1,3 @@
-import 'rc_status_define.dart';
 import 'message_content.dart';
 import 'dart:convert' show json;
 
@@ -12,7 +11,7 @@ class ImageMessage extends MessageContent {
 
 
   /// [localPath] 本地路径，Android 必须以 file:// 开头
-  static ImageMessage build(String localPath) {
+  static ImageMessage obtain(String localPath) {
     ImageMessage msg = new ImageMessage();
     msg.localPath = localPath;
     return msg;

@@ -48,8 +48,7 @@ class _FriendListPageState extends State<FriendListPage> {
     }
 
     print("imagepath " + imgPath);
-    ImageMessage imgMsg = new ImageMessage();
-    imgMsg.localPath = imgPath;
+    ImageMessage imgMsg = ImageMessage.obtain(imgPath);
     Message msg = await RongcloudImPlugin.sendMessage(
         RCConversationType.Private, "test", imgMsg);
   }
@@ -69,7 +68,7 @@ class _FriendListPageState extends State<FriendListPage> {
     if (TargetPlatform.android == defaultTargetPlatform) {
        path = "file://" + path;
     }
-    VoiceMessage message = VoiceMessage.build(path, 10);
+    VoiceMessage message = VoiceMessage.obtain(path, 10);
     RongcloudImPlugin.sendMessage(RCConversationType.Private, "test", message);
   }
 

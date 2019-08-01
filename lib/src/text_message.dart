@@ -1,4 +1,3 @@
-import 'rc_status_define.dart';
 import 'message_content.dart';
 import 'dart:convert' show json;
 
@@ -9,7 +8,7 @@ class TextMessage extends MessageContent {
   String extra;
 
   /// [content] 文本内容
-  static TextMessage build(String content) {
+  static TextMessage obtain(String content) {
     TextMessage msg = new TextMessage();
     msg.content = content;
     return msg;
