@@ -15,6 +15,9 @@ dependencies:
   flutter_screenutil: ^0.5.3
   cached_network_image: ^1.1.1
   image_picker: ^0.6.0+20
+  audio_recorder: ^1.0.1
+  path_provider: ^1.2.0
+  permission_handler: '^3.2.0'
 
 dev_dependencies:
   flutter_test:

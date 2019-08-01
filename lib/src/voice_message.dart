@@ -5,11 +5,10 @@ class VoiceMessage extends MessageContent {
 
   static const String objectName = "RC:HQVCMsg";
 
+  String localPath;
+  String remoteUrl;
   int duration;
   String extra;
-  String content;
-  String localPath;
-  Uri remoteUri;
 
   /// [localPath] 本地路径，必须以 file:// 开头
   ///
@@ -28,16 +27,15 @@ class VoiceMessage extends MessageContent {
       return;
     }
     Map map = json.decode(jsonStr.toString());
-    this.content = map["content"];
+    this.localPath = map["localPath"];
+    this.remoteUrl = map["remoteUrl"];
     this.duration = map["duration"];
     this.extra = map["extra"];
-    this.localPath = map["localPath"];
-    this.remoteUri = map["remoteUrl"];
   }
 
   @override
   String encode() {
-    Map map = {"content":this.content,"duration":this.duration,"extra":this.extra,"localPath":this.localPath,"remoteUrl":this.remoteUri};
+    Map map = {"localPath":this.localPath,"duration":this.duration,"extra":this.extra};
     return json.encode(map);
   }
 

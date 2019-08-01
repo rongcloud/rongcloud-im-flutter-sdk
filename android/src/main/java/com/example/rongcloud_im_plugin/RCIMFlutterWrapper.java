@@ -21,9 +21,9 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.rong.common.fwlog.FwLog;
+import io.rong.imlib.IRongCallback;
 import io.rong.imlib.MessageTag;
 import io.rong.imlib.RongIMClient;
-import io.rong.imlib.RongIMClient.SendImageMessageCallback;
 import io.rong.imlib.model.ChatRoomInfo;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
@@ -368,7 +368,21 @@ public class RCIMFlutterWrapper {
                 return;
             }
 
-            RongIMClient.getInstance().sendImageMessage(type, targetId, content, null, null, new SendImageMessageCallback() {
+            Message message = Message.obtain(targetId,type,content);
+            RongIMClient.getInstance().sendMediaMessage(message, null, null, new IRongCallback.ISendMediaMessageCallback() {
+                @Override
+                public void onProgress(Message message, int i) {
+                    Map map = new HashMap();
+                    map.put("messageId",message.getMessageId());
+                    map.put("progress",i);
+                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeyUploadMediaProgress,map);
+                }
+
+                @Override
+                public void onCanceled(Message message) {
+
+                }
+
                 @Override
                 public void onAttached(Message message) {
                     String messageS = MessageFactory.getInstance().message2String(message);
@@ -376,16 +390,6 @@ public class RCIMFlutterWrapper {
                     msgMap.put("message",messageS);
                     msgMap.put("status",10);
                     result.success(msgMap);
-                }
-
-                @Override
-                public void onError(Message message, RongIMClient.ErrorCode errorCode) {
-                    RCLog.e(LOG_TAG+ String.valueOf(errorCode.getValue()));
-                    Map resultMap = new HashMap();
-                    resultMap.put("messageId",message.getMessageId());
-                    resultMap.put("status",20);
-                    resultMap.put("code",errorCode.getValue());
-                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage,resultMap);
                 }
 
                 @Override
@@ -404,11 +408,13 @@ public class RCIMFlutterWrapper {
                 }
 
                 @Override
-                public void onProgress(Message message, int i) {
-                    Map map = new HashMap();
-                    map.put("messageId",message.getMessageId());
-                    map.put("progress",i);
-                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeyUploadMediaProgress,map);
+                public void onError(Message message, RongIMClient.ErrorCode errorCode) {
+                    RCLog.e(LOG_TAG+ String.valueOf(errorCode.getValue()));
+                    Map resultMap = new HashMap();
+                    resultMap.put("messageId",message.getMessageId());
+                    resultMap.put("status",20);
+                    resultMap.put("code",errorCode.getValue());
+                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage,resultMap);
                 }
             });
         }
