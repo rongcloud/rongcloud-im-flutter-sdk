@@ -10,7 +10,7 @@ class VoiceMessage extends MessageContent {
   int duration;
   String extra;
 
-  /// [localPath] 本地路径，必须以 file:// 开头
+  /// [localPath] 本地路径，Android 必须以 file:// 开头
   ///
   /// [duration] 语音时长，单位 秒
   static VoiceMessage build(String localPath,int duration) {

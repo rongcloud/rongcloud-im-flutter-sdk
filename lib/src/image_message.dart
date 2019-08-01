@@ -11,7 +11,7 @@ class ImageMessage extends MessageContent {
   String imageUri;
 
 
-  /// [localPath] 本地路径，必须以 file:// 开头
+  /// [localPath] 本地路径，Android 必须以 file:// 开头
   static ImageMessage build(String localPath) {
     ImageMessage msg = new ImageMessage();
     msg.localPath = localPath;
