@@ -16,7 +16,7 @@ class ConversationPage extends StatefulWidget {
       _ConversationPageState(arguments: this.arguments);
 }
 
-class _ConversationPageState extends State<ConversationPage> implements ConversationItemDelegate {
+class _ConversationPageState extends State<ConversationPage> implements ConversationItemDelegate,BottomInputBarDelegate {
   Map arguments;
   int conversationType;
   String targetId;
@@ -51,8 +51,17 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
       }
       //  _controller.jumpTo(0);
       setState(() {});
-      Timer(Duration(milliseconds: 100),
-          () => _controller.jumpTo(_controller.position.maxScrollExtent));
+      _scrollToBottom(100);
+    };
+
+    RongcloudImPlugin.onMessageSend = (int messageId, int status, int code) async {
+      Message msg = await RongcloudImPlugin.getMessage(messageId);
+      if(msg.targetId == this.targetId) {
+        msgList.add(msg);
+      }
+
+      setState(() {});
+      _scrollToBottom(100);
     };
   }
 
@@ -79,7 +88,11 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
         'scroller 最大值onGetHistoryMessages ${_controller.position.maxScrollExtent}');
     // _controller.jumpTo(_controller.position.maxScrollExtent);
 
-    Timer(Duration(milliseconds: 10),
+    _scrollToBottom(10);
+  }
+
+  void _scrollToBottom(int milliseconds) {
+    Timer(Duration(milliseconds: milliseconds),
         () => _controller.jumpTo(_controller.position.maxScrollExtent));
   }
 
@@ -132,7 +145,10 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
               controller: _refreshController,
             ),
           ),
-          // BottomInputBar(),
+          Container(
+            height: 70,
+            child: BottomInputBar(this),
+          )
         ],
       ),
     );
@@ -153,5 +169,12 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
       FlutterSound flutterSound = new FlutterSound();
       flutterSound.startPlayer(msg.remoteUrl);
     }
+  }
+
+  @override
+  void willSendText(String text) {
+    TextMessage msg = new TextMessage();
+    msg.content = text;
+    RongcloudImPlugin.sendMessage(conversationType, targetId, msg);
   }
 }
