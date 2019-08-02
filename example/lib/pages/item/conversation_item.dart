@@ -4,23 +4,27 @@ import 'user_portrait.dart';
 import 'message_item_factory.dart';
 
 class ConversationItem extends StatefulWidget {
-  Message message = null;
+  Message message ;
+  ConversationItemDelegate delegate;
 
-  ConversationItem(Message msg) {
-    message = msg;
+  ConversationItem(Message msg,ConversationItemDelegate delegate) {
+    this.message = msg;
+    this.delegate = delegate;
   }
 
   @override
   State<StatefulWidget> createState() {
-    return new _ConversationItemState(message);
+    return new _ConversationItemState(message,this.delegate);
   }
 }
 
 class _ConversationItemState extends State<ConversationItem> {
-  Message message = null;
+  Message message;
+  ConversationItemDelegate delegate;
 
-  _ConversationItemState(Message msg) {
-    message = msg;
+  _ConversationItemState(Message msg,ConversationItemDelegate delegate) {
+    this.message = msg;
+    this.delegate = delegate;
   }
 
   @override
@@ -67,6 +71,12 @@ class _ConversationItemState extends State<ConversationItem> {
     );
   }
 
+  void __onTapedMesssage() {
+    if(delegate != null) {
+      delegate.didTapMessageItem(message);
+    }
+  }
+
   Widget textContent() {
     // TextMessage txtMsg = message.content;
     return Row(
@@ -77,10 +87,20 @@ class _ConversationItemState extends State<ConversationItem> {
             alignment: message.messageDirection == 1
                 ? Alignment.centerRight
                 : Alignment.centerLeft,
-            child: MessageItemFactory(message: message)
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                __onTapedMesssage();
+              },
+              child:MessageItemFactory(message: message) ,
+            )
           ),
         )
       ],
     );
   }
+}
+
+abstract class ConversationItemDelegate {
+  void didTapMessageItem(Message message);
 }

@@ -5,6 +5,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'item/conversation_item.dart';
 import 'item/bottom_inputBar.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:flutter_sound/flutter_sound.dart';
 
 class ConversationPage extends StatefulWidget {
   final Map arguments;
@@ -15,7 +16,7 @@ class ConversationPage extends StatefulWidget {
       _ConversationPageState(arguments: this.arguments);
 }
 
-class _ConversationPageState extends State<ConversationPage> {
+class _ConversationPageState extends State<ConversationPage> implements ConversationItemDelegate {
   Map arguments;
   int conversationType;
   String targetId;
@@ -122,7 +123,7 @@ class _ConversationPageState extends State<ConversationPage> {
                 itemCount: msgList.length,
                 itemBuilder: (BuildContext context, int index) {
                   if (msgList.length != null && msgList.length > 0) {
-                    return ConversationItem(msgList[index]);
+                    return ConversationItem(msgList[index],this);
                   } else {
                     return null;
                   }
@@ -142,5 +143,15 @@ class _ConversationPageState extends State<ConversationPage> {
     // TODO: implement dispose
     _refreshController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didTapMessageItem(Message message) {
+    print("didTapMessageItem "+message.content.getObjectName());
+    if(message.content is VoiceMessage) {
+      VoiceMessage msg = message.content;
+      FlutterSound flutterSound = new FlutterSound();
+      flutterSound.startPlayer(msg.remoteUrl);
+    }
   }
 }
