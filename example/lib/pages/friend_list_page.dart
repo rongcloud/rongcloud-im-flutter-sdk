@@ -1,13 +1,8 @@
-import 'dart:io';
-import 'package:flutter/foundation.dart';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:audio_recorder/audio_recorder.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
+
+import '../util/media_util.dart';
 
 class FriendListPage extends StatefulWidget {
   @override
@@ -41,13 +36,9 @@ class _FriendListPageState extends State<FriendListPage> {
   }
 
   getImages() async {
-    File imgfile = await ImagePicker.pickImage(source: ImageSource.gallery);
-    if(imgfile == null) {
+    String imgPath = await MediaUtil.instance.pickImage();
+    if(imgPath == null) {
       return;
-    }
-    String imgPath = imgfile.path;
-    if (TargetPlatform.android == defaultTargetPlatform) {
-       imgPath = "file://" + imgfile.path;
     }
 
     print("imagepath " + imgPath);
@@ -57,13 +48,9 @@ class _FriendListPageState extends State<FriendListPage> {
   }
 
   takePhotos() async {
-    File imgfile = await ImagePicker.pickImage(source: ImageSource.camera);
-    if(imgfile == null) {
+    String imgPath = await MediaUtil.instance.takePhoto();
+    if(imgPath == null) {
       return;
-    }
-    String imgPath = imgfile.path;
-    if (TargetPlatform.android == defaultTargetPlatform) {
-       imgPath = "file://" + imgfile.path;
     }
 
     print("imagepath " + imgPath);
@@ -73,22 +60,16 @@ class _FriendListPageState extends State<FriendListPage> {
   }
 
   startRecordAudio() async {
-    await PermissionHandler().requestPermissions([PermissionGroup.microphone]);
-    bool hasPermissions = await AudioRecorder.hasPermissions;
-
-    Directory tempDir = await getTemporaryDirectory();
-    String tempPath = tempDir.path+"/"+DateTime.now().millisecondsSinceEpoch.toString()+".aac";
-    await AudioRecorder.start(path: tempPath, audioOutputFormat: AudioOutputFormat.AAC);
+    MediaUtil.instance.startRecordAudio();
   }
 
   stopRecordAudio() async {
-    Recording recording = await AudioRecorder.stop();
-    String path = recording.path;
-    if (TargetPlatform.android == defaultTargetPlatform) {
-       path = "file://" + path;
-    }
-    VoiceMessage message = VoiceMessage.obtain(path, 10);
-    RongcloudImPlugin.sendMessage(RCConversationType.Private, "test", message);
+    MediaUtil.instance.stopRecordAudio((String path,int duration) {
+      if(path != null) {
+        VoiceMessage message = VoiceMessage.obtain(path, 10);
+        RongcloudImPlugin.sendMessage(RCConversationType.Private, "test", message);
+      }
+    }); 
   }
 
   @override

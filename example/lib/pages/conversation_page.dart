@@ -5,7 +5,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'item/conversation_item.dart';
 import 'item/bottom_inputBar.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:flutter_sound/flutter_sound.dart';
+import '../util/media_util.dart';
 
 class ConversationPage extends StatefulWidget {
   final Map arguments;
@@ -123,12 +123,12 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
       appBar: AppBar(
         title: Text('与${targetId}的会话'),
       ),
-      body: Column(
+      body: SafeArea(
+        child: Column(
         children: <Widget>[
           Expanded(
             child: SmartRefresher(
               enablePullDown: true,
-
               onRefresh: _onRefresh,
               child: ListView.builder(
                 key: UniqueKey(),
@@ -151,12 +151,12 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
           )
         ],
       ),
+      )
     );
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     _refreshController.dispose();
     super.dispose();
   }
@@ -166,8 +166,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
     print("didTapMessageItem "+message.content.getObjectName());
     if(message.content is VoiceMessage) {
       VoiceMessage msg = message.content;
-      FlutterSound flutterSound = new FlutterSound();
-      flutterSound.startPlayer(msg.remoteUrl);
+      MediaUtil.instance.startPlayAudio(msg.remoteUrl);
     }
   }
 
@@ -175,6 +174,12 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
   void willSendText(String text) {
     TextMessage msg = new TextMessage();
     msg.content = text;
+    RongcloudImPlugin.sendMessage(conversationType, targetId, msg);
+  }
+
+  @override
+  void willSendVoice(String path,int duration) {
+    VoiceMessage msg = VoiceMessage.obtain(path, duration);
     RongcloudImPlugin.sendMessage(conversationType, targetId, msg);
   }
 }
