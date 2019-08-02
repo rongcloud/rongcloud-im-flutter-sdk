@@ -42,6 +42,25 @@ class _FriendListPageState extends State<FriendListPage> {
 
   getImages() async {
     File imgfile = await ImagePicker.pickImage(source: ImageSource.gallery);
+    if(imgfile == null) {
+      return;
+    }
+    String imgPath = imgfile.path;
+    if (TargetPlatform.android == defaultTargetPlatform) {
+       imgPath = "file://" + imgfile.path;
+    }
+
+    print("imagepath " + imgPath);
+    ImageMessage imgMsg = ImageMessage.obtain(imgPath);
+    Message msg = await RongcloudImPlugin.sendMessage(
+        RCConversationType.Private, "test", imgMsg);
+  }
+
+  takePhotos() async {
+    File imgfile = await ImagePicker.pickImage(source: ImageSource.camera);
+    if(imgfile == null) {
+      return;
+    }
     String imgPath = imgfile.path;
     if (TargetPlatform.android == defaultTargetPlatform) {
        imgPath = "file://" + imgfile.path;
@@ -83,6 +102,14 @@ class _FriendListPageState extends State<FriendListPage> {
             child: new Text("相册"),
             onPressed: () {
               getImages();
+            },
+          ),
+          MaterialButton(
+            color: Colors.blue,
+            textColor: Colors.white,
+            child: new Text("拍照"),
+            onPressed: () {
+              takePhotos();
             },
           ),
           MaterialButton(
