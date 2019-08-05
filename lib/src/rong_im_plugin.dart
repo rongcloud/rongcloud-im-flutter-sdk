@@ -385,6 +385,30 @@ class RongcloudImPlugin {
       finished(message, code);
     }
   }
+  
+  /// 删除特定会话的消息
+  /// 
+  /// [conversationType] 会话类型，参见枚举 [RCConversationType]
+  ///
+  /// [targetId] 会话 id
+  static void deleteMessages(int conversationType,String targetId,Function(int code)finished) async {
+    Map map = {"conversationType": conversationType,"targetId": targetId};
+    int code = await _channel.invokeMethod(RCMethodKey.DeleteMessages,map);
+    if(finished != null) {
+      finished(code);
+    }
+  }
+
+  /// 批量删除消息
+  /// 
+  /// [messageIds] 需要删除的 messageId List
+  static void deleteMessageByIds(List<int> messageIds,Function(int code)finished) async {
+    Map map = {"messageIds": messageIds};
+    int code = await _channel.invokeMethod(RCMethodKey.DeleteMessageByIds,map);
+    if(finished != null) {
+      finished(code);
+    }
+  }
 
   /// 获取所有的未读数
   ///

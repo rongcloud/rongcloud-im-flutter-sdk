@@ -33,6 +33,9 @@ class MessageFactory extends Object {
   }
 
   Conversation string2Conversation(String conJsonStr) {
+    if(conJsonStr == null) {
+      return null;
+    }
     Map map = json.decode(conJsonStr);
     return map2Conversation(map);
   }
@@ -99,9 +102,13 @@ class MessageFactory extends Object {
     if(content != null) {
       con.latestMessageContent = content;
     }else {
-      print(con.objectName+":该消息不能被解析!消息内容被保存在 Conversation.originContentMap 中");
-      Map map = json.decode(contenStr.toString());
-      con.originContentMap = map;
+      if(contenStr == null || contenStr.length <=0) {
+        print("该会话没有消息 type:"+con.conversationType.toString() +" targetId:"+con.targetId);
+      }else {
+        print(con.objectName+":该消息不能被解析!消息内容被保存在 Conversation.originContentMap 中");
+        Map map = json.decode(contenStr.toString());
+        con.originContentMap = map;
+      }
     }
     return con;
   }

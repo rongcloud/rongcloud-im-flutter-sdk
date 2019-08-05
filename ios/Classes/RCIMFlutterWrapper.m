@@ -87,7 +87,12 @@
         [self setConversationToTop:call.arguments result:result];
     }else if ([RCMethodKeyGetUnreadCountConversationTypeList isEqualToString:call.method]) {
         [self getUnreadCountConversationTypeList:call.arguments result:result];
-    }else {
+    }else if([RCMethodKeyDeleteMessages isEqualToString:call.method]) {
+        [self deleteMessages:call.arguments result:result];
+    }else if([RCMethodKeyDeleteMessageByIds isEqualToString:call.method]) {
+        [self deleteMessageByIds:call.arguments result:result];
+    }
+    else {
         result(FlutterMethodNotImplemented);
     }
 
@@ -565,6 +570,40 @@
         BOOL isContain = [param[@"isContain"] boolValue];
         int count = [[RCIMClient sharedRCIMClient] getUnreadCount:typeArray containBlocked:isContain];
         result(@{@"count":@(count),@"code":@(0)});
+    }
+}
+
+- (void)deleteMessages:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"deleteMessages";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if ([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *dic = (NSDictionary *)arg;
+        RCConversationType type =  [dic[@"conversationType"] integerValue];
+        NSString *targetId = dic[@"targetId"];
+        [[RCIMClient sharedRCIMClient] deleteMessages:type targetId:targetId success:^{
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            result(@(0));
+        } error:^(RCErrorCode status) {
+            [RCLog e:[NSString stringWithFormat:@"%@ error:%@",LOG_TAG,@(status)]];
+            result(@(status));
+        }];
+    }
+}
+
+- (void)deleteMessageByIds:(id)arg result:(FlutterResult)result{
+    NSString *LOG_TAG =  @"deleteMessage";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if ([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *dic = (NSDictionary *)arg;
+        NSArray *messageIds = dic[@"messageIds"];
+        BOOL success = [[RCIMClient sharedRCIMClient] deleteMessages:messageIds];
+        if(success) {
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            result(@(0));
+        }else {
+            [RCLog e:[NSString stringWithFormat:@"%@ error",LOG_TAG]];
+            result(@(-1));
+        }
     }
 }
 

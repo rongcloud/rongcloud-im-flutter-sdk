@@ -133,7 +133,10 @@ class _ConversationListItemState extends State<ConversationListItem> {
 
   Widget _buildTitle(){
     String title = conversation.senderUserId;
-    String digest = conversation.latestMessageContent.conversationDigest();
+    String digest = "";
+    if(conversation.latestMessageContent != null) {
+      digest = conversation.latestMessageContent.conversationDigest();
+    }
     if(digest == null) {
       digest = "";
     }

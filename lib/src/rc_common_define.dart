@@ -34,7 +34,8 @@ class RCMethodKey {
   static const String GetBlockedConversationList = 'getBlockedConversationList';
   static const String SetConversationToTop = 'setConversationToTop';
   static const String GetTopConversationList = 'getTopConversationList';
-
+  static const String DeleteMessages = 'DeleteMessages';
+  static const String DeleteMessageByIds = 'DeleteMessageByIds';
 }
 
 //callback list //native 会触发此方法

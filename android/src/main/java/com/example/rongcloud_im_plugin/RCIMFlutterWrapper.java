@@ -121,6 +121,10 @@ public class RCIMFlutterWrapper {
             setConversationToTop(call.arguments,result);
         }else if (RCMethodList.MethodKeyGetTopConversationList.equalsIgnoreCase(call.method)) {
 //            getTopConversationList(call.arguments,result);
+        }else if(RCMethodList.MethodKeyDeleteMessages.equalsIgnoreCase(call.method)) {
+            deleteMessages(call.arguments,result);
+        }else if(RCMethodList.MethodKeyDeleteMessageByIds.equalsIgnoreCase(call.method)) {
+            deleteMessageByIds(call.arguments,result);
         }
         else {
             result.notImplemented();
@@ -864,7 +868,7 @@ public class RCIMFlutterWrapper {
             Integer recordTime = (Integer)map.get("recordTime");
             Integer count = (Integer)map.get("count");
 
-            RongIMClient.getInstance().getRemoteHistoryMessages(type, targetId, recordTime, count, new RongIMClient.ResultCallback<List<Message>>() {
+            RongIMClient.getInstance().getRemoteHistoryMessages(type, targetId, recordTime.longValue(), count, new RongIMClient.ResultCallback<List<Message>>() {
                 @Override
                 public void onSuccess(List<Message> messages) {
                     RCLog.i(LOG_TAG+" success");
@@ -1033,6 +1037,59 @@ public class RCIMFlutterWrapper {
                     Map msgMap = new HashMap();
                     msgMap.put("code", errorCode.getValue());
                     result.success(msgMap);
+                }
+            });
+        }
+    }
+
+    private void deleteMessages(Object arg, final Result result) {
+        final String LOG_TAG = "deleteMessages";
+        RCLog.i(LOG_TAG+" start param:"+arg.toString());
+        if(arg instanceof  Map) {
+            Map map = (Map) arg;
+            Integer t = (Integer) map.get("conversationType");
+            Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
+            String targetId = (String) map.get("targetId");
+            RongIMClient.getInstance().deleteMessages(type, targetId, new RongIMClient.ResultCallback<Boolean>() {
+                @Override
+                public void onSuccess(Boolean aBoolean) {
+                    RCLog.i(LOG_TAG+" success");
+                    result.success(0);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    RCLog.e(LOG_TAG+" error:"+errorCode.getValue());
+                    result.success(errorCode.getValue());
+                }
+            });
+        }
+    }
+
+    private void deleteMessageByIds(Object arg, final Result result) {
+        final String LOG_TAG = "deleteMessageByIds";
+        RCLog.i(LOG_TAG+" start param:"+arg.toString());
+        if(arg instanceof  Map) {
+            Map map = (Map) arg;
+            List messageIds = (List)map.get("messageIds");
+
+            int[] mIds = new int[messageIds.size()];
+            for (int i=0;i<messageIds.size();i++) {
+                int t = (int)messageIds.get(i);
+                mIds[i] = t;
+            }
+
+            RongIMClient.getInstance().deleteMessages(mIds, new RongIMClient.ResultCallback<Boolean>() {
+                @Override
+                public void onSuccess(Boolean aBoolean) {
+                    RCLog.i(LOG_TAG+" success");
+                    result.success(0);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    RCLog.e(LOG_TAG+" error:"+errorCode.getValue());
+                    result.success(errorCode.getValue());
                 }
             });
         }

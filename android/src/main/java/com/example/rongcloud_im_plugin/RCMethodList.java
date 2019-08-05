@@ -28,6 +28,8 @@ public class RCMethodList {
     static String MethodKeyGetBlockedConversationList = "getBlockedConversationList";
     static String MethodKeySetConversationToTop = "setConversationToTop";
     static String MethodKeyGetTopConversationList = "getTopConversationList";
+    static String MethodKeyDeleteMessages = "DeleteMessages";
+    static String MethodKeyDeleteMessageByIds = "DeleteMessageByIds";
 
 
 
