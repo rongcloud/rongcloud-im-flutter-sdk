@@ -27,7 +27,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  rongcloud_im_plugin: ^0.9.2
+  rongcloud_im_plugin: ^0.9.3
 ```
 
 然后在项目路径执行 `flutter packages get` 来下载 Flutter Plugin
@@ -171,6 +171,24 @@ RongcloudImPlugin.insertOutgoingMessage(RCConversationType.Private, "1001", 10, 
 RongcloudImPlugin.insertIncomingMessage(RCConversationType.Private, "1002", "1002", 1, msgT , 0, (msg,code){
       print("insertIncomingMessage " + msg.content.encode() + " code " + code.toString());
     });
+```
+
+删除特定会话消息
+
+```
+RongcloudImPlugin.deleteMessages(RCConversationType.Private, "2002", (int code) {
+
+});
+```
+
+批量删除消息
+
+```
+List<int> mids =  new List();
+mids.add(1);
+RongcloudImPlugin.deleteMessageByIds(mids, (int code) {
+
+});
 ```
 
 ## 会话列表

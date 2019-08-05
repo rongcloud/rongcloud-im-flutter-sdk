@@ -1,3 +1,8 @@
+## 0.9.3
+
+* 增加删除历史消息的接口：删除特定会话消息；批量删除消息
+* 修复 Android getRemoteHistoryMessages 接口 recordTime 类型出错
+
 ## 0.9.2
 
 * 解决 Android 非法 token 连接报非主线程执行的问题
