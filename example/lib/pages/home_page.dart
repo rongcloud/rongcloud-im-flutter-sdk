@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'conversation_list_page.dart';
-import 'friend_list_page.dart';
+import 'contacts_page.dart';
 import 'dart:convert' show json;
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -21,7 +21,7 @@ class _HomePageState extends State<HomePage> {
     new BottomNavigationBarItem(icon: new Icon(Icons.chat,color: Colors.grey),title: new Text("会话"),),
     new BottomNavigationBarItem(icon: new Icon(Icons.perm_contact_calendar,color: Colors.grey,),title: new Text("通讯录"),),
   ];
-  final List<StatefulWidget> vcList = [new ConversationListPage(),new FriendListPage()];
+  final List<StatefulWidget> vcList = [new ConversationListPage(),new ContactsPage()];
 
   int curIndex = 0;
 

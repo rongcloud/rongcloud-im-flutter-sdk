@@ -15,7 +15,8 @@ class BottomInputBar extends StatefulWidget {
 class _BottomInputBarState extends State<BottomInputBar> {
   BottomInputBarDelegate delegate;
   TextField textField;
-  int inputBarStatus;
+  FocusNode focusNode = FocusNode();
+  InputBarStatus inputBarStatus;
 
   _BottomInputBarState(BottomInputBarDelegate delegate) {
     this.delegate = delegate;
@@ -26,7 +27,18 @@ class _BottomInputBarState extends State<BottomInputBar> {
       decoration: InputDecoration(
             border: InputBorder.none,
           ),
+      focusNode: focusNode,
       );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    focusNode.addListener(() {
+      if(focusNode.hasFocus) {
+        _notifyInputStatusChanged(InputBarStatus.Normal);
+      }
+    });
   }
 
   void _clickSendMessage(String messageStr) {
@@ -42,26 +54,26 @@ class _BottomInputBarState extends State<BottomInputBar> {
 
   switchVoice() {
     print("switchVoice");
+    InputBarStatus status = InputBarStatus.Normal;
     if(this.inputBarStatus != InputBarStatus.Voice) {
-      this.inputBarStatus = InputBarStatus.Voice;
-    }else {
-      this.inputBarStatus = InputBarStatus.Normal;
+      status = InputBarStatus.Voice;
     }
-    setState(() {
-      
-    });
+    _notifyInputStatusChanged(status);
   }
 
   switchExtention() {
     print("switchExtention");
-    if(this.inputBarStatus != InputBarStatus.Extention) {
-      this.inputBarStatus = InputBarStatus.Extention;
-    }else {
-      this.inputBarStatus = InputBarStatus.Normal;
+    if(focusNode.hasFocus) {
+      focusNode.unfocus();
     }
-    setState(() {
-      
-    });
+    InputBarStatus status = InputBarStatus.Normal;
+    if(this.inputBarStatus != InputBarStatus.Extention) {
+      status = InputBarStatus.Extention;
+    }
+    if(this.delegate != null) {
+      this.delegate.didTapExtentionButton();
+    }
+    _notifyInputStatusChanged(status);
   }
 
   _onVoiceGesLongPress() {
@@ -82,11 +94,11 @@ class _BottomInputBarState extends State<BottomInputBar> {
     return Container(
       width: 48,
       height: 48,
-      padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
       child: MaterialButton(
             color: Colors.blue,
             textColor: Colors.white,
-            child: new Text("音"),
+            child: Icon(Icons.mic),
             onPressed: () {
               switchVoice();
             },
@@ -98,7 +110,7 @@ class _BottomInputBarState extends State<BottomInputBar> {
     return Container(
       width: 48,
       height: 48,
-      padding: EdgeInsets.fromLTRB(0, 0, 8, 0),
+      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
       child: MaterialButton(
             color: Colors.blue,
             textColor: Colors.white,
@@ -141,6 +153,13 @@ class _BottomInputBarState extends State<BottomInputBar> {
     ) ;
   }
 
+  void _notifyInputStatusChanged(InputBarStatus status) {
+    this.inputBarStatus = status;
+    if(this.delegate != null) {
+      this.delegate.inputStatusDidChange(status);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -158,16 +177,17 @@ class _BottomInputBarState extends State<BottomInputBar> {
   }
 }
 
-class InputBarStatus {
-  static const int Normal = 0;//正常
-  static const int Voice = 1;//语音输入
-  static const int Extention = 2;//扩展栏
+enum InputBarStatus{
+  Normal,//正常
+  Voice,//语音输入
+  Extention,//扩展栏
 }
 
-
 abstract class BottomInputBarDelegate {
+  void inputStatusDidChange(InputBarStatus status);
   void willSendText(String text);
   void willSendVoice(String path,int duration);
+  void didTapExtentionButton();
 }
 
 

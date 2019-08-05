@@ -23,6 +23,10 @@ class MediaUtil {
     return _instance;
   }
 
+  void requestPermissions() {
+    PermissionHandler().requestPermissions([PermissionGroup.photos,PermissionGroup.camera,PermissionGroup.microphone]);
+  }
+
   Future<String> takePhoto() async {
     File imgfile = await ImagePicker.pickImage(source: ImageSource.camera);
     if (imgfile == null) {
@@ -48,9 +52,6 @@ class MediaUtil {
   }
 
   void startRecordAudio() async {
-    await PermissionHandler().requestPermissions([PermissionGroup.microphone]);
-    bool hasPermissions = await AudioRecorder.hasPermissions;
-
     Directory tempDir = await getTemporaryDirectory();
     String tempPath = tempDir.path +
         "/" +

@@ -6,6 +6,7 @@ import 'item/conversation_item.dart';
 import 'item/bottom_inputBar.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../util/media_util.dart';
+import 'item/widget_util.dart';
 
 class ConversationPage extends StatefulWidget {
   final Map arguments;
@@ -21,21 +22,33 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
   int conversationType;
   String targetId;
   List msgList = new List();
-  _ConversationPageState({this.arguments});
   ScrollController _controller = ScrollController();
+  bool showExtentionWidget = false;
+  List<Widget> extWidgetList = new List();
+
+  _ConversationPageState({this.arguments});
   @override
   void initState() {
     super.initState();
+    _requestPermissions();
+
     conversationType = arguments["coversationType"];
     targetId = arguments["targetId"];
+
     _addIMHandler();
     onGetHistoryMessages();
+    _addExtentionWidgets();
+
     _controller.addListener(() {
       print(
           'scroller 最大值 addListener maxScrollExtent${_controller.position.maxScrollExtent}');
       print('scroller 最大值 addListener pixels${_controller.position.pixels}');
     });
     print("get history message11111");
+  }
+
+  void _requestPermissions() {
+    MediaUtil.instance.requestPermissions();
   }
 
   @override
@@ -117,6 +130,51 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
     _refreshController.loadComplete();
   }
 
+  Widget _getExtentionWidget() {
+    if(showExtentionWidget) {
+      return Container(
+        height: 180,
+        child: GridView.count(
+          crossAxisCount: 4,
+          padding: EdgeInsets.all(10),
+          children: extWidgetList,
+        )
+      );
+    }else {
+      return Container(
+        height: 0,
+      );
+    }
+  }
+
+  void _addExtentionWidgets() {
+    Widget imageWidget = WidgetUtil.buildExtentionWidget(Icons.photo, "相册", () async {
+      String imgPath = await MediaUtil.instance.pickImage();
+      if(imgPath == null) {
+        return;
+      }
+      print("imagepath " + imgPath);
+      ImageMessage imgMsg = ImageMessage.obtain(imgPath);
+      Message msg = await RongcloudImPlugin.sendMessage(
+          RCConversationType.Private, "test", imgMsg);
+    });
+
+    Widget cameraWidget = WidgetUtil.buildExtentionWidget(Icons.camera, "相机", () async {
+      String imgPath = await MediaUtil.instance.takePhoto();
+      if(imgPath == null) {
+        return;
+      }
+
+      print("imagepath " + imgPath);
+      ImageMessage imgMsg = ImageMessage.obtain(imgPath);
+      Message msg = await RongcloudImPlugin.sendMessage(
+          RCConversationType.Private, "test", imgMsg);
+    });
+
+    extWidgetList.add(imageWidget);
+    extWidgetList.add(cameraWidget);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -148,7 +206,8 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
           Container(
             height: 70,
             child: BottomInputBar(this),
-          )
+          ),
+          _getExtentionWidget()
         ],
       ),
       )
@@ -181,5 +240,22 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
   void willSendVoice(String path,int duration) {
     VoiceMessage msg = VoiceMessage.obtain(path, duration);
     RongcloudImPlugin.sendMessage(conversationType, targetId, msg);
+  }
+
+  @override
+  void didTapExtentionButton() {
+    
+  }
+
+  @override
+  void inputStatusDidChange(InputBarStatus status) {
+    if(status == InputBarStatus.Extention) {
+      showExtentionWidget = true;
+    }else {
+      showExtentionWidget = false;
+    }
+    setState(() {
+      
+    });
   }
 }

@@ -1,6 +1,10 @@
 import 'dart:math';
 
-import 'user_info.dart';
+class UserInfo {
+  String userId;
+  String name;
+  String portraitUrl;
+}
 
 class UserInfoDataSource {
   static Map<String,UserInfo> cachedUserMap = new Map();

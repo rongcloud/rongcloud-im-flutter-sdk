@@ -1,6 +1,5 @@
 
 import 'package:flutter/material.dart';
-import '../../util/user_info.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -132,7 +131,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
   }
 
   Widget _buildTitle(){
-    String title = conversation.senderUserId;
+    String title = conversation.targetId;
     String digest = "";
     if(conversation.latestMessageContent != null) {
       digest = conversation.latestMessageContent.conversationDigest();
