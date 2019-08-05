@@ -204,7 +204,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
             ),
           ),
           Container(
-            height: 70,
+            height: 55,
             child: BottomInputBar(this),
           ),
           _getExtentionWidget()

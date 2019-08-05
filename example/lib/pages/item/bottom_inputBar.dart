@@ -25,10 +25,12 @@ class _BottomInputBarState extends State<BottomInputBar> {
     this.textField = TextField(
       onSubmitted: _clickSendMessage,
       decoration: InputDecoration(
-            border: InputBorder.none,
-          ),
+          border: InputBorder.none,
+        ),
       focusNode: focusNode,
-      );
+      maxLines: 3,
+      maxLength: 30,
+    );
   }
 
   @override
@@ -90,43 +92,11 @@ class _BottomInputBarState extends State<BottomInputBar> {
     });
   }
 
-  Widget _getVoiceButton() {
-    return Container(
-      width: 48,
-      height: 48,
-      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-      child: MaterialButton(
-            color: Colors.blue,
-            textColor: Colors.white,
-            child: Icon(Icons.mic),
-            onPressed: () {
-              switchVoice();
-            },
-          ),
-    );
-  }
-
-  Widget _getExtentionButton() {
-    return Container(
-      width: 48,
-      height: 48,
-      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-      child: MaterialButton(
-            color: Colors.blue,
-            textColor: Colors.white,
-            child: new Text("加"),
-            onPressed: () {
-              switchExtention();
-            },
-          ),
-    );
-  }
-
   Widget _getMainInputField() {
     Widget widget ;
     if(this.inputBarStatus == InputBarStatus.Voice) {
       widget = Container(
-        padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+        alignment: Alignment.center,
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
           child: Text("按住 说话",textAlign: TextAlign.center),
@@ -140,17 +110,25 @@ class _BottomInputBarState extends State<BottomInputBar> {
       );
     }else {
       widget = Container(
+        padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
           child: this.textField,
-        );
+      );
     }
     return Container(
-      padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
-      decoration: BoxDecoration(
-        border:  new Border.all(color: Colors.black54, width: 0.5),
-        borderRadius:  BorderRadius.circular(8)
+      height: 45,
+      child: Stack(
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+            decoration: BoxDecoration(
+              border:  new Border.all(color: Colors.black54, width: 0.5),
+              borderRadius:  BorderRadius.circular(8)
+            ),
+          ),
+          widget
+        ],
       ),
-      child: widget ,
-    ) ;
+    );
   }
 
   void _notifyInputStatusChanged(InputBarStatus status) {
@@ -166,11 +144,23 @@ class _BottomInputBarState extends State<BottomInputBar> {
       color: Colors.white,
       child: Row(
         children: <Widget>[
-          _getVoiceButton(),
+          IconButton(
+            icon: Icon(Icons.mic),
+            iconSize: 32,
+            onPressed:() {
+              switchVoice();
+            } ,
+          ),
           Expanded(
             child : _getMainInputField()
           ),
-          _getExtentionButton()
+          IconButton(
+            icon: Icon(Icons.add),
+            iconSize: 32,
+            onPressed:() {
+              switchExtention();
+            } ,
+          ),
         ],
       ),
     );
