@@ -24,7 +24,9 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
   List msgList = new List();
   ScrollController _controller = ScrollController();
   bool showExtentionWidget = false;
+  bool isVoiceRecording = false;
   List<Widget> extWidgetList = new List();
+  RefreshController _refreshController = RefreshController();
 
   _ConversationPageState({this.arguments});
   @override
@@ -37,7 +39,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
 
     _addIMHandler();
     onGetHistoryMessages();
-    _addExtentionWidgets();
+    _initExtentionWidgets();
 
     _controller.addListener(() {
       print(
@@ -77,8 +79,6 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
       _scrollToBottom(100);
     };
   }
-
-  RefreshController _refreshController = RefreshController();
 
   onGetHistoryMessages() async {
     List msgs = await RongcloudImPlugin.getHistoryMessage(
@@ -147,7 +147,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
     }
   }
 
-  void _addExtentionWidgets() {
+  void _initExtentionWidgets() {
     Widget imageWidget = WidgetUtil.buildExtentionWidget(Icons.photo, "相册", () async {
       String imgPath = await MediaUtil.instance.pickImage();
       if(imgPath == null) {
@@ -181,36 +181,43 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
       appBar: AppBar(
         title: Text('与${targetId}的会话'),
       ),
-      body: SafeArea(
-        child: Column(
-        children: <Widget>[
-          Expanded(
-            child: SmartRefresher(
-              enablePullDown: true,
-              onRefresh: _onRefresh,
-              child: ListView.builder(
-                key: UniqueKey(),
-                controller: _controller,
-                itemCount: msgList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  if (msgList.length != null && msgList.length > 0) {
-                    return ConversationItem(msgList[index],this);
-                  } else {
-                    return null;
-                  }
-                },
+      body:Container(
+        child: Stack(
+          children: <Widget>[
+            SafeArea(
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                    child: SmartRefresher(
+                      enablePullDown: true,
+                      onRefresh: _onRefresh,
+                      child: ListView.builder(
+                        key: UniqueKey(),
+                        controller: _controller,
+                        itemCount: msgList.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          if (msgList.length != null && msgList.length > 0) {
+                            return ConversationItem(msgList[index],this);
+                          } else {
+                            return null;
+                          }
+                        },
+                      ),
+                      controller: _refreshController,
+                    ),
+                  ),
+                  Container(
+                    height: 55,
+                    child: BottomInputBar(this),
+                  ),
+                  _getExtentionWidget()
+                ],
               ),
-              controller: _refreshController,
             ),
-          ),
-          Container(
-            height: 55,
-            child: BottomInputBar(this),
-          ),
-          _getExtentionWidget()
-        ],
-      ),
-      )
+            this.isVoiceRecording? WidgetUtil.buildVoiceRecorderWidget() :Container(width: 1,height: 1,),
+          ],
+        ),
+      ) 
     );
   }
 
@@ -256,6 +263,22 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
     }else {
       showExtentionWidget = false;
     }
+    setState(() {
+      
+    });
+  }
+
+  @override
+  void willStartRecordVoice() {
+    this.isVoiceRecording = true;
+    setState(() {
+      
+    });
+  }
+
+  @override
+  void willStopRecordVoice() {
+    this.isVoiceRecording = false;
     setState(() {
       
     });

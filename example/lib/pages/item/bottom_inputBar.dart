@@ -81,6 +81,9 @@ class _BottomInputBarState extends State<BottomInputBar> {
   _onVoiceGesLongPress() {
     print("_onVoiceGesLongPress");
     MediaUtil.instance.startRecordAudio();
+    if(this.delegate != null) {
+      this.delegate.willStartRecordVoice();
+    }
   }
 
   _onVoiceGesLongPressEnd() {
@@ -90,6 +93,9 @@ class _BottomInputBarState extends State<BottomInputBar> {
         this.delegate.willSendVoice(path,duration);
       }
     });
+    if(this.delegate != null) {
+      this.delegate.willStopRecordVoice();
+    }
   }
 
   Widget _getMainInputField() {
@@ -177,6 +183,8 @@ abstract class BottomInputBarDelegate {
   void inputStatusDidChange(InputBarStatus status);
   void willSendText(String text);
   void willSendVoice(String path,int duration);
+  void willStartRecordVoice();
+  void willStopRecordVoice();
   void didTapExtentionButton();
 }
 

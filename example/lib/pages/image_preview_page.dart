@@ -23,15 +23,15 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
     ImageMessage msg = message.content;
     Widget widget;
     if(msg.localPath != null) {
-        File file = File(msg.localPath);
-        if(file != null) {
-          widget = Image.file(file);
-        }else {
-          widget = Image.network(msg.imageUri);
-        }
+      File file = File(msg.localPath);
+      if(file != null) {
+        widget = Image.file(file);
       }else {
         widget = Image.network(msg.imageUri);
       }
+    }else {
+      widget = Image.network(msg.imageUri);
+    }
     return widget;
   }
   

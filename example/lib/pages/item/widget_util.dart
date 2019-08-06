@@ -32,4 +32,18 @@ class WidgetUtil {
       ],
     );
   }
+
+  /// 会话页面录音时的 widget
+  static Widget buildVoiceRecorderWidget() {
+    return Container(
+      padding: EdgeInsets.fromLTRB(50, 0, 50, 200),
+      alignment: Alignment.center,
+      child: Container(
+        width: 150,
+        height: 150,
+        color: Colors.blue,
+        child: Image.asset("assets/images/voice_recoder.gif"),
+      ),
+    );
+  }
 }
