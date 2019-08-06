@@ -18,17 +18,31 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
   final Message message;
 
   _ImagePreviewPageState(this.message);
+
+  Widget getImageWidget() {
+    ImageMessage msg = message.content;
+    Widget widget;
+    if(msg.localPath != null) {
+        File file = File(msg.localPath);
+        if(file != null) {
+          widget = Image.file(file);
+        }else {
+          widget = Image.network(msg.imageUri);
+        }
+      }else {
+        widget = Image.network(msg.imageUri);
+      }
+    return widget;
+  }
   
   @override
   Widget build(BuildContext context) {
-    ImageMessage msg = message.content;
-    File file = File(msg.localPath);
     return Scaffold(
       appBar: AppBar(
         title: Text("图片预览"),
       ),
       body: Container(
-        child: file == null? Image.network(msg.imageUri): Image.file(file),
+        child: getImageWidget(),
       ),
     );
   }
