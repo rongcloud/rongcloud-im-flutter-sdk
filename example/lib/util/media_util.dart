@@ -7,6 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 
+///媒体工具，负责申请权限，选照片，拍照，录音，播放语音
 class MediaUtil {
   FlutterSound flutterSound = new FlutterSound();
 

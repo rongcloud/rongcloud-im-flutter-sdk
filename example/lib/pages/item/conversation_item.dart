@@ -2,29 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'user_portrait.dart';
 import 'message_item_factory.dart';
+import 'widget_util.dart';
 
 class ConversationItem extends StatefulWidget {
   Message message ;
   ConversationItemDelegate delegate;
+  bool showTime;
 
-  ConversationItem(Message msg,ConversationItemDelegate delegate) {
+  ConversationItem(ConversationItemDelegate delegate,Message msg,bool showTime) {
     this.message = msg;
     this.delegate = delegate;
+    this.showTime = showTime;
   }
 
   @override
   State<StatefulWidget> createState() {
-    return new _ConversationItemState(message,this.delegate);
+    return new _ConversationItemState(this.delegate,this.message,this.showTime);
   }
 }
 
 class _ConversationItemState extends State<ConversationItem> {
   Message message;
   ConversationItemDelegate delegate;
+  bool showTime;
 
-  _ConversationItemState(Message msg,ConversationItemDelegate delegate) {
+  _ConversationItemState(ConversationItemDelegate delegate,Message msg,bool showTime) {
     this.message = msg;
     this.delegate = delegate;
+    this.showTime = showTime;
   }
 
   @override
@@ -65,8 +70,13 @@ class _ConversationItemState extends State<ConversationItem> {
   Widget backgroundContent() {
     return Container(
       padding: EdgeInsets.all(10.0),
-      child: Row(
-        children: <Widget>[subContent()],
+      child:Column(
+        children: <Widget>[
+          this.showTime? WidgetUtil.buildMessageTimeWidget(message.sentTime):Container(width: 1,height: 1,),
+          Row(
+            children: <Widget>[subContent()],
+          )
+        ],
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:rongcloud_im_plugin_example/pages/item/message_item_factory.dart';
 import 'item/conversation_item.dart';
 import 'item/bottom_inputBar.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -175,6 +176,20 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
     extWidgetList.add(cameraWidget);
   }
 
+  bool _needShowTime(int index) {
+    bool needShow = false;
+    if(index == 0) {//第一条消息一定显示时间
+      needShow = true;
+    }else {//如果与上一条消息相差 5 分钟，则显示时间
+      Message lastMessage = msgList[index-1];
+      Message curMessage = msgList[index];
+      if(curMessage.sentTime - lastMessage.sentTime > 5 * 60 * 1000) {
+        needShow = true;
+      }
+    }
+    return needShow;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -197,7 +212,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
                         itemCount: msgList.length,
                         itemBuilder: (BuildContext context, int index) {
                           if (msgList.length != null && msgList.length > 0) {
-                            return ConversationItem(msgList[index],this);
+                            return ConversationItem(this,msgList[index],_needShowTime(index));
                           } else {
                             return null;
                           }

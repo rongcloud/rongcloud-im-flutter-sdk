@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
 
+import '../../util/time.dart';
+
 class WidgetUtil {
   ///扩展栏里面的 widget
   static Widget buildExtentionWidget(IconData icon,String text,Function()clicked) {
@@ -41,9 +43,21 @@ class WidgetUtil {
       child: Container(
         width: 150,
         height: 150,
-        color: Colors.blue,
         child: Image.asset("assets/images/voice_recoder.gif"),
       ),
     );
+  }
+
+  ///消息上的时间
+  static Widget buildMessageTimeWidget(int sentTime) {
+    return ClipRRect(
+        borderRadius: BorderRadius.circular(5),
+        child: Container(
+          alignment: Alignment.center,
+          width: 80,
+          color: Color(0xffC8C8C8),
+          child: Text(TimeUtil.convertTime(sentTime),style: TextStyle(color: Colors.white,fontSize: 12),),
+        ),
+      );
   }
 }
