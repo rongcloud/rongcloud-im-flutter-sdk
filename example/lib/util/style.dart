@@ -10,4 +10,6 @@ class UIColor {
 
   static const MessageSendBgColor = 0xffC8E9FD;
   static const MessageReceiveBgColor = 0xffC8E9FD;
+  static const MessageTimeBgColor = 0xffC8C8C8;
+  static const MessageNameBgColor = 0xff9B9B9B;
 }

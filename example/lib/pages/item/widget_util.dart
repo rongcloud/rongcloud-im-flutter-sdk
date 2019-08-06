@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import '../../util/time.dart';
+import '../../util/style.dart';
 
 class WidgetUtil {
   ///扩展栏里面的 widget
@@ -55,7 +56,7 @@ class WidgetUtil {
         child: Container(
           alignment: Alignment.center,
           width: 80,
-          color: Color(0xffC8C8C8),
+          color: Color(UIColor.MessageTimeBgColor),
           child: Text(TimeUtil.convertTime(sentTime),style: TextStyle(color: Colors.white,fontSize: 12),),
         ),
       );

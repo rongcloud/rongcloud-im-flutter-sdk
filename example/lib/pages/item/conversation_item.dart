@@ -3,6 +3,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'user_portrait.dart';
 import 'message_item_factory.dart';
 import 'widget_util.dart';
+import '../../util/style.dart';
 
 class ConversationItem extends StatefulWidget {
   Message message ;
@@ -34,40 +35,6 @@ class _ConversationItemState extends State<ConversationItem> {
 
   @override
   Widget build(BuildContext context) {
-    return backgroundContent();
-  }
-
-  Widget subContent() {
-    if (message.messageDirection == 1) {
-      return Expanded(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Expanded(
-              child: textContent(),
-            ),
-            Portrait(),
-          ],
-        ),
-      );
-    } else if (message.messageDirection == 2) {
-      return Expanded(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Portrait(),
-            Expanded(
-              child: textContent(),
-            )
-          ],
-        ),
-      );
-    }
-  }
-
-  Widget backgroundContent() {
     return Container(
       padding: EdgeInsets.all(10.0),
       child:Column(
@@ -81,19 +48,67 @@ class _ConversationItemState extends State<ConversationItem> {
     );
   }
 
+  Widget subContent() {
+    if (message.messageDirection == RCMessageDirection.Send) {
+      return Expanded(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Expanded(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    alignment: Alignment.centerRight,
+                    padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
+                    child: Text("用户"+message.senderUserId,style: TextStyle(color: Color(UIColor.MessageNameBgColor))),
+                  ),
+                  buildMessageWidget(),
+                ],
+              ),
+            ),
+            Portrait(),
+          ],
+        ),
+      );
+    } else if (message.messageDirection == RCMessageDirection.Receive) {
+      return Expanded(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Portrait(),
+            Expanded(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
+                    child: Text("用户"+message.senderUserId,style: TextStyle(color: Color(UIColor.MessageNameBgColor)),),
+                  ),
+                  buildMessageWidget(),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
   void __onTapedMesssage() {
     if(delegate != null) {
       delegate.didTapMessageItem(message);
     }
   }
 
-  Widget textContent() {
+  Widget buildMessageWidget() {
     // TextMessage txtMsg = message.content;
     return Row(
       children: <Widget>[
         Expanded(
           child: Container(
-            padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+            padding: EdgeInsets.fromLTRB(15, 6, 15, 10),
             alignment: message.messageDirection == 1
                 ? Alignment.centerRight
                 : Alignment.centerLeft,
