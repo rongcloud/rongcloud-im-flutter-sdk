@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'dart:convert';
 import 'dart:typed_data';
+import '../../util/style.dart';
 
 class MessageItemFactory extends StatelessWidget {
   final Message message;
@@ -16,7 +17,7 @@ class MessageItemFactory extends StatelessWidget {
       child: Container(
         height: 44,
         padding: EdgeInsets.all(8),
-        color: Color(0xffD3D3D3),
+        color: _getMessageWidgetBGColor(message.messageDirection),
         child: Text(msg.content),
       ),
     );
@@ -50,25 +51,35 @@ class MessageItemFactory extends StatelessWidget {
 
   Widget voiceMessageItem() {
     VoiceMessage msg = message.content;
+    List<Widget> list = new List();
+    if(message.messageDirection == RCMessageDirection.Send) {
+      list.add(SizedBox(width: 6,));
+      list.add(Text(msg.duration.toString()+"''"));
+      list.add(SizedBox(width: 20,));
+      list.add(Container(
+                width: 20,
+                height: 20,
+                child: Image.asset("assets/images/voice_icon.png"),
+              ));
+    }else {
+      list.add(SizedBox(width: 6,));
+      list.add(Container(
+                width: 20,
+                height: 20,
+                child: Image.asset("assets/images/voice_icon_reverse.png"),
+              ));
+      list.add(SizedBox(width: 20,));
+      list.add(Text(msg.duration.toString()+"''"));
+    }
+    
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: Container(
         width: 80,
         height: 44,
-        color: Color(0xffD3D3D3),
+        color: _getMessageWidgetBGColor(message.messageDirection),
         child: Row(
-          children: <Widget>[
-            SizedBox(width: 6,),            
-            Text(msg.duration.toString()+"'s"),
-            SizedBox(
-              width: 20,
-            ),
-            Container(
-              width: 20,
-              height: 20,
-              child: Image.asset("assets/images/voice_icon.png"),
-            ),
-          ],
+          children:list
         ) ,
       ),
     );
@@ -84,6 +95,14 @@ class MessageItemFactory extends StatelessWidget {
     } else {
       return Text("无法识别消息 "+message.content.getObjectName());
     }
+  }
+
+  Color _getMessageWidgetBGColor(int messageDirection) {
+    Color color = Color(UIColor.MessageSendBgColor);
+    if(message.messageDirection == RCMessageDirection.Receive) {
+      color = Color(UIColor.MessageReceiveBgColor);
+    }
+    return color;
   }
 
   @override

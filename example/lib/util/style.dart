@@ -7,4 +7,7 @@ class UIColor {
   static const ConTimeColor = 0xff6C7B8B;
   static const ConItemBgColor = 0xffffffff;
   static const ConBorderColor = 0xff6C7B8B;
+
+  static const MessageSendBgColor = 0xffC8E9FD;
+  static const MessageReceiveBgColor = 0xffC8E9FD;
 }
