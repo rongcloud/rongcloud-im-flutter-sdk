@@ -80,6 +80,9 @@ class MediaUtil {
   }
 
   void startPlayAudio(String path) {
+    if(flutterSound.isPlaying) {
+      stopPlayAudio();
+    }
     flutterSound.startPlayer(path);
   }
 

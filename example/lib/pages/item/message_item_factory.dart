@@ -56,7 +56,20 @@ class MessageItemFactory extends StatelessWidget {
         width: 80,
         height: 44,
         color: Color(0xffD3D3D3),
-        child: Text(msg.duration.toString()+"'s"),
+        child: Row(
+          children: <Widget>[
+            SizedBox(width: 6,),            
+            Text(msg.duration.toString()+"'s"),
+            SizedBox(
+              width: 20,
+            ),
+            Container(
+              width: 20,
+              height: 20,
+              child: Image.asset("assets/images/voice_icon.png"),
+            ),
+          ],
+        ) ,
       ),
     );
   }

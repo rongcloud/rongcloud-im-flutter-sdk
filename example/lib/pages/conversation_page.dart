@@ -156,7 +156,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
       print("imagepath " + imgPath);
       ImageMessage imgMsg = ImageMessage.obtain(imgPath);
       Message msg = await RongcloudImPlugin.sendMessage(
-          RCConversationType.Private, "test", imgMsg);
+          conversationType, targetId, imgMsg);
     });
 
     Widget cameraWidget = WidgetUtil.buildExtentionWidget(Icons.camera, "相机", () async {
@@ -168,7 +168,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
       print("imagepath " + imgPath);
       ImageMessage imgMsg = ImageMessage.obtain(imgPath);
       Message msg = await RongcloudImPlugin.sendMessage(
-          RCConversationType.Private, "test", imgMsg);
+          conversationType, targetId, imgMsg);
     });
 
     extWidgetList.add(imageWidget);
