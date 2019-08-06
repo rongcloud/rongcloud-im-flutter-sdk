@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'user_portrait.dart';
 import 'message_item_factory.dart';
 import 'widget_util.dart';
 import '../../util/style.dart';
+import '../../util/user_info_datesource.dart';
 
 class ConversationItem extends StatefulWidget {
   Message message ;
@@ -26,11 +27,13 @@ class _ConversationItemState extends State<ConversationItem> {
   Message message;
   ConversationItemDelegate delegate;
   bool showTime;
+  UserInfo user;
 
   _ConversationItemState(ConversationItemDelegate delegate,Message msg,bool showTime) {
     this.message = msg;
     this.delegate = delegate;
     this.showTime = showTime;
+    this.user = UserInfoDataSource.getUserInfo(msg.senderUserId);
   }
 
   @override
@@ -61,13 +64,13 @@ class _ConversationItemState extends State<ConversationItem> {
                   Container(
                     alignment: Alignment.centerRight,
                     padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
-                    child: Text("用户"+message.senderUserId,style: TextStyle(color: Color(UIColor.MessageNameBgColor))),
+                    child: Text(this.user.name,style: TextStyle(color: Color(UIColor.MessageNameBgColor))),
                   ),
                   buildMessageWidget(),
                 ],
               ),
             ),
-            Portrait(),
+            WidgetUtil.buildUserPortrait(this.user.portraitUrl),
           ],
         ),
       );
@@ -77,14 +80,14 @@ class _ConversationItemState extends State<ConversationItem> {
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Portrait(),
+            WidgetUtil.buildUserPortrait(this.user.portraitUrl),
             Expanded(
               child: Column(
                 children: <Widget>[
                   Container(
                     alignment: Alignment.centerLeft,
                     padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
-                    child: Text("用户"+message.senderUserId,style: TextStyle(color: Color(UIColor.MessageNameBgColor)),),
+                    child: Text(this.user.name,style: TextStyle(color: Color(UIColor.MessageNameBgColor)),),
                   ),
                   buildMessageWidget(),
                 ],

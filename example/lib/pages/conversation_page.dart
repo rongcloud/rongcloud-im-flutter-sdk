@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:rongcloud_im_plugin_example/pages/item/message_item_factory.dart';
+import 'package:rongcloud_im_plugin_example/util/time.dart';
+import 'package:rongcloud_im_plugin_example/util/user_info_datesource.dart';
 import 'item/conversation_item.dart';
 import 'item/bottom_inputBar.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -28,6 +29,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
   bool isVoiceRecording = false;
   List<Widget> extWidgetList = new List();
   RefreshController _refreshController = RefreshController();
+  UserInfo user;
 
   _ConversationPageState({this.arguments});
   @override
@@ -37,6 +39,9 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
 
     conversationType = arguments["coversationType"];
     targetId = arguments["targetId"];
+
+
+    this.user = UserInfoDataSource.getUserInfo(targetId);
 
     _addIMHandler();
     onGetHistoryMessages();
@@ -183,7 +188,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
     }else {//如果与上一条消息相差 5 分钟，则显示时间
       Message lastMessage = msgList[index-1];
       Message curMessage = msgList[index];
-      if(curMessage.sentTime - lastMessage.sentTime > 5 * 60 * 1000) {
+      if(TimeUtil.needShowTime(lastMessage.sentTime, curMessage.sentTime)) {
         needShow = true;
       }
     }
@@ -194,7 +199,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('与${targetId}的会话'),
+        title: Text('与${this.user.name}的会话'),
       ),
       body:Container(
         child: Stack(

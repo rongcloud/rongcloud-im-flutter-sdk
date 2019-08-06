@@ -2,7 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+
+import 'widget_util.dart';
 
 import '../../util/style.dart';
 import '../../util/time.dart';
@@ -57,36 +58,24 @@ class _ConversationListItemState extends State<ConversationListItem> {
 
   Widget _buildPortrait() {
     return Stack(
-        overflow: Overflow.visible,
-        children: <Widget>[
-          _buildAvatar(),
-          Positioned(
-            right:-3.0 ,
-            top: -3.0,
-            child: _buildUnreadCount(conversation.unreadMessageCount),
-          )
-        ],
-      );
-  }
-
-  Widget _buildAvatar(){
-    return Container(
-      margin: EdgeInsets.only(left:ScreenUtil().setWidth(20.0)),
-      child: _clipAvatar(),
-      width: ScreenUtil().setWidth(100),
-      height: ScreenUtil().setWidth(100)
-    );
-  }
-
-  Widget _clipAvatar(){
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(5.0),
-      child: CachedNetworkImage(
-          fit: BoxFit.fill,
-          imageUrl: user.portraitUrl,
+      overflow: Overflow.visible,
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            SizedBox(
+              width: 8,
+            ),
+            WidgetUtil.buildUserPortrait(this.user.portraitUrl),
+          ],
         ),
+        Positioned(
+          right:-3.0 ,
+          top: -3.0,
+          child: _buildUnreadCount(conversation.unreadMessageCount),
+        ),
+      ],
     );
-  } 
+  }
 
   Widget _buildContent(){
     return Expanded(
@@ -109,17 +98,11 @@ class _ConversationListItemState extends State<ConversationListItem> {
   }
 
   Widget _buildTime(){
-    bool mute = true;
     String time = TimeUtil.convertTime(conversation.sentTime);
-    var _rightArea =<Widget>[
+    List<Widget> _rightArea =<Widget>[
       Text(time,style:TextStyle(fontSize: ScreenUtil().setSp(24.0),color: Color(UIColor.ConTimeColor))),
       SizedBox(height: ScreenUtil().setHeight(15.0),)
     ];
-    if(mute){
-      // _rightArea.add(new Icon(ICons.MUTE_ICON,color: Colors.white,size: ScreenUtil().setSp(30),));
-    }else{
-      // _rightArea.add(new Icon(ICons.MUTE_ICON,color: Colors.transparent,size: ScreenUtil().setSp(30),));
-    }
     return Container(
       width:ScreenUtil().setWidth(120),
       margin: EdgeInsets.only(right: ScreenUtil().setWidth(10.0)),
@@ -131,7 +114,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
   }
 
   Widget _buildTitle(){
-    String title = conversation.targetId;
+    String title = this.user.name;
     String digest = "";
     if(conversation.latestMessageContent != null) {
       digest = conversation.latestMessageContent.conversationDigest();

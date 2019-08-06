@@ -1,5 +1,9 @@
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../util/time.dart';
 import '../../util/style.dart';
@@ -33,6 +37,30 @@ class WidgetUtil {
         ),
         Text(text,style:TextStyle(fontSize:12))
       ],
+    );
+  }
+
+  ///用户头像
+  static Widget buildUserPortrait(String path) {
+    Widget protraitWidget = Image.asset("assets/images/default_portrait.png",fit: BoxFit.fill);
+    if(path.startsWith("http")) {
+      protraitWidget = CachedNetworkImage(
+          fit: BoxFit.fill,
+          imageUrl: path,
+        );
+    }else {
+      File file = File(path);
+      if(file.existsSync()) {
+        protraitWidget = Image.file(file,fit: BoxFit.fill,);
+      }
+    }
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        height: 45,
+        width: 45,
+        child: protraitWidget,
+      ),
     );
   }
 

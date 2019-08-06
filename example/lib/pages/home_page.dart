@@ -6,7 +6,7 @@ import 'dart:convert' show json;
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../util/user_data.dart';
+import '../user_data.dart';
 
 class HomePage extends StatefulWidget {
   @override

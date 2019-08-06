@@ -1,4 +1,3 @@
-
 import 'dart:core';
 
 class TimeUtil {
@@ -14,7 +13,7 @@ class TimeUtil {
           if(nowTime.day - msgTime.day == 1) {//昨天
             return "昨天";
           }else if(nowTime.day - msgTime.day < 7) {
-            return getWeekday(msgTime.weekday);
+            return _getWeekday(msgTime.weekday);
           }
         }
       }
@@ -22,7 +21,12 @@ class TimeUtil {
     return msgTime.year.toString()+"/"+msgTime.month.toString()+"/"+msgTime.day.toString();
   }
 
-  static String getWeekday(int weekday) {
+  ///是否需要显示时间，相差 5 分钟
+  static bool needShowTime(int sentTime1,int sentTime2) {
+    return (sentTime1-sentTime2).abs() > 5 * 60 * 1000;
+  }
+
+  static String _getWeekday(int weekday) {
     switch (weekday) {
       case 1:return "星期一";
       case 2:return "星期二";
