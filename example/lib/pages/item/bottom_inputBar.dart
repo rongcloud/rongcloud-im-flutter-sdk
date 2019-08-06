@@ -26,10 +26,10 @@ class _BottomInputBarState extends State<BottomInputBar> {
       onSubmitted: _clickSendMessage,
       decoration: InputDecoration(
           border: InputBorder.none,
+          hintText: '随便说点什么吧'
         ),
       focusNode: focusNode,
-      maxLines: 3,
-      maxLength: 30,
+      // maxLines: 3,
     );
   }
 

@@ -9,34 +9,46 @@ class MessageItemFactory extends StatelessWidget {
 
   Widget textMessageItem() {
     TextMessage msg = message.content;
-    return RichText(
-      text:
-          TextSpan(text: '${msg.content}', style: TextStyle(color: Colors.red)),
-      softWrap: true,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: EdgeInsets.all(8),
+        color: Color(0xffD3D3D3),
+        child: Text(msg.content),
+      ),
     );
   }
 
   Widget imageMessageItem() {
     ImageMessage msg = message.content;
-
+    
+    Widget widget;
     if (msg.content != null && msg.content.length > 0) {
       Uint8List bytes = base64.decode(msg.content);
-      return Image.memory(bytes);
+      widget = Image.memory(bytes);
     } else {
-      return Container(
+      widget = Container(
         height: 200,
         width: 200,
         color: Colors.grey[100],
       );
     }
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: widget,
+    );
   }
 
   Widget voiceMessageItem() {
     VoiceMessage msg = message.content;
-    return Container(
-      width: 80,
-      height: 44,
-      child: Text(msg.duration.toString()+"'s"),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        width: 80,
+        height: 44,
+        color: Color(0xffD3D3D3),
+        child: Text(msg.duration.toString()+"'s"),
+      ),
     );
   }
 
@@ -55,7 +67,6 @@ class MessageItemFactory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.blue,
       child: messageItem(),
     );
   }

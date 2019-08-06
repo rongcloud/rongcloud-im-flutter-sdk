@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'pages/conversation_page.dart';
 import 'pages/home_page.dart';
+import 'pages/image_preview_page.dart';
 
 final routes = {
   '/': (context) => HomePage(),
   '/conversation': (context, {arguments}) =>
-      ConversationPage(arguments: arguments)
+      ConversationPage(arguments: arguments),
+  '/image_preview':(context, {arguments}) =>
+      ImagePreviewPage(message: arguments),
 };
 
 var onGenerateRoute = (RouteSettings settings) {
