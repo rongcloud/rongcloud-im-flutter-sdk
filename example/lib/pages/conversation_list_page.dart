@@ -71,7 +71,7 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
           itemCount: conList.length,
           itemBuilder: (BuildContext context,int index) {
             if(conList.length <= 0) {
-              return Container();
+              return WidgetUtil.buildEmptyWidget();
             }
             return ConversationListItem(delegate:this,conversation:conList[index]);
           },

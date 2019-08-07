@@ -9,7 +9,7 @@ import '../../util/time.dart';
 import '../../util/style.dart';
 
 class WidgetUtil {
-  ///扩展栏里面的 widget
+  /// 会话页面加号扩展栏里面的 widget
   static Widget buildExtentionWidget(IconData icon,String text,Function()clicked) {
     return Column(
       children: <Widget>[
@@ -40,7 +40,7 @@ class WidgetUtil {
     );
   }
 
-  ///用户头像
+  /// 用户头像
   static Widget buildUserPortrait(String path) {
     Widget protraitWidget = Image.asset("assets/images/default_portrait.png",fit: BoxFit.fill);
     if(path.startsWith("http")) {
@@ -77,7 +77,7 @@ class WidgetUtil {
     );
   }
 
-  ///消息上的时间
+  /// 消息上的时间
   static Widget buildMessageTimeWidget(int sentTime) {
     return ClipRRect(
         borderRadius: BorderRadius.circular(5),
@@ -102,10 +102,9 @@ class WidgetUtil {
               onTaped(i);
             }
           },
-          child: new Padding(
-            padding: const EdgeInsets.only(
-              top: 20.0,
-            ),
+          child: Container(
+            height: 40,
+            alignment: Alignment.center,
             child: new Text(
               titles[i],
               style: new TextStyle(fontSize: 18.0),
@@ -131,7 +130,7 @@ class WidgetUtil {
     );
     return Stack(
       children: <Widget>[
-        bgWidget,
+        bgWidget,//半透明 widget
         new Center( //保证控件居中效果
           child:Container(
             width: 120,

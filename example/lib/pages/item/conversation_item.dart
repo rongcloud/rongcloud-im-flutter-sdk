@@ -96,12 +96,22 @@ class _ConversationItemState extends State<ConversationItem> {
           ],
         ),
       );
+    }else {
+      return WidgetUtil.buildEmptyWidget();
     }
   }
 
   void __onTapedMesssage() {
     if(delegate != null) {
       delegate.didTapMessageItem(message);
+    }else {
+      print("没有实现 ConversationItemDelegate");
+    }
+  }
+
+  void __onLongPressMessage() {
+    if(delegate != null) {
+      delegate.didLongPressMessageItem(message);
     }else {
       print("没有实现 ConversationItemDelegate");
     }
@@ -122,6 +132,9 @@ class _ConversationItemState extends State<ConversationItem> {
               onTap: () {
                 __onTapedMesssage();
               },
+              onLongPress: () {
+                __onLongPressMessage();
+              },
               child:MessageItemFactory(message: message) ,
             )
           ),
@@ -133,4 +146,5 @@ class _ConversationItemState extends State<ConversationItem> {
 
 abstract class ConversationItemDelegate {
   void didTapMessageItem(Message message);
+  void didLongPressMessageItem(Message message);
 }

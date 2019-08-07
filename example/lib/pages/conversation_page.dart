@@ -10,6 +10,12 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../util/media_util.dart';
 import 'item/widget_util.dart';
 
+enum ConversationStatus{
+  Normal,//正常
+  VoiceRecorder,//语音输入，页面中间回弹出录音的 gif
+  LongPress,//长按，页面中间会弹出半透明的选择框
+}
+
 class ConversationPage extends StatefulWidget {
   final Map arguments;
   ConversationPage({Key key, this.arguments}) : super(key: key);
@@ -26,7 +32,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
   List msgList = new List();
   ScrollController _controller = ScrollController();
   bool showExtentionWidget = false;
-  bool isVoiceRecording = false;
+  ConversationStatus currentStatus;
   List<Widget> extWidgetList = new List();
   RefreshController _refreshController = RefreshController();
   UserInfo user;
@@ -39,7 +45,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
 
     conversationType = arguments["coversationType"];
     targetId = arguments["targetId"];
-
+    currentStatus = ConversationStatus.Normal;
 
     this.user = UserInfoDataSource.getUserInfo(targetId);
 
@@ -193,6 +199,27 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
     return needShow;
   }
 
+  Widget _buildExtraCenterWidget() {
+    if(this.currentStatus == ConversationStatus.LongPress) {
+      return WidgetUtil.buildLongPressDialog(["删除消息"],(int index){
+        //todo
+        print("_buildLongPressDialog "+index.toString());
+        _showExtraCenterWidget(ConversationStatus.Normal);
+      });
+    }else if(this.currentStatus == ConversationStatus.VoiceRecorder) {
+      return WidgetUtil.buildVoiceRecorderWidget();
+    }else {
+      return WidgetUtil.buildEmptyWidget();
+    }
+  }
+
+  void _showExtraCenterWidget(ConversationStatus status) {
+    this.currentStatus = status;
+    setState(() {
+      
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -232,7 +259,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
                 ],
               ),
             ),
-            this.isVoiceRecording? WidgetUtil.buildVoiceRecorderWidget() :WidgetUtil.buildEmptyWidget(),
+            _buildExtraCenterWidget(),
           ],
         ),
       ) 
@@ -254,6 +281,11 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
     }else if(message.content is ImageMessage) {
       Navigator.pushNamed(context, "/image_preview",arguments: message);
     }
+  }
+
+  @override
+  void didLongPressMessageItem(Message message) {
+    _showExtraCenterWidget(ConversationStatus.LongPress);
   }
 
   @override
@@ -288,17 +320,11 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
 
   @override
   void willStartRecordVoice() {
-    this.isVoiceRecording = true;
-    setState(() {
-      
-    });
+    _showExtraCenterWidget(ConversationStatus.VoiceRecorder);
   }
 
   @override
   void willStopRecordVoice() {
-    this.isVoiceRecording = false;
-    setState(() {
-      
-    });
+    _showExtraCenterWidget(ConversationStatus.Normal);
   }
 }
