@@ -23,12 +23,12 @@ class _BottomInputBarState extends State<BottomInputBar> {
 
     this.textField = TextField(
       onSubmitted: _clickSendMessage,
+      controller: new TextEditingController(),
       decoration: InputDecoration(
           border: InputBorder.none,
           hintText: '随便说点什么吧'
         ),
       focusNode: focusNode,
-      // maxLines: 3,
     );
   }
 
