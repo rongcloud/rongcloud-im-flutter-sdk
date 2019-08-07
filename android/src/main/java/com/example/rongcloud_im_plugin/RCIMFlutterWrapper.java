@@ -743,7 +743,7 @@ public class RCIMFlutterWrapper {
             String targetId = (String)map.get("targetId");
             Integer st = (Integer) map.get("sendStatus");
             Message.SentStatus sendStatus = Message.SentStatus.setValue(st.intValue());
-            Integer sendTime = (Integer)map.get("sendTime");
+            Long sendTime = (Long)map.get("sendTime");
 
             String contentStr = (String)map.get("content");
 
@@ -806,7 +806,7 @@ public class RCIMFlutterWrapper {
             Integer st = (Integer)map.get("rececivedStatus");
             Message.ReceivedStatus receivedStatus = new Message.ReceivedStatus(st.intValue());
             String senderUserId = (String)map.get("senderUserId");
-            Integer sendTime = (Integer)map.get("sendTime");
+            Long sendTime = (Long)map.get("sendTime");
 
             String contentStr = (String)map.get("content");
 
@@ -865,7 +865,7 @@ public class RCIMFlutterWrapper {
             Integer t = (Integer)map.get("conversationType");
             Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
             final String targetId = (String)map.get("targetId");
-            Integer recordTime = (Integer)map.get("recordTime");
+            Long recordTime = (Long)map.get("recordTime");
             Integer count = (Integer)map.get("count");
 
             RongIMClient.getInstance().getRemoteHistoryMessages(type, targetId, recordTime.longValue(), count, new RongIMClient.ResultCallback<List<Message>>() {
