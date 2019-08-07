@@ -1,4 +1,4 @@
-# 融云 IM flutter plugin
+# 融云 IM Flutter plugin
 
 本文档讲解了如何使用 IM 的 Flutter Plugin，基于融云 iOS/Android 平台的 IMLib SDK
 
@@ -8,6 +8,7 @@
 
 [融云 Android 文档集成](https://www.rongcloud.cn/docs/android.html)
 
+源码地址 [Github](https://github.com/rongcloud/rongcloud-im-flutter-sdk)，任何问题可以通过 Github Issues 提问
 
 # 前期准备
 
@@ -41,26 +42,7 @@ dependencies:
 RongcloudImPlugin.init(RongAppKey);
 ```
 
-## 2.配置 SDK
-
-### 2.1 在项目目录创建 `assets` 文件夹，并将 `RCFlutterConf.json` 放入该文件夹
-
-### 2.2 在项目 `pubspec.yaml` 中的写入下面的配置
-
-```
-assets:
-  - assets/RCFlutterConf.json
-```
-
-### 2.3 代码
-
-```
-String confString = await DefaultAssetBundle.of(context).loadString("assets/RCFlutterConf.json");
-Map confMap = json.decode(confString.toString());
-RongcloudImPlugin.config(confMap);
-```
-
-## 3.连接 IM
+## 2.连接 IM
 
 ```
 int rc = await RongcloudImPlugin.connect(RongIMToken);
