@@ -90,12 +90,13 @@ class WidgetUtil {
       );
   }
 
-  static Widget buildConversationDialog(List<String> titles,Function(int index)onTaped){
+  /// onTaped 点击事件，0~n 代表点击了对应下标，-1 代表点击了白透明空白区域
+  static Widget buildLongPressDialog(List<String> titles,Function(int index)onTaped){
     List<Widget> wList = new List();
     for(int i=0;i<titles.length;i++) {
       Widget w = Container(
         alignment: Alignment.center,
-        child: InkWell(
+        child: GestureDetector(
           onTap: () {
             if(onTaped != null) {
               onTaped(i);
@@ -114,18 +115,37 @@ class WidgetUtil {
       );
       wList.add(w);
     }
-    return new Center( //保证控件居中效果
-        child:Container(
-          width: 120,
-          height: 60.0 * titles.length,
-          color: Colors.white,
-          child: new Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: wList,
-            ) 
-          ),
-      );
+    Widget bgWidget = Opacity(
+      opacity: 0.3,
+      child: GestureDetector(
+        onTap: () {
+          if(onTaped != null) {
+            onTaped(-1);
+          }
+        },
+        child: Container(
+          padding: EdgeInsets.all(0),
+          color: Colors.black,
+        ),
+      ),
+    );
+    return Stack(
+      children: <Widget>[
+        bgWidget,
+        new Center( //保证控件居中效果
+          child:Container(
+            width: 120,
+            height: 60.0 * titles.length,
+            color: Colors.white,
+            child: new Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: wList,
+              ) 
+            ),
+        )
+      ],
+    );
   }
 
   static Widget buildEmptyWidget() {

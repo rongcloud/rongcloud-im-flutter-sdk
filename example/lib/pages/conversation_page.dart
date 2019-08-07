@@ -147,9 +147,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
         )
       );
     }else {
-      return Container(
-        height: 0,
-      );
+      return WidgetUtil.buildEmptyWidget();
     }
   }
 
@@ -185,7 +183,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
     bool needShow = false;
     if(index == 0) {//第一条消息一定显示时间
       needShow = true;
-    }else {//如果与上一条消息相差 5 分钟，则显示时间
+    }else {//如果满足条件，则显示时间
       Message lastMessage = msgList[index-1];
       Message curMessage = msgList[index];
       if(TimeUtil.needShowTime(lastMessage.sentTime, curMessage.sentTime)) {

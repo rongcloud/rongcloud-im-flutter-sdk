@@ -29,7 +29,6 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
   updateConversationList() async {
     List list = await RongcloudImPlugin.getConversationList([RCConversationType.Private,RCConversationType.Group]);
     if(list != null) {
-
       list.sort((a,b) => b.sentTime.compareTo(a.sentTime));
       conList = list;
     }
@@ -54,7 +53,8 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
 
   Widget _buildConversationDialog() {
     if(needShowConversationDialog) {
-      return WidgetUtil.buildConversationDialog(["清除未读","删除会话"],(int index){
+      return WidgetUtil.buildLongPressDialog(["清除未读","删除会话"],(int index){
+        //todo
         print("_buildConversationDialog "+index.toString());
         _showConversationDialog(false);
       });
