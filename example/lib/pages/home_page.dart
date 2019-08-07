@@ -36,12 +36,7 @@ class _HomePageState extends State<HomePage> {
     //1.初始化 im SDK
     RongcloudImPlugin.init(RongAppKey);
 
-    //2.配置 im SDK
-    String confString = await DefaultAssetBundle.of(context).loadString("assets/RCFlutterConf.json");
-    Map confMap = json.decode(confString.toString());
-    RongcloudImPlugin.config(confMap);
-
-    //3.连接 im SDK
+    //2.连接 im SDK
     int rc = await RongcloudImPlugin.connect(RongIMToken);
     print('connect result '+rc.toString());
   }

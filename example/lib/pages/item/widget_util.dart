@@ -89,4 +89,49 @@ class WidgetUtil {
         ),
       );
   }
+
+  static Widget buildConversationDialog(List<String> titles,Function(int index)onTaped){
+    List<Widget> wList = new List();
+    for(int i=0;i<titles.length;i++) {
+      Widget w = Container(
+        alignment: Alignment.center,
+        child: InkWell(
+          onTap: () {
+            if(onTaped != null) {
+              onTaped(i);
+            }
+          },
+          child: new Padding(
+            padding: const EdgeInsets.only(
+              top: 20.0,
+            ),
+            child: new Text(
+              titles[i],
+              style: new TextStyle(fontSize: 18.0),
+            ),
+          ),
+        ),
+      );
+      wList.add(w);
+    }
+    return new Center( //保证控件居中效果
+        child:Container(
+          width: 120,
+          height: 60.0 * titles.length,
+          color: Colors.white,
+          child: new Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: wList,
+            ) 
+          ),
+      );
+  }
+
+  static Widget buildEmptyWidget() {
+    return Container(
+      height: 1,
+      width: 1,
+    );
+  }
 }

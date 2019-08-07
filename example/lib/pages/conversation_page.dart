@@ -234,7 +234,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
                 ],
               ),
             ),
-            this.isVoiceRecording? WidgetUtil.buildVoiceRecorderWidget() :Container(width: 1,height: 1,),
+            this.isVoiceRecording? WidgetUtil.buildVoiceRecorderWidget() :WidgetUtil.buildEmptyWidget(),
           ],
         ),
       ) 

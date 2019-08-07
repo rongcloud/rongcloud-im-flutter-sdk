@@ -11,22 +11,24 @@ import '../../util/user_info_datesource.dart';
 
 class ConversationListItem extends StatefulWidget {
   final Conversation conversation;
-
-  const ConversationListItem({Key key, this.conversation}) : super(key: key);
+  final ConversationListItemDelegate delegate;
+  const ConversationListItem({Key key,this.delegate, this.conversation}) : super(key: key);
   
   @override
   State<StatefulWidget> createState() {
-    return new _ConversationListItemState(conversation);
+    return new _ConversationListItemState(this.delegate,this.conversation);
   }
 }
 
 class _ConversationListItemState extends State<ConversationListItem> {
   Conversation conversation ;
+  ConversationListItemDelegate delegate;
   UserInfo user;
 
-  _ConversationListItemState(Conversation con) {
-    conversation = con;
-    user = UserInfoDataSource.getUserInfo(con.senderUserId);
+  _ConversationListItemState(ConversationListItemDelegate delegate,Conversation con) {
+    this.delegate = delegate;
+    this.conversation = con;
+    this.user = UserInfoDataSource.getUserInfo(con.senderUserId);
   }
   
 
@@ -35,11 +37,18 @@ class _ConversationListItemState extends State<ConversationListItem> {
       color: Color(UIColor.ConItemBgColor),
       child: InkWell(
         onTap: () {
-          Map arg = {"coversationType":conversation.conversationType,"targetId":conversation.targetId};
-          Navigator.pushNamed(context, "/conversation",arguments: arg);
+          if(this.delegate != null) {
+            this.delegate.didTapConversation(this.conversation);
+          }else {
+            print("没有实现 ConversationListItemDelegate");
+          }
         },
         onLongPress: () {
-
+          if(this.delegate != null) {
+            this.delegate.didLongPressConversation(this.conversation);
+          }else {
+            print("没有实现 ConversationListItemDelegate");
+          }
         },
         child: Container(
           height: ScreenUtil().setHeight(120),
@@ -167,4 +176,9 @@ class _ConversationListItemState extends State<ConversationListItem> {
   Widget build(BuildContext context) {
     return _buildTile();
   }
+}
+
+abstract class ConversationListItemDelegate {
+  void didTapConversation(Conversation conversation);
+  void didLongPressConversation(Conversation conversation);
 }

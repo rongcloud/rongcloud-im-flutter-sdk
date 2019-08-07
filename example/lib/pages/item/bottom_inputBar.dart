@@ -49,6 +49,8 @@ class _BottomInputBarState extends State<BottomInputBar> {
     }
     if(this.delegate != null) {
       this.delegate.willSendText(messageStr);
+    }else {
+      print("没有实现 BottomInputBarDelegate");
     }
     this.textField.controller.text = '';
   }
@@ -73,6 +75,8 @@ class _BottomInputBarState extends State<BottomInputBar> {
     }
     if(this.delegate != null) {
       this.delegate.didTapExtentionButton();
+    }else {
+      print("没有实现 BottomInputBarDelegate");
     }
     _notifyInputStatusChanged(status);
   }
@@ -82,6 +86,8 @@ class _BottomInputBarState extends State<BottomInputBar> {
     MediaUtil.instance.startRecordAudio();
     if(this.delegate != null) {
       this.delegate.willStartRecordVoice();
+    }else {
+      print("没有实现 BottomInputBarDelegate");
     }
   }
 
@@ -90,10 +96,14 @@ class _BottomInputBarState extends State<BottomInputBar> {
     MediaUtil.instance.stopRecordAudio((String path,int duration) {
       if(this.delegate != null) {
         this.delegate.willSendVoice(path,duration);
+      }else {
+        print("没有实现 BottomInputBarDelegate");
       }
     });
     if(this.delegate != null) {
       this.delegate.willStopRecordVoice();
+    }else {
+      print("没有实现 BottomInputBarDelegate");
     }
   }
 
@@ -140,6 +150,8 @@ class _BottomInputBarState extends State<BottomInputBar> {
     this.inputBarStatus = status;
     if(this.delegate != null) {
       this.delegate.inputStatusDidChange(status);
+    }else {
+      print("没有实现 BottomInputBarDelegate");
     }
   }
 

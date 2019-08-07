@@ -42,7 +42,7 @@ class _ConversationItemState extends State<ConversationItem> {
       padding: EdgeInsets.all(10.0),
       child:Column(
         children: <Widget>[
-          this.showTime? WidgetUtil.buildMessageTimeWidget(message.sentTime):Container(width: 1,height: 1,),
+          this.showTime? WidgetUtil.buildMessageTimeWidget(message.sentTime):WidgetUtil.buildEmptyWidget(),
           Row(
             children: <Widget>[subContent()],
           )
@@ -102,6 +102,8 @@ class _ConversationItemState extends State<ConversationItem> {
   void __onTapedMesssage() {
     if(delegate != null) {
       delegate.didTapMessageItem(message);
+    }else {
+      print("没有实现 ConversationItemDelegate");
     }
   }
 
@@ -112,7 +114,7 @@ class _ConversationItemState extends State<ConversationItem> {
         Expanded(
           child: Container(
             padding: EdgeInsets.fromLTRB(15, 6, 15, 10),
-            alignment: message.messageDirection == 1
+            alignment: message.messageDirection == RCMessageDirection.Send
                 ? Alignment.centerRight
                 : Alignment.centerLeft,
             child: GestureDetector(
