@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:rongcloud_im_plugin_example/util/style.dart';
 import 'package:rongcloud_im_plugin_example/util/time.dart';
 import 'package:rongcloud_im_plugin_example/util/user_info_datesource.dart';
 import 'item/conversation_item.dart';
@@ -227,6 +228,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
         title: Text('与${this.user.name}的会话'),
       ),
       body:Container(
+        color: Color(UIColor.GeneralBgColor),
         child: Stack(
           children: <Widget>[
             SafeArea(

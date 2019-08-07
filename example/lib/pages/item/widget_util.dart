@@ -84,8 +84,9 @@ class WidgetUtil {
         child: Container(
           alignment: Alignment.center,
           width: 80,
+          height: 25,
           color: Color(UIColor.MessageTimeBgColor),
-          child: Text(TimeUtil.convertTime(sentTime),style: TextStyle(color: Colors.white,fontSize: 12),),
+          child: Text(TimeUtil.convertTime(sentTime),style: TextStyle(color: Colors.white,fontSize: 15),),
         ),
       );
   }

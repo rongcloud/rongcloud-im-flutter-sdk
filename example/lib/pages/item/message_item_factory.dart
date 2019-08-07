@@ -15,10 +15,8 @@ class MessageItemFactory extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        height: 44,
         padding: EdgeInsets.all(8),
-        color: _getMessageWidgetBGColor(message.messageDirection),
-        child: Text(msg.content),
+        child: Text(msg.content,style: TextStyle(fontSize: 20),),
       ),
     );
   }
@@ -54,7 +52,7 @@ class MessageItemFactory extends StatelessWidget {
     List<Widget> list = new List();
     if(message.messageDirection == RCMessageDirection.Send) {
       list.add(SizedBox(width: 6,));
-      list.add(Text(msg.duration.toString()+"''"));
+      list.add(Text(msg.duration.toString()+"''",style: TextStyle(fontSize: 20),));
       list.add(SizedBox(width: 20,));
       list.add(Container(
                 width: 20,
@@ -77,7 +75,6 @@ class MessageItemFactory extends StatelessWidget {
       child: Container(
         width: 80,
         height: 44,
-        color: _getMessageWidgetBGColor(message.messageDirection),
         child: Row(
           children:list
         ) ,
@@ -108,6 +105,7 @@ class MessageItemFactory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: _getMessageWidgetBGColor(message.messageDirection),
       child: messageItem(),
     );
   }

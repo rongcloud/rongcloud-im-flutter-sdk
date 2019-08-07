@@ -28,7 +28,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
   _ConversationListItemState(ConversationListItemDelegate delegate,Conversation con) {
     this.delegate = delegate;
     this.conversation = con;
-    this.user = UserInfoDataSource.getUserInfo(con.senderUserId);
+    this.user = UserInfoDataSource.getUserInfo(con.targetId);
   }
   
 
