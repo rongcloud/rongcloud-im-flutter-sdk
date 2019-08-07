@@ -30,7 +30,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
   int conversationType;
   String targetId;
   List msgList = new List();
-  ScrollController _controller = ScrollController();
+  ScrollController _scrollController = ScrollController();
   bool showExtentionWidget = false;
   ConversationStatus currentStatus;
   List<Widget> extWidgetList = new List();
@@ -53,12 +53,11 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
     onGetHistoryMessages();
     _initExtentionWidgets();
 
-    _controller.addListener(() {
+    _scrollController.addListener(() {
       print(
-          'scroller 最大值 addListener maxScrollExtent${_controller.position.maxScrollExtent}');
-      print('scroller 最大值 addListener pixels${_controller.position.pixels}');
+          'scroller 最大值 addListener maxScrollExtent${_scrollController.position.maxScrollExtent}');
+      print('scroller 最大值 addListener pixels${_scrollController.position.pixels}');
     });
-    print("get history message11111");
   }
 
   void _requestPermissions() {
@@ -68,78 +67,66 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
   @override
   void didUpdateWidget(Widget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    print('scroller 最大值 oldWidget ${_controller.position.maxScrollExtent}');
   }
 
   _addIMHandler() {
     RongcloudImPlugin.onMessageReceived = (Message msg, int left) {
       if (msg.targetId == this.targetId) {
-        msgList.add(msg);
+        _insertOrReplaceMessage(msg);
       }
-      //  _controller.jumpTo(0);
-      setState(() {});
-      _scrollToBottom(100);
+      _refreshUI();
     };
 
     RongcloudImPlugin.onMessageSend = (int messageId, int status, int code) async {
       Message msg = await RongcloudImPlugin.getMessage(messageId);
       if(msg.targetId == this.targetId) {
-        msgList.add(msg);
+        _insertOrReplaceMessage(msg);
       }
-
-      setState(() {});
-      _scrollToBottom(100);
+      _refreshUI();
     };
   }
 
   onGetHistoryMessages() async {
-    List msgs = await RongcloudImPlugin.getHistoryMessage(
-        conversationType, targetId, 0, 20);
     print("get history message");
 
-    List msg = new List();
-
-    for (Message m in msgs) {
-      msg.insert(0, m);
+    List msgs = await RongcloudImPlugin.getHistoryMessage(
+        conversationType, targetId, 0, 20);
+    if(msgs != null) {
+      msgs.sort((a,b) => b.sentTime.compareTo(a.sentTime));
+      msgList = msgs;
     }
-    print(msg);
-
-    setState(() {
-      msgList = msg;
-      print('scroller   setState 1${_controller.position.maxScrollExtent}');
-    });
-
-    print(
-        'scroller 最大值onGetHistoryMessages ${_controller.position.maxScrollExtent}');
-    // _controller.jumpTo(_controller.position.maxScrollExtent);
-
-    _scrollToBottom(10);
+    _refreshUI();
   }
 
-  void _scrollToBottom(int milliseconds) {
-    Timer(Duration(milliseconds: milliseconds),
-        () => _controller.jumpTo(_controller.position.maxScrollExtent));
+  void _insertOrReplaceMessage(Message message) {
+    int index = -1;
+    for(int i=0;i<msgList.length;i++) {
+      Message msg =  msgList[i];
+      if(msg.messageId == message.messageId) {
+        index = i;
+        break;
+      }
+    }
+    if(index >=0) {//如果数据源中相同 id 消息，那么更新对应消息，否则插入消息
+      msgList[index] = message;
+    }else {
+      msgList.insert(0, message);
+    }
+    _refreshUI();
   }
 
   void _onRefresh() async {
-    // monitor network fetch
+    print("下拉加载更多历史消息");
     await Future.delayed(Duration(milliseconds: 1000));
-    // if failed,use refreshFailed()
-    //  msgList.add(msgList[0]);
-    setState(() {});
     _refreshController.refreshCompleted();
+    _refreshUI();
   }
 
   void _onLoading() async {
-    // monitor network fetch
+    print("下拉加载更多历史消息");
     await Future.delayed(Duration(milliseconds: 1000));
-    // if failed,use loadFailed(),if no data return,use LoadNodata()
-    // items.add((items.length+1).toString());
-    // if(mounted)
-
-    msgList.add(msgList[0]);
-    setState(() {});
     _refreshController.loadComplete();
+    _refreshUI();
   }
 
   Widget _getExtentionWidget() {
@@ -157,6 +144,13 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
     }
   }
 
+  /// 禁止随意调用 setState 接口刷新 UI，必须调用该接口刷新 UI
+  void _refreshUI() {
+    setState(() {
+    });
+  }
+
+
   void _initExtentionWidgets() {
     Widget imageWidget = WidgetUtil.buildExtentionWidget(Icons.photo, "相册", () async {
       String imgPath = await MediaUtil.instance.pickImage();
@@ -167,6 +161,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
       ImageMessage imgMsg = ImageMessage.obtain(imgPath);
       Message msg = await RongcloudImPlugin.sendMessage(
           conversationType, targetId, imgMsg);
+      _insertOrReplaceMessage(msg);
     });
 
     Widget cameraWidget = WidgetUtil.buildExtentionWidget(Icons.camera, "相机", () async {
@@ -179,6 +174,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
       ImageMessage imgMsg = ImageMessage.obtain(imgPath);
       Message msg = await RongcloudImPlugin.sendMessage(
           conversationType, targetId, imgMsg);
+      _insertOrReplaceMessage(msg);
     });
 
     extWidgetList.add(imageWidget);
@@ -209,9 +205,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
 
   void _showExtraCenterWidget(ConversationStatus status) {
     this.currentStatus = status;
-    setState(() {
-      
-    });
+    _refreshUI();
   }
 
   @override
@@ -229,17 +223,20 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
                 children: <Widget>[
                   Expanded(
                     child: SmartRefresher(
-                      enablePullDown: true,
+                      enablePullUp: true,
+                      onLoading: _onLoading,
                       onRefresh: _onRefresh,
                       child: ListView.builder(
                         key: UniqueKey(),
-                        controller: _controller,
+                        shrinkWrap: true,
+                        reverse: true,
+                        controller: _scrollController,
                         itemCount: msgList.length,
                         itemBuilder: (BuildContext context, int index) {
                           if (msgList.length != null && msgList.length > 0) {
                             return ConversationItem(this,msgList[index],_needShowTime(index));
                           } else {
-                            return null;
+                            return WidgetUtil.buildEmptyWidget();
                           }
                         },
                       ),
@@ -290,16 +287,18 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
   }
 
   @override
-  void willSendText(String text) {
+  void willSendText(String text) async {
     TextMessage msg = new TextMessage();
     msg.content = text;
-    RongcloudImPlugin.sendMessage(conversationType, targetId, msg);
+    Message message = await RongcloudImPlugin.sendMessage(conversationType, targetId, msg);
+    _insertOrReplaceMessage(message);
   }
 
   @override
-  void willSendVoice(String path,int duration) {
+  void willSendVoice(String path,int duration) async {
     VoiceMessage msg = VoiceMessage.obtain(path, duration);
-    RongcloudImPlugin.sendMessage(conversationType, targetId, msg);
+    Message message = await RongcloudImPlugin.sendMessage(conversationType, targetId, msg);
+    _insertOrReplaceMessage(message);
   }
 
   @override
@@ -314,9 +313,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
     }else {
       showExtentionWidget = false;
     }
-    setState(() {
-      
-    });
+    _refreshUI();
   }
 
   @override
