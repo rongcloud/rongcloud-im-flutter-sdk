@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:rongcloud_im_plugin_example/pages/item/widget_util.dart';
+import 'package:rongcloud_im_plugin_example/util/style.dart';
 import 'item/conversation_list_item.dart';
 
 class ConversationListPage extends StatefulWidget {
@@ -17,7 +18,6 @@ class ConversationListPage extends StatefulWidget {
 class _ConversationListPageState extends State<ConversationListPage> implements ConversationListItemDelegate{
 
   List conList = new List();
-  bool needShowConversationDialog = false;
 
   @override
   void initState() {
@@ -51,33 +51,16 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
     };
   }
 
-  Widget _buildConversationDialog() {
-    if(needShowConversationDialog) {
-      return WidgetUtil.buildLongPressDialog(["清除未读","删除会话"],(int index){
-        //todo
-        print("_buildConversationDialog "+index.toString());
-        _showConversationDialog(false);
-      });
-    }else {
-      return WidgetUtil.buildEmptyWidget();
-    }
-  }
-
   Widget _buildConversationListView() {
-    return Stack(
-      children: <Widget>[
-        new ListView.builder(
-          scrollDirection: Axis.vertical,
-          itemCount: conList.length,
-          itemBuilder: (BuildContext context,int index) {
-            if(conList.length <= 0) {
-              return WidgetUtil.buildEmptyWidget();
-            }
-            return ConversationListItem(delegate:this,conversation:conList[index]);
-          },
-        ),
-        _buildConversationDialog(),
-      ],
+    return new ListView.builder(
+      scrollDirection: Axis.vertical,
+      itemCount: conList.length,
+      itemBuilder: (BuildContext context,int index) {
+        if(conList.length <= 0) {
+          return WidgetUtil.buildEmptyWidget();
+        }
+        return ConversationListItem(delegate:this,conversation:conList[index]);
+      },
     );
   }
 
@@ -89,17 +72,15 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
     );
   }
 
-  void _showConversationDialog(bool show) {
-    this.needShowConversationDialog = show;
-    setState(() {
-      
-    });
-  }
-
   @override
-  void didLongPressConversation(Conversation conversation) {
-    print("didLongPressConversation");
-    _showConversationDialog(true);
+  void didLongPressConversation(Conversation conversation,Offset tapPos) {
+    Map<String,String> actionMap = {
+      RCLongPressAction.DeleteConversationKey:RCLongPressAction.DeleteConversationValue,
+      RCLongPressAction.ClearUnreadKey:RCLongPressAction.ClearUnreadValue
+    };
+    WidgetUtil.showLongPressMenu(context, tapPos,actionMap,(String key) {
+      print("当前选中的是 "+ key);
+    });
   }
 
   @override

@@ -85,10 +85,43 @@ class WidgetUtil {
           alignment: Alignment.center,
           width: 80,
           height: 25,
-          color: Color(UIColor.MessageTimeBgColor),
-          child: Text(TimeUtil.convertTime(sentTime),style: TextStyle(color: Colors.white,fontSize: 15),),
+          color: Color(RCColor.MessageTimeBgColor),
+          child: Text(TimeUtil.convertTime(sentTime),style: TextStyle(color: Colors.white,fontSize: RCFont.MessageTimeFont),),
         ),
       );
+  }
+
+  static void showLongPressMenu(BuildContext context,Offset tapPos,Map<String,String> map,Function(String key)onSelected) {
+    final RenderBox overlay =Overlay.of(context).context.findRenderObject();
+      final RelativeRect position = RelativeRect.fromLTRB(
+        tapPos.dx, tapPos.dy,
+        overlay.size.width - tapPos.dx,
+        overlay.size.height - tapPos.dy
+      );
+      List<PopupMenuEntry<String>>  items = new List();
+      map.keys.forEach((String key) {
+        PopupMenuItem<String> p = PopupMenuItem(
+          child: Container(
+            alignment: Alignment.center,
+            child: Text(map[key],textAlign: TextAlign.center,),
+          ),
+          value: key,
+        );
+        items.add(p);
+      });
+      showMenu<String>(
+        context: context,
+        position: position,
+        items: items
+      ).then<String>((String selectedStr) {
+        if(onSelected != null) {
+          if(selectedStr == null) {
+            selectedStr = RCLongPressAction.UndefinedKey;
+          }
+          onSelected(selectedStr);
+        }
+        return selectedStr;
+      });
   }
 
   /// onTaped 点击事件，0~n 代表点击了对应下标，-1 代表点击了白透明空白区域

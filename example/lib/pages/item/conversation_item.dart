@@ -28,6 +28,7 @@ class _ConversationItemState extends State<ConversationItem> {
   ConversationItemDelegate delegate;
   bool showTime;
   UserInfo user;
+  Offset tapPos;
 
   _ConversationItemState(ConversationItemDelegate delegate,Message msg,bool showTime) {
     this.message = msg;
@@ -64,7 +65,7 @@ class _ConversationItemState extends State<ConversationItem> {
                   Container(
                     alignment: Alignment.centerRight,
                     padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
-                    child: Text(this.user.name,style: TextStyle(color: Color(UIColor.MessageNameBgColor))),
+                    child: Text(this.user.name,style: TextStyle(color: Color(RCColor.MessageNameBgColor))),
                   ),
                   buildMessageWidget(),
                 ],
@@ -87,7 +88,7 @@ class _ConversationItemState extends State<ConversationItem> {
                   Container(
                     alignment: Alignment.centerLeft,
                     padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
-                    child: Text(this.user.name,style: TextStyle(color: Color(UIColor.MessageNameBgColor)),),
+                    child: Text(this.user.name,style: TextStyle(color: Color(RCColor.MessageNameBgColor)),),
                   ),
                   buildMessageWidget(),
                 ],
@@ -109,9 +110,9 @@ class _ConversationItemState extends State<ConversationItem> {
     }
   }
 
-  void __onLongPressMessage() {
+  void __onLongPressMessage(Offset tapPos) {
     if(delegate != null) {
-      delegate.didLongPressMessageItem(message);
+      delegate.didLongPressMessageItem(message,tapPos);
     }else {
       print("没有实现 ConversationItemDelegate");
     }
@@ -129,11 +130,14 @@ class _ConversationItemState extends State<ConversationItem> {
                 : Alignment.centerLeft,
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
+              onTapDown: (TapDownDetails details) {
+                this.tapPos = details.globalPosition;
+              },
               onTap: () {
                 __onTapedMesssage();
               },
               onLongPress: () {
-                __onLongPressMessage();
+                __onLongPressMessage(this.tapPos);
               },
               child:MessageItemFactory(message: message) ,
             )
@@ -146,5 +150,5 @@ class _ConversationItemState extends State<ConversationItem> {
 
 abstract class ConversationItemDelegate {
   void didTapMessageItem(Message message);
-  void didLongPressMessageItem(Message message);
+  void didLongPressMessageItem(Message message,Offset tapPos);
 }

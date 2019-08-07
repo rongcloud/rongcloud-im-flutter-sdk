@@ -16,7 +16,7 @@ class MessageItemFactory extends StatelessWidget {
       borderRadius: BorderRadius.circular(8),
       child: Container(
         padding: EdgeInsets.all(8),
-        child: Text(msg.content,style: TextStyle(fontSize: 20),),
+        child: Text(msg.content,style: TextStyle(fontSize: RCFont.MessageTextFont),),
       ),
     );
   }
@@ -52,7 +52,7 @@ class MessageItemFactory extends StatelessWidget {
     List<Widget> list = new List();
     if(message.messageDirection == RCMessageDirection.Send) {
       list.add(SizedBox(width: 6,));
-      list.add(Text(msg.duration.toString()+"''",style: TextStyle(fontSize: 20),));
+      list.add(Text(msg.duration.toString()+"''",style: TextStyle(fontSize: RCFont.MessageTextFont),));
       list.add(SizedBox(width: 20,));
       list.add(Container(
                 width: 20,
@@ -95,9 +95,9 @@ class MessageItemFactory extends StatelessWidget {
   }
 
   Color _getMessageWidgetBGColor(int messageDirection) {
-    Color color = Color(UIColor.MessageSendBgColor);
+    Color color = Color(RCColor.MessageSendBgColor);
     if(message.messageDirection == RCMessageDirection.Receive) {
-      color = Color(UIColor.MessageReceiveBgColor);
+      color = Color(RCColor.MessageReceiveBgColor);
     }
     return color;
   }

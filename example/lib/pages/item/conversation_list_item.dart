@@ -24,6 +24,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
   Conversation conversation ;
   ConversationListItemDelegate delegate;
   UserInfo user;
+  Offset tapPos;
 
   _ConversationListItemState(ConversationListItemDelegate delegate,Conversation con) {
     this.delegate = delegate;
@@ -34,8 +35,11 @@ class _ConversationListItemState extends State<ConversationListItem> {
 
   Widget _buildTile() {
     return Material(
-      color: Color(UIColor.ConItemBgColor),
+      color: Color(RCColor.ConItemBgColor),
       child: InkWell(
+        onTapDown: (TapDownDetails details) {
+          tapPos = details.globalPosition;
+        },
         onTap: () {
           if(this.delegate != null) {
             this.delegate.didTapConversation(this.conversation);
@@ -45,14 +49,14 @@ class _ConversationListItemState extends State<ConversationListItem> {
         },
         onLongPress: () {
           if(this.delegate != null) {
-            this.delegate.didLongPressConversation(this.conversation);
+            this.delegate.didLongPressConversation(this.conversation,this.tapPos);
           }else {
             print("没有实现 ConversationListItemDelegate");
           }
         },
         child: Container(
           height: ScreenUtil().setHeight(120),
-          color: Color(UIColor.ConItemBgColor),
+          color: Color(RCColor.ConItemBgColor),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -93,7 +97,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
         margin: EdgeInsets.only(left:ScreenUtil().setWidth(20.0)),
         decoration: BoxDecoration(
           border: Border(
-            bottom: BorderSide(width: 0.5,color: Color(UIColor.ConBorderColor),)
+            bottom: BorderSide(width: 0.5,color: Color(RCColor.ConBorderColor),)
           )
         ),
         child: Row(
@@ -109,7 +113,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
   Widget _buildTime(){
     String time = TimeUtil.convertTime(conversation.sentTime);
     List<Widget> _rightArea =<Widget>[
-      Text(time,style:TextStyle(fontSize: ScreenUtil().setSp(24.0),color: Color(UIColor.ConTimeColor))),
+      Text(time,style:TextStyle(fontSize: ScreenUtil().setSp(24.0),color: Color(RCColor.ConTimeColor))),
       SizedBox(height: ScreenUtil().setHeight(15.0),)
     ];
     return Container(
@@ -138,14 +142,14 @@ class _ConversationListItemState extends State<ConversationListItem> {
         children: <Widget>[
           Text(
             title,
-            style: TextStyle(fontSize: ScreenUtil().setSp(30.0),color: Color(UIColor.ConTitleColor),fontWeight:FontWeight.w400),
+            style: TextStyle(fontSize: ScreenUtil().setSp(30.0),color: Color(RCColor.ConTitleColor),fontWeight:FontWeight.w400),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
           SizedBox(height: ScreenUtil().setHeight(15.0),),
           Text(
             digest,
-            style: TextStyle(fontSize: ScreenUtil().setSp(24.0),color: Color(UIColor.ConDigestColor)),
+            style: TextStyle(fontSize: ScreenUtil().setSp(24.0),color: Color(RCColor.ConDigestColor)),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           )
@@ -166,9 +170,9 @@ class _ConversationListItemState extends State<ConversationListItem> {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(35.0),
-        color: Color(UIColor.ConUnreadColor)
+        color: Color(RCColor.ConUnreadColor)
       ),
-      child: Text(count.toString(),style:TextStyle(fontSize: ScreenUtil().setSp(18),color: Color(UIColor.ConUnreadTextColor)))
+      child: Text(count.toString(),style:TextStyle(fontSize: ScreenUtil().setSp(18),color: Color(RCColor.ConUnreadTextColor)))
     );
   }
 
@@ -180,5 +184,5 @@ class _ConversationListItemState extends State<ConversationListItem> {
 
 abstract class ConversationListItemDelegate {
   void didTapConversation(Conversation conversation);
-  void didLongPressConversation(Conversation conversation);
+  void didLongPressConversation(Conversation conversation,Offset tapPos);
 }

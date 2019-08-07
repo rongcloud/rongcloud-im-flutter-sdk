@@ -14,7 +14,6 @@ import 'item/widget_util.dart';
 enum ConversationStatus{
   Normal,//正常
   VoiceRecorder,//语音输入，页面中间回弹出录音的 gif
-  LongPress,//长按，页面中间会弹出半透明的选择框
 }
 
 class ConversationPage extends StatefulWidget {
@@ -201,13 +200,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
   }
 
   Widget _buildExtraCenterWidget() {
-    if(this.currentStatus == ConversationStatus.LongPress) {
-      return WidgetUtil.buildLongPressDialog(["删除消息"],(int index){
-        //todo
-        print("_buildLongPressDialog "+index.toString());
-        _showExtraCenterWidget(ConversationStatus.Normal);
-      });
-    }else if(this.currentStatus == ConversationStatus.VoiceRecorder) {
+    if(this.currentStatus == ConversationStatus.VoiceRecorder) {
       return WidgetUtil.buildVoiceRecorderWidget();
     }else {
       return WidgetUtil.buildEmptyWidget();
@@ -228,7 +221,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
         title: Text('与${this.user.name}的会话'),
       ),
       body:Container(
-        color: Color(UIColor.GeneralBgColor),
+        color: Color(RCColor.GeneralBgColor),
         child: Stack(
           children: <Widget>[
             SafeArea(
@@ -286,8 +279,14 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
   }
 
   @override
-  void didLongPressMessageItem(Message message) {
-    _showExtraCenterWidget(ConversationStatus.LongPress);
+  void didLongPressMessageItem(Message message,Offset tapPos) {
+    Map<String,String> actionMap = {
+      RCLongPressAction.CopyKey:RCLongPressAction.CopyValue,
+      RCLongPressAction.DeleteKey:RCLongPressAction.DeleteValue
+    };
+    WidgetUtil.showLongPressMenu(context, tapPos,actionMap,(String key) {
+      print("当前选中的是 "+ key);
+    });
   }
 
   @override
