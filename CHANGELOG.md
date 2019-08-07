@@ -1,3 +1,8 @@
+## 0.9.4
+
+* 解决 Android 时间戳 Long 强转为 Integer 报错 [详细参见](https://github.com/rongcloud/rongcloud-im-flutter-sdk/issues/13)
+
+
 ## 0.9.3
 
 * 增加删除历史消息的接口：删除特定会话消息；批量删除消息
