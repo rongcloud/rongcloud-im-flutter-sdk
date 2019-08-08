@@ -179,10 +179,11 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
 
   bool _needShowTime(int index) {
     bool needShow = false;
-    if(index == 0) {//第一条消息一定显示时间
+    //消息是逆序的
+    if(index == messageDataSource.length - 1) {//第一条消息一定显示时间
       needShow = true;
     }else {//如果满足条件，则显示时间
-      Message lastMessage = messageDataSource[index-1];
+      Message lastMessage = messageDataSource[index+1];
       Message curMessage = messageDataSource[index];
       if(TimeUtil.needShowTime(lastMessage.sentTime, curMessage.sentTime)) {
         needShow = true;
