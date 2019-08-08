@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+
+import 'item/conversation_item.dart';
+import 'item/bottom_input_bar.dart';
+import 'item/widget_util.dart';
+
 import '../util/style.dart';
 import '../util/time.dart';
 import '../util/user_info_datesource.dart';
-import 'item/conversation_item.dart';
-import 'item/bottom_input_bar.dart';
 import '../util/media_util.dart';
-import 'item/widget_util.dart';
+import '../util/event_bus.dart';
 
 enum ConversationStatus{
   Normal,//正常
@@ -60,6 +63,12 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
         _pullMoreHistoryMessage();
       }
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    EventBus.instance.commit(EventKeys.ConversationPageDispose, null);
   }
 
   void _pullMoreHistoryMessage() async {

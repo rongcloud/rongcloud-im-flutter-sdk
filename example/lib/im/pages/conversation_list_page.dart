@@ -1,12 +1,16 @@
 
+import 'dart:async';
 import 'dart:core';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+
 import 'item/widget_util.dart';
-import '../util/style.dart';
 import 'item/conversation_list_item.dart';
+
+import '../util/style.dart';
+import '../util/event_bus.dart';
 
 class ConversationListPage extends StatefulWidget {
   @override
@@ -24,6 +28,19 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
     super.initState();
     addIMhandler();
     updateConversationList();
+
+    EventBus.instance.addlistener(EventKeys.ConversationPageDispose, (arg) {
+      Timer(Duration(milliseconds:10), (){
+        updateConversationList();
+        _renfreshUI();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    EventBus.instance.removelistener(EventKeys.ConversationPageDispose);
   }
 
   updateConversationList() async {
