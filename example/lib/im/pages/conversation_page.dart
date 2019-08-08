@@ -281,6 +281,11 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
   }
 
   @override
+  void didTapUserPortrait(String userId) {
+    print("点击了用户头像 "+userId);
+  }
+
+  @override
   void willSendText(String text) async {
     TextMessage msg = new TextMessage();
     msg.content = text;

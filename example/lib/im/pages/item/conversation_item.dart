@@ -71,7 +71,12 @@ class _ConversationItemState extends State<ConversationItem> {
                 ],
               ),
             ),
-            WidgetUtil.buildUserPortrait(this.user.portraitUrl),
+            GestureDetector(
+              onTap: () {
+                __onTapedUserPortrait();
+              },
+              child: WidgetUtil.buildUserPortrait(this.user.portraitUrl),
+            ),
           ],
         ),
       );
@@ -81,7 +86,12 @@ class _ConversationItemState extends State<ConversationItem> {
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            WidgetUtil.buildUserPortrait(this.user.portraitUrl),
+            GestureDetector(
+              onTap: () {
+                __onTapedUserPortrait();
+              },
+              child: WidgetUtil.buildUserPortrait(this.user.portraitUrl),
+            ),
             Expanded(
               child: Column(
                 children: <Widget>[
@@ -113,6 +123,14 @@ class _ConversationItemState extends State<ConversationItem> {
   void __onLongPressMessage(Offset tapPos) {
     if(delegate != null) {
       delegate.didLongPressMessageItem(message,tapPos);
+    }else {
+      print("没有实现 ConversationItemDelegate");
+    }
+  }
+
+  void __onTapedUserPortrait() {
+    if(delegate != null) {
+      delegate.didTapUserPortrait(message.senderUserId);
     }else {
       print("没有实现 ConversationItemDelegate");
     }
@@ -151,6 +169,10 @@ class _ConversationItemState extends State<ConversationItem> {
 }
 
 abstract class ConversationItemDelegate {
+  //点击消息
   void didTapMessageItem(Message message);
+  //长按消息
   void didLongPressMessageItem(Message message,Offset tapPos);
+  //点击用户头像
+  void didTapUserPortrait(String userId);
 }
