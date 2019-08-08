@@ -1,6 +1,8 @@
 import 'dart:core';
 
 class TimeUtil {
+  
+  //将 unix 时间戳转换为特定时间文本，如年月日
   static String convertTime(int timestamp) {
     DateTime msgTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
     DateTime nowTime = DateTime.now();

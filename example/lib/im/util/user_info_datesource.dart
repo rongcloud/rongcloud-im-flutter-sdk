@@ -6,8 +6,9 @@ class UserInfo {
   String portraitUrl;
 }
 
+//用户信息，用户信息需要开发者自行处理（从 APP 服务获取用户信息并保存），此处只做了最简单的处理
 class UserInfoDataSource {
-  static Map<String,UserInfo> cachedUserMap = new Map();
+  static Map<String,UserInfo> cachedUserMap = new Map();//保证同一 userId
 
   static UserInfo getUserInfo(String userId) {
     UserInfo cachedUserInfo = cachedUserMap[userId];

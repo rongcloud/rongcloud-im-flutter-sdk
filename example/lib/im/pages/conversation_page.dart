@@ -27,13 +27,13 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
   Map arguments;
   int conversationType;
   String targetId;
-  List msgList = new List();
+
+  List messageDataSource = new List();//消息数组
+  List<Widget> extWidgetList = new List();//加号扩展栏的 widget 列表
+  bool showExtentionWidget = false;//是否显示加号扩展栏内容
+  ConversationStatus currentStatus;//当前输入工具栏的状态
+
   ScrollController _scrollController = ScrollController();
-  bool showExtentionWidget = false;
-  bool hasLeftMesssage = true;
-  ConversationStatus currentStatus;
-  List<Widget> extWidgetList = new List();
-  RefreshController _refreshController = RefreshController();
   UserInfo user;
 
   _ConversationPageState({this.arguments});
@@ -48,8 +48,11 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
 
     this.user = UserInfoDataSource.getUserInfo(targetId);
 
+    //增加 IM 监听
     _addIMHandler();
+    //获取默认的历史消息
     onGetHistoryMessages();
+    //增加加号扩展栏的 widget
     _initExtentionWidgets();
 
     _scrollController.addListener(() {
@@ -64,6 +67,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
     //todo 加载更多历史消息
   }
 
+  ///请求相应的权限，只会在此一次触发
   void _requestPermissions() {
     MediaUtil.instance.requestPermissions();
   }
@@ -91,24 +95,25 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
     List msgs = await RongcloudImPlugin.getHistoryMessage(conversationType, targetId, 0, 20);
     if(msgs != null) {
       msgs.sort((a,b) => b.sentTime.compareTo(a.sentTime));
-      msgList = msgs;
+      messageDataSource = msgs;
     }
     _refreshUI();
   }
 
   void _insertOrReplaceMessage(Message message) {
     int index = -1;
-    for(int i=0;i<msgList.length;i++) {
-      Message msg =  msgList[i];
+    for(int i=0;i<messageDataSource.length;i++) {
+      Message msg =  messageDataSource[i];
       if(msg.messageId == message.messageId) {
         index = i;
         break;
       }
     }
-    if(index >=0) {//如果数据源中相同 id 消息，那么更新对应消息，否则插入消息
-      msgList[index] = message;
+    //如果数据源中相同 id 消息，那么更新对应消息，否则插入消息
+    if(index >=0) {
+      messageDataSource[index] = message;
     }else {
-      msgList.insert(0, message);
+      messageDataSource.insert(0, message);
     }
     _refreshUI();
   }
@@ -170,8 +175,8 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
     if(index == 0) {//第一条消息一定显示时间
       needShow = true;
     }else {//如果满足条件，则显示时间
-      Message lastMessage = msgList[index-1];
-      Message curMessage = msgList[index];
+      Message lastMessage = messageDataSource[index-1];
+      Message curMessage = messageDataSource[index];
       if(TimeUtil.needShowTime(lastMessage.sentTime, curMessage.sentTime)) {
         needShow = true;
       }
@@ -216,10 +221,10 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
                             //因为消息超过一屏，ListView 很难滚动到最底部，所以要翻转显示，同时数据源也要逆序
                             reverse: true,
                             controller: _scrollController,
-                            itemCount: msgList.length,
+                            itemCount: messageDataSource.length,
                             itemBuilder: (BuildContext context, int index) {
-                              if (msgList.length != null && msgList.length > 0) {
-                                return ConversationItem(this,msgList[index],_needShowTime(index));
+                              if (messageDataSource.length != null && messageDataSource.length > 0) {
+                                return ConversationItem(this,messageDataSource[index],_needShowTime(index));
                               } else {
                                 return WidgetUtil.buildEmptyWidget();
                               }
@@ -242,12 +247,6 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
         ),
       )  
     );
-  }
-
-  @override
-  void dispose() {
-    _refreshController.dispose();
-    super.dispose();
   }
 
   @override

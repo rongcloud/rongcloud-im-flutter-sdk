@@ -23,11 +23,13 @@ class MediaUtil {
     }
     return _instance;
   }
-
+  
+  //请求权限：相册，相机，麦克风
   void requestPermissions() {
     PermissionHandler().requestPermissions([PermissionGroup.photos,PermissionGroup.camera,PermissionGroup.microphone]);
   }
 
+  //拍照，成功则返回照片的本地路径，注：Android 必须要加 file:// 头
   Future<String> takePhoto() async {
     File imgfile = await ImagePicker.pickImage(source: ImageSource.camera);
     if (imgfile == null) {
@@ -40,6 +42,7 @@ class MediaUtil {
     return imgPath;
   }
 
+  //从相册选照片，成功则返回照片的本地路径，注：Android 必须要加 file:// 头
   Future<String> pickImage() async {
     File imgfile = await ImagePicker.pickImage(source: ImageSource.gallery);
     if (imgfile == null) {
@@ -52,6 +55,7 @@ class MediaUtil {
     return imgPath;
   }
 
+  //开始录音
   void startRecordAudio() async {
     Directory tempDir = await getTemporaryDirectory();
     String tempPath = tempDir.path +
@@ -62,6 +66,7 @@ class MediaUtil {
         path: tempPath, audioOutputFormat: AudioOutputFormat.AAC);
   }
 
+  //录音结束，通过 finished 返回本地路径和语音时长，注：Android 必须要加 file:// 头
   void stopRecordAudio(Function(String path, int duration) finished) async {
     Recording recording = await AudioRecorder.stop();
     String path = recording.path;
@@ -80,6 +85,7 @@ class MediaUtil {
     }
   }
 
+  //播放语音
   void startPlayAudio(String path) {
     if(flutterSound.isPlaying) {
       stopPlayAudio();
@@ -87,6 +93,7 @@ class MediaUtil {
     flutterSound.startPlayer(path);
   }
 
+  //停止播放语音
   void stopPlayAudio() {
     flutterSound.stopPlayer();
   }

@@ -21,7 +21,9 @@ class RCFont {
   static const double MessageTimeFont = 15.0;
 }
 
+//长按 menu 的 Action
 class RCLongPressAction {
+  //如果用户点击了空白，会触发 UndefinedKey
   static const String UndefinedKey = "UndefinedKey";
 
   static const String DeleteConversationKey = "DeleteConversationKey";

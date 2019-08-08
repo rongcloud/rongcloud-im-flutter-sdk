@@ -10,17 +10,16 @@ class MessageItemFactory extends StatelessWidget {
   final Message message;
   const MessageItemFactory({Key key, this.message}) : super(key: key);
 
+  ///文本消息 item
   Widget textMessageItem() {
     TextMessage msg = message.content;
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        padding: EdgeInsets.all(8),
-        child: Text(msg.content,style: TextStyle(fontSize: RCFont.MessageTextFont),),
-      ),
+    return Container(
+      padding: EdgeInsets.all(8),
+      child: Text(msg.content,style: TextStyle(fontSize: RCFont.MessageTextFont),),
     );
   }
 
+  ///图片消息 item
   ///优先读缩略图，否则读本地路径图，否则读网络图
   Widget imageMessageItem() {
     ImageMessage msg = message.content;
@@ -41,12 +40,10 @@ class MessageItemFactory extends StatelessWidget {
         widget = Image.network(msg.imageUri);
       }
     }
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: widget,
-    );
+    return widget;
   }
 
+  ///语音消息 item
   Widget voiceMessageItem() {
     VoiceMessage msg = message.content;
     List<Widget> list = new List();
@@ -70,15 +67,12 @@ class MessageItemFactory extends StatelessWidget {
       list.add(Text(msg.duration.toString()+"''"));
     }
     
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        width: 80,
-        height: 44,
-        child: Row(
-          children:list
-        ) ,
-      ),
+    return Container(
+      width: 80,
+      height: 44,
+      child: Row(
+        children:list
+      ) ,
     );
   }
 

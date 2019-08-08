@@ -19,6 +19,7 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
 
   _ImagePreviewPageState(this.message);
 
+  //优先加载本地路径图片，否则加载网络图片
   Widget getImageWidget() {
     ImageMessage msg = message.content;
     Widget widget;

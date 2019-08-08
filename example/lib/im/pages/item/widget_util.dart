@@ -9,7 +9,7 @@ import '../../util/time.dart';
 import '../../util/style.dart';
 
 class WidgetUtil {
-  /// 会话页面加号扩展栏里面的 widget
+  /// 会话页面加号扩展栏里面的 widget，上面图片，下面文本
   static Widget buildExtentionWidget(IconData icon,String text,Function()clicked) {
     return Column(
       children: <Widget>[
@@ -64,7 +64,7 @@ class WidgetUtil {
     );
   }
 
-  /// 会话页面录音时的 widget
+  /// 会话页面录音时的 widget，gif 动画
   static Widget buildVoiceRecorderWidget() {
     return Container(
       padding: EdgeInsets.fromLTRB(50, 0, 50, 200),
@@ -77,7 +77,7 @@ class WidgetUtil {
     );
   }
 
-  /// 消息上的时间
+  /// 消息 item 上的时间
   static Widget buildMessageTimeWidget(int sentTime) {
     return ClipRRect(
         borderRadius: BorderRadius.circular(5),
@@ -91,6 +91,7 @@ class WidgetUtil {
       );
   }
 
+  /// 长按的 menu，用于处理会话列表页面和会话页面的长按
   static void showLongPressMenu(BuildContext context,Offset tapPos,Map<String,String> map,Function(String key)onSelected) {
     final RenderBox overlay =Overlay.of(context).context.findRenderObject();
       final RelativeRect position = RelativeRect.fromLTRB(
@@ -124,7 +125,7 @@ class WidgetUtil {
       });
   }
 
-  /// onTaped 点击事件，0~n 代表点击了对应下标，-1 代表点击了白透明空白区域
+  /// onTaped 点击事件，0~n 代表点击了对应下标，-1 代表点击了白透明空白区域，暂无用
   static Widget buildLongPressDialog(List<String> titles,Function(int index)onTaped){
     List<Widget> wList = new List();
     for(int i=0;i<titles.length;i++) {
@@ -181,6 +182,7 @@ class WidgetUtil {
     );
   }
 
+  /// 空白 widget ，用于处理非法参数时的占位
   static Widget buildEmptyWidget() {
     return Container(
       height: 1,

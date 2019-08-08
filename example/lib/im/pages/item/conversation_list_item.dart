@@ -32,41 +32,20 @@ class _ConversationListItemState extends State<ConversationListItem> {
     this.user = UserInfoDataSource.getUserInfo(con.targetId);
   }
   
+  void _onTaped() {
+    if(this.delegate != null) {
+      this.delegate.didTapConversation(this.conversation);
+    }else {
+      print("没有实现 ConversationListItemDelegate");
+    }
+  }
 
-  Widget _buildTile() {
-    return Material(
-      color: Color(RCColor.ConItemBgColor),
-      child: InkWell(
-        onTapDown: (TapDownDetails details) {
-          tapPos = details.globalPosition;
-        },
-        onTap: () {
-          if(this.delegate != null) {
-            this.delegate.didTapConversation(this.conversation);
-          }else {
-            print("没有实现 ConversationListItemDelegate");
-          }
-        },
-        onLongPress: () {
-          if(this.delegate != null) {
-            this.delegate.didLongPressConversation(this.conversation,this.tapPos);
-          }else {
-            print("没有实现 ConversationListItemDelegate");
-          }
-        },
-        child: Container(
-          height: ScreenUtil().setHeight(120),
-          color: Color(RCColor.ConItemBgColor),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              _buildPortrait(),
-              _buildContent()
-            ],
-          ),
-        ),
-      ),
-    );
+  void _onLongPressed() {
+    if(this.delegate != null) {
+      this.delegate.didLongPressConversation(this.conversation,this.tapPos);
+    }else {
+      print("没有实现 ConversationListItemDelegate");
+    }
   }
 
   Widget _buildPortrait() {
@@ -160,9 +139,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
 
   Widget _buildUnreadCount(int count) {
     if(count <=0 || count == null) {
-      return Container(
-        
-      );
+      return WidgetUtil.buildEmptyWidget();
     }
     return Container(
       width: ScreenUtil().setWidth(32.0),
@@ -178,11 +155,37 @@ class _ConversationListItemState extends State<ConversationListItem> {
 
   @override
   Widget build(BuildContext context) {
-    return _buildTile();
+    return Material(
+      color: Color(RCColor.ConItemBgColor),
+      child: InkWell(
+        onTapDown: (TapDownDetails details) {
+          tapPos = details.globalPosition;
+        },
+        onTap: () {
+          _onTaped();
+        },
+        onLongPress: () {
+          _onLongPressed();
+        },
+        child: Container(
+          height: ScreenUtil().setHeight(120),
+          color: Color(RCColor.ConItemBgColor),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              _buildPortrait(),
+              _buildContent()
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
 abstract class ConversationListItemDelegate {
+  ///点击了会话 item
   void didTapConversation(Conversation conversation);
+  ///长按了会话 item
   void didLongPressConversation(Conversation conversation,Offset tapPos);
 }

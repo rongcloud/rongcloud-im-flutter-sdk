@@ -191,11 +191,17 @@ enum InputBarStatus{
 }
 
 abstract class BottomInputBarDelegate {
+  ///输入工具栏状态发生变更
   void inputStatusDidChange(InputBarStatus status);
+  ///即将发送消息
   void willSendText(String text);
+  ///即将发送语音
   void willSendVoice(String path,int duration);
+  ///即将开始录音
   void willStartRecordVoice();
+  ///即将停止录音
   void willStopRecordVoice();
+  ///点击了加号按钮
   void didTapExtentionButton();
 }
 

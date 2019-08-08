@@ -119,7 +119,6 @@ class _ConversationItemState extends State<ConversationItem> {
   }
 
   Widget buildMessageWidget() {
-    // TextMessage txtMsg = message.content;
     return Row(
       children: <Widget>[
         Expanded(
@@ -139,7 +138,10 @@ class _ConversationItemState extends State<ConversationItem> {
               onLongPress: () {
                 __onLongPressMessage(this.tapPos);
               },
-              child:MessageItemFactory(message: message) ,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: MessageItemFactory(message: message) ,
+              ) ,
             )
           ),
         )
