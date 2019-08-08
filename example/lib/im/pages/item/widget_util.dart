@@ -25,17 +25,17 @@ class WidgetUtil {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Container(
-              width: 40,
-              height: 40,
+              width: RCLayout.ExtIconLayoutSize,
+              height: RCLayout.ExtIconLayoutSize,
               color: Colors.white,
-              child: Icon(icon,size: 28,),
+              child: Icon(icon,size: RCFont.ExtIconSize,),
             ),
           ),
         ),
         SizedBox(
           height: 5,
         ),
-        Text(text,style:TextStyle(fontSize:12))
+        Text(text,style:TextStyle(fontSize: RCFont.ExtTextFont))
       ],
     );
   }

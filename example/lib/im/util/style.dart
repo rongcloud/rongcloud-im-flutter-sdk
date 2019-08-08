@@ -29,6 +29,10 @@ class RCFont {
   static const double MessageTextFont = 18;
   static const double MessageTimeFont = 12;
   static const double MessageNameFont = 14;
+
+  //加号扩展栏
+  static const double ExtIconSize = 40;
+  static const double ExtTextFont = 13;
 }
 
 class RCLayout {
@@ -40,6 +44,9 @@ class RCLayout {
   //消息页面布局
   static const double MessageTimeItemWidth = 80;
   static const double MessageTimeItemHeight = 22;
+
+  //加号扩展栏
+  static const double ExtIconLayoutSize = 50;
 }
 
 //长按 menu 的 Action
