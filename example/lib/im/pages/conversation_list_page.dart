@@ -4,8 +4,8 @@ import 'dart:core';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:rongcloud_im_plugin_example/pages/item/widget_util.dart';
-import 'package:rongcloud_im_plugin_example/util/style.dart';
+import 'item/widget_util.dart';
+import '../util/style.dart';
 import 'item/conversation_list_item.dart';
 
 class ConversationListPage extends StatefulWidget {

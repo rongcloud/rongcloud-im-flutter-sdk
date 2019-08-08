@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'pages/conversation_page.dart';
-import 'pages/home_page.dart';
-import 'pages/image_preview_page.dart';
+import 'im/pages/conversation_page.dart';
+import 'other/home_page.dart';
+import 'im/pages/image_preview_page.dart';
 
 final routes = {
   '/': (context) => HomePage(),

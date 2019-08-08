@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:rongcloud_im_plugin_example/util/style.dart';
-import 'package:rongcloud_im_plugin_example/util/time.dart';
-import 'package:rongcloud_im_plugin_example/util/user_info_datesource.dart';
+import '../util/style.dart';
+import '../util/time.dart';
+import '../util/user_info_datesource.dart';
 import 'item/conversation_item.dart';
-import 'item/bottom_inputBar.dart';
+import 'item/bottom_input_bar.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../util/media_util.dart';
 import 'item/widget_util.dart';

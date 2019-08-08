@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
-import '../util/user_info_datesource.dart';
+import '../im/util/user_info_datesource.dart';
 
 class ContactsPage extends StatefulWidget {
   @override
