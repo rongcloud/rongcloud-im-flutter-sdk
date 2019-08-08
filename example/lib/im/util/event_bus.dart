@@ -18,13 +18,13 @@ class EventBus {
   Map<String,EventCallback> _events = new Map();
 
   //设置事件监听，当有人调用 commit ，并且 eventKey 一样的时候会触发此方法
-  void addlistener(String eventKey,EventCallback callback) {
+  void addListener(String eventKey,EventCallback callback) {
     if(eventKey == null || callback == null) return;
     _events[eventKey] = callback;
   }
 
   //移除监听
-  void removelistener(String eventKey) {
+  void removeListener(String eventKey) {
     if(eventKey == null) return;
     _events.remove(eventKey);
   }

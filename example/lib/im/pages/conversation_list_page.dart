@@ -29,7 +29,7 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
     addIMhandler();
     updateConversationList();
 
-    EventBus.instance.addlistener(EventKeys.ConversationPageDispose, (arg) {
+    EventBus.instance.addListener(EventKeys.ConversationPageDispose, (arg) {
       Timer(Duration(milliseconds:10), (){
         updateConversationList();
         _renfreshUI();
@@ -40,7 +40,7 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
   @override
   void dispose() {
     super.dispose();
-    EventBus.instance.removelistener(EventKeys.ConversationPageDispose);
+    EventBus.instance.removeListener(EventKeys.ConversationPageDispose);
   }
 
   updateConversationList() async {
