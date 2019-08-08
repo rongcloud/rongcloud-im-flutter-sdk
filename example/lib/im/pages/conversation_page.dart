@@ -132,6 +132,14 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
     }
   }
 
+  void _deleteMessage(Message message) {
+    //删除消息完成需要刷新消息数据源
+    RongcloudImPlugin.deleteMessageByIds([message.messageId],(int code) {
+      onGetHistoryMessages();
+      _refreshUI();
+    });
+  }
+
   /// 禁止随意调用 setState 接口刷新 UI，必须调用该接口刷新 UI
   void _refreshUI() {
     setState(() {
@@ -262,10 +270,12 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
   @override
   void didLongPressMessageItem(Message message,Offset tapPos) {
     Map<String,String> actionMap = {
-      RCLongPressAction.CopyKey:RCLongPressAction.CopyValue,
       RCLongPressAction.DeleteKey:RCLongPressAction.DeleteValue
     };
     WidgetUtil.showLongPressMenu(context, tapPos,actionMap,(String key) {
+      if(key == RCLongPressAction.DeleteKey) {
+        _deleteMessage(message);
+      }
       print("当前选中的是 "+ key);
     });
   }

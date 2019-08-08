@@ -32,6 +32,10 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
       list.sort((a,b) => b.sentTime.compareTo(a.sentTime));
       conList = list;
     }
+    _renfreshUI();
+  }
+
+  void _renfreshUI() {
     setState(() {
       
     });
@@ -49,6 +53,27 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
         updateConversationList();
       }
     };
+  }
+
+  void _deleteConversation(Conversation conversation) {
+    //删除会话需要刷新会话列表数据
+    RongcloudImPlugin.removeConversation(conversation.conversationType, conversation.targetId, (bool success) {
+      if(success) {
+        RongcloudImPlugin.deleteMessages(conversation.conversationType, conversation.targetId, (int code) {
+          updateConversationList();
+          _renfreshUI();
+        });
+      }
+    });
+  }
+
+  void _clearConversationUnread(Conversation conversation) async {
+    //清空未读需要刷新会话列表数据
+    bool success = await RongcloudImPlugin.clearMessagesUnreadStatus(conversation.conversationType, conversation.targetId);
+    if(success) {
+      updateConversationList();
+      _renfreshUI();
+    }
   }
 
   Widget _buildConversationListView() {
@@ -80,6 +105,13 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
     };
     WidgetUtil.showLongPressMenu(context, tapPos,actionMap,(String key) {
       print("当前选中的是 "+ key);
+      if(key == RCLongPressAction.DeleteConversationKey) {
+        _deleteConversation(conversation);
+      }else if(key == RCLongPressAction.ClearUnreadKey) {
+        _clearConversationUnread(conversation);
+      }else {
+        print("未实现操作 "+key);
+      }
     });
   }
 
