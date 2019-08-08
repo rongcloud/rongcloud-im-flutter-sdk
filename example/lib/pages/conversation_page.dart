@@ -32,6 +32,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
   List msgList = new List();
   ScrollController _scrollController = ScrollController();
   bool showExtentionWidget = false;
+  bool hasLeftMesssage = true;
   ConversationStatus currentStatus;
   List<Widget> extWidgetList = new List();
   RefreshController _refreshController = RefreshController();
@@ -54,19 +55,45 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
     _initExtentionWidgets();
 
     _scrollController.addListener(() {
-      print(
-          'scroller 最大值 addListener maxScrollExtent${_scrollController.position.maxScrollExtent}');
-      print('scroller 最大值 addListener pixels${_scrollController.position.pixels}');
+      //此处要用 == 而不是 >= 否则会触发多次
+      if(_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+        _pullMoreHistoryMessage();
+      }
     });
+  }
+
+  void _pullMoreHistoryMessage() async {
+    if(msgList == null || msgList.length <=0){
+      onGetHistoryMessages();
+      return;
+    }
+    if(this.hasLeftMesssage == false) {
+      print("本地已经没有更多的消息了");
+      return;
+    }
+
+    int messageCount = 10;
+
+    Message lastMsg = msgList.last;
+    List msgs = await RongcloudImPlugin.getHistoryMessage(conversationType, targetId, lastMsg.messageId, messageCount);
+    for(Message m in msgs) {
+      msgList.add(m);
+    }
+
+    //如果拉取的消息不满足规定的条数，那么说明本地已经没有更多的消息了
+    if(msgs.length < messageCount) {
+      this.hasLeftMesssage = false;
+    }
+
+    //按时间排序
+    msgList.sort((a,b) => b.sentTime.compareTo(a.sentTime));
+    
+    _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    _refreshUI();
   }
 
   void _requestPermissions() {
     MediaUtil.instance.requestPermissions();
-  }
-
-  @override
-  void didUpdateWidget(Widget oldWidget) {
-    super.didUpdateWidget(oldWidget);
   }
 
   _addIMHandler() {
@@ -112,20 +139,6 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
     }else {
       msgList.insert(0, message);
     }
-    _refreshUI();
-  }
-
-  void _onRefresh() async {
-    print("下拉加载更多历史消息");
-    await Future.delayed(Duration(milliseconds: 1000));
-    _refreshController.refreshCompleted();
-    _refreshUI();
-  }
-
-  void _onLoading() async {
-    print("下拉加载更多历史消息");
-    await Future.delayed(Duration(milliseconds: 1000));
-    _refreshController.loadComplete();
     _refreshUI();
   }
 
@@ -195,6 +208,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
     return needShow;
   }
 
+  ///长按录制语音的 gif 动画
   Widget _buildExtraCenterWidget() {
     if(this.currentStatus == ConversationStatus.VoiceRecorder) {
       return WidgetUtil.buildVoiceRecorderWidget();
@@ -214,47 +228,48 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
       appBar: AppBar(
         title: Text('与${this.user.name}的会话'),
       ),
-      body:Container(
-        color: Color(RCColor.GeneralBgColor),
+      body: Container(
         child: Stack(
           children: <Widget>[
             SafeArea(
               child: Column(
                 children: <Widget>[
-                  Expanded(
-                    child: SmartRefresher(
-                      enablePullUp: true,
-                      onLoading: _onLoading,
-                      onRefresh: _onRefresh,
-                      child: ListView.builder(
-                        key: UniqueKey(),
-                        shrinkWrap: true,
-                        reverse: true,
-                        controller: _scrollController,
-                        itemCount: msgList.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          if (msgList.length != null && msgList.length > 0) {
-                            return ConversationItem(this,msgList[index],_needShowTime(index));
-                          } else {
-                            return WidgetUtil.buildEmptyWidget();
-                          }
-                        },
-                      ),
-                      controller: _refreshController,
+                  Flexible(
+                    child: Column(
+                      children: <Widget>[
+                        Flexible(
+                          child: ListView.builder(
+                            key: UniqueKey(),
+                            shrinkWrap: true,
+
+                            //因为消息超过一屏，ListView 很难滚动到最底部，所以要翻转显示，同时数据源也要逆序
+                            reverse: true,
+                            controller: _scrollController,
+                            itemCount: msgList.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              if (msgList.length != null && msgList.length > 0) {
+                                return ConversationItem(this,msgList[index],_needShowTime(index));
+                              } else {
+                                return WidgetUtil.buildEmptyWidget();
+                              }
+                            },
+                          ),
+                        )
+                      ],
                     ),
                   ),
                   Container(
                     height: 55,
                     child: BottomInputBar(this),
                   ),
-                  _getExtentionWidget()
+                  _getExtentionWidget(),
                 ],
               ),
             ),
             _buildExtraCenterWidget(),
           ],
         ),
-      ) 
+      )  
     );
   }
 
