@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:rongcloud_im_plugin_example/util/style.dart';
@@ -63,33 +61,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
   }
 
   void _pullMoreHistoryMessage() async {
-    if(msgList == null || msgList.length <=0){
-      onGetHistoryMessages();
-      return;
-    }
-    if(this.hasLeftMesssage == false) {
-      print("本地已经没有更多的消息了");
-      return;
-    }
-
-    int messageCount = 10;
-
-    Message lastMsg = msgList.last;
-    List msgs = await RongcloudImPlugin.getHistoryMessage(conversationType, targetId, lastMsg.messageId, messageCount);
-    for(Message m in msgs) {
-      msgList.add(m);
-    }
-
-    //如果拉取的消息不满足规定的条数，那么说明本地已经没有更多的消息了
-    if(msgs.length < messageCount) {
-      this.hasLeftMesssage = false;
-    }
-
-    //按时间排序
-    msgList.sort((a,b) => b.sentTime.compareTo(a.sentTime));
-    
-    _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-    _refreshUI();
+    //todo 加载更多历史消息
   }
 
   void _requestPermissions() {
@@ -116,8 +88,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
   onGetHistoryMessages() async {
     print("get history message");
 
-    List msgs = await RongcloudImPlugin.getHistoryMessage(
-        conversationType, targetId, 0, 20);
+    List msgs = await RongcloudImPlugin.getHistoryMessage(conversationType, targetId, 0, 20);
     if(msgs != null) {
       msgs.sort((a,b) => b.sentTime.compareTo(a.sentTime));
       msgList = msgs;

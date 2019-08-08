@@ -1,8 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'conversation_list_page.dart';
 import 'contacts_page.dart';
-import 'dart:convert' show json;
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
