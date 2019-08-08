@@ -5,7 +5,6 @@ import '../util/time.dart';
 import '../util/user_info_datesource.dart';
 import 'item/conversation_item.dart';
 import 'item/bottom_input_bar.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../util/media_util.dart';
 import 'item/widget_util.dart';
 

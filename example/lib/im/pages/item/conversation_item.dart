@@ -65,7 +65,7 @@ class _ConversationItemState extends State<ConversationItem> {
                   Container(
                     alignment: Alignment.centerRight,
                     padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
-                    child: Text(this.user.name,style: TextStyle(color: Color(RCColor.MessageNameBgColor))),
+                    child: Text(this.user.name,style: TextStyle(fontSize: RCFont.MessageNameFont,color: Color(RCColor.MessageNameBgColor))),
                   ),
                   buildMessageWidget(),
                 ],

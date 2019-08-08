@@ -57,8 +57,8 @@ class WidgetUtil {
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        height: 45,
-        width: 45,
+        height: RCLayout.ConListPortraitSize,
+        width: RCLayout.ConListPortraitSize,
         child: protraitWidget,
       ),
     );
@@ -83,8 +83,8 @@ class WidgetUtil {
         borderRadius: BorderRadius.circular(5),
         child: Container(
           alignment: Alignment.center,
-          width: 80,
-          height: 25,
+          width: RCLayout.MessageTimeItemWidth,
+          height: RCLayout.MessageTimeItemHeight,
           color: Color(RCColor.MessageTimeBgColor),
           child: Text(TimeUtil.convertTime(sentTime),style: TextStyle(color: Colors.white,fontSize: RCFont.MessageTimeFont),),
         ),

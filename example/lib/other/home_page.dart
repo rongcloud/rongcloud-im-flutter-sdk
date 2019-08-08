@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../im/pages/conversation_list_page.dart';
 import 'contacts_page.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../user_data.dart';
 
@@ -41,7 +40,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.instance = ScreenUtil(width: 750,height:1334)..init(context);//初始化屏幕分辨率
     return new Scaffold(
       appBar: AppBar(
         title: Text("RongCloud IM"),

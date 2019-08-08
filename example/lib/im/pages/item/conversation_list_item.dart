@@ -1,6 +1,5 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import 'widget_util.dart';
@@ -72,11 +71,11 @@ class _ConversationListItemState extends State<ConversationListItem> {
   Widget _buildContent(){
     return Expanded(
       child: Container(
-        height: ScreenUtil().setHeight(120),
-        margin: EdgeInsets.only(left:ScreenUtil().setWidth(20.0)),
+        height: RCLayout.ConListItemHeight,
+        margin: EdgeInsets.only(left:8),
         decoration: BoxDecoration(
           border: Border(
-            bottom: BorderSide(width: 0.5,color: Color(RCColor.ConBorderColor),)
+            bottom: BorderSide(width: 0.5,color: Color(RCColor.ConListBorderColor),)
           )
         ),
         child: Row(
@@ -92,12 +91,12 @@ class _ConversationListItemState extends State<ConversationListItem> {
   Widget _buildTime(){
     String time = TimeUtil.convertTime(conversation.sentTime);
     List<Widget> _rightArea =<Widget>[
-      Text(time,style:TextStyle(fontSize: ScreenUtil().setSp(24.0),color: Color(RCColor.ConTimeColor))),
-      SizedBox(height: ScreenUtil().setHeight(15.0),)
+      Text(time,style:TextStyle(fontSize: RCFont.ConListTimeFont,color: Color(RCColor.ConListTimeColor))),
+      SizedBox(height: 15,)
     ];
     return Container(
-      width:ScreenUtil().setWidth(120),
-      margin: EdgeInsets.only(right: ScreenUtil().setWidth(10.0)),
+      width:RCLayout.ConListItemHeight,
+      margin: EdgeInsets.only(right: 8),
       child: Column(
         mainAxisAlignment:  MainAxisAlignment.center,
         children: _rightArea
@@ -121,14 +120,14 @@ class _ConversationListItemState extends State<ConversationListItem> {
         children: <Widget>[
           Text(
             title,
-            style: TextStyle(fontSize: ScreenUtil().setSp(30.0),color: Color(RCColor.ConTitleColor),fontWeight:FontWeight.w400),
+            style: TextStyle(fontSize: RCFont.ConListTitleFont,color: Color(RCColor.ConListTitleColor),fontWeight:FontWeight.w400),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          SizedBox(height: ScreenUtil().setHeight(15.0),),
+          SizedBox(height: 6,),
           Text(
             digest,
-            style: TextStyle(fontSize: ScreenUtil().setSp(24.0),color: Color(RCColor.ConDigestColor)),
+            style: TextStyle(fontSize: RCFont.ConListDigestFont,color: Color(RCColor.ConListDigestColor)),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           )
@@ -142,21 +141,21 @@ class _ConversationListItemState extends State<ConversationListItem> {
       return WidgetUtil.buildEmptyWidget();
     }
     return Container(
-      width: ScreenUtil().setWidth(32.0),
-      height: ScreenUtil().setWidth(32.0),
+      width: RCLayout.ConListUnreadSize,
+      height: RCLayout.ConListUnreadSize,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(35.0),
-        color: Color(RCColor.ConUnreadColor)
+        borderRadius: BorderRadius.circular(RCLayout.ConListUnreadSize/2.0),
+        color: Color(RCColor.ConListUnreadColor)
       ),
-      child: Text(count.toString(),style:TextStyle(fontSize: ScreenUtil().setSp(18),color: Color(RCColor.ConUnreadTextColor)))
+      child: Text(count.toString(),style:TextStyle(fontSize: RCFont.ConListUnreadFont,color: Color(RCColor.ConListUnreadTextColor)))
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Color(RCColor.ConItemBgColor),
+      color: Color(RCColor.ConListItemBgColor),
       child: InkWell(
         onTapDown: (TapDownDetails details) {
           tapPos = details.globalPosition;
@@ -168,8 +167,8 @@ class _ConversationListItemState extends State<ConversationListItem> {
           _onLongPressed();
         },
         child: Container(
-          height: ScreenUtil().setHeight(120),
-          color: Color(RCColor.ConItemBgColor),
+          height: RCLayout.ConListItemHeight,
+          color: Color(RCColor.ConListItemBgColor),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
