@@ -1,5 +1,9 @@
 # 融云 IM flutter plugin
 
+![](https://raw.githubusercontent.com/rongcloud/imkit-flutter-quickstart/master/screenshot1.png)
+
+![](https://raw.githubusercontent.com/rongcloud/imkit-flutter-quickstart/master/screenshot2.png)
+
 ## iOS 初次运行
 
 初次安装需要从 pod 下载 IMLib 的 iOS SDK，要花费较长的时间，建议手动更新一下
