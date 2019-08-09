@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-import 'rc_status_define.dart';
+import 'common_define.dart';
 
 ///网络状态装换
 ///

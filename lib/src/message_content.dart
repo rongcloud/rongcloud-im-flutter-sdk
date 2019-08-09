@@ -1,4 +1,4 @@
-import 'rc_status_define.dart';
+import 'common_define.dart';
 
 class MessageContent
     implements MessageCoding, MessageContentView {

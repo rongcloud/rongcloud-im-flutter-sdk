@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'conversation.dart';
 import 'message.dart';
 import 'message_factory.dart';
-import 'rc_common_define.dart';
+import 'method_key.dart';
 import 'message_content.dart';
 import 'connection_status_convert.dart';
 
@@ -29,6 +29,8 @@ class RongcloudImPlugin {
   ///连接 SDK
   ///
   ///[token] 融云 im token
+  ///
+  ///[code] 参见 [RCErrorCode]
   static Future<int> connect(String token) async {
     final int code = await _channel.invokeMethod(RCMethodKey.Connect, token);
     return code;
@@ -663,6 +665,7 @@ class RongcloudImPlugin {
           }
           break;
       }
+      return;
     });
   }
 }

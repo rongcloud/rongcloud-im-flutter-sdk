@@ -1,10 +1,3 @@
-// 会话类型
-class RCConversationType {
-  static const int Private = 1;
-  static const int Group = 3;
-  static const int ChatRoom = 4;
-  static const int System = 6;
-}
 
 //method list
 class RCMethodKey {
