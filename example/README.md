@@ -1,7 +1,6 @@
-# 融云 IM flutter plugin
+# 融云 IM Flutter Plugin Demo
 
 ![](https://raw.githubusercontent.com/rongcloud/imkit-flutter-quickstart/master/screenshot1.png)
-
 ![](https://raw.githubusercontent.com/rongcloud/imkit-flutter-quickstart/master/screenshot2.png)
 
 ## iOS 初次运行
