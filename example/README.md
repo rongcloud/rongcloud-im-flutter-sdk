@@ -7,6 +7,13 @@
 1. Podfile 目录执行 `pod repo update` 命令
 2. Podfile 目录执行 `pod update` 命令
 
+### 常见问题
+
+1. `audio_recorder` does not specify a Swift version and none of the targets (`Runner`) integrating it have the `SWIFT_VERSION` attribute set. Please contact the author or set the `SWIFT_VERSION` attribute in at least one of the targets that integrate this pod.
+
+ Podfile 上添加 `use_frameworks!` 参数
+ 
+ Xcode 打开，选择 TARGETS -> Runnder -> Build Settings -> Levels 右边加号 -> Add User-Defined Setting -> 添加字段 `SWIFT_VERSION`，写上 swift 版本，如 4.0
 
 ## Android 初次运行
 
