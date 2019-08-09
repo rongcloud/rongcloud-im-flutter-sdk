@@ -68,6 +68,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
   @override
   void dispose() {
     super.dispose();
+    RongcloudImPlugin.clearMessagesUnreadStatus(conversationType, targetId);
     EventBus.instance.commit(EventKeys.ConversationPageDispose, null);
   }
 
