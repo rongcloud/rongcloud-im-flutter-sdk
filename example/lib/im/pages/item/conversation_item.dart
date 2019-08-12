@@ -40,7 +40,7 @@ class _ConversationItemState extends State<ConversationItem> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(10.0),
+      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
       child:Column(
         children: <Widget>[
           this.showTime? WidgetUtil.buildMessageTimeWidget(message.sentTime):WidgetUtil.buildEmptyWidget(),
