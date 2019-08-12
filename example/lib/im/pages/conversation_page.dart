@@ -132,6 +132,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
       return Container(
         height: 180,
         child: GridView.count(
+          physics: new NeverScrollableScrollPhysics(),
           crossAxisCount: 4,
           padding: EdgeInsets.all(10),
           children: extWidgetList,
