@@ -14,7 +14,7 @@
 
 [融云官网](https://developer.rongcloud.cn/signup/?utm_source=IMfluttergithub&utm_term=Imsign) 申请开发者账号
 
-通过管理后台的 "基本信息"->"App Key" 获取 appkey
+通过管理后台的 "基本信息"->"App Key" 获取 AppKey
 
 通过管理后台的 "IM 服务"—>"API 调用"->"用户服务"->"获取 Token"，通过用户 id 获取 IMToken
 
