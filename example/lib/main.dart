@@ -70,13 +70,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     print("--" + state.toString());
+    currentState = AppLifecycleState.paused;
     switch (state) {
       case AppLifecycleState.inactive: // 处于这种状态的应用程序应该假设它们可能在任何时候暂停。
         break;
       case AppLifecycleState.resumed:// 应用程序可见，前台
         break;
       case AppLifecycleState.paused: // 应用程序不可见，后台
-        currentState = AppLifecycleState.paused;
         break;
       case AppLifecycleState.suspending: // 申请将暂时暂停
         break;
