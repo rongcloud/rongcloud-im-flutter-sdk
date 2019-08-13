@@ -59,11 +59,13 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
   }
 
   addIMhandler() {
-    RongcloudImPlugin.onMessageReceived = (Message msg, int left) {
+    EventBus.instance.addListener(EventKeys.ReceiveMessage, (map) {
+      // Message msg = map["message"];
+      int left = map["left"];
       if(left == 0) {
         updateConversationList();
       }
-    };
+    });
 
     RongcloudImPlugin.onConnectionStatusChange = (int connectionStatus) {
       if(RCConnectionStatus.Connected == connectionStatus) {

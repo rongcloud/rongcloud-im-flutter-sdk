@@ -82,12 +82,14 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
   }
 
   _addIMHandler() {
-    RongcloudImPlugin.onMessageReceived = (Message msg, int left) {
+    EventBus.instance.addListener(EventKeys.ReceiveMessage, (map) {
+      Message msg = map["message"];
+      // int left = map["left"];
       if (msg.targetId == this.targetId) {
         _insertOrReplaceMessage(msg);
       }
       _refreshUI();
-    };
+    });
 
     RongcloudImPlugin.onMessageSend = (int messageId, int status, int code) async {
       Message msg = await RongcloudImPlugin.getMessage(messageId);

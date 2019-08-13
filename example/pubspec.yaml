@@ -18,6 +18,7 @@ dependencies:
   path_provider: ^1.2.0
   permission_handler: '^3.2.0'
   flutter_sound: ^1.4.2
+  flutter_local_notifications: ^0.8.1
 
 
 dev_dependencies:

@@ -41,4 +41,5 @@ class EventBus {
 
 class EventKeys {
   static const String ConversationPageDispose = "ConversationPageDispose";
+  static const String ReceiveMessage = "ReceiveMessage";
 }
