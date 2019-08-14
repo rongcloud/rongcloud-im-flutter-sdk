@@ -241,3 +241,5 @@ onGetChatRoomInfo() async {
 
 
 更多接口请[参考](https://github.com/rongcloud/rongcloud-im-flutter-sdk)
+
+[常见问题](./doc)
