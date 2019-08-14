@@ -70,6 +70,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
     super.dispose();
     RongcloudImPlugin.clearMessagesUnreadStatus(conversationType, targetId);
     EventBus.instance.commit(EventKeys.ConversationPageDispose, null);
+    EventBus.instance.removeListener(EventKeys.ReceiveMessage);
   }
 
   void _pullMoreHistoryMessage() async {

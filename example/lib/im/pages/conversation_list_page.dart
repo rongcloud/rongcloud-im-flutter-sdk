@@ -41,6 +41,7 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
   void dispose() {
     super.dispose();
     EventBus.instance.removeListener(EventKeys.ConversationPageDispose);
+    EventBus.instance.removeListener(EventKeys.ReceiveMessage);
   }
 
   updateConversationList() async {
