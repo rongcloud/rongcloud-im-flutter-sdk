@@ -38,20 +38,21 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
     var initializationSettingsAndroid =
     new AndroidInitializationSettings("app_icon");// app_icon 所在目录为 res/drawable/
+    var initializationSettingsIOS = new IOSInitializationSettings(requestAlertPermission: true,requestSoundPermission: true);
     var initializationSettings = new InitializationSettings(
-        initializationSettingsAndroid,null);
+        initializationSettingsAndroid,initializationSettingsIOS);
     flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onSelectNotification: null);
 
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
     'your channel id', 'your channel name', 'your channel description',
-    importance: Importance.Max, priority: Priority.High, ticker: 'ticker');
+    importance: Importance.Max, priority: Priority.High, ticker: '本地通知');
 
 
     var platformChannelSpecifics = NotificationDetails(
     androidPlatformChannelSpecifics, null);
 
-    String content = "测试推送";
+    String content = "测试本地通知";
 
     await flutterLocalNotificationsPlugin.show(
     0, 'RongCloud IM', content, platformChannelSpecifics,
