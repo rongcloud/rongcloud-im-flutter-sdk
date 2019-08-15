@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import '../../util/media_util.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 import '../../util/style.dart';
@@ -30,7 +31,8 @@ class MessageItemFactory extends StatelessWidget {
       widget = Image.memory(bytes);
     } else {
       if(msg.localPath != null) {
-        File file = File(msg.localPath);
+        String path = MediaUtil.instance.getCorrectedLocalPath(msg.localPath);
+        File file = File(path);
         if(file != null && file.existsSync()) {
           widget = Image.file(file);
         }else {
