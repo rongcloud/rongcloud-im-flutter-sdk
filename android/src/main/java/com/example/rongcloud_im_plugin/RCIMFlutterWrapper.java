@@ -350,6 +350,12 @@ public class RCIMFlutterWrapper {
                     String localPath =  (String)jsonObject.get("localPath");
                     Uri uri = Uri.parse(localPath);
                     content = ImageMessage.obtain(uri,uri,true);
+
+                    Object o = jsonObject.get("extra");//设置 extra
+                    if(o instanceof String) {
+                        String extra = (String)o;
+                        ((ImageMessage) content).setExtra(extra);
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -360,6 +366,12 @@ public class RCIMFlutterWrapper {
                     Uri uri = Uri.parse(localPath);
                     int duration = (Integer) jsonObject.get("duration");
                     content = HQVoiceMessage.obtain(uri,duration);
+
+                    Object o = jsonObject.get("extra");//设置 extra
+                    if(o instanceof String) {
+                        String extra = (String)o;
+                        ((HQVoiceMessage) content).setExtra(extra);
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

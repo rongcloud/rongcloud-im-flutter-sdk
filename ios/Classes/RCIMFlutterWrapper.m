@@ -259,13 +259,17 @@
         NSData *data = [contentStr dataUsingEncoding:NSUTF8StringEncoding];
         NSDictionary *msgDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
         NSString *localPath = [msgDic valueForKey:@"localPath"];
+        NSString *extra = [msgDic valueForKey:@"extra"];
         content = [RCImageMessage messageWithImageURI:localPath];
+        ((RCImageMessage *)content).extra = extra;
     } else if ([objName isEqualToString:@"RC:HQVCMsg"]) {
         NSData *data = [contentStr dataUsingEncoding:NSUTF8StringEncoding];
         NSDictionary *msgDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
         NSString *localPath = [msgDic valueForKey:@"localPath"];
         long duration = [[msgDic valueForKey:@"duration"] longValue];
+        NSString *extra = [msgDic valueForKey:@"extra"];
         content = [RCHQVoiceMessage messageWithPath:localPath duration:duration];
+        ((RCHQVoiceMessage *)content).extra = extra;
     } else {
         NSLog(@"%s 非法的媒体消息类型",__func__);
         return;
