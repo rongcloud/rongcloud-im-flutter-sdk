@@ -45,6 +45,8 @@ public class RCIMFlutterWrapper {
 
     private HashMap<String, Constructor<? extends MessageContent>> messageContentConstructorMap;
 
+    private String appkey = null;
+
     private RCIMFlutterWrapper() {
         messageContentConstructorMap = new HashMap<>();
         mMainHandler = new Handler(Looper.getMainLooper());
@@ -132,7 +134,13 @@ public class RCIMFlutterWrapper {
 
     }
 
+    public Context getMainContext() {
+        return mContext;
+    }
 
+    public String getAppkey() {
+        return appkey;
+    }
 
     //private method
     private void initRCIM(Object arg) {
@@ -140,6 +148,7 @@ public class RCIMFlutterWrapper {
         RCLog.i(LOG_TAG+" start param:"+arg.toString());
         if(arg instanceof String) {
             String appkey = String.valueOf(arg);
+            this.appkey = appkey;
             RongIMClient.init(mContext,appkey);
 
 

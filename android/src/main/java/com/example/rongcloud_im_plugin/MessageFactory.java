@@ -13,6 +13,7 @@ import io.rong.imlib.model.ChatRoomMemberInfo;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
+import io.rong.message.ImageMessage;
 
 public class MessageFactory {
 
@@ -42,6 +43,9 @@ public class MessageFactory {
         map.put("messageUId",uid);
 
         MessageContent content = message.getContent();
+        if(message.getContent() instanceof ImageMessage) {
+            RCMessageHandler.encodeImageMessage(message);
+        }
         byte[] data = content.encode();
         String jsonS = new String(data);
 
