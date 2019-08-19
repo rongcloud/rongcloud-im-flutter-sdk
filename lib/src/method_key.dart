@@ -29,6 +29,10 @@ class RCMethodKey {
   static const String GetTopConversationList = 'getTopConversationList';
   static const String DeleteMessages = 'DeleteMessages';
   static const String DeleteMessageByIds = 'DeleteMessageByIds';
+  static const String AddToBlackList = 'AddToBlackList';
+  static const String RemoveFromBlackList = 'RemoveFromBlackList';
+  static const String GetBlackListStatus = 'GetBlackListStatus';
+  static const String GetBlackList = 'GetBlackList';
 }
 
 //callback list //native 会触发此方法

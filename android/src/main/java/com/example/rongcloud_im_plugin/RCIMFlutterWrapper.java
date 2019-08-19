@@ -14,6 +14,7 @@ import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,6 +128,14 @@ public class RCIMFlutterWrapper {
             deleteMessages(call.arguments,result);
         }else if(RCMethodList.MethodKeyDeleteMessageByIds.equalsIgnoreCase(call.method)) {
             deleteMessageByIds(call.arguments,result);
+        }else if(RCMethodList.MethodKeyAddToBlackList.equalsIgnoreCase(call.method)) {
+            addToBlackList(call.arguments,result);
+        }else if(RCMethodList.MethodKeyRemoveFromBlackList.equalsIgnoreCase(call.method)) {
+            removeFromBlackList(call.arguments,result);
+        }else if(RCMethodList.MethodKeyGetBlackListStatus.equalsIgnoreCase(call.method)) {
+            getBlackListStatus(call.arguments,result);
+        }else if(RCMethodList.MethodKeyGetBlackList.equalsIgnoreCase(call.method)) {
+            getBlackList(result);
         }
         else {
             result.notImplemented();
@@ -1180,6 +1189,108 @@ public class RCIMFlutterWrapper {
                 }
             });
         }
+    }
+
+    private void addToBlackList(Object arg, final Result result) {
+        final String LOG_TAG = "addToBlackList";
+        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+        if (arg instanceof Map) {
+            Map map = (Map)arg;
+            String userId = (String) map.get("userId");
+            RongIMClient.getInstance().addToBlacklist(userId, new RongIMClient.OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    RCLog.i(LOG_TAG+" success");
+                    result.success(0);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    RCLog.e(LOG_TAG+String.valueOf(errorCode.getValue()));
+                    result.success(errorCode.getValue());
+                }
+            });
+        }
+    }
+
+    private void removeFromBlackList(Object arg, final Result result) {
+        final String LOG_TAG = "removeFromBlackList";
+        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+        if (arg instanceof Map) {
+            Map map = (Map)arg;
+            String userId = (String) map.get("userId");
+            RongIMClient.getInstance().removeFromBlacklist(userId, new RongIMClient.OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    RCLog.i(LOG_TAG+" success");
+                    result.success(0);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    RCLog.e(LOG_TAG+String.valueOf(errorCode.getValue()));
+                    result.success(errorCode.getValue());
+                }
+            });
+        }
+    }
+
+    private void getBlackListStatus(Object arg, final Result result) {
+        final String LOG_TAG = "getBlackListStatus";
+        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+        if (arg instanceof Map) {
+            Map map = (Map)arg;
+            String userId = (String) map.get("userId");
+            RongIMClient.getInstance().getBlacklistStatus(userId, new RongIMClient.ResultCallback<RongIMClient.BlacklistStatus>() {
+                @Override
+                public void onSuccess(RongIMClient.BlacklistStatus blacklistStatus) {
+                    RCLog.i(LOG_TAG+" success");
+                    int status = blacklistStatus.getValue();
+                    Map resultMap =  new HashMap();
+                    resultMap.put("status",status);
+                    resultMap.put("code",0);
+                    result.success(resultMap);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    RCLog.e(LOG_TAG+String.valueOf(errorCode.getValue()));
+                    Map resultMap =  new HashMap();
+                    resultMap.put("status",1);
+                    resultMap.put("code",errorCode.getValue());
+                    result.success(resultMap);
+                }
+            });
+        }
+    }
+
+    private void getBlackList(final Result result) {
+        final String LOG_TAG = "getBlackList";
+        RongIMClient.getInstance().getBlacklist(new RongIMClient.GetBlacklistCallback() {
+            @Override
+            public void onSuccess(String[] strings) {
+                RCLog.i(LOG_TAG+" success");
+                List userIdList = null;
+                if(strings == null) {
+                    userIdList = new ArrayList();
+                }else {
+                    userIdList = Arrays.asList(strings);
+                }
+                Map resultMap =  new HashMap();
+                resultMap.put("userIdList",userIdList);
+                resultMap.put("code",0);
+                result.success(resultMap);
+            }
+
+            @Override
+            public void onError(RongIMClient.ErrorCode errorCode) {
+                RCLog.e(LOG_TAG+String.valueOf(errorCode.getValue()));
+                Map resultMap =  new HashMap();
+                resultMap.put("userIdList",new ArrayList<>());
+                resultMap.put("code",errorCode.getValue());
+                result.success(resultMap);
+            }
+        });
     }
 
 

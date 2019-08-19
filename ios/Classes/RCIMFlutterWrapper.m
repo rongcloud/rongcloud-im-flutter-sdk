@@ -91,6 +91,14 @@
         [self deleteMessages:call.arguments result:result];
     }else if([RCMethodKeyDeleteMessageByIds isEqualToString:call.method]) {
         [self deleteMessageByIds:call.arguments result:result];
+    }else if([RCMethodKeyAddToBlackList isEqualToString:call.method]) {
+        [self addToBlackList:call.arguments result:result];
+    }else if([RCMethodKeyRemoveFromBlackList isEqualToString:call.method]) {
+        [self removeFromBlackList:call.arguments result:result];
+    }else if([RCMethodKeyGetBlackListStatus isEqualToString:call.method]) {
+        [self getBlackListStatus:call.arguments result:result];
+    }else if([RCMethodKeyGetBlackList isEqualToString:call.method]) {
+        [self getBlackList:result];
     }
     else {
         result(FlutterMethodNotImplemented);
@@ -704,8 +712,72 @@
     }
 }
 
+#pragma mark - 黑名单
+- (void)addToBlackList:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"addToBlackList";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *dic = (NSDictionary *)arg;
+        NSString *userId = dic[@"userId"];
+        [[RCIMClient sharedRCIMClient] addToBlacklist:userId success:^{
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            result(@(0));
+        } error:^(RCErrorCode status) {
+            [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(status)]];
+            result(@(status));
+        }];
+    }
+}
 
+- (void)removeFromBlackList:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"removeFromBlackList";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *dic = (NSDictionary *)arg;
+        NSString *userId = dic[@"userId"];
+        [[RCIMClient sharedRCIMClient] removeFromBlacklist:userId success:^{
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            result(@(0));
+        } error:^(RCErrorCode status) {
+            [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(status)]];
+            result(@(status));
+        }];
+    }
+}
 
+- (void)getBlackListStatus:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"getBlackListStatus";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *dic = (NSDictionary *)arg;
+        NSString *userId = dic[@"userId"];
+        [[RCIMClient sharedRCIMClient] getBlacklistStatus:userId success:^(int bizStatus) {
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            if(bizStatus == 101) {//和 Android 保持一致
+                bizStatus = 1;
+            }
+            result(@{@"status":@(bizStatus),@"code":@(0)});
+        } error:^(RCErrorCode status) {
+            [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(status)]];
+            result(@{@"status":@(1),@"code":@(status)});
+        }];
+    }
+}
+
+- (void)getBlackList:(FlutterResult)result {
+    NSString *LOG_TAG =  @"getBlackList";
+    [RCLog i:[NSString stringWithFormat:@"%@ start ",LOG_TAG]];
+    [[RCIMClient sharedRCIMClient] getBlacklist:^(NSArray *blockUserIds) {
+        [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+        if(!blockUserIds) {
+            blockUserIds = [NSArray new];
+        }
+        result(@{@"userIdList":blockUserIds,@"code":@(0)});
+    } error:^(RCErrorCode status) {
+        [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(status)]];
+        result(@{@"userIdList":[NSArray new],@"code":@(0)});
+    }];
+}
 
 #pragma mark - RCIMClientReceiveMessageDelegate
 - (void)onReceived:(RCMessage *)message left:(int)nLeft object:(id)object {

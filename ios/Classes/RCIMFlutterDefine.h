@@ -32,6 +32,10 @@ static NSString *RCMethodKeySetConversationToTop = @"setConversationToTop";
 static NSString *RCMethodKeyGetTopConversationList = @"getTopConversationList";
 static NSString *RCMethodKeyDeleteMessages = @"DeleteMessages";
 static NSString *RCMethodKeyDeleteMessageByIds = @"DeleteMessageByIds";
+static NSString *RCMethodKeyAddToBlackList = @"AddToBlackList";
+static NSString *RCMethodKeyRemoveFromBlackList = @"RemoveFromBlackList";
+static NSString *RCMethodKeyGetBlackListStatus = @"GetBlackListStatus";
+static NSString *RCMethodKeyGetBlackList = @"GetBlackList";
 
 
 //callback iOS 通知 flutter

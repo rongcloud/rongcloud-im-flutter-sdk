@@ -562,6 +562,63 @@ class RongcloudImPlugin {
 //    }
 //  }
 
+  /// 将用户加入黑名单，黑名单针对用户 id 生效，即使换设备也依然生效。
+  /// 
+  /// [userId] 需要加入黑名单的用户 id
+  ///
+  /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
+  static void addToBlackList(String userId, Function(int code) finished) async {
+    Map map = {"userId":userId};
+    int code = await _channel.invokeMethod(RCMethodKey.AddToBlackList,map);
+    if(finished != null) {
+      finished(code);
+    }
+  }
+
+  /// 将用户移除黑名单
+  /// 
+  /// [userId] 需要移除黑名单的用户 id
+  ///
+  /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
+  static void removeFromBlackList(String userId,Function(int code) finished) async {
+    Map map = {"userId":userId};
+    int code = await _channel.invokeMethod(RCMethodKey.RemoveFromBlackList,map);
+    if(finished != null) {
+      finished(code);
+    }
+  }
+
+  /// 获取特定用户的黑名单状态
+  /// 
+  /// [userId] 需要加入黑名单的用户 id
+  ///
+  /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
+  ///
+  /// [blackListStatus] 黑名单状态，0 代表在黑名单，1 代表不在黑名单，详细参见 [RCBlackListStatus]
+  static void getBlackListStatus(String userId,Function(int blackListStatus,int code) finished) async {
+    Map map = {"userId":userId};
+    Map result = await _channel.invokeMethod(RCMethodKey.GetBlackListStatus,map);
+    int status = result["status"];
+    int code = result["code"];
+    if(finished != null) {
+      finished(status,code);
+    }
+  }
+
+  /// 查询已经设置的黑名单列表
+  ///
+  /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
+  ///
+  /// [userIdList] 黑名单用户 id 列表
+  static void getBlackList(Function(List/*<String>*/ userIdList,int code) finished) async {
+    Map result = await _channel.invokeMethod(RCMethodKey.GetBlackList);
+    List userIdList = result["userIdList"];
+    int code = result["code"];
+    if(finished != null) {
+      finished(userIdList,code);
+    }
+  }
+
   ///连接状态发生变更
   ///
   /// [connectionStatus] 连接状态，具体参见枚举 [RCConnectionStatus]

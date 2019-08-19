@@ -30,6 +30,11 @@ public class RCMethodList {
     static String MethodKeyGetTopConversationList = "getTopConversationList";
     static String MethodKeyDeleteMessages = "DeleteMessages";
     static String MethodKeyDeleteMessageByIds = "DeleteMessageByIds";
+    static String MethodKeyAddToBlackList = "AddToBlackList";
+    static String MethodKeyRemoveFromBlackList = "RemoveFromBlackList";
+    static String MethodKeyGetBlackListStatus = "GetBlackListStatus";
+    static String MethodKeyGetBlackList = "GetBlackList";
+
 
 
 

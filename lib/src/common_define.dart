@@ -41,6 +41,12 @@ class RCChatRoomMemberOrder {
   static const int Desc = 2;//降序，最晚加入
 }
 
+//用户黑名单状态
+class RCBlackListStatus {
+  static const int In = 0;//在黑名单中
+  static const int NotIn = 1;//不在黑名单中
+}
+
 class RCConnectionStatus {
   static const int Connected = 0;//连接成功
   static const int Connecting = 1;//连接中
@@ -50,25 +56,42 @@ class RCConnectionStatus {
   static const int UserBlocked = 5;//用户被封禁
 }
 
-///错误码，以下罗列的均是需要开发者进行处理的
+///错误码
 ///
-///不用开发者处理的并没有写明
-///iOS 参考 [RCStatusDefine.h]
+///iOS 参考 [RCStatusDefine.h] 的枚举 [RCConnectErrorCode] 和 [RCErrorCode]
 ///Android 参考 [RongIMClient.java] 的枚举 [ErrorCode]
 class RCErrorCode {
   ///成功
   static const int Success = 0;
 
+  ///已被对方加入黑名单
+  static const int RejectedByBlackList = 405;
+
+  ///发送消息频率过高，1秒最多允许发送5条消息
+  static const int SendMsgOverfrequency = 20604;
+
+  ///不在该群组中
+  static const int NotInGroup = 22406;
+
+  ///在群组中被禁言
+  static const int ForbiddenInGroup = 22408;
+
+  ///不在该聊天室中
+  static const int NotInChatRoom = 23406;
+
+  ///在聊天室中被禁言
+  static const int ForbiddenInChatRoom = 23408;
+
   ///AppKey 错误
   static const int AppKeyError = 31002;
 
-  ///token 无效
+  ///token 无效，需要获取新的 token 连接 IM
   ///一般有已下两种原因
   ///一是token错误，请您检查客户端初始化使用的AppKey和您服务器获取token使用的AppKey是否一致；
   ///二是token过期，是因为您在开发者后台设置了token过期时间，您需要请求您的服务器重新获取token并再次用新的token建立连接。
   static const int TokenIncorrect = 31004;
 
-  /// AppKey 与 Token 不匹配
+  /// AppKey 与 Token 不匹配，需要获取新的 token 连接 IM
   /// 原因同 [TokenIncorrect]
   static const int NotAuthrorized = 31005;
 
@@ -86,4 +109,7 @@ class RCErrorCode {
 
   /// 非法参数，请检查调用接口传入的参数
   static const int InvalidParameter = 33003;
+
+  /// 历史消息云存储功能未开通
+  static const int RoamingServiceUnAvailable = 33007;
 }
