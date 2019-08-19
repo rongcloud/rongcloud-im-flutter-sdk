@@ -173,6 +173,38 @@ RongcloudImPlugin.deleteMessageByIds(mids, (int code) {
 });
 ```
 
+## 未读数
+
+获取特定会话的未读数
+
+```
+RongcloudImPlugin.getUnreadCount(RCConversationType.Private, "targetId", (int count,int code) {
+      if( 0 == code) {
+        print("未读数为"+count.toString());
+      }
+    });
+```
+
+获取特定会话类型的未读数
+
+```
+RongcloudImPlugin.getUnreadCountConversationTypeList([RCConversationType.Private,RCConversationType.Group], true, (int count, int code) {
+      if( 0 == code) {
+        print("未读数为"+count.toString());
+      }
+    });
+```
+
+获取所有未读数
+
+```
+RongcloudImPlugin.getTotalUnreadCount((int count, int code) {
+      if( 0 == code) {
+        print("未读数为"+count.toString());
+      }
+    });
+```
+
 ## 会话列表
 
 获取会话列表
@@ -194,6 +226,52 @@ RongcloudImPlugin.removeConversation(RCConversationType.Private, "1001", (succes
       if(success) {
         print("删除会话成功");
       }
+    });
+```
+
+## 黑名单
+
+把用户加入黑名单
+
+```
+RongcloudImPlugin.addToBlackList(blackUserId, (int code) {
+      print("_addBlackList:" + blackUserId + " code:" + code.toString());
+    });
+```
+
+把用户移除黑名单
+
+```
+RongcloudImPlugin.removeFromBlackList(blackUserId, (int code) {
+      print("_removeBalckList:" + blackUserId + " code:" + code.toString());
+    });
+```
+
+查询特定用户的黑名单状态
+
+```
+RongcloudImPlugin.getBlackListStatus(blackUserId,
+        (int blackStatus, int code) {
+      if (0 == code) {
+        if (RCBlackListStatus.In == blackStatus) {
+          print("用户:" + blackUserId + " 在黑名单中");
+        } else {
+          print("用户:" + blackUserId + " 不在黑名单中");
+        }
+      } else {
+        print("用户:" + blackUserId + " 黑名单状态查询失败" + code.toString());
+      }
+    });
+```
+
+查询已经设置的黑名单列表
+
+```
+RongcloudImPlugin.getBlackList((List/*<String>*/ userIdList, int code) {
+      print("_getBlackList:" + userIdList.toString() + " code:" + code.toString());
+      userIdList.forEach((userId) {
+        print("userId:"+userId);
+      });
     });
 ```
 
@@ -223,6 +301,7 @@ onQuitChatRoom() {
 ```
 
 退出聊天室回调
+
 ```
 //退出聊天室结果回调
     RongcloudImPlugin.onQuitChatRoom = (String targetId,int status) {
