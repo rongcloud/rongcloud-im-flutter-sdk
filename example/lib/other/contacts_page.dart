@@ -40,6 +40,10 @@ class _ContactsPageState extends State<ContactsPage> {
     Navigator.pushNamed(context, "/conversation",arguments: arg);
   }
 
+  void _pushToDebug() {
+    Navigator.pushNamed(context, "/debug");
+  }
+
   Widget getWidget(UserInfo user) {
     return Container(
             height: 50.0,
@@ -69,6 +73,17 @@ class _ContactsPageState extends State<ContactsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("RongCloud IM"),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.more),
+            onPressed: () {
+              _pushToDebug();
+            },
+          ),
+        ],
+      ),
       body: new ListView(
         children: this.widgetList,
       ),

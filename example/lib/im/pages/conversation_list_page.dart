@@ -112,6 +112,9 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      appBar: AppBar(
+        title: Text("RongCloud IM"),
+      ),
       key: UniqueKey(),
       body: _buildConversationListView(),
     );

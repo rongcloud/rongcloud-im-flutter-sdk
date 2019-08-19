@@ -41,9 +41,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: AppBar(
-        title: Text("RongCloud IM"),
-      ),
       bottomNavigationBar: new BottomNavigationBar(
         items: tabbarList,
         type: BottomNavigationBarType.fixed,
