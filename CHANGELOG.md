@@ -1,3 +1,18 @@
+## 0.9.5
+
+* SDK:
+* 1.增加错误码
+* 2.解决发送图片，语音消息 extra 字段无效的问题
+* 3.解决 Android 发送图片没有缩略图的问题
+* 4.增加黑名单相关接口
+* 5.更新文档
+
+* Demo:
+* 1.增加会话长按和消息长按功能
+* 2.增加点击消息用户头像回调
+* 3.实现本地通知功能
+* 4.更新文档
+
 ## 0.9.4
 
 * 解决 Android 时间戳 Long 强转为 Integer 报错 [详细参见](https://github.com/rongcloud/rongcloud-im-flutter-sdk/issues/13)
