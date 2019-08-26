@@ -3,3 +3,5 @@ android/.settings/
 .packages
 example/pubspec.lock
 pubspec.lock
+.idea
+.idea/*
