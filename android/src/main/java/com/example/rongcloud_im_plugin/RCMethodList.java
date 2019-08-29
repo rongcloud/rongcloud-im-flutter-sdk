@@ -47,5 +47,6 @@ public class RCMethodList {
     static String MethodCallBackKeyUploadMediaProgress = "uploadMediaProgressCallBack";
     static String MethodCallBackKeygetRemoteHistoryMessages = "getRemoteHistoryMessagesCallBack";
     static String MethodCallBackKeyConnectionStatusChange = "ConnectionStatusChangeCallBack";
+    static String MethodCallBackKeySendDataToFlutter = "SendDataToFlutterCallBack";
 
 }

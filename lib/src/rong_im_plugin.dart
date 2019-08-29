@@ -687,6 +687,14 @@ class RongcloudImPlugin {
   ///[progress] 上传进度 0~100
   static Function(int messageId, int progress) onUploadMediaProgress;
 
+  ///收到原生数据的回调 目前仅支持iOS
+  ///
+  ///[data] 传递的数据内容
+  ///
+  /// 如果传送的是push内容 建议在 main.dart 使用
+  static Function(Map data) onDataReceived;
+
+
   ///响应原生的事件
   ///
   static void _addNativeMethodCallHandler() {
@@ -745,6 +753,13 @@ class RongcloudImPlugin {
             int code = map["status"];
             int status = ConnectionStatusConvert.convert(code);
             onConnectionStatusChange(status);
+          }
+          break;
+
+        case RCMethodCallBackKey.SendDataToFlutter:
+          if (onDataReceived != null) {
+            Map map = call.arguments;
+            onDataReceived(map);
           }
           break;
       }

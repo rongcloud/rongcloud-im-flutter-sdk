@@ -10,9 +10,23 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RCIMFlutterWrapper : NSObject
+
 + (instancetype)sharedWrapper;
-- (void)addFlutterChannel:(FlutterMethodChannel *)channel;
-- (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result;
+/*
+ iOS可通过该接口向Flutter传递数据
+ @discussion 如果是远程推送的数据，延时0.5S之后再调用该接口，防止Flutter尚未初始化就调用，导致Flutter无法接受数据
+ */
+- (void)sendDataToFlutter:(NSDictionary *)userInfo;
 @end
 
 NS_ASSUME_NONNULL_END
+
+/*
+ 内部接口,开发者请勿调用
+ */
+@interface RCIMFlutterWrapper (Internal)
+
+- (void)addFlutterChannel:(FlutterMethodChannel *_Nonnull)channel;
+- (void)handleMethodCall:(FlutterMethodCall*_Nonnull)call result:(FlutterResult _Nonnull )result;
+
+@end

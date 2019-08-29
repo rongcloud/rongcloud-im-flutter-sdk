@@ -10,6 +10,7 @@ import 'router.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -31,6 +32,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         //通知其他页面收到消息
         EventBus.instance.commit(EventKeys.ReceiveMessage, {"message":msg,"left":left});
       }
+    };
+
+    prefix.RongcloudImPlugin.onDataReceived = (Map map) {
+      print("object onDataReceived " + map.toString());
     };
   }
 

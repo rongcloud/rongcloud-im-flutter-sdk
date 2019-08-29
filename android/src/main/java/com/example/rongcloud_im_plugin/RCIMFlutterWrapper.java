@@ -195,6 +195,15 @@ public class RCIMFlutterWrapper {
         }
     }
 
+    public void sendDataToFlutter(final Map map) {
+        mMainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendDataToFlutter,map);
+            }
+        });
+    }
+
     private void connect(Object arg, final Result result) {
         String LOG_TAG = "connect";
         RCLog.i(LOG_TAG+" start param:"+arg.toString());
@@ -1354,6 +1363,10 @@ public class RCIMFlutterWrapper {
             }
         });
     }
+
+
+
+
 
     private void setConnectStatusListener() {
         RongIMClient.setConnectionStatusListener(new RongIMClient.ConnectionStatusListener() {

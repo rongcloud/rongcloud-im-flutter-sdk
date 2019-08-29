@@ -2,6 +2,7 @@
 #include "GeneratedPluginRegistrant.h"
 #import <RongIMLib/RongIMLib.h>
 #import "RCDTestMessage.h"
+#import <rongcloud_im_plugin/RCIMFlutterWrapper.h>
 
 @implementation AppDelegate
 
@@ -24,6 +25,15 @@
                                                 categories:nil];
         [application registerUserNotificationSettings:settings];
     }
+    
+    // 远程推送的内容
+//    NSDictionary *remoteNotificationUserInfo = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
+    
+    // 传递远程推送数据
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [[RCIMFlutterWrapper sharedWrapper] sendDataToFlutter:@{@"key":@"value"}];
+    });
+    
     
     return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
@@ -48,6 +58,13 @@
     
     [[RCIMClient sharedRCIMClient] setDeviceToken:token];
 }
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo{
+    
+//    [[RCIMFlutterWrapper sharedWrapper] sendDataToFlutter:userInfo];
+}
+
+
 
 
 @end

@@ -47,6 +47,7 @@ static NSString *RCMethodCallBackKeyQuitChatRoom = @"quitChatRoomCallBack";
 static NSString *RCMethodCallBackKeyUploadMediaProgress = @"uploadMediaProgressCallBack";
 static NSString *RCMethodCallBackKeyGetRemoteHistoryMessages = @"getRemoteHistoryMessagesCallBack";
 static NSString *RCMethodCallBackKeyConnectionStatusChange = @"ConnectionStatusChangeCallBack";
+static NSString *RCMethodCallBackKeySendDataToFlutter = @"SendDataToFlutterCallBack";
 
 
 

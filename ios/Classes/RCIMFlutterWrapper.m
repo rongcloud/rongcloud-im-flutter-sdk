@@ -795,6 +795,14 @@
     }];
 }
 
+#pragma mark - 推送
+- (void)sendDataToFlutter:(NSDictionary *)userInfo {
+    NSString *LOG_TAG =  @"sendDataToFlutter";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,userInfo]];
+    
+    [self.channel invokeMethod:RCMethodCallBackKeySendDataToFlutter arguments:userInfo];
+}
+
 #pragma mark - RCIMClientReceiveMessageDelegate
 - (void)onReceived:(RCMessage *)message left:(int)nLeft object:(id)object {
     @autoreleasepool {

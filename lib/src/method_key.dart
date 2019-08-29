@@ -45,5 +45,5 @@ class RCMethodCallBackKey {
   static const String UploadMediaProgress = 'uploadMediaProgressCallBack';
   static const String GetRemoteHistoryMessages = 'getRemoteHistoryMessagesCallBack';
   static const String ConnectionStatusChange = 'ConnectionStatusChangeCallBack';
-
+  static const String SendDataToFlutter = 'SendDataToFlutterCallBack';
 }
