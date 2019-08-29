@@ -294,7 +294,14 @@ public class RCIMFlutterWrapper {
             Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
             String targetId = (String)map.get("targetId");
             String contentStr = (String)map.get("content");
-
+            String pushContent = (String)map.get("pushContent");
+            if (pushContent.length() <= 0) {
+                pushContent = null;
+            }
+            String pushData = (String)map.get("pushData");
+            if (pushData.length() <= 0) {
+                pushData = null;
+            }
             byte[] bytes = contentStr.getBytes() ;
 
             MessageContent content = null;
@@ -319,7 +326,7 @@ public class RCIMFlutterWrapper {
                 return;
             }
 
-            Message message = RongIMClient.getInstance().sendMessage(type, targetId, content, null, null, new RongIMClient.SendMessageCallback() {
+            Message message = RongIMClient.getInstance().sendMessage(type, targetId, content, pushContent, pushData, new RongIMClient.SendMessageCallback() {
                 @Override
                 public void onError(Integer messageId, RongIMClient.ErrorCode errorCode) {
                     RCLog.e(LOG_TAG+" content is nil");
@@ -359,7 +366,14 @@ public class RCIMFlutterWrapper {
             Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
             String targetId = (String)map.get("targetId");
             String contentStr = (String)map.get("content");
-
+            String pushContent = (String)map.get("pushContent");
+            if (pushContent.length() <= 0) {
+                pushContent = null;
+            }
+            String pushData = (String)map.get("pushData");
+            if (pushData.length() <= 0) {
+                pushData = null;
+            }
 
             MessageContent content = null;
             if(objectName.equalsIgnoreCase("RC:ImgMsg")) {
@@ -403,7 +417,7 @@ public class RCIMFlutterWrapper {
             }
 
             Message message = Message.obtain(targetId,type,content);
-            RongIMClient.getInstance().sendMediaMessage(message, null, null, new IRongCallback.ISendMediaMessageCallback() {
+            RongIMClient.getInstance().sendMediaMessage(message, pushContent, pushData, new IRongCallback.ISendMediaMessageCallback() {
                 @Override
                 public void onProgress(Message message, int i) {
                     Map map = new HashMap();

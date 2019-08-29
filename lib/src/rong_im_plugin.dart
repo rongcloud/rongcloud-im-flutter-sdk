@@ -86,14 +86,40 @@ class RongcloudImPlugin {
   ///
   ///[content] 消息内容 参见 [MessageContent]
   static Future<Message> sendMessage(int conversationType, String targetId, MessageContent content) async {
+    return sendMessageCarriesPush(conversationType, targetId, content, "", "");
+  }
+
+  ///发送消息
+  ///
+  ///[conversationType] 会话类型，参见枚举 [RCConversationType]
+  ///
+  ///[targetId] 会话 id
+  ///
+  ///[content] 消息内容 参见 [MessageContent]
+  ///
+  /// 当接收方离线并允许远程推送时，会收到远程推送。
+  /// 远程推送中包含两部分内容，一是[pushContent]，用于显示；二是[pushData]，用于携带不显示的数据。
+  ///
+  /// SDK内置的消息类型，如果您将[pushContent]和[pushData]置为空或者为null，会使用默认的推送格式进行远程推送。
+  /// 自定义类型的消息，需要您自己设置pushContent和pushData来定义推送内容，否则将不会进行远程推送。
+  static Future<Message> sendMessageCarriesPush(int conversationType, String targetId, MessageContent content, String pushContent, String pushData) async {
+    if(pushContent == null) {
+      pushContent = "";
+    }
+    if(pushData == null) {
+      pushData = "";
+    }
     String jsonStr = content.encode();
     String objName = content.getObjectName();
     Map map = {
       'conversationType': conversationType,
       'targetId': targetId,
       "content": jsonStr,
-      "objectName": objName
+      "objectName": objName,
+      "pushContent": pushContent,
+      "pushData": pushData
     };
+
     Map resultMap = await _channel.invokeMethod(RCMethodKey.SendMessage, map);
     if (resultMap == null) {
       return null;
