@@ -1,3 +1,9 @@
+## 0.9.6
+
+* SDK:
+* 1.增加发送消息接口，消息可以发送 pushContent 和 pushData
+* 2.iOS/Android 增加接口，可以向 Flutter 传递数据
+
 ## 0.9.5
 
 * SDK:
