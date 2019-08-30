@@ -687,7 +687,7 @@ class RongcloudImPlugin {
   ///[progress] 上传进度 0~100
   static Function(int messageId, int progress) onUploadMediaProgress;
 
-  ///收到原生数据的回调 目前仅支持iOS
+  ///收到原生数据的回调
   ///
   ///[data] 传递的数据内容
   ///

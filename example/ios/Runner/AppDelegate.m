@@ -13,7 +13,7 @@
     
     
     /**
-     * 推送处理1
+     * 推送处理1 (申请推送权限)
      */
     if ([application
          respondsToSelector:@selector(registerUserNotificationSettings:)]) {
@@ -26,15 +26,16 @@
         [application registerUserNotificationSettings:settings];
     }
     
-    // 远程推送的内容
+//    // 远程推送的内容
 //    NSDictionary *remoteNotificationUserInfo = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
-    
-    // 传递远程推送数据
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [[RCIMFlutterWrapper sharedWrapper] sendDataToFlutter:@{@"key":@"value"}];
-    });
-    
-    
+//
+//    // 传递远程推送数据
+//    if (remoteNotificationUserInfo != nil) {
+//        //远程推送的数据，延时之后再调用该接口，防止Flutter尚未初始化就调用，导致Flutter无法接受数据
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            [[RCIMFlutterWrapper sharedWrapper] sendDataToFlutter:remoteNotificationUserInfo];
+//        });
+//    }
     return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
 

@@ -2,6 +2,14 @@ package com.example.rongcloud_im_plugin_example;
 
 import android.content.Context;
 import android.os.Bundle;
+
+import com.example.rongcloud_im_plugin.RCIMFlutterWrapper;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 import io.rong.imlib.AnnotationNotFoundException;
@@ -22,5 +30,17 @@ public class MainActivity extends FlutterActivity {
 //    } catch (AnnotationNotFoundException e) {
 //      e.printStackTrace();
 //    }
+
+    // 测试Android往Flutter传递数据
+//    Timer timer = new Timer();
+//    timer.schedule(new TimerTask() {
+//      public void run() {
+//        Map map = new HashMap();
+//        map.put("key","android");
+//        RCIMFlutterWrapper.getInstance().sendDataToFlutter(map);
+//      }
+//    },500);
+
+
   }
 }

@@ -13,8 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedWrapper;
 /*
- iOS可通过该接口向Flutter传递数据
- @discussion 如果是远程推送的数据，延时0.5S之后再调用该接口，防止Flutter尚未初始化就调用，导致Flutter无法接受数据
+ iOS可通过该接口向 Flutter 传递数据
+ @discussion 如果是远程推送的数据，延时之后再调用该接口，防止 Flutter 尚未初始化就调用，导致 Flutter 无法接受数据
  */
 - (void)sendDataToFlutter:(NSDictionary *)userInfo;
 @end

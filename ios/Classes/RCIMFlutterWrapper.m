@@ -795,7 +795,7 @@
     }];
 }
 
-#pragma mark - 推送
+#pragma mark - 传递数据
 - (void)sendDataToFlutter:(NSDictionary *)userInfo {
     NSString *LOG_TAG =  @"sendDataToFlutter";
     [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,userInfo]];

@@ -318,6 +318,30 @@ onGetChatRoomInfo() async {
   }
 ```
 
+## Native 向 Flutter 传递数据
+
+iOS 端传递数据:
+
+``` 
+[[RCIMFlutterWrapper sharedWrapper] sendDataToFlutter:@{@"key":@"ios"}];
+
+```
+
+Android 端传递数据:
+
+```
+Map map = new HashMap();
+map.put("key","android");
+RCIMFlutterWrapper.getInstance().sendDataToFlutter(map);
+```
+
+Flutter 端接收数据:
+
+```
+RongcloudImPlugin.onDataReceived = (Map map) {
+  print("object onDataReceived " + map.toString());
+};
+```
 
 更多接口请[参考](https://github.com/rongcloud/rongcloud-im-flutter-sdk)
 

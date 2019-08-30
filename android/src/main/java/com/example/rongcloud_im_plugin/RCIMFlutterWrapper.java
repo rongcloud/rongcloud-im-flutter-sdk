@@ -151,6 +151,18 @@ public class RCIMFlutterWrapper {
         return appkey;
     }
 
+    //可通过该接口向Flutter传递数据
+    public void sendDataToFlutter(final Map map) {
+        String LOG_TAG = "sendDataToFlutter";
+        RCLog.i(LOG_TAG+" start param:"+map.toString());
+        mMainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendDataToFlutter,map);
+            }
+        });
+    }
+
     //private method
     private void initRCIM(Object arg) {
         String LOG_TAG = "init";
@@ -193,15 +205,6 @@ public class RCIMFlutterWrapper {
             String fileServer = (String)map.get("fileServer");
             RongIMClient.setServerInfo(naviServer,fileServer);
         }
-    }
-
-    public void sendDataToFlutter(final Map map) {
-        mMainHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendDataToFlutter,map);
-            }
-        });
     }
 
     private void connect(Object arg, final Result result) {
