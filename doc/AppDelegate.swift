@@ -1,6 +1,7 @@
 import UIKit
 import Flutter
 import RongIMLib
+import rongcloud_im_plugin
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate, UNUserNotificationCenterDelegate{
@@ -10,9 +11,19 @@ import RongIMLib
         ) -> Bool {
         GeneratedPluginRegistrant.register(with: self)
         
-        // 推送处理 1
+        // 推送处理 1 (申请推送权限)
         registerUserNotification()
-       
+        
+//        // 获取推送数据
+//        let remoteNotificationUserInfo = launchOptions?[UIApplicationLaunchOptionsKey.remoteNotification]
+//
+//        // 向 Flutter 层传递推送数据
+//        if let userInfo = remoteNotificationUserInfo {
+//            DispatchQueue.main.asyncAfter(deadline: .now()+0.5) {
+//                RCIMFlutterWrapper.shared().sendData(toFlutter:userInfo as! [AnyHashable : Any])
+//            };
+//        }
+
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
     
@@ -29,15 +40,20 @@ import RongIMLib
     }
     
     
-    // 推送处理 2
+    // 推送处理 2 (注册用户通知设置)
     override func application(_ application: UIApplication, didRegister notificationSettings: UIUserNotificationSettings) {
         application.registerForRemoteNotifications()
     }
     
-    // 推送处理 3
+    // 推送处理 3 (上传DeviceToken)
     override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         let token = NSData(data: deviceToken).description.replacingOccurrences(of: "<", with: "").replacingOccurrences(of: ">", with: "").replacingOccurrences(of: " ", with: "")
         RCIMClient.shared()?.setDeviceToken(token)
+    }
+    
+    override func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) {
+        
+//        RCIMFlutterWrapper.shared().sendData(toFlutter:userInfo)
     }
 }
 
