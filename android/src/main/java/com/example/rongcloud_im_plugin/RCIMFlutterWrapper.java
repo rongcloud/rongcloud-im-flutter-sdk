@@ -351,7 +351,7 @@ public class RCIMFlutterWrapper {
 
                 @Override
                 public void onSuccess(Integer messageId) {
-                    RCLog.e(LOG_TAG+" success");
+                    RCLog.i(LOG_TAG+" success");
                     Map resultMap = new HashMap();
                     resultMap.put("messageId",messageId);
                     resultMap.put("status",30);
