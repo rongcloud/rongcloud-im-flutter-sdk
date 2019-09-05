@@ -515,7 +515,7 @@ class RongcloudImPlugin {
       "conversation": conversation,
       "targetId": targetId
     };
-    Map statusMap = await _channel.invokeMethod(RCMethodKey.SetConversationNotificationStatus, map);
+    Map statusMap = await _channel.invokeMethod(RCMethodKey.GetConversationNotificationStatus, map);
     if (finished != null) {
       finished(statusMap["status"], statusMap["code"]);
     }
@@ -562,7 +562,7 @@ class RongcloudImPlugin {
     Map map = {
       "conversationType": conversationType,
       "targetId": targetId,
-      "targetId": targetId
+      "isTop": isTop
     };
     Map conversationMap = await _channel.invokeMethod(RCMethodKey.SetConversationToTop, map);
     if (finished != null) {
