@@ -975,7 +975,7 @@ public class RCIMFlutterWrapper {
                 public void onSuccess(Conversation.ConversationNotificationStatus conversationNotificationStatus) {
                     RCLog.i(LOG_TAG+" success");
                     Map msgMap = new HashMap();
-                    msgMap.put("status",conversationNotificationStatus);
+                    msgMap.put("status",conversationNotificationStatus.getValue());
                     msgMap.put("code",0);
                     result.success(msgMap);
                 }

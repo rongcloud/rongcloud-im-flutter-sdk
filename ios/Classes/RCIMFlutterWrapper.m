@@ -657,7 +657,7 @@
         NSDictionary *param = (NSDictionary *)arg;
         RCConversationType type = [param[@"conversationType"] integerValue];
         NSString *targetId = param[@"targetId"];
-        BOOL isBlocked = [param[@"isblocked"] boolValue];
+        BOOL isBlocked = [param[@"isBlocked"] boolValue]; 
         
         [[RCIMClient sharedRCIMClient] setConversationNotificationStatus:type targetId:targetId isBlocked:isBlocked success:^(RCConversationNotificationStatus nStatus) {
             [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
