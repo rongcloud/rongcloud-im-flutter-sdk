@@ -490,7 +490,7 @@ class RongcloudImPlugin {
   ///
   /// [targetId] 会话 id
   ///
-  /// [finished] 回调结果，code 为 0 代表正常
+  /// [finished] 回调结果，status 参见 [RCConversationNotificationStatus]，code 为 0 代表正常
   static void setConversationNotificationStatus(int conversationType, String targetId, bool isBlocked, Function(int status, int code) finished) async {
     Map map = {
       "conversationType": conversationType,
@@ -509,10 +509,10 @@ class RongcloudImPlugin {
   ///
   /// [targetId] 会话 id
   ///
-  /// [finished] 回调结果，code 为 0 代表正常
-  static void getConversationNotificationStatus(int conversation, String targetId, Function(int status, int code) finished) async {
+  /// [finished] 回调结果，status 参见 [RCConversationNotificationStatus]，code 为 0 代表正常
+  static void getConversationNotificationStatus(int conversationType, String targetId, Function(int status, int code) finished) async {
     Map map = {
-      "conversation": conversation,
+      "conversationType": conversationType,
       "targetId": targetId
     };
     Map statusMap = await _channel.invokeMethod(RCMethodKey.GetConversationNotificationStatus, map);

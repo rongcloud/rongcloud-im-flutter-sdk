@@ -35,6 +35,12 @@ class RCOperationStatus {
   static const int Failed = 1;
 }
 
+//消息免打扰状态
+class RCConversationNotificationStatus {
+  static const int DoNotDisturb = 0;//免打扰
+  static const int Notify = 1;//新消息通知
+}
+
 //聊天室成员顺序
 class RCChatRoomMemberOrder {
   static const int Asc = 1;//升序，最早加入
