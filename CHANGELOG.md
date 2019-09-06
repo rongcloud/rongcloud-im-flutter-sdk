@@ -1,3 +1,9 @@
+## 0.9.7
+
+* SDK:
+* 1.增加自定义消息文档
+* 2.修改代码错误：[Issue 27](https://github.com/rongcloud/rongcloud-im-flutter-sdk/issues/27) & [Issue 28](https://github.com/rongcloud/rongcloud-im-flutter-sdk/issues/28)
+
 ## 0.9.6
 
 * SDK:
