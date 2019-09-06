@@ -6,7 +6,7 @@ class DebugPage extends StatelessWidget {
   String blackUserId = "blackUserId";
 
   DebugPage() {
-    titles = ["加入黑名单", "移除黑名单", "查看黑名单状态", "获取黑名单列表"];
+    titles = ["加入黑名单", "移除黑名单", "查看黑名单状态", "获取黑名单列表","设置免打扰","取消免打扰","查看免打扰"];
   }
 
   void _didTap(int index) {
@@ -24,6 +24,15 @@ class DebugPage extends StatelessWidget {
       case 3:
         _getBlackList();
         break;
+      case 4:
+        _setConStatusEnable();
+        break;
+      case 5:
+        _setConStatusDisanable();
+        break;
+      case 6:
+        _getConStatus();
+      break;
     }
   }
 
@@ -64,6 +73,24 @@ class DebugPage extends StatelessWidget {
       userIdList.forEach((userId) {
         print("userId:"+userId);
       });
+    });
+  }
+
+  void _setConStatusEnable() {
+    RongcloudImPlugin.setConversationNotificationStatus(RCConversationType.Private,"SealTalk",true,(int status, int code) {
+      print("setConversationNotificationStatus1 status "+status.toString());
+    });
+  }
+
+  void _setConStatusDisanable() {
+    RongcloudImPlugin.setConversationNotificationStatus(RCConversationType.Private,"SealTalk",false,(int status, int code) {
+      print("setConversationNotificationStatus2 status "+status.toString());
+    });
+  }
+
+  void _getConStatus() {
+    RongcloudImPlugin.getConversationNotificationStatus(RCConversationType.Private, "SealTalk", (int status, int code) {
+      print("getConversationNotificationStatus3 status "+status.toString());
     });
   }
 
