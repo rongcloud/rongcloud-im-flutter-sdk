@@ -9,7 +9,10 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [GeneratedPluginRegistrant registerWithRegistry:self];
     // Override point for customization after application launch.
-    [[RCIMClient sharedRCIMClient] registerMessageType:[RCDTestMessage class]];
+    //注册自定义消息流程
+    //1.初始化 SDK，2.注册自定义的消息
+//    [[RCIMClient sharedRCIMClient] initWithAppKey:@"pvxdm17jxjaor"];
+//    [[RCIMClient sharedRCIMClient] registerMessageType:[RCDTestMessage class]];
     
     
     /**
