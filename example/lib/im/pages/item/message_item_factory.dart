@@ -86,7 +86,7 @@ class MessageItemFactory extends StatelessWidget {
     } else if (message.content is VoiceMessage) {
       return voiceMessageItem();
     } else {
-      return Text("无法识别消息 "+message.content.getObjectName());
+      return Text("无法识别消息 "+message.objectName);
     }
   }
 
