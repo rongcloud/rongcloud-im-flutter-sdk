@@ -10,6 +10,8 @@ import 'text_message.dart';
 import 'image_message.dart';
 import 'voice_message.dart';
 
+import 'util/text_util.dart';
+
 class MessageFactory extends Object {
   factory MessageFactory() =>_getInstance();
   static MessageFactory get instance => _getInstance();
@@ -25,7 +27,7 @@ class MessageFactory extends Object {
   }
 
   Message string2Message(String msgJsonStr) {
-    if(msgJsonStr == null) {
+    if(TextUtil.isEmpty(msgJsonStr)) {
       return null;
     }
     Map map = json.decode(msgJsonStr);
@@ -33,7 +35,7 @@ class MessageFactory extends Object {
   }
 
   Conversation string2Conversation(String conJsonStr) {
-    if(conJsonStr == null) {
+    if(TextUtil.isEmpty(conJsonStr)) {
       return null;
     }
     Map map = json.decode(conJsonStr);

@@ -59,6 +59,8 @@
         [self getMessage:call.arguments result:result];
     }else if([RCMethodKeyGetConversationList isEqualToString:call.method]) {
         [self getConversationList:call.arguments result:result];
+    }else if([RCMethodKeyGetConversation isEqualToString:call.method]) {
+        [self getConversation:call.arguments result:result];
     }else if([RCMethodKeyGetChatRoomInfo isEqualToString:call.method]) {
         [self getChatRoomInfo:call.arguments result:result];
     }else if([RCMethodKeyClearMessagesUnreadStatus isEqualToString:call.method]) {
@@ -439,7 +441,7 @@
 
 - (void)getConversationList:(id)arg result:(FlutterResult)result {
     NSString *LOG_TAG =  @"getConversationList";
-    [RCLog i:[NSString stringWithFormat:@"%@ start",LOG_TAG]];
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if ([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
         NSArray *typeArray = param[@"conversationTypeList"];
@@ -451,6 +453,22 @@
             [arr addObject:conStr];
         }
         result(arr);
+    }
+}
+
+- (void)getConversation:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"getConversation";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if ([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        RCConversationType conversationType = [param[@"conversationType"] intValue];
+        NSString *targetId = param[@"targetId"];
+        RCConversation *con = [[RCIMClient sharedRCIMClient] getConversation:conversationType targetId:targetId];
+        NSString *conStr = @"";
+        if(con) {
+            conStr = [RCFlutterMessageFactory conversation2String:con];
+        }
+        result(conStr);
     }
 }
 

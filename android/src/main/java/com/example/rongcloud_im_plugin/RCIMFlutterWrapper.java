@@ -94,6 +94,8 @@ public class RCIMFlutterWrapper {
             getMessage(call.arguments,result);
         }else if (RCMethodList.MethodKeyGetConversationList.equalsIgnoreCase(call.method)) {
             getConversationList(call.arguments,result);
+        }else if (RCMethodList.MethodKeyGetConversation.equalsIgnoreCase(call.method)) {
+            getConversation(call.arguments,result);
         }else if (RCMethodList.MethodKeyGetChatRoomInfo.equalsIgnoreCase(call.method)) {
             getChatRoomInfo(call.arguments,result);
         }else if (RCMethodList.MethodKeyClearMessagesUnreadStatus.equalsIgnoreCase(call.method)) {
@@ -598,7 +600,7 @@ public class RCIMFlutterWrapper {
 
     private void getConversationList(Object arg, final Result result) {
         final String LOG_TAG = "getConversationList";
-        RCLog.i(LOG_TAG+" start ");
+        RCLog.i(LOG_TAG+" start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map)arg;
             List conversationTypeList = (List)map.get("conversationTypeList");
@@ -632,6 +634,36 @@ public class RCIMFlutterWrapper {
                     result.success(null);
                 }
             },types);
+        }
+
+    }
+
+    private void getConversation(Object arg, final Result result) {
+        final String LOG_TAG = "getConversation";
+        RCLog.i(LOG_TAG+" start param:" + arg.toString());
+        if (arg instanceof Map) {
+            Map map = (Map)arg;
+            Integer t = (Integer)map.get("conversationType");
+            Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
+            String targetId = (String)map.get("targetId");
+            RongIMClient.getInstance().getConversation(type, targetId, new RongIMClient.ResultCallback<Conversation>() {
+                @Override
+                public void onSuccess(Conversation conversation) {
+                    RCLog.i(LOG_TAG+" success ");
+                    if(conversation == null) {
+                        result.success(null);
+                        return;
+                    }
+                    String conStr = MessageFactory.getInstance().conversation2String(conversation);
+                    result.success(conStr);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    RCLog.e(LOG_TAG+String.valueOf(errorCode.getValue()));
+                    result.success(null);
+                }
+            });
         }
 
     }

@@ -6,7 +6,16 @@ class DebugPage extends StatelessWidget {
   String blackUserId = "blackUserId";
 
   DebugPage() {
-    titles = ["加入黑名单", "移除黑名单", "查看黑名单状态", "获取黑名单列表","设置免打扰","取消免打扰","查看免打扰"];
+    titles = [
+      "加入黑名单",
+      "移除黑名单",
+      "查看黑名单状态",
+      "获取黑名单列表",
+      "设置免打扰",
+      "取消免打扰",
+      "查看免打扰",
+      "获取特定会话"
+    ];
   }
 
   void _didTap(int index) {
@@ -32,7 +41,10 @@ class DebugPage extends StatelessWidget {
         break;
       case 6:
         _getConStatus();
-      break;
+        break;
+      case 7:
+        _getCons();
+        break;
     }
   }
 
@@ -69,29 +81,46 @@ class DebugPage extends StatelessWidget {
   void _getBlackList() {
     print("_getBlackList");
     RongcloudImPlugin.getBlackList((List/*<String>*/ userIdList, int code) {
-      print("_getBlackList:" + userIdList.toString() + " code:" + code.toString());
+      print("_getBlackList:" +
+          userIdList.toString() +
+          " code:" +
+          code.toString());
       userIdList.forEach((userId) {
-        print("userId:"+userId);
+        print("userId:" + userId);
       });
     });
   }
 
   void _setConStatusEnable() {
-    RongcloudImPlugin.setConversationNotificationStatus(RCConversationType.Private,"SealTalk",true,(int status, int code) {
-      print("setConversationNotificationStatus1 status "+status.toString());
+    RongcloudImPlugin.setConversationNotificationStatus(
+        RCConversationType.Private, "SealTalk", true, (int status, int code) {
+      print("setConversationNotificationStatus1 status " + status.toString());
     });
   }
 
   void _setConStatusDisanable() {
-    RongcloudImPlugin.setConversationNotificationStatus(RCConversationType.Private,"SealTalk",false,(int status, int code) {
-      print("setConversationNotificationStatus2 status "+status.toString());
+    RongcloudImPlugin.setConversationNotificationStatus(
+        RCConversationType.Private, "SealTalk", false, (int status, int code) {
+      print("setConversationNotificationStatus2 status " + status.toString());
     });
   }
 
   void _getConStatus() {
-    RongcloudImPlugin.getConversationNotificationStatus(RCConversationType.Private, "SealTalk", (int status, int code) {
-      print("getConversationNotificationStatus3 status "+status.toString());
+    RongcloudImPlugin.getConversationNotificationStatus(
+        RCConversationType.Private, "SealTalk", (int status, int code) {
+      print("getConversationNotificationStatus3 status " + status.toString());
     });
+  }
+
+  void _getCons() async {
+    int conversationType = RCConversationType.Private;
+    String targetId =  "SealTalk";
+    Conversation con = await RongcloudImPlugin.getConversation(conversationType,targetId);
+    if(con != null) {
+      print("con type:"+con.conversationType.toString()+" targetId:"+con.targetId);
+    }else {
+      print("不存在该会话 type:"+conversationType.toString()+" targetId:"+targetId);
+    }
   }
 
   @override

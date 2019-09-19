@@ -103,6 +103,10 @@ class RongcloudImPlugin {
   /// SDK内置的消息类型，如果您将[pushContent]和[pushData]置为空或者为null，会使用默认的推送格式进行远程推送。
   /// 自定义类型的消息，需要您自己设置pushContent和pushData来定义推送内容，否则将不会进行远程推送。
   static Future<Message> sendMessageCarriesPush(int conversationType, String targetId, MessageContent content, String pushContent, String pushData) async {
+    if(conversationType == null || targetId == null || content == null) {
+      print("send message fail: conversationType or targetId or content is null");
+      return null;
+    }
     if(pushContent == null) {
       pushContent = "";
     }
@@ -187,7 +191,7 @@ class RongcloudImPlugin {
   ///根据传入的会话类型来获取会话列表
   ///
   /// [conversationTypeList] 会话类型数组，参见枚举 [RCConversationType]
-  static Future<List> getConversationList(List<int> conversationTypeList) async {
+  static Future<List/*Conversation*/> getConversationList(List<int/*RCConversationType*/> conversationTypeList) async {
 
     Map map = {
       "conversationTypeList": conversationTypeList
@@ -202,6 +206,24 @@ class RongcloudImPlugin {
       conList.add(con);
     }
     return conList;
+  }
+
+  ///获取特定会话的详细信息
+  ///
+  ///[conversationType] 会话类型，参见枚举 [RCConversationType]
+  ///
+  ///[targetId] 会话 id
+  ///
+  ///[return] 返回结果为会话的详细数据，如果不存在该会话，那么会返回 null
+  static Future<Conversation> getConversation(int conversationType, String targetId) async {
+    if(conversationType == null || targetId == null) {
+      print("getConversation error, conversationType or targetId is null");
+      return null;
+    }
+    Map param = {"conversationType":conversationType,"targetId":targetId};
+    String conStr = await _channel.invokeMethod(RCMethodKey.GetConversation,param);
+    Conversation con = MessageFactory.instance.string2Conversation(conStr);
+    return con;
   }
 
   ///删除指定会话

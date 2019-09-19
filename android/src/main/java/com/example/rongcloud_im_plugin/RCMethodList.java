@@ -13,6 +13,7 @@ public class RCMethodList {
     static String MethodKeyGetHistoryMessage ="getHistoryMessage";
     static String MethodKeyGetMessage ="getMessage";
     static String MethodKeyGetConversationList ="getConversationList";
+    static String MethodKeyGetConversation ="getConversation";
     static String MethodKeyGetChatRoomInfo ="getChatRoomInfo";
     static String MethodKeyClearMessagesUnreadStatus ="clearMessagesUnreadStatus";
     static String MethodKeySetServerInfo ="setServerInfo";
