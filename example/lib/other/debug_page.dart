@@ -14,7 +14,8 @@ class DebugPage extends StatelessWidget {
       "设置免打扰",
       "取消免打扰",
       "查看免打扰",
-      "获取特定会话"
+      "获取特定会话",
+      "获取特定方向的消息列表"
     ];
   }
 
@@ -44,6 +45,9 @@ class DebugPage extends StatelessWidget {
         break;
       case 7:
         _getCons();
+        break;
+      case 8:
+        _getMessagesByDirection();
         break;
     }
   }
@@ -117,9 +121,25 @@ class DebugPage extends StatelessWidget {
     String targetId =  "SealTalk";
     Conversation con = await RongcloudImPlugin.getConversation(conversationType,targetId);
     if(con != null) {
-      print("con type:"+con.conversationType.toString()+" targetId:"+con.targetId);
+      print("getConversation type:"+con.conversationType.toString()+" targetId:"+con.targetId);
     }else {
       print("不存在该会话 type:"+conversationType.toString()+" targetId:"+targetId);
+    }
+  }
+
+  void _getMessagesByDirection() async {
+    int conversationType = RCConversationType.Private;
+    String targetId =  "SealTalk";
+    int sentTime = 1567756686643;
+    int beforeCount = 10;
+    int afterCount = 10;
+    List msgs = await RongcloudImPlugin.getHistoryMessages(conversationType, targetId, sentTime, beforeCount, afterCount);
+    if(msgs == null)  {
+      print("未获取消息列表 type:"+conversationType.toString()+" targetId:"+targetId);
+    }else {
+      for(Message msg in msgs) {
+        print("getHistoryMessages messageId:"+msg.messageId.toString()+" objName:"+ msg.objectName +" sentTime:"+msg.sentTime.toString());
+      }
     }
   }
 

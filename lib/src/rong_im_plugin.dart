@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:rongcloud_im_plugin/src/util/type_util.dart';
+import 'common_define.dart';
 import 'conversation.dart';
 import 'message.dart';
 import 'message_factory.dart';
@@ -150,6 +152,45 @@ class RongcloudImPlugin {
       "count": count
     };
     List list = await _channel.invokeMethod(RCMethodKey.GetHistoryMessage, map);
+    if (list == null) {
+      return null;
+    }
+    List msgList = new List();
+    for (String msgStr in list) {
+      Message msg = MessageFactory.instance.string2Message(msgStr);
+      msgList.add(msg);
+    }
+    return msgList;
+  }
+
+  ///获取特定方向的历史消息
+  ///
+  ///[conversationType] 会话类型，参见枚举 [RCConversationType]
+  ///
+  ///[targetId] 会话 id
+  ///
+  ///[objName] 消息的 objectName，如果传有效的 objectName，那么只会获取该类型的消息；如果传 null，则会获取全部的消息类型
+  ///
+  ///[messageId] 消息 id，基于该消息获取更多的消息
+  ///
+  ///[historyMsgDirection] 历史消息的方向，基于 messageId 获取之前的消息还是之后的消息，参见枚举 [RCHistoryMessageDirection]，非法值按 Behind 处理
+  ///
+  ///[count] 需要获取的消息数
+  ///
+  ///[return] 获取到的消息列表
+  static Future<List> getHistoryMessages(int conversationType, String targetId,int sentTime, int beforeCount,int afterCount) async {
+    if(conversationType == null || targetId == null) {
+      print("getHistoryMessages error: conversationType or targetId null");
+      return null;
+    }
+    Map map = {
+      'conversationType': conversationType,
+      'targetId': targetId,
+      "sentTime": TypeUtil.getProperInt(sentTime),
+      "beforeCount": TypeUtil.getProperInt(beforeCount),
+      "afterCount":TypeUtil.getProperInt(afterCount),
+    };
+    List list = await _channel.invokeMethod(RCMethodKey.GetHistoryMessages, map);
     if (list == null) {
       return null;
     }

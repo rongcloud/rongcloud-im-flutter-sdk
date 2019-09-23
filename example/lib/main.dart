@@ -25,7 +25,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
 
     prefix.RongcloudImPlugin.onMessageReceived = (prefix.Message msg, int left) {
-      print("object onMessageReceived");
+      print("object onMessageReceived objName:"+msg.content.getObjectName()+" msgContent:"+msg.content.encode());
       if(currentState == AppLifecycleState.paused) {
         _postLocalNotification(msg,left);
       }else {

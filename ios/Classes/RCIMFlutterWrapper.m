@@ -55,6 +55,8 @@
         [self quitChatRoom:call.arguments];
     }else if([RCMethodKeyGetHistoryMessage isEqualToString:call.method]) {
         [self getHistoryMessage:call.arguments result:result];
+    }else if([RCMethodKeyGetHistoryMessages.lowercaseString isEqualToString:call.method.lowercaseString]) {
+        [self getHistoryMessages:call.arguments result:result];
     }else if ([RCMethodKeyGetMessage isEqualToString:call.method]) {
         [self getMessage:call.arguments result:result];
     }else if([RCMethodKeyGetConversationList isEqualToString:call.method]) {
@@ -388,6 +390,27 @@
         int messageId = [dic[@"messageId"] intValue];
         int count = [dic[@"count"] intValue];
         NSArray <RCMessage *> *msgs = [[RCIMClient sharedRCIMClient] getHistoryMessages:type targetId:targetId oldestMessageId:messageId count:count];
+        NSMutableArray *msgsArray = [NSMutableArray new];
+        for(RCMessage *message in msgs) {
+            NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+            [msgsArray addObject:jsonString];
+        }
+        result(msgsArray);
+    }
+}
+
+- (void)getHistoryMessages:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"getHistoryMessages";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *dic = (NSDictionary *)arg;
+        RCConversationType type = [dic[@"conversationType"] integerValue];
+        NSString *targetId = dic[@"targetId"];
+        long long sentTime = [dic[@"sentTime"] longLongValue];
+        int beforeCount = [dic[@"beforeCount"] intValue];
+        int afterCount = [dic[@"afterCount"] intValue];
+        
+        NSArray <RCMessage *> *msgs = [[RCIMClient sharedRCIMClient] getHistoryMessages:type targetId:targetId sentTime:sentTime beforeCount:beforeCount afterCount:afterCount];
         NSMutableArray *msgsArray = [NSMutableArray new];
         for(RCMessage *message in msgs) {
             NSString *jsonString = [RCFlutterMessageFactory message2String:message];

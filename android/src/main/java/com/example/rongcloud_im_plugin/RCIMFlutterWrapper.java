@@ -24,6 +24,7 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.rong.common.fwlog.FwLog;
 import io.rong.imlib.IRongCallback;
 import io.rong.imlib.MessageTag;
+import io.rong.imlib.RongCommonDefine;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.ChatRoomInfo;
 import io.rong.imlib.model.Conversation;
@@ -90,6 +91,8 @@ public class RCIMFlutterWrapper {
             quitChatRoom(call.arguments);
         }else if (RCMethodList.MethodKeyGetHistoryMessage.equalsIgnoreCase(call.method)) {
             getHistoryMessage(call.arguments,result);
+        }else if (RCMethodList.MethodKeyGetHistoryMessages.equalsIgnoreCase(call.method)) {
+            getHistoryMessages(call.arguments,result);
         }else if (RCMethodList.MethodKeyGetMessage.equalsIgnoreCase(call.method)) {
             getMessage(call.arguments,result);
         }else if (RCMethodList.MethodKeyGetConversationList.equalsIgnoreCase(call.method)) {
@@ -540,7 +543,7 @@ public class RCIMFlutterWrapper {
     }
 
     private void getHistoryMessage(Object arg, final Result result) {
-        final String LOG_TAG = "quitChatRoom";
+        final String LOG_TAG = "getHistoryMessage";
         RCLog.i(LOG_TAG+" start param:"+arg.toString());
         if(arg instanceof Map) {
             Map map = (Map)arg;
@@ -564,6 +567,42 @@ public class RCIMFlutterWrapper {
                     }
                     result.success(list);
 
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    RCLog.e(LOG_TAG+String.valueOf(errorCode.getValue()));
+                    result.success(null);
+                }
+            });
+        }
+    }
+
+    private void getHistoryMessages(Object arg, final Result result) {
+        final String LOG_TAG = "getHistoryMessages";
+        RCLog.i(LOG_TAG+" start param:"+arg.toString());
+        if(arg instanceof Map) {
+            Map map = (Map)arg;
+            Integer t = (Integer)map.get("conversationType");
+            Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
+            String targetId = (String)map.get("targetId");
+            Number sendTime = (Number)map.get("sentTime");
+            Integer beforeCount = (Integer)map.get("beforeCount");
+            Integer afterCount = (Integer)map.get("afterCount");
+            RongIMClient.getInstance().getHistoryMessages(type, targetId, sendTime.longValue(), beforeCount.intValue(), afterCount.intValue(), new RongIMClient.ResultCallback<List<Message>>() {
+                @Override
+                public void onSuccess(List<Message> messages) {
+                    RCLog.i(LOG_TAG+" success ");
+                    if(messages == null) {
+                        result.success(null);
+                        return;
+                    }
+                    List list = new ArrayList();
+                    for(Message msg : messages) {
+                        String messageS = MessageFactory.getInstance().message2String(msg);
+                        list.add(messageS);
+                    }
+                    result.success(list);
                 }
 
                 @Override

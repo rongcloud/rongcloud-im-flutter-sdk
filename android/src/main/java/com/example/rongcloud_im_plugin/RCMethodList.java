@@ -11,6 +11,7 @@ public class RCMethodList {
     static String MethodKeyJoinChatRoom = "joinChatRoom";
     static String MethodKeyQuitChatRoom = "quitChatRoom";
     static String MethodKeyGetHistoryMessage ="getHistoryMessage";
+    static String MethodKeyGetHistoryMessages ="getHistoryMessages";
     static String MethodKeyGetMessage ="getMessage";
     static String MethodKeyGetConversationList ="getConversationList";
     static String MethodKeyGetConversation ="getConversation";
