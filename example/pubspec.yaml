@@ -19,6 +19,7 @@ dependencies:
   permission_handler: '^3.2.0'
   flutter_sound: ^1.4.2
   flutter_local_notifications: ^0.8.1
+  camera: ^0.5.5+1
 
 
 dev_dependencies:

@@ -187,8 +187,14 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
       _insertOrReplaceMessage(msg);
     });
 
+    Widget videoWidget = WidgetUtil.buildExtentionWidget(Icons.video_call, "视频", () async {
+      print("push to video record page");
+      Navigator.pushNamed(context, "/video_record");
+    });
+
     extWidgetList.add(imageWidget);
     extWidgetList.add(cameraWidget);
+    extWidgetList.add(videoWidget);
   }
 
   bool _needShowTime(int index) {

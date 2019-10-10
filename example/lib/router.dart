@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+
 import 'im/pages/conversation_page.dart';
-import 'other/home_page.dart';
 import 'im/pages/image_preview_page.dart';
+import 'im/pages/video_record_page.dart';
+
+import 'other/home_page.dart';
 import 'other/debug_page.dart';
 
 final routes = {
@@ -12,6 +15,8 @@ final routes = {
       ImagePreviewPage(message: arguments),
   '/debug':(context) =>
       DebugPage(),
+  '/video_record':(context) =>
+        VideoRecordPage(),
 };
 
 var onGenerateRoute = (RouteSettings settings) {
