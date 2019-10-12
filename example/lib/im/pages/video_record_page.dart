@@ -43,6 +43,7 @@ class _VideoRecordPageState extends State<VideoRecordPage> {
   @override
   void dispose() {
     cameraController?.dispose();
+    videoPlayerController?.dispose(); 
     super.dispose();
   }
 
@@ -181,6 +182,7 @@ class _VideoRecordPageState extends State<VideoRecordPage> {
     imagePath = null;
     videoPath = null;
     videoPlayerController = null;
+    cameraController = null;
   }
 
   @override
