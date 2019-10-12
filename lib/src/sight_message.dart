@@ -23,7 +23,7 @@ class SightMessage extends MessageContent {
 
   @override
   void decode(String jsonStr) {
-    if(jsonStr == null) {
+    if(jsonStr == null || jsonStr == "") {
       print("[RC-Flutter-IM] Flutter SightMessage deocde error: no content");
       return;
     }
