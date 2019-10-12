@@ -1,6 +1,8 @@
 import 'message_content.dart';
 import 'dart:convert' show json;
 
+//小视频消息
+//小视频消息使用必须在融云开发者后台进行开通
 class SightMessage extends MessageContent {
   static const String objectName = "RC:SightMsg";
 

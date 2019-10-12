@@ -189,7 +189,8 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
 
     Widget videoWidget = WidgetUtil.buildExtentionWidget(Icons.video_call, "视频", () async {
       print("push to video record page");
-      Navigator.pushNamed(context, "/video_record");
+      Map map = {"coversationType":conversationType,"targetId":targetId};
+      Navigator.pushNamed(context, "/video_record",arguments: map);
     });
 
     extWidgetList.add(imageWidget);

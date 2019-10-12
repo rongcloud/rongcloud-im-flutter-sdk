@@ -8,6 +8,7 @@ export 'src/message_content.dart';
 export 'src/text_message.dart';
 export 'src/image_message.dart';
 export 'src/voice_message.dart';
+export 'src/sight_message.dart';
 
 //实体类
 export 'src/chatroom_info.dart';

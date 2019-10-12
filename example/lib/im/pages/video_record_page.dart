@@ -1,21 +1,42 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
+import 'package:camera/camera.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:video_player/video_player.dart';
+
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+
 class VideoRecordPage extends StatefulWidget {
+  final Map arguments;
+
+  VideoRecordPage({Key key, this.arguments}) : super(key: key);
   @override
   State<StatefulWidget> createState() {
-    return _VideoRecordPageState();
+    return _VideoRecordPageState(arguments: this.arguments);
   }
 }
 
 class _VideoRecordPageState extends State<VideoRecordPage> {
+  Map arguments;
+  int conversationType;
+  String targetId;
+
   CameraController cameraController;
+  VideoPlayerController videoPlayerController;
   List<CameraDescription> cameras;
+  String videoPath;
+  String imagePath;
+
+  _VideoRecordPageState({this.arguments});
 
   @override
   void initState() {
     super.initState();
+    conversationType = arguments["coversationType"];
+    targetId = arguments["targetId"];
     initCamera();
   }
 
@@ -36,8 +57,9 @@ class _VideoRecordPageState extends State<VideoRecordPage> {
     });
   }
 
-  void onRecordCancel() {
-    print("onRecordCancel");
+  void onPop() {
+    print("onPop");
+    resetData();
     Navigator.pop(context);
   }
 
@@ -62,16 +84,103 @@ class _VideoRecordPageState extends State<VideoRecordPage> {
     });
   }
 
-  void onTapCamera() {
+  void onTapCamera() async {
     print("onTapCamera");
+    imagePath = null;
   }
 
   void onLongPressCamera() {
     print("onLongPressCamera");
+    videoPath = null;
+    startVideoRecording().then((String filePath) {
+      // if (mounted) setState(() {});
+      if (filePath != null) print('Saving video to $filePath');
+    });
   }
 
   void onLongPressEndCamera() {
     print("onLongPressEndCamera");
+    stopVideoRecording().then((_) {
+      // if (mounted) setState(() {});
+      print('Video recorded to: $videoPath');
+    });
+  }
+
+  // 录制视频后取消
+  void onCancelEvent() {
+    print("onCancelEvent");
+    resetData();
+    setState(() {});
+  }
+
+  //录制视频后完成
+  void onFinishEvent() {
+    print("onFinishEvent");
+    if (videoPath != null) {
+      SightMessage sightMessage = SightMessage.obtain(videoPath, 5);
+      print("onFinishEvent con $conversationType targetId $targetId");
+      RongcloudImPlugin.sendMessage(conversationType, targetId, sightMessage);
+      onPop();
+    } else {
+      print("onFinishEvent videoPath is null");
+    }
+  }
+
+  Future<String> startVideoRecording() async {
+    if (!cameraController.value.isInitialized) {
+      print('Error: select a camera first.');
+      return null;
+    }
+
+    final Directory extDir = await getTemporaryDirectory();
+    final String dirPath = '${extDir.path}/Movies/flutter_test';
+    await Directory(dirPath).create(recursive: true);
+    final String filePath = '$dirPath/${timestamp()}.mp4';
+
+    if (cameraController.value.isRecordingVideo) {
+      // A recording is already started, do nothing.
+      return null;
+    }
+
+    try {
+      videoPath = filePath;
+      await cameraController.startVideoRecording(filePath);
+    } on CameraException catch (e) {
+      print(e);
+      return null;
+    }
+    return filePath;
+  }
+
+  Future<void> stopVideoRecording() async {
+    if (!cameraController.value.isRecordingVideo) {
+      return null;
+    }
+
+    try {
+      await cameraController.stopVideoRecording();
+    } on CameraException catch (e) {
+      print(e);
+      return null;
+    }
+
+    print("rc videoPath $videoPath");
+
+    videoPlayerController = VideoPlayerController.file(File(videoPath));
+    await videoPlayerController.setLooping(true);
+    await videoPlayerController.initialize();
+    // videoPlayerController.addListener(listener)
+
+    setState(() {});
+    await videoPlayerController.play();
+  }
+
+  String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
+
+  void resetData(){
+    imagePath = null;
+    videoPath = null;
+    videoPlayerController = null;
   }
 
   @override
@@ -87,19 +196,25 @@ class _VideoRecordPageState extends State<VideoRecordPage> {
       child: Center(
           child: Stack(
         children: <Widget>[
-          _getCameraPreview(),
-          _getSwitchCameraIcon(),
-          _getBottomToolbar(),
+          _getCameraPreviewWidget(),
+          _getTopCameraIconWidget(),
+          _getBottomToolbarWidget(),
         ],
       )),
     );
   }
 
-  Widget _getCameraPreview() {
-    return CameraPreview(cameraController);
+  Widget _getCameraPreviewWidget() {
+    Widget widget = CameraPreview(cameraController);
+    if (imagePath != null) {
+      widget = Image.file(File(imagePath));
+    } else if (videoPath != null) {
+      widget = VideoPlayer(videoPlayerController);
+    }
+    return widget;
   }
 
-  Widget _getSwitchCameraIcon() {
+  Widget _getTopCameraIconWidget() {
     return Container(
       height: 100,
       width: MediaQuery.of(context).size.width,
@@ -110,7 +225,7 @@ class _VideoRecordPageState extends State<VideoRecordPage> {
           ),
           GestureDetector(
             onTap: () {
-              onRecordCancel();
+              onPop();
             },
             child: Container(
               width: 35,
@@ -137,7 +252,16 @@ class _VideoRecordPageState extends State<VideoRecordPage> {
     );
   }
 
-  Widget _getBottomToolbar() {
+  Widget _getBottomToolbarWidget() {
+    Widget widget = _getBottomRecordToolbar();
+    if (videoPlayerController != null &&
+        videoPlayerController.value.isPlaying) {
+      widget = _getBottomChoiceToolbar();
+    }
+    return widget;
+  }
+
+  Widget _getBottomRecordToolbar() {
     return Container(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
@@ -163,6 +287,49 @@ class _VideoRecordPageState extends State<VideoRecordPage> {
                   width: 70,
                   height: 70,
                   child: Image.asset("assets/images/sight_preview_tap.png"),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _getBottomChoiceToolbar() {
+    double itemWidth = 70;
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        children: <Widget>[
+          SizedBox(
+            height: MediaQuery.of(context).size.height - 150,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              GestureDetector(
+                onTap: () {
+                  onCancelEvent();
+                },
+                child: Container(
+                  width: itemWidth,
+                  height: itemWidth,
+                  child: Image.asset("assets/images/sight_preview_cancel.png"),
+                ),
+              ),
+              SizedBox(
+                width: 100,
+              ),
+              GestureDetector(
+                onTap: () {
+                  onFinishEvent();
+                },
+                child: Container(
+                  width: itemWidth,
+                  height: itemWidth,
+                  child: Image.asset("assets/images/sight_preview_done.png"),
                 ),
               ),
             ],

@@ -9,6 +9,7 @@ import 'message_content.dart';
 import 'text_message.dart';
 import 'image_message.dart';
 import 'voice_message.dart';
+import 'sight_message.dart';
 
 import 'util/type_util.dart';
 
@@ -126,6 +127,9 @@ class MessageFactory extends Object {
       content.decode(contentS);
     }else if(objectName == VoiceMessage.objectName) {
       content = new VoiceMessage();
+      content.decode(contentS);
+    }else if(objectName == SightMessage.objectName) {
+      content = new SightMessage();
       content.decode(contentS);
     }
     return content;

@@ -15,8 +15,8 @@ final routes = {
       ImagePreviewPage(message: arguments),
   '/debug':(context) =>
       DebugPage(),
-  '/video_record':(context) =>
-        VideoRecordPage(),
+  '/video_record':(context, {arguments}) =>
+        VideoRecordPage(arguments: arguments),
 };
 
 var onGenerateRoute = (RouteSettings settings) {

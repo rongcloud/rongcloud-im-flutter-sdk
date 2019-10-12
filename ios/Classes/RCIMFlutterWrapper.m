@@ -298,7 +298,15 @@
         NSString *extra = [msgDic valueForKey:@"extra"];
         content = [RCHQVoiceMessage messageWithPath:localPath duration:duration];
         ((RCHQVoiceMessage *)content).extra = extra;
-    } else {
+    } else if ([objName isEqualToString:@"RC:SightMsg"]) {
+           NSData *data = [contentStr dataUsingEncoding:NSUTF8StringEncoding];
+           NSDictionary *msgDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+           NSString *localPath = [msgDic valueForKey:@"localPath"];
+           long duration = [[msgDic valueForKey:@"duration"] longValue];
+           NSString *extra = [msgDic valueForKey:@"extra"];
+           content = [RCSightMessage messageWithLocalPath:localPath thumbnail:nil duration:duration];
+           ((RCSightMessage *)content).extra = extra;
+       } else {
         NSLog(@"%s 非法的媒体消息类型",__func__);
         return;
     }
@@ -885,7 +893,7 @@
 #pragma mark - private method
 
 - (BOOL)isMediaMessage:(NSString *)objName {
-    if([objName isEqualToString:@"RC:ImgMsg"] || [objName isEqualToString:@"RC:HQVCMsg"]) {
+    if([objName isEqualToString:@"RC:ImgMsg"] || [objName isEqualToString:@"RC:HQVCMsg"] || [objName isEqualToString:@"RC:SightMsg"]) {
         return YES;
     }
     return NO;
