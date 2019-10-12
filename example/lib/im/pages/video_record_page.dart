@@ -168,12 +168,10 @@ class _VideoRecordPageState extends State<VideoRecordPage> {
     print("rc videoPath $videoPath");
 
     videoPlayerController = VideoPlayerController.file(File(videoPath));
-    await videoPlayerController.setLooping(true);
+//    await videoPlayerController.setLooping(true);
     await videoPlayerController.initialize();
-    // videoPlayerController.addListener(listener)
-
-    setState(() {});
     await videoPlayerController.play();
+    setState(() {});
   }
 
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
@@ -181,6 +179,9 @@ class _VideoRecordPageState extends State<VideoRecordPage> {
   void resetData(){
     imagePath = null;
     videoPath = null;
+    if(videoPlayerController.value.isPlaying) {
+      videoPlayerController.pause();
+    }
     videoPlayerController = null;
     cameraController = null;
   }
