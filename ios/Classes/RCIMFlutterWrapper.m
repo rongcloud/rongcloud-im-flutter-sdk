@@ -121,6 +121,9 @@
         NSString *appkey = (NSString *)arg;
         [[RCIMClient sharedRCIMClient] initWithAppKey:appkey];
         
+        /// imlib 默认检测到小视频 SDK，才会注册小视频消息，但是这里没有小视频 SDK
+        [[RCIMClient sharedRCIMClient] registerMessageType:RCSightMessage.class];
+        
         [[RCIMClient sharedRCIMClient] setReceiveMessageDelegate:self object:nil];
         [[RCIMClient sharedRCIMClient] setRCConnectionStatusChangeDelegate:self];
     }else {

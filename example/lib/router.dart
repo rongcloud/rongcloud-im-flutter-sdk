@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'im/pages/conversation_page.dart';
 import 'im/pages/image_preview_page.dart';
 import 'im/pages/video_record_page.dart';
+import 'im/pages/video_play_page.dart';
 
 import 'other/home_page.dart';
 import 'other/debug_page.dart';
@@ -17,6 +18,8 @@ final routes = {
       DebugPage(),
   '/video_record':(context, {arguments}) =>
         VideoRecordPage(arguments: arguments),
+  '/video_play':(context, {arguments}) =>
+      VideoPlayPage(message: arguments),
 };
 
 var onGenerateRoute = (RouteSettings settings) {

@@ -286,6 +286,8 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
       MediaUtil.instance.startPlayAudio(msg.remoteUrl);
     }else if(message.content is ImageMessage) {
       Navigator.pushNamed(context, "/image_preview",arguments: message);
+    }else if(message.content is SightMessage) {
+      Navigator.pushNamed(context, "/video_play",arguments: message);
     }
   }
 

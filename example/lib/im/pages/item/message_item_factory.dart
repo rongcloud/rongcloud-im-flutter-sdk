@@ -78,6 +78,15 @@ class MessageItemFactory extends StatelessWidget {
     );
   }
 
+  Widget sightMessageItem() {
+    SightMessage msg = message.content;
+    return Container(
+      width: 100,
+      height: 50,
+      child: Text("小视频消息"),
+    );
+  }
+
   Widget messageItem() {
     if (message.content is TextMessage) {
       return textMessageItem();
@@ -85,6 +94,8 @@ class MessageItemFactory extends StatelessWidget {
       return imageMessageItem();
     } else if (message.content is VoiceMessage) {
       return voiceMessageItem();
+    } else if (message.content is SightMessage) {
+      return sightMessageItem();
     } else {
       return Text("无法识别消息 "+message.objectName);
     }
