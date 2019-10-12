@@ -77,6 +77,10 @@ class MessageFactory extends Object {
     message.messageUId = map["messageUId"];
     String contenStr = map["content"];
     MessageContent content = string2MessageContent(contenStr,message.objectName);
+    if(contenStr == null || contenStr == "") {
+      print(message.objectName+":该消息内容为空");
+      return message;
+    }
     if(content != null) {
       message.content = content;
     }else {

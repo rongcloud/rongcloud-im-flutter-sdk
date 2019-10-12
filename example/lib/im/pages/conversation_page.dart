@@ -280,7 +280,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
 
   @override
   void didTapMessageItem(Message message) {
-    print("didTapMessageItem "+message.content.getObjectName());
+    print("didTapMessageItem "+message.objectName);
     if(message.content is VoiceMessage) {
       VoiceMessage msg = message.content;
       MediaUtil.instance.startPlayAudio(msg.remoteUrl);
