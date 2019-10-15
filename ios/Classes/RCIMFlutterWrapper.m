@@ -10,6 +10,7 @@
 #import "RCFlutterConfig.h"
 #import "RCFlutterMessageFactory.h"
 #import "RCIMFlutterLog.h"
+#import "RCFlutterUtil.h"
 
 @interface RCMessageMapper : NSObject
 + (instancetype)sharedMapper;
@@ -307,7 +308,9 @@
            NSString *localPath = [msgDic valueForKey:@"localPath"];
            long duration = [[msgDic valueForKey:@"duration"] longValue];
            NSString *extra = [msgDic valueForKey:@"extra"];
-           content = [RCSightMessage messageWithLocalPath:localPath thumbnail:nil duration:duration];
+        
+           UIImage *thumbImg = [RCFlutterUtil getVideoPreViewImage:localPath];
+           content = [RCSightMessage messageWithLocalPath:localPath thumbnail:thumbImg duration:duration];
            ((RCSightMessage *)content).extra = extra;
        } else {
         NSLog(@"%s 非法的媒体消息类型",__func__);

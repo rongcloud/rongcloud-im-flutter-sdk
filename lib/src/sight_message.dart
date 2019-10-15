@@ -6,10 +6,11 @@ import 'dart:convert' show json;
 class SightMessage extends MessageContent {
   static const String objectName = "RC:SightMsg";
 
-  String localPath;
-  String remoteUrl;
-  int duration;
-  String extra;
+  String localPath;//本地路径
+  String remoteUrl;//远端路径
+  String content;//缩略图内容
+  int duration;//时长
+  String extra;//额外数据
 
   /// [localPath] 本地路径，Android 必须以 file:// 开头
   ///
@@ -30,6 +31,7 @@ class SightMessage extends MessageContent {
     Map map = json.decode(jsonStr.toString());
     this.localPath = map["localPath"];
     this.remoteUrl = map["sightUrl"];
+    this.content = map["content"];
     this.duration =  int.parse(map["duration"]);
     this.extra = map["extra"];
   }
