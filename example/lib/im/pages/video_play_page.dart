@@ -31,7 +31,7 @@ class _VideoPlayPageState extends State<VideoPlayPage> {
 
   void initVideoController() async {
     sightMessage = message.content;
-    if(sightMessage.localPath != null || sightMessage.localPath != "") {
+    if(sightMessage.localPath != null && sightMessage.localPath != "") {
       videoPlayerController = VideoPlayerController.file(File(sightMessage.localPath));
     }else {
       videoPlayerController = VideoPlayerController.network(sightMessage.remoteUrl);
