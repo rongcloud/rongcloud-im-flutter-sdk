@@ -34,6 +34,7 @@ class _VideoPlayPageState extends State<VideoPlayPage> {
     if(sightMessage.localPath != null && sightMessage.localPath != "") {
       videoPlayerController = VideoPlayerController.file(File(sightMessage.localPath));
     }else {
+      //TODO 是否需要做缓存？ VideoPlayerController.network 每次都会下载一遍视频
       videoPlayerController = VideoPlayerController.network(sightMessage.remoteUrl);
     }
     videoPlayerController.initialize();

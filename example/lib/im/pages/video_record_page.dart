@@ -43,7 +43,7 @@ class _VideoRecordPageState extends State<VideoRecordPage> {
   @override
   void dispose() {
     cameraController?.dispose();
-    videoPlayerController?.dispose(); 
+    videoPlayerController?.dispose();
     super.dispose();
   }
 
@@ -176,10 +176,10 @@ class _VideoRecordPageState extends State<VideoRecordPage> {
 
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
 
-  void resetData(){
+  void resetData() {
     imagePath = null;
     videoPath = null;
-    if(videoPlayerController.value.isPlaying) {
+    if (videoPlayerController.value.isPlaying) {
       videoPlayerController.pause();
     }
     videoPlayerController = null;
@@ -236,9 +236,8 @@ class _VideoRecordPageState extends State<VideoRecordPage> {
               child: Image.asset("assets/images/sight_top_toolbar_close.png"),
             ),
           ),
-          Container(
-            width: MediaQuery.of(context).size.width - 160,
-            height: 50,
+          Expanded(
+            child: Container(),
           ),
           GestureDetector(
             onTap: () {
@@ -249,6 +248,9 @@ class _VideoRecordPageState extends State<VideoRecordPage> {
               height: 50,
               child: Image.asset("assets/images/sight_camera_switch.png"),
             ),
+          ),
+          SizedBox(
+            width: 40,
           ),
         ],
       ),
@@ -277,21 +279,23 @@ class _VideoRecordPageState extends State<VideoRecordPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               GestureDetector(
-                onTap: () {
-                  onTapCamera();
-                },
-                onLongPress: () {
-                  onLongPressCamera();
-                },
-                onLongPressEnd: (LongPressEndDetails details) {
-                  onLongPressEndCamera();
-                },
-                child: Container(
-                  width: 70,
-                  height: 70,
-                  child: Image.asset("assets/images/sight_preview_tap.png"),
-                ),
-              ),
+                  onTap: () {
+                    onTapCamera();
+                  },
+                  onLongPress: () {
+                    onLongPressCamera();
+                  },
+                  onLongPressEnd: (LongPressEndDetails details) {
+                    onLongPressEndCamera();
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(35),
+                    child: Container(
+                      width: 70,
+                      height: 70,
+                      color: Colors.white,
+                    ),
+                  )),
             ],
           )
         ],
