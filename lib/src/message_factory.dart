@@ -78,7 +78,7 @@ class MessageFactory extends Object {
     String contenStr = map["content"];
     MessageContent content = string2MessageContent(contenStr,message.objectName);
     if(contenStr == null || contenStr == "") {
-      print(message.objectName+":该消息内容为空");
+      print(message.objectName+":该消息内容为空，可能该消息没有在原生 SDK 中注册");
       return message;
     }
     if(content != null) {

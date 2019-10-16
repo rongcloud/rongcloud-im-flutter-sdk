@@ -43,6 +43,9 @@
 }
 
 + (NSDictionary *)message2Dic:(RCMessage *)message {
+    if(!message) {
+        return [NSDictionary new];
+    }
     NSMutableDictionary *dic = [NSMutableDictionary new];
     [dic setObject:@(message.conversationType) forKey:@"conversationType"];
     [dic setObject:message.targetId forKey:@"targetId"];
