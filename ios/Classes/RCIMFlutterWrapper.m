@@ -905,45 +905,4 @@
     return NO;
 }
 
-- (void)pushToVC:(UIViewController *)vc {
-    UIViewController *rootVC = [UIApplication sharedApplication].keyWindow.rootViewController;
-    if([rootVC isKindOfClass:[UINavigationController class]]) {
-        UINavigationController *nav = (UINavigationController *)rootVC;
-        [nav pushViewController:vc animated:YES];
-    }else {
-        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
-        [rootVC presentViewController:nav animated:YES completion:nil ];
-    }
-    UIButton *backBtn = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 40, 33)];
-    [backBtn setTitle:@"back" forState:UIControlStateNormal];
-    [backBtn addTarget:self action:@selector(backEvent:) forControlEvents:UIControlEventTouchUpInside];
-    vc.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backBtn];
-}
-
-- (void)backEvent:(UIButton *)btn {
-    id vc = [self findViewController:btn];
-    if(vc && [vc isKindOfClass:[UIViewController class]]) {
-        [self popFromVC:(UIViewController *)vc];
-    }
-}
-
-- (void)popFromVC:(UIViewController *)vc {
-    UINavigationController *nav = vc.navigationController;
-    if(nav && nav.childViewControllers.count > 1) {
-        [nav popViewControllerAnimated:YES];
-    }else {
-        [vc dismissViewControllerAnimated:YES completion:nil];
-    }
-}
-
-- (UIViewController *)findViewController:(UIView *)sourceView {
-    id target=sourceView;
-    while (target) {
-        target = ((UIResponder *)target).nextResponder;
-        if ([target isKindOfClass:[UIViewController class]]) {
-            break;
-        }
-    }
-    return target;
-}
 @end
