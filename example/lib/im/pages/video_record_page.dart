@@ -214,7 +214,15 @@ class _VideoRecordPageState extends State<VideoRecordPage> {
     } else if (videoPath != null) {
       widget = VideoPlayer(videoPlayerController);
     }
-    return widget;
+    return Transform.scale(
+      scale: 1 /cameraController.value.aspectRatio,
+      child: Center(
+        child: AspectRatio(
+          aspectRatio: cameraController.value.aspectRatio,
+          child: widget,
+        ),
+      ),
+    );
   }
 
   Widget _getTopCameraIconWidget() {
@@ -231,8 +239,8 @@ class _VideoRecordPageState extends State<VideoRecordPage> {
               onPop();
             },
             child: Container(
-              width: 35,
-              height: 35,
+              width: 25,
+              height: 25,
               child: Image.asset("assets/images/sight_top_toolbar_close.png"),
             ),
           ),
@@ -244,8 +252,8 @@ class _VideoRecordPageState extends State<VideoRecordPage> {
               onSwitchCamera();
             },
             child: Container(
-              width: 50,
-              height: 50,
+              width: 35,
+              height: 35,
               child: Image.asset("assets/images/sight_camera_switch.png"),
             ),
           ),
