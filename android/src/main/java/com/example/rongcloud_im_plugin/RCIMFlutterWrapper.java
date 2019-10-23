@@ -23,6 +23,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.rong.common.fwlog.FwLog;
+import io.rong.imlib.AnnotationNotFoundException;
 import io.rong.imlib.IRongCallback;
 import io.rong.imlib.MessageTag;
 import io.rong.imlib.RongCommonDefine;
@@ -179,6 +180,12 @@ public class RCIMFlutterWrapper {
             this.appkey = appkey;
             RongIMClient.init(mContext,appkey);
 
+            try {
+                // IMLib 默认检测到小视频 SDK 才会注册小视频消息，所以此处需要手动注册
+                RongIMClient.registerMessageType(SightMessage.class);
+            } catch (AnnotationNotFoundException e) {
+                e.printStackTrace();
+            }
 
             setReceiveMessageListener();
             setConnectStatusListener();

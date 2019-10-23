@@ -32,7 +32,12 @@ class SightMessage extends MessageContent {
     this.localPath = map["localPath"];
     this.remoteUrl = map["sightUrl"];
     this.content = map["content"];
-    this.duration =  int.parse(map["duration"]);
+    var d = map["duration"];
+    if(d is String) {
+      this.duration = int.parse(d);
+    }else {
+      this.duration = d;
+    }
     this.extra = map["extra"];
   }
 
