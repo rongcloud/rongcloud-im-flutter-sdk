@@ -9,6 +9,7 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
@@ -35,6 +36,7 @@ import io.rong.imlib.model.UserInfo;
 import io.rong.message.HQVoiceMessage;
 import io.rong.message.ImageMessage;
 import io.rong.message.MessageHandler;
+import io.rong.message.SightMessage;
 import io.rong.message.VoiceMessage;
 
 
@@ -424,6 +426,25 @@ public class RCIMFlutterWrapper {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+            } else if (objectName.equalsIgnoreCase("RC:SightMsg")) {
+                Log.i("TAG","!!!");
+                try {
+                    JSONObject jsonObject = new JSONObject(contentStr);
+                    String localPath =  (String)jsonObject.get("localPath");
+                    Uri uri = Uri.fromFile(new File(localPath));
+                    int duration = (Integer) jsonObject.get("duration");
+                    content = SightMessage.obtain(uri,duration);
+                    RCLog.i(LOG_TAG+" start param:"+arg.toString());
+                    Object o = jsonObject.get("extra");//设置 extra
+                    if(o instanceof String) {
+                        String extra = (String)o;
+                        ((SightMessage) content).setExtra(extra);
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
             } else {
 
             }
@@ -1456,7 +1477,7 @@ public class RCIMFlutterWrapper {
     }
 
     private boolean isMediaMessage(String objName) {
-        if(objName.equalsIgnoreCase("RC:ImgMsg") || objName.equalsIgnoreCase("RC:HQVCMsg")) {
+        if(objName.equalsIgnoreCase("RC:ImgMsg") || objName.equalsIgnoreCase("RC:HQVCMsg") || objName.equalsIgnoreCase("RC:SightMsg")) {
             return true;
         }
         return false;
