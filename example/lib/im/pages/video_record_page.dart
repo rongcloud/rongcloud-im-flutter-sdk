@@ -1,13 +1,17 @@
 import 'dart:io';
+import 'dart:async'; //timer
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:video_player/video_player.dart';
 
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'item/record_top_item.dart';
+import 'item/record_bottom_item.dart';
 
 class VideoRecordPage extends StatefulWidget {
   final Map arguments;
@@ -19,16 +23,20 @@ class VideoRecordPage extends StatefulWidget {
   }
 }
 
-class _VideoRecordPageState extends State<VideoRecordPage> {
+class _VideoRecordPageState extends State<VideoRecordPage>
+    implements VideoBottomToolBarDelegate, TopRecordItemDelegate {
   Map arguments;
   int conversationType;
   String targetId;
+  int recodeTime = 0;
+  Timer timer;
 
   CameraController cameraController;
   VideoPlayerController videoPlayerController;
   List<CameraDescription> cameras;
   String videoPath;
   String imagePath;
+  TopRecordItem topitem;
 
   _VideoRecordPageState({this.arguments});
 
@@ -38,6 +46,7 @@ class _VideoRecordPageState extends State<VideoRecordPage> {
     conversationType = arguments["coversationType"];
     targetId = arguments["targetId"];
     initCamera();
+    topitem = TopRecordItem(this);
   }
 
   @override
@@ -97,6 +106,8 @@ class _VideoRecordPageState extends State<VideoRecordPage> {
       // if (mounted) setState(() {});
       if (filePath != null) print('Saving video to $filePath');
     });
+
+    // startTimer();
   }
 
   void onLongPressEndCamera() {
@@ -105,26 +116,6 @@ class _VideoRecordPageState extends State<VideoRecordPage> {
       // if (mounted) setState(() {});
       print('Video recorded to: $videoPath');
     });
-  }
-
-  // 录制视频后取消
-  void onCancelEvent() {
-    print("onCancelEvent");
-    resetData();
-    setState(() {});
-  }
-
-  //录制视频后完成
-  void onFinishEvent() {
-    print("onFinishEvent");
-    if (videoPath != null) {
-      SightMessage sightMessage = SightMessage.obtain(videoPath, 5);
-      print("onFinishEvent con $conversationType targetId $targetId");
-      RongcloudImPlugin.sendMessage(conversationType, targetId, sightMessage);
-      onPop();
-    } else {
-      print("onFinishEvent videoPath is null");
-    }
   }
 
   Future<String> startVideoRecording() async {
@@ -194,16 +185,35 @@ class _VideoRecordPageState extends State<VideoRecordPage> {
     if (!cameraController.value.isInitialized) {
       return Container();
     }
-    return AspectRatio(
-      aspectRatio: cameraController.value.aspectRatio,
-      child: Center(
-          child: Stack(
+
+    return Container(
+      child: Column(
         children: <Widget>[
-          _getCameraPreviewWidget(),
-          _getTopCameraIconWidget(),
-          _getBottomToolbarWidget(),
+          Stack(
+            children: <Widget>[
+              Container(
+                width: MediaQuery.of(context).size.width,
+                child: AspectRatio(
+                  aspectRatio: MediaQuery.of(context).size.width /
+                      MediaQuery.of(context).size.height,
+                  child: Center(
+                      child: Stack(
+                    children: <Widget>[_getCameraPreviewWidget(), topitem],
+                  )),
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 200,
+                  child: BottomRecordItem(this),
+                ),
+              )
+            ],
+          )
         ],
-      )),
+      ),
     );
   }
 
@@ -215,7 +225,7 @@ class _VideoRecordPageState extends State<VideoRecordPage> {
       widget = VideoPlayer(videoPlayerController);
     }
     return Transform.scale(
-      scale: 1 /cameraController.value.aspectRatio,
+      scale: 1 / cameraController.value.aspectRatio,
       child: Center(
         child: AspectRatio(
           aspectRatio: cameraController.value.aspectRatio,
@@ -225,132 +235,86 @@ class _VideoRecordPageState extends State<VideoRecordPage> {
     );
   }
 
-  Widget _getTopCameraIconWidget() {
-    return Container(
-      height: 100,
-      width: MediaQuery.of(context).size.width,
-      child: Row(
-        children: <Widget>[
-          SizedBox(
-            width: 40,
-          ),
-          GestureDetector(
-            onTap: () {
-              onPop();
-            },
-            child: Container(
-              width: 25,
-              height: 25,
-              child: Image.asset("assets/images/sight_top_toolbar_close.png"),
-            ),
-          ),
-          Expanded(
-            child: Container(),
-          ),
-          GestureDetector(
-            onTap: () {
-              onSwitchCamera();
-            },
-            child: Container(
-              width: 35,
-              height: 35,
-              child: Image.asset("assets/images/sight_camera_switch.png"),
-            ),
-          ),
-          SizedBox(
-            width: 40,
-          ),
-        ],
-      ),
+  Widget recodeLine() {
+    return LinearPercentIndicator(
+      width: MediaQuery.of(context).size.width - 40 - 25 - 40 - 35 - 30,
+      animation: true,
+      animationDuration: 10000,
+      percent: 1,
+      progressColor: Colors.white,
     );
   }
 
-  Widget _getBottomToolbarWidget() {
-    Widget widget = _getBottomRecordToolbar();
-    if (videoPlayerController != null &&
-        videoPlayerController.value.isPlaying) {
-      widget = _getBottomChoiceToolbar();
+  void startTimer() {
+    if (timer == null) {
+      timer = Timer.periodic(Duration(milliseconds: 1000), (timer) {
+        recodeTime++;
+        print('!!!!timer + $recodeTime');
+        if (recodeTime >= 10) {
+          didLongPressEndCamera();
+        }
+      });
     }
-    return widget;
   }
 
-  Widget _getBottomRecordToolbar() {
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
-      child: Column(
-        children: <Widget>[
-          SizedBox(
-            height: MediaQuery.of(context).size.height - 150,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              GestureDetector(
-                  onTap: () {
-                    onTapCamera();
-                  },
-                  onLongPress: () {
-                    onLongPressCamera();
-                  },
-                  onLongPressEnd: (LongPressEndDetails details) {
-                    onLongPressEndCamera();
-                  },
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(35),
-                    child: Container(
-                      width: 70,
-                      height: 70,
-                      color: Colors.white,
-                    ),
-                  )),
-            ],
-          )
-        ],
-      ),
-    );
+  void stopTimer() {
+    timer.cancel();
   }
 
-  Widget _getBottomChoiceToolbar() {
-    double itemWidth = 70;
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
-      child: Column(
-        children: <Widget>[
-          SizedBox(
-            height: MediaQuery.of(context).size.height - 150,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              GestureDetector(
-                onTap: () {
-                  onCancelEvent();
-                },
-                child: Container(
-                  width: itemWidth,
-                  height: itemWidth,
-                  child: Image.asset("assets/images/sight_preview_cancel.png"),
-                ),
-              ),
-              SizedBox(
-                width: 100,
-              ),
-              GestureDetector(
-                onTap: () {
-                  onFinishEvent();
-                },
-                child: Container(
-                  width: itemWidth,
-                  height: itemWidth,
-                  child: Image.asset("assets/images/sight_preview_done.png"),
-                ),
-              ),
-            ],
-          )
-        ],
-      ),
-    );
+  @override
+  void didLongPressCamera() {
+    print("onLongPressCamera");
+    videoPath = null;
+
+    topitem.updateRecordState(RecordState.Recording);
+    startVideoRecording().then((String filePath) {
+      // if (mounted) setState(() {});
+      if (filePath != null) print('Saving video to $filePath');
+    });
+
+    startTimer();
+  }
+
+  @override
+  void didLongPressEndCamera() {
+    topitem.updateRecordState(RecordState.Preview);
+    print("onLongPressEndCamera");
+    stopVideoRecording().then((_) {
+      // if (mounted) setState(() {});
+      print('Video recorded to: $videoPath');
+    });
+    stopTimer();
+  }
+
+  //录制视频后取消
+  @override
+  void didCancelEvent() {
+    print("onCancelEvent");
+    resetData();
+    setState(() {});
+  }
+
+  //录制视频后完成
+  @override
+  void didFinishEvent() {
+    print("onFinishEvent");
+    if (videoPath != null) {
+      SightMessage sightMessage = SightMessage.obtain(videoPath, recodeTime);
+      print("onFinishEvent con $conversationType targetId $targetId");
+      RongcloudImPlugin.sendMessage(conversationType, targetId, sightMessage);
+      onPop();
+    } else {
+      print("onFinishEvent videoPath is null");
+    }
+  }
+
+  @override
+  void didPop() {
+    onPop();
+  }
+
+  @override
+  void didSwitchCamera() {
+    onSwitchCamera();
   }
 }

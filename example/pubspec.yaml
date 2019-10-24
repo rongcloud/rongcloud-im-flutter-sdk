@@ -21,6 +21,7 @@ dependencies:
   flutter_local_notifications: ^0.8.1
   camera: ^0.5.5+1
   video_player: ^0.10.2+3
+  percent_indicator: ^2.1.1+1
 
 
 dev_dependencies:
