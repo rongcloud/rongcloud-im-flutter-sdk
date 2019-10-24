@@ -68,7 +68,9 @@ class _TopRecordItemState extends State<TopRecordItem> {
             child: Container(
               width: 25,
               height: 25,
-              child: Image.asset("assets/images/sight_top_toolbar_close.png"),
+              child: currentRecordState != RecordState.Recording
+                  ? Image.asset("assets/images/sight_top_toolbar_close.png")
+                  : Container(),
             ),
           ),
           SizedBox(
@@ -78,7 +80,7 @@ class _TopRecordItemState extends State<TopRecordItem> {
             child: Container(
               child: currentRecordState == RecordState.Recording
                   ? recordLine()
-                  : null,
+                  : Container(),
             ),
           ),
           GestureDetector(

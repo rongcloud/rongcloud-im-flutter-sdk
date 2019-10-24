@@ -93,25 +93,6 @@ class _VideoRecordPageState extends State<VideoRecordPage>
     });
   }
 
-  void onLongPressCamera() {
-    print("onLongPressCamera");
-    videoPath = null;
-    startVideoRecording().then((String filePath) {
-      // if (mounted) setState(() {});
-      if (filePath != null) print('Saving video to $filePath');
-    });
-
-    // startTimer();
-  }
-
-  void onLongPressEndCamera() {
-    print("onLongPressEndCamera");
-    stopVideoRecording().then((_) {
-      // if (mounted) setState(() {});
-      print('Video recorded to: $videoPath');
-    });
-  }
-
   Future<String> startVideoRecording() async {
     if (!cameraController.value.isInitialized) {
       print('Error: select a camera first.');
@@ -222,16 +203,6 @@ class _VideoRecordPageState extends State<VideoRecordPage>
           child: widget,
         ),
       ),
-    );
-  }
-
-  Widget recodeLine() {
-    return LinearPercentIndicator(
-      width: MediaQuery.of(context).size.width - 40 - 25 - 40 - 35 - 30,
-      animation: true,
-      animationDuration: 10000,
-      percent: 1,
-      progressColor: Colors.white,
     );
   }
 
