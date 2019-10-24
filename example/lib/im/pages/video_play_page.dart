@@ -12,7 +12,6 @@ class VideoPlayPage extends StatefulWidget {
   State<StatefulWidget> createState() {
     return _VideoPlayPageState(message);
   }
-  
 }
 
 class _VideoPlayPageState extends State<VideoPlayPage> {
@@ -29,21 +28,58 @@ class _VideoPlayPageState extends State<VideoPlayPage> {
     initVideoController();
   }
 
+  @override
+  void dispose() {
+    videoPlayerController?.dispose();
+    super.dispose();
+  }
+
   void initVideoController() async {
     sightMessage = message.content;
-    if(sightMessage.localPath != null && sightMessage.localPath != "") {
-      videoPlayerController = VideoPlayerController.file(File(sightMessage.localPath));
-    }else {
+    if (sightMessage.localPath != null && sightMessage.localPath != "") {
+      videoPlayerController =
+          VideoPlayerController.file(File(sightMessage.localPath));
+    } else {
       //TODO 是否需要做缓存？ VideoPlayerController.network 每次都会下载一遍视频
-      videoPlayerController = VideoPlayerController.network(sightMessage.remoteUrl);
+      videoPlayerController =
+          VideoPlayerController.network(sightMessage.remoteUrl);
     }
     videoPlayerController.initialize();
     await videoPlayerController.play();
     setState(() {});
   }
 
+  void onPop() {
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return VideoPlayer(videoPlayerController);
+    return Stack(
+      children: <Widget>[
+        VideoPlayer(videoPlayerController),
+        Container(
+          height: 100,
+          width: MediaQuery.of(context).size.width,
+          child: Row(
+            children: <Widget>[
+              SizedBox(
+                width: 40,
+              ),
+              GestureDetector(
+                onTap: () {
+                  onPop();
+                },
+                child: Container(
+                    width: 25,
+                    height: 25,
+                    child: Image.asset(
+                        "assets/images/sight_top_toolbar_close.png")),
+              )
+            ],
+          ),
+        )
+      ],
+    );
   }
 }
