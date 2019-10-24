@@ -14,6 +14,7 @@ import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
 import io.rong.message.ImageMessage;
+import io.rong.message.SightMessage;
 
 public class MessageFactory {
 
@@ -45,6 +46,8 @@ public class MessageFactory {
         MessageContent content = message.getContent();
         if(message.getContent() instanceof ImageMessage) {
             RCMessageHandler.encodeImageMessage(message);
+        }else if(message.getContent() instanceof SightMessage) {
+            RCMessageHandler.encodeSightMessage(message);
         }
         byte[] data = content.encode();
         String jsonS = new String(data);

@@ -19,7 +19,10 @@ import io.rong.common.RLog;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Message;
 import io.rong.message.ImageMessage;
+import io.rong.message.SightMessage;
 import io.rong.message.utils.BitmapUtil;
+import static android.provider.MediaStore.Video.Thumbnails.MINI_KIND;
+import android.media.ThumbnailUtils;
 
 public class RCMessageHandler {
 
@@ -32,17 +35,17 @@ public class RCMessageHandler {
     private final static String IMAGE_LOCAL_PATH = "/image/local/";
     private final static String IMAGE_THUMBNAIL_PATH = "/image/thumbnail/";
 
+    private final static String VIDEO_THUMBNAIL_PATH = "/video/thumbnail/";
+
     //ImageMessageHandler encodeMessage 方法的副本
     static public void encodeImageMessage(Message message) {
         Context context = RCIMFlutterWrapper.getInstance().getMainContext();
-        String appkey = RCIMFlutterWrapper.getInstance().getAppkey();
-        String currentUserId = RongIMClient.getInstance().getCurrentUserId();
-
-        ImageMessage model = (ImageMessage)message.getContent();
-        String key = shortMD5(appkey,currentUserId);
         File file = context.getFilesDir();
         String path = file.getAbsolutePath();
-        Uri uri = Uri.parse(path + File.separator + key);
+
+        Uri uri = obtainMediaFileSavedUri();
+
+        ImageMessage model = (ImageMessage)message.getContent();
         String name = message.getMessageId() + ".jpg";
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -197,6 +200,66 @@ public class RCMessageHandler {
 
     }
 
+    static public void encodeSightMessage(Message message) {
+        String TAG = "encodeSightMessage";
+        SightMessage model = (SightMessage) message.getContent();
+        Uri uri = obtainMediaFileSavedUri();
+        String name = message.getMessageId() + ".jpg";
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        byte[] data;
+        if (model.getThumbUri() != null
+                && model.getThumbUri().getScheme() != null
+                && model.getThumbUri().getScheme().equals("file")) {
+
+            File file = new File(uri.toString() + VIDEO_THUMBNAIL_PATH + name);
+            if (file.exists()) {
+                model.setThumbUri(Uri.parse("file://" + uri.toString() + VIDEO_THUMBNAIL_PATH + name));
+                data = FileUtils.file2byte(file);
+                if (data != null) {
+                    model.setBase64(Base64.encodeToString(data, Base64.NO_WRAP));
+                }
+                return;
+            } else {
+                String thumbPath = model.getThumbUri().toString().substring(5);
+                File src = new File(thumbPath);
+                data = FileUtils.file2byte(src);
+                if (data != null) {
+                    model.setBase64(Base64.encodeToString(data, Base64.NO_WRAP));
+                    String path = uri.toString() + VIDEO_THUMBNAIL_PATH;
+                    if ((FileUtils.copyFile(src, path, name)) != null) {
+                        model.setThumbUri(Uri.parse("file://" + path + name));
+                        return;
+                    }
+                }
+            }
+        }
+        try {
+            String videoPath = model.getLocalPath().toString().substring(5);
+            RLog.d(TAG, "beforeEncodeMessage Thumbnail not save yet! " + videoPath);
+            Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(videoPath, MINI_KIND);
+            if (bitmap != null) {
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, THUMB_COMPRESSED_QUALITY, outputStream);
+                data = outputStream.toByteArray();
+                model.setBase64(Base64.encodeToString(data, Base64.NO_WRAP));
+                outputStream.close();
+                FileUtils.byte2File(data, uri.toString() + VIDEO_THUMBNAIL_PATH, name);
+                model.setThumbUri(Uri.parse("file://" + uri.toString() + VIDEO_THUMBNAIL_PATH + name));
+                if (!bitmap.isRecycled()) {
+                    bitmap.recycle();
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            RLog.e(TAG, "beforeEncodeMessage Not Base64 Content!");
+        } catch (IOException e) {
+            e.printStackTrace();
+            RLog.e(TAG, "beforeEncodeMessage IOException");
+        }
+    }
+
     static private String shortMD5(String... args) {
         try {
             StringBuilder builder = new StringBuilder();
@@ -219,5 +282,18 @@ public class RCMessageHandler {
             RLog.e("NativeClient", "shortMD5", var7);
             return "";
         }
+    }
+
+    static private Uri obtainMediaFileSavedUri() {
+
+        Context context = RCIMFlutterWrapper.getInstance().getMainContext();
+        String appkey = RCIMFlutterWrapper.getInstance().getAppkey();
+        String currentUserId = RongIMClient.getInstance().getCurrentUserId();
+
+        String key = shortMD5(appkey,currentUserId);
+        File file = context.getFilesDir();
+        String path = file.getAbsolutePath();
+        Uri uri = Uri.parse(path + File.separator + key);
+        return uri;
     }
 }
