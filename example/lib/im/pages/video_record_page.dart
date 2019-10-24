@@ -35,7 +35,6 @@ class _VideoRecordPageState extends State<VideoRecordPage>
   VideoPlayerController videoPlayerController;
   List<CameraDescription> cameras;
   String videoPath;
-  String imagePath;
   TopRecordItem topitem;
 
   _VideoRecordPageState({this.arguments});
@@ -92,11 +91,6 @@ class _VideoRecordPageState extends State<VideoRecordPage>
       }
       setState(() {});
     });
-  }
-
-  void onTapCamera() async {
-    print("onTapCamera");
-    imagePath = null;
   }
 
   void onLongPressCamera() {
@@ -168,7 +162,6 @@ class _VideoRecordPageState extends State<VideoRecordPage>
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
 
   void resetData() {
-    imagePath = null;
     videoPath = null;
     if (videoPlayerController.value.isPlaying) {
       videoPlayerController.pause();
@@ -217,10 +210,8 @@ class _VideoRecordPageState extends State<VideoRecordPage>
   }
 
   Widget _getCameraPreviewWidget() {
-    Widget widget = CameraPreview(cameraController);
-    if (imagePath != null) {
-      widget = Image.file(File(imagePath));
-    } else if (videoPath != null) {
+    Widget widget = CameraPreview(cameraController);  
+    if (videoPath != null) {
       widget = VideoPlayer(videoPlayerController);
     }
     return Transform.scale(
