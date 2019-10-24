@@ -174,7 +174,6 @@ class _VideoRecordPageState extends State<VideoRecordPage>
       videoPlayerController.pause();
     }
     videoPlayerController = null;
-    cameraController = null;
   }
 
   @override
@@ -290,6 +289,7 @@ class _VideoRecordPageState extends State<VideoRecordPage>
   @override
   void didCancelEvent() {
     print("onCancelEvent");
+    topitem.updateRecordState(RecordState.Normal);
     resetData();
     setState(() {});
   }

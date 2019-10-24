@@ -17,7 +17,7 @@ class _BottomRecordItemState extends State<BottomRecordItem>
   int timerValue = 0;
   bool isBegin = false;
   AnimationController percentageAnimationController;
-  bool isFinishRecord = false;
+  bool isNarmal = true; //正常状态，选择状态
 
   _BottomRecordItemState(VideoBottomToolBarDelegate delegate) {
     this.delegate = delegate;
@@ -72,7 +72,7 @@ class _BottomRecordItemState extends State<BottomRecordItem>
   Widget _getBottomToolbarWidget() {
     Widget widget = _getBottomRecordToolbar();
 
-    if (isFinishRecord == true) {
+    if (isNarmal == false) {
       widget = _getBottomChoiceToolbar();
     }
 
@@ -98,10 +98,13 @@ class _BottomRecordItemState extends State<BottomRecordItem>
                   SizedBox(
                     height: 50,
                   ),
-                  Container(
-                    width: 70,
-                    height: 70,
-                    child: Image.asset("assets/images/sight_preview_done.png"),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(35),
+                    child: Container(
+                      width: 70,
+                      height: 70,
+                      color: Colors.white,
+                    ),
                   ),
                 ],
               )),
@@ -125,7 +128,7 @@ class _BottomRecordItemState extends State<BottomRecordItem>
 
   onLongPressEndCamera() {
     setState(() {
-      isFinishRecord = true;
+      isNarmal = false;
       // percentageAnimationController.stop();
     });
     if (delegate != null) {
@@ -143,6 +146,9 @@ class _BottomRecordItemState extends State<BottomRecordItem>
     } else {
       print("没有实现 didLongPressEndCamera");
     }
+    //重置为普通状态
+    isNarmal = true;
+    setState(() {});
   }
 
   onFinishEvent() {
