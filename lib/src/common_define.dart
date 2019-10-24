@@ -118,4 +118,7 @@ class RCErrorCode {
 
   /// 历史消息云存储功能未开通
   static const int RoamingServiceUnAvailable = 33007;
+
+  /// 小视频消息时长超限，最长 10s
+  static const int SightMessageDurationLimitExceed = 34002;
 }

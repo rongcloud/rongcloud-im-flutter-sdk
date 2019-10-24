@@ -436,7 +436,6 @@ public class RCIMFlutterWrapper {
                     e.printStackTrace();
                 }
             } else if (objectName.equalsIgnoreCase("RC:SightMsg")) {
-                Log.i("TAG","!!!");
                 try {
                     JSONObject jsonObject = new JSONObject(contentStr);
                     String localPath =  (String)jsonObject.get("localPath");
@@ -444,7 +443,6 @@ public class RCIMFlutterWrapper {
                     Uri uri = Uri.parse(localPath);
                     int duration = (Integer) jsonObject.get("duration");
                     content = SightMessage.obtain(uri,duration);
-                    RCLog.i(LOG_TAG+" start param:"+arg.toString());
                     Object o = jsonObject.get("extra");//设置 extra
                     if(o instanceof String) {
                         String extra = (String)o;
@@ -462,6 +460,20 @@ public class RCIMFlutterWrapper {
             if(content == null) {
                 RCLog.e(LOG_TAG+" message content is nil");
                 return;
+            }
+
+            if(content instanceof SightMessage) {
+                SightMessage sightMessage = (SightMessage)content;
+                if(sightMessage.getDuration() > 10) {
+                    RongIMClient.ErrorCode errorCode = RongIMClient.ErrorCode.RC_SIGHT_MSG_DURATION_LIMIT_EXCEED;
+                    RCLog.e(LOG_TAG+ String.valueOf(errorCode.getValue()));
+                    Map resultMap = new HashMap();
+                    resultMap.put("messageId",-1);
+                    resultMap.put("status",20);
+                    resultMap.put("code",errorCode.getValue());
+                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage,resultMap);
+                    return ;
+                }
             }
 
             Message message = Message.obtain(targetId,type,content);

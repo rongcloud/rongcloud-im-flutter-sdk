@@ -320,6 +320,18 @@
         return;
     }
     
+    if([content isKindOfClass:[RCSightMessage class]]) {
+        RCSightMessage *sightMsg = (RCSightMessage *)content;
+        if(sightMsg.duration > 10) {
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:@(-1) forKey:@"messageId"];
+            [dic setObject:@(SentStatus_FAILED) forKey:@"status"];
+            [dic setObject:@(RC_GIF_MSG_SIZE_LIMIT_EXCEED) forKey:@"code"];
+            [self.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
+            return;
+        }
+    }
+    
     __weak typeof(self) ws = self;
     RCMessage *message =  [[RCIMClient sharedRCIMClient] sendMediaMessage:type targetId:targetId content:content pushContent:pushContent pushData:pushData progress:^(int progress, long messageId) {
         NSMutableDictionary *dic = [NSMutableDictionary new];
