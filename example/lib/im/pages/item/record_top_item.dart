@@ -28,10 +28,13 @@ class TopRecordItem extends StatefulWidget {
 
 class _TopRecordItemState extends State<TopRecordItem> {
   TopRecordItemDelegate delegate;
+
+  RecordState currentRecordState = RecordState.Normal;
+
   _TopRecordItemState(TopRecordItemDelegate delegate) {
     this.delegate = delegate;
   }
-  RecordState currentRecordState = RecordState.Normal;
+
   void updateRecordState(RecordState s) {
     setState(() {
       currentRecordState = s;
@@ -82,14 +85,14 @@ class _TopRecordItemState extends State<TopRecordItem> {
             onTap: () {
               currentRecordState == RecordState.Normal
                   ? onSwitchCamera()
-                  : null;
+                  : Container();
             },
             child: Container(
               width: 35,
               height: 35,
               child: currentRecordState == RecordState.Normal
                   ? Image.asset("assets/images/sight_camera_switch.png")
-                  : null,
+                  : Container(),
             ),
           ),
           SizedBox(
@@ -123,8 +126,8 @@ class _TopRecordItemState extends State<TopRecordItem> {
 }
 
 abstract class TopRecordItemDelegate {
-  //长按相机按钮
+  //点击叉号按钮
   void didPop();
-  //长按结束
+  //切换摄像头
   void didSwitchCamera();
 }

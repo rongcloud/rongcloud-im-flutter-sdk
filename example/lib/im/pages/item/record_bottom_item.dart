@@ -13,10 +13,6 @@ class BottomRecordItem extends StatefulWidget {
 class _BottomRecordItemState extends State<BottomRecordItem>
     with TickerProviderStateMixin {
   VideoBottomToolBarDelegate delegate;
-  double percentage = 0.0;
-  int timerValue = 0;
-  bool isBegin = false;
-  AnimationController percentageAnimationController;
   bool isNarmal = true; //正常状态，选择状态
 
   _BottomRecordItemState(VideoBottomToolBarDelegate delegate) {
@@ -114,11 +110,6 @@ class _BottomRecordItemState extends State<BottomRecordItem>
   }
 
   onLongPressCamera() {
-    setState(() {
-      isBegin = true;
-      // percentageAnimationController.forward(from: 0.0);
-    });
-
     if (delegate != null) {
       delegate.didLongPressCamera();
     } else {
@@ -129,7 +120,6 @@ class _BottomRecordItemState extends State<BottomRecordItem>
   onLongPressEndCamera() {
     setState(() {
       isNarmal = false;
-      // percentageAnimationController.stop();
     });
     if (delegate != null) {
       delegate.didLongPressEndCamera();
