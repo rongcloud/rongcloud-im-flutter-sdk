@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 
 import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:video_player/video_player.dart';
 
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';

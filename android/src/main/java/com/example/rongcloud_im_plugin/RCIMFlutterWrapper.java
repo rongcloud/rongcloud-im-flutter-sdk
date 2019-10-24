@@ -406,6 +406,7 @@ public class RCIMFlutterWrapper {
                 try {
                     JSONObject jsonObject = new JSONObject(contentStr);
                     String localPath =  (String)jsonObject.get("localPath");
+                    localPath = getCorrectLocalPath(localPath);
                     Uri uri = Uri.parse(localPath);
                     content = ImageMessage.obtain(uri,uri,true);
 
@@ -421,6 +422,7 @@ public class RCIMFlutterWrapper {
                 try {
                     JSONObject jsonObject = new JSONObject(contentStr);
                     String localPath =  (String)jsonObject.get("localPath");
+                    localPath = getCorrectLocalPath(localPath);
                     Uri uri = Uri.parse(localPath);
                     int duration = (Integer) jsonObject.get("duration");
                     content = HQVoiceMessage.obtain(uri,duration);
@@ -438,7 +440,8 @@ public class RCIMFlutterWrapper {
                 try {
                     JSONObject jsonObject = new JSONObject(contentStr);
                     String localPath =  (String)jsonObject.get("localPath");
-                    Uri uri = Uri.fromFile(new File(localPath));
+                    localPath = getCorrectLocalPath(localPath);
+                    Uri uri = Uri.parse(localPath);
                     int duration = (Integer) jsonObject.get("duration");
                     content = SightMessage.obtain(uri,duration);
                     RCLog.i(LOG_TAG+" start param:"+arg.toString());
@@ -1534,6 +1537,16 @@ public class RCIMFlutterWrapper {
             FwLog.write(FwLog.F, FwLog.MSG, "L-decode_msg-E", "msg_type|stacks", objectName, FwLog.stackToString(e));
         }
         return result;
+    }
+
+    // 为 localPath 拼 file 前缀
+    private String getCorrectLocalPath(String localPath) {
+        String path = localPath;
+        if(!localPath.startsWith("file")) {//如果没有以 file 开头，为其增加 file 前缀
+            path="file://"+localPath;
+        }
+        RCLog.i("sendMediaMessage localPath:"+localPath);
+        return path;
     }
 
 }
