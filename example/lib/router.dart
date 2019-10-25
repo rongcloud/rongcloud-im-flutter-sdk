@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'im/pages/conversation_page.dart';
 import 'im/pages/image_preview_page.dart';
-import 'im/pages/video_record_page.dart';
-import 'im/pages/video_play_page.dart';
+import 'im/pages/sight/video_play_page.dart';
+import 'im/pages/sight/video_record_page.dart';
 
 import 'other/home_page.dart';
 import 'other/debug_page.dart';

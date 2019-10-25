@@ -9,8 +9,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'item/record_top_item.dart';
-import 'item/record_bottom_item.dart';
+import 'record_top_item.dart';
+import 'record_bottom_item.dart';
 
 class VideoRecordPage extends StatefulWidget {
   final Map arguments;
@@ -260,8 +260,8 @@ class _VideoRecordPageState extends State<VideoRecordPage>
   void didFinishEvent() {
     print("onFinishEvent");
     if (videoPath != null) {
-      SightMessage sightMessage = SightMessage.obtain(videoPath, recodeTime);
       print("onFinishEvent con $conversationType targetId $targetId");
+      SightMessage sightMessage = SightMessage.obtain(videoPath, recodeTime);
       RongcloudImPlugin.sendMessage(conversationType, targetId, sightMessage);
       onPop();
     } else {
