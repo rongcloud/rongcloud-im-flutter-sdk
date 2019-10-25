@@ -83,6 +83,10 @@ onSendImageMessage() async {
 
 ```
 
+发送小视频消息
+
+详细参见[小视频消息文档](doc/小视频.md)
+
 发送结果回调
 
 ```
