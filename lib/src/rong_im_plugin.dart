@@ -364,7 +364,7 @@ class RongcloudImPlugin {
   ///
   /// 此方法从服务器端获取之前的历史消息，但是必须先开通历史消息云存储功能。
   /// 例如，本地会话中有10条消息，您想拉取更多保存在服务器的消息的话，recordTime应传入最早的消息的发送时间戳，count传入1~20之间的数值。
-  static void getRemoteHistoryMessages(int conversationType, String targetId, int recordTime, int count, Function(List<Message> msgList, int code) finished) async {
+  static void getRemoteHistoryMessages(int conversationType, String targetId, int recordTime, int count, Function(List /*<Message>*/ msgList, int code) finished) async {
     Map map = {
       'conversationType': conversationType,
       'targetId': targetId,
