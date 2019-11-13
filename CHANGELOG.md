@@ -1,3 +1,10 @@
+## 1.0.0
+
+* SDK:
+* 1.解决 Android 时间戳转换错误的问题
+* 2.解决 Flutter 中 getRemoteHistoryMessages 接口报错的问题
+
+
 ## 0.9.9
 
 * SDK:
