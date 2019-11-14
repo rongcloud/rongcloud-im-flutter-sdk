@@ -326,7 +326,7 @@
             NSMutableDictionary *dic = [NSMutableDictionary new];
             [dic setObject:@(-1) forKey:@"messageId"];
             [dic setObject:@(SentStatus_FAILED) forKey:@"status"];
-            [dic setObject:@(RC_GIF_MSG_SIZE_LIMIT_EXCEED) forKey:@"code"];
+            [dic setObject:@(RC_SIGHT_MSG_DURATION_LIMIT_EXCEED) forKey:@"code"]; 
             [self.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
             return;
         }
