@@ -36,7 +36,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
   ConversationStatus currentStatus;//当前输入工具栏的状态
 
   ScrollController _scrollController = ScrollController();
-  UserInfo user;
+  BaseInfo info;
 
   _ConversationPageState({this.arguments});
   @override
@@ -48,7 +48,11 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
     targetId = arguments["targetId"];
     currentStatus = ConversationStatus.Normal;
 
-    this.user = UserInfoDataSource.getUserInfo(targetId);
+    if(conversationType == RCConversationType.Private) {
+      this.info = UserInfoDataSource.getUserInfo(targetId);
+    }else {
+      this.info = UserInfoDataSource.getGroupInfo(targetId);
+    }
 
     //增加 IM 监听
     _addIMHandler();
@@ -231,7 +235,7 @@ class _ConversationPageState extends State<ConversationPage> implements Conversa
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('与${this.user.name}的会话'),
+        title: Text('与${this.info.name}的会话'),
       ),
       body: Container(
         child: Stack(

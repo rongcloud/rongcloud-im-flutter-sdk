@@ -22,13 +22,18 @@ class ConversationListItem extends StatefulWidget {
 class _ConversationListItemState extends State<ConversationListItem> {
   Conversation conversation ;
   ConversationListItemDelegate delegate;
-  UserInfo user;
+  BaseInfo info;
   Offset tapPos;
 
   _ConversationListItemState(ConversationListItemDelegate delegate,Conversation con) {
     this.delegate = delegate;
     this.conversation = con;
-    this.user = UserInfoDataSource.getUserInfo(con.targetId);
+    if(con.conversationType == RCConversationType.Private) {
+      this.info = UserInfoDataSource.getUserInfo(con.targetId);
+    }else {
+      this.info = UserInfoDataSource.getGroupInfo(con.targetId);
+    }
+    
   }
   
   void _onTaped() {
@@ -56,7 +61,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
             SizedBox(
               width: 8,
             ),
-            WidgetUtil.buildUserPortrait(this.user.portraitUrl),
+            WidgetUtil.buildUserPortrait(this.info.portraitUrl),
           ],
         ),
         Positioned(
@@ -105,7 +110,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
   }
 
   Widget _buildTitle(){
-    String title = this.user.name;
+    String title = this.info.name;
     String digest = "";
     if(conversation.latestMessageContent != null) {
       digest = conversation.latestMessageContent.conversationDigest();

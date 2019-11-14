@@ -36,7 +36,7 @@ class _ContactsPageState extends State<ContactsPage> {
   }
 
   void _onTapUser(UserInfo user) {
-    Map arg = {"coversationType":RCConversationType.Private,"targetId":user.userId};
+    Map arg = {"coversationType":RCConversationType.Private,"targetId":user.id};
     Navigator.pushNamed(context, "/conversation",arguments: arg);
   }
 
