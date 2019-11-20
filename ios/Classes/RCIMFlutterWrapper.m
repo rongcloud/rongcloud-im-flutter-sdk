@@ -875,11 +875,17 @@
 
 #pragma mark - RCIMClientReceiveMessageDelegate
 - (void)onReceived:(RCMessage *)message left:(int)nLeft object:(id)object {
+    
+}
+
+- (void)onReceived:(RCMessage *)message left:(int)nLeft object:(id)object offline:(BOOL)offline hasPackage:(BOOL)hasPackage {
     @autoreleasepool {
         NSMutableDictionary *dic = [NSMutableDictionary new];
         NSString *jsonString = [RCFlutterMessageFactory message2String:message];
         [dic setObject:jsonString forKey:@"message"];
         [dic setObject:@(nLeft) forKey:@"left"];
+        [dic setObject:@(offline) forKey:@"offline"];
+        [dic setObject:@(hasPackage) forKey:@"hasPackage"];
         
         [self.channel invokeMethod:RCMethodCallBackKeyReceiveMessage arguments:dic];
     }

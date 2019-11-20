@@ -722,12 +722,27 @@ class RongcloudImPlugin {
   /// [code] 具体的错误码，0 代表成功
   static Function(int messageId, int status, int code) onMessageSend;
 
-  ///收到消息的回调
+  ///收到消息的回调，功能和 onMessageReceivedWrapper 一样，两个回调只能实现一个，否则会出现重复收到消息的情况
+  ///
+  ///[msg] 消息
+  ///
+  ///[left] 剩余未接收的消息个数 left>=0，建议在 left == 0 是刷新会话列表
+  ///
+  ///如果离线消息量不大，可以使用该回调；如果离线消息量巨大，那么使用下面 [onMessageReceivedWrapper] 回调
+  static Function(Message msg, int left) onMessageReceived;
+
+  ///收到消息的回调，功能和 onMessageReceived 一样，两个回调只能实现一个，否则会出现重复收到消息的情况
   ///
   ///[msg] 消息
   ///
   ///[left] 剩余未接收的消息个数 left>=0
-  static Function(Message msg, int left) onMessageReceived;
+  ///
+  ///[hasPackage] 是否远端还有尚未被接收的消息，当为 false 是代表远端没有更多的离线消息了
+  ///
+  ///[offline] 消息是否是离线消息
+  ///
+  ///SDK 分批拉取离线消息，当离线消息量巨大的时候，建议当 left == 0 且 hasPackage == false 时刷新会话列表
+  static Function(Message msg, int left, bool hasPackage, bool offline) onMessageReceivedWrapper;
 
   ///加入聊天的回调
   ///
@@ -773,14 +788,30 @@ class RongcloudImPlugin {
           }
           break;
 
-        case RCMethodCallBackKey.ReceiveMessage:
+        case RCMethodCallBackKey.ReceiveMessage: {
+          int count = 0;
           if (onMessageReceived != null) {
+            count ++;
             Map map = call.arguments;
             int left = map["left"];
             String messageString = map["message"];
             Message msg = MessageFactory.instance.string2Message(messageString);
             onMessageReceived(msg, left);
           }
+          if (onMessageReceivedWrapper != null) {
+            count ++;
+            Map map = call.arguments;
+            int left = map["left"];
+            String messageString = map["message"];
+            bool hasPackage = map["hasPackage"];
+            bool offline = map["offline"];
+            Message msg = MessageFactory.instance.string2Message(messageString);
+            onMessageReceivedWrapper(msg,left,hasPackage,offline);
+          }
+          if (count == 2) {
+            print("警告：同时实现了 onMessageReceived 和 onMessageReceivedWrapper 两个接收消息的回调，可能会出现重复接收消息或者重复刷新的问题，建议只实现其中一个！！！");
+          }
+        }
           break;
 
         case RCMethodCallBackKey.JoinChatRoom:

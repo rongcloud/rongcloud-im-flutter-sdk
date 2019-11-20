@@ -63,7 +63,9 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
     EventBus.instance.addListener(EventKeys.ReceiveMessage, (map) {
       // Message msg = map["message"];
       int left = map["left"];
-      if(left == 0) {
+      bool hasPackage = map["hasPackage"];
+      //如果离线消息过多，那么可以等到 hasPackage 为 false 并且 left == 0 时更新会话列表
+      if(!hasPackage && left == 0) {
         updateConversationList();
       }
     });

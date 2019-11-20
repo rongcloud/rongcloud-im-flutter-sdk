@@ -24,13 +24,15 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     
     WidgetsBinding.instance.addObserver(this);
 
-    prefix.RongcloudImPlugin.onMessageReceived = (prefix.Message msg, int left) {
-      print("object onMessageReceived objName:"+msg.content.getObjectName()+" msgContent:"+msg.content.encode());
+    prefix.RongcloudImPlugin.onMessageReceivedWrapper = (prefix.Message msg, int left, bool hasPackage, bool offline) {
+      String hasP = hasPackage ? "true":"false";
+      String off = offline ? "true":"false";
+      print("object onMessageReceivedWrapper objName:"+msg.content.getObjectName()+" msgContent:"+msg.content.encode()+" left:"+left.toString()+" hasPackage:"+hasP+" offline:"+off);
       if(currentState == AppLifecycleState.paused) {
         _postLocalNotification(msg,left);
       }else {
         //通知其他页面收到消息
-        EventBus.instance.commit(EventKeys.ReceiveMessage, {"message":msg,"left":left});
+        EventBus.instance.commit(EventKeys.ReceiveMessage, {"message":msg,"left":left,"hasPackage":hasPackage});
       }
     };
 

@@ -1460,22 +1460,22 @@ public class RCIMFlutterWrapper {
 
 
     private void setReceiveMessageListener() {
-
-        RongIMClient.setOnReceiveMessageListener(new RongIMClient.OnReceiveMessageListener() {
+        RongIMClient.setOnReceiveMessageListener(new RongIMClient.OnReceiveMessageWrapperListener() {
             @Override
-            public boolean onReceived(final Message message,final int i) {
-
+            public boolean onReceived(final Message message,final int left,final boolean hasPackage,final boolean offline) {
                 mMainHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         String messageS = MessageFactory.getInstance().message2String(message);
                         final Map map = new HashMap();
                         map.put("message",messageS);
-                        map.put("left",i);
+                        map.put("left",left);
+                        map.put("offline",offline);
+                        map.put("hasPackage",hasPackage);
+
                         mChannel.invokeMethod(RCMethodList.MethodCallBackKeyReceiveMessage,map);
                     }
                 });
-
                 return false;
             }
         });
