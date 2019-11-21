@@ -62,6 +62,8 @@
         [self getMessage:call.arguments result:result];
     }else if([RCMethodKeyGetConversationList isEqualToString:call.method]) {
         [self getConversationList:call.arguments result:result];
+    }else if([RCMethodKeyGetConversationListByPage isEqualToString:call.method]) {
+        [self getConversationListByPage:call.arguments result:result];
     }else if([RCMethodKeyGetConversation isEqualToString:call.method]) {
         [self getConversation:call.arguments result:result];
     }else if([RCMethodKeyGetChatRoomInfo isEqualToString:call.method]) {
@@ -499,6 +501,25 @@
         NSArray *typeArray = param[@"conversationTypeList"];
         
         NSArray *conversations = [[RCIMClient sharedRCIMClient] getConversationList:typeArray];
+        NSMutableArray *arr = [NSMutableArray new];
+        for(RCConversation *con in conversations) {
+            NSString *conStr = [RCFlutterMessageFactory conversation2String:con];
+            [arr addObject:conStr];
+        }
+        result(arr);
+    }
+}
+
+- (void)getConversationListByPage:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"getConversationListByPage";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if ([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        NSArray *typeArray = param[@"conversationTypeList"];
+        int count = [param[@"count"] intValue];
+        long long startTime = [param[@"startTime"] longLongValue];
+        
+        NSArray *conversations = [[RCIMClient sharedRCIMClient] getConversationList:typeArray count:count startTime:startTime];
         NSMutableArray *arr = [NSMutableArray new];
         for(RCConversation *con in conversations) {
             NSString *conStr = [RCFlutterMessageFactory conversation2String:con];

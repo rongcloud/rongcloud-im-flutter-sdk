@@ -14,6 +14,7 @@ public class RCMethodList {
     static String MethodKeyGetHistoryMessages ="getHistoryMessages";
     static String MethodKeyGetMessage ="getMessage";
     static String MethodKeyGetConversationList ="getConversationList";
+    static String MethodKeyGetConversationListByPage ="getConversationListByPage";
     static String MethodKeyGetConversation ="getConversation";
     static String MethodKeyGetChatRoomInfo ="getChatRoomInfo";
     static String MethodKeyClearMessagesUnreadStatus ="clearMessagesUnreadStatus";

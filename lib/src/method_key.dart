@@ -13,6 +13,7 @@ class RCMethodKey {
   static const String GetHistoryMessages = 'getHistoryMessages';
   static const String GetMessage = 'GetMessage';
   static const String GetConversationList = 'getConversationList';
+  static const String GetConversationListByPage = 'getConversationListByPage';
   static const String GetConversation = 'GetConversation';
   static const String GetChatRoomInfo = 'getChatRoomInfo';
   static const String ClearMessagesUnreadStatus = 'clearMessagesUnreadStatus';

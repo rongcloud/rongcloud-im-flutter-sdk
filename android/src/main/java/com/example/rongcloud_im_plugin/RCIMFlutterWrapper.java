@@ -100,6 +100,8 @@ public class RCIMFlutterWrapper {
             getMessage(call.arguments,result);
         }else if (RCMethodList.MethodKeyGetConversationList.equalsIgnoreCase(call.method)) {
             getConversationList(call.arguments,result);
+        }else if (RCMethodList.MethodKeyGetConversationListByPage.equalsIgnoreCase(call.method)) {
+            getConversationListByPage(call.arguments,result);
         }else if (RCMethodList.MethodKeyGetConversation.equalsIgnoreCase(call.method)) {
             getConversation(call.arguments,result);
         }else if (RCMethodList.MethodKeyGetChatRoomInfo.equalsIgnoreCase(call.method)) {
@@ -716,6 +718,48 @@ public class RCIMFlutterWrapper {
                     result.success(null);
                 }
             },types);
+        }
+
+    }
+
+    private void getConversationListByPage(Object arg, final Result result) {
+        final String LOG_TAG = "getConversationListByPage";
+        RCLog.i(LOG_TAG+" start param:" + arg.toString());
+        if (arg instanceof Map) {
+            Map map = (Map)arg;
+            List conversationTypeList = (List)map.get("conversationTypeList");
+            Integer count = (Integer)map.get("count");
+            Number startTime = (Number)map.get("startTime");
+
+            Conversation.ConversationType[] types = new Conversation.ConversationType[conversationTypeList.size()];
+            for (int i=0;i<conversationTypeList.size();i++) {
+                Integer t = (Integer)conversationTypeList.get(i);
+                Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
+                types[i] = type;
+            }
+
+            RongIMClient.getInstance().getConversationListByPage(new RongIMClient.ResultCallback<List<Conversation>>() {
+                @Override
+                public void onSuccess(List<Conversation> conversations) {
+                    RCLog.i(LOG_TAG+" success ");
+                    if(conversations == null) {
+                        result.success(null);
+                        return ;
+                    }
+                    List l = new ArrayList();
+                    for(Conversation con : conversations) {
+                        String conStr = MessageFactory.getInstance().conversation2String(con);
+                        l.add(conStr);
+                    }
+                    result.success(l);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    RCLog.e(LOG_TAG+String.valueOf(errorCode.getValue()));
+                    result.success(null);
+                }
+            },startTime.longValue(),count,types);
         }
 
     }

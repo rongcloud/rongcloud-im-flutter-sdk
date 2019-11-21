@@ -16,6 +16,7 @@ static NSString *RCMethodKeyGetHistoryMessage = @"getHistoryMessage";
 static NSString *RCMethodKeyGetHistoryMessages = @"getHistoryMessages";
 static NSString *RCMethodKeyGetMessage = @"GetMessage";
 static NSString *RCMethodKeyGetConversationList = @"getConversationList";
+static NSString *RCMethodKeyGetConversationListByPage = @"getConversationListByPage";
 static NSString *RCMethodKeyGetConversation = @"GetConversation";
 static NSString *RCMethodKeyGetChatRoomInfo = @"getChatRoomInfo";
 static NSString *RCMethodKeyClearMessagesUnreadStatus = @"clearMessagesUnreadStatus";

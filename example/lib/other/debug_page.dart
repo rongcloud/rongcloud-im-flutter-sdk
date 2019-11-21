@@ -15,7 +15,8 @@ class DebugPage extends StatelessWidget {
       "取消免打扰",
       "查看免打扰",
       "获取特定会话",
-      "获取特定方向的消息列表"
+      "获取特定方向的消息列表",
+      "分页获取会话",
     ];
   }
 
@@ -48,6 +49,9 @@ class DebugPage extends StatelessWidget {
         break;
       case 8:
         _getMessagesByDirection();
+        break;
+      case 9:
+        _getConversationListByPage();
         break;
     }
   }
@@ -139,6 +143,29 @@ class DebugPage extends StatelessWidget {
     }else {
       for(Message msg in msgs) {
         print("getHistoryMessages messageId:"+msg.messageId.toString()+" objName:"+ msg.objectName +" sentTime:"+msg.sentTime.toString());
+      }
+    }
+  }
+
+  void _getConversationListByPage() async {
+    List list = await RongcloudImPlugin.getConversationListByPage([RCConversationType.Private,RCConversationType.Group], 2, 0);
+    Conversation lastCon ;
+    if (list != null && list.length > 0) {
+      list.sort((a,b) => b.sentTime.compareTo(a.sentTime));
+      for(int i=0;i<list.length;i++) {
+        Conversation con = list[i];
+        print("first targetId:"+con.targetId+" "+"time:"+con.sentTime.toString());
+        lastCon = con;
+      }
+    }
+    if(lastCon != null) {
+      list = await RongcloudImPlugin.getConversationListByPage([RCConversationType.Private,RCConversationType.Group], 2, lastCon.sentTime);
+      if (list != null && list.length > 0) {
+        list.sort((a,b) => b.sentTime.compareTo(a.sentTime));
+        for(int i=0;i<list.length;i++) {
+          Conversation con = list[i];
+          print("last targetId:"+con.targetId+" "+"time:"+con.sentTime.toString());
+        }
       }
     }
   }

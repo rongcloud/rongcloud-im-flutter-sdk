@@ -249,6 +249,31 @@ class RongcloudImPlugin {
     return conList;
   }
 
+  ///根据传入的会话类型来分页获取会话列表
+  ///
+  /// [conversationTypeList] 会话类型数组，参见枚举 [RCConversationType]
+  /// 
+  /// [count] 需要获取的会话个数，当实际取回的会话个数小于 count 值时，表明已取完数据
+  /// 
+  /// [startTime] 会话的时间戳，获取这个时间戳之前的会话列表，第一次传 0
+  static Future<List/*Conversation*/> getConversationListByPage(List<int/*RCConversationType*/> conversationTypeList,int count,int startTime) async {
+    Map map= {
+      "conversationTypeList": conversationTypeList,
+      "count": count,
+      "startTime": startTime
+    };
+    List list = await _channel.invokeMethod(RCMethodKey.GetConversationListByPage,map);
+    if (list == null) {
+      return null;
+    }
+    List conList = new List();
+    for (String conStr in list) {
+      Conversation con = MessageFactory.instance.string2Conversation(conStr);
+      conList.add(con);
+    }
+    return conList;
+  }
+
   ///获取特定会话的详细信息
   ///
   ///[conversationType] 会话类型，参见枚举 [RCConversationType]
