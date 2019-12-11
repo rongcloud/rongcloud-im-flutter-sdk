@@ -347,6 +347,28 @@ RongcloudImPlugin.onDataReceived = (Map map) {
 };
 ```
 
+## 单聊已读回执
+
+发送已读回执:
+
+```
+RongcloudImPlugin.sendReadReceiptMessage(conversationType, targetId, timestamp, (int code){
+  if (code == 0) {
+    print('sendReadReceiptMessageSuccess');
+  } else {
+    print('sendReadReceiptMessageFailed:code = + $code');
+  }
+});
+```
+
+接收已读回执:
+
+```
+RongcloudImPlugin.onReceiveReadReceipt = (Map map) {
+  print("object onReceiveReadReceipt " + map.toString());
+};
+```
+
 更多接口请[参考](https://github.com/rongcloud/rongcloud-im-flutter-sdk)
 
 [常见问题](./doc)

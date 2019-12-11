@@ -825,6 +825,7 @@ class RongcloudImPlugin {
   ///
   ///[data] 回执的内容 {messageTime=已阅读的最后一条消息的sendTime, tId=会话的targetId, ctype=会话类型}
   ///
+  ///eg:{messageTime=1575530815100, tId='c1Its71dc', ctype=1}
   static Function(Map data) onReceiveReadReceipt;
 
   ///响应原生的事件
