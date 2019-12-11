@@ -1,3 +1,8 @@
+## 1.0.4
+
+* SDK:
+* 1.解决连接时报 java.lang.IllegalStateException: Reply already submitted 问题
+
 ## 1.0.3
 
 * SDK:
