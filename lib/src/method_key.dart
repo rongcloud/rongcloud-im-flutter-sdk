@@ -36,6 +36,7 @@ class RCMethodKey {
   static const String RemoveFromBlackList = 'RemoveFromBlackList';
   static const String GetBlackListStatus = 'GetBlackListStatus';
   static const String GetBlackList = 'GetBlackList';
+  static const String SendReadReceiptMessage = 'SendReadReceiptMessage';
 }
 
 //callback list //native 会触发此方法
@@ -49,4 +50,5 @@ class RCMethodCallBackKey {
   static const String GetRemoteHistoryMessages = 'getRemoteHistoryMessagesCallBack';
   static const String ConnectionStatusChange = 'ConnectionStatusChangeCallBack';
   static const String SendDataToFlutter = 'SendDataToFlutterCallBack';
+  static const String ReceiveReadReceipt = 'ReceiveReadReceiptCallBack';
 }

@@ -37,6 +37,7 @@ public class RCMethodList {
     static String MethodKeyRemoveFromBlackList = "RemoveFromBlackList";
     static String MethodKeyGetBlackListStatus = "GetBlackListStatus";
     static String MethodKeyGetBlackList = "GetBlackList";
+    static String MethodKeySendReadReceiptMessage = "SendReadReceiptMessage";
 
 
 
@@ -51,5 +52,6 @@ public class RCMethodList {
     static String MethodCallBackKeygetRemoteHistoryMessages = "getRemoteHistoryMessagesCallBack";
     static String MethodCallBackKeyConnectionStatusChange = "ConnectionStatusChangeCallBack";
     static String MethodCallBackKeySendDataToFlutter = "SendDataToFlutterCallBack";
+    static String MethodCallBackKeyReceiveReadReceipt = "ReceiveReadReceiptCallBack";
 
 }

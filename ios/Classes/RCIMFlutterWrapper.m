@@ -32,9 +32,19 @@
     });
     return wrapper;
 }
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveMessageHasReadNotification:) name:RCLibDispatchReadReceiptNotification object:nil];
+    }
+    return self;
+}
+
 - (void)addFlutterChannel:(FlutterMethodChannel *)channel {
     self.channel = channel;
 }
+
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     if([RCMethodKeyInit isEqualToString:call.method]){
         [self initWithRCIMAppKey:call.arguments];
@@ -106,6 +116,8 @@
         [self getBlackListStatus:call.arguments result:result];
     }else if([RCMethodKeyGetBlackList isEqualToString:call.method]) {
         [self getBlackList:result];
+    }else if ([RCMethodKeySendReadReceiptMessage isEqualToString:call.method]){
+        [self sendReadReceiptMessage:call.arguments result:result];
     }
     else {
         result(FlutterMethodNotImplemented);
@@ -884,6 +896,36 @@
         [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(status)]];
         result(@{@"userIdList":[NSArray new],@"code":@(0)});
     }];
+}
+
+
+- (void)sendReadReceiptMessage:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"sendReadReceiptMessage";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        RCConversationType type = [param[@"conversationType"] integerValue];
+        NSString *targetId = param[@"targetId"];
+        long long timestamp = [param[@"timestamp"] longLongValue];
+        [[RCIMClient sharedRCIMClient] sendReadReceiptMessage:type targetId:targetId time:timestamp success:^{
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            result(@{@"code":@(0)});
+        } error:^(RCErrorCode nErrorCode) {
+            [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(nErrorCode)]];
+            result(@{@"code":@(nErrorCode)});
+        }];
+    }
+}
+
+- (void)receiveMessageHasReadNotification:(NSNotification *)notification {
+
+    NSDictionary *dict = @{@"cType":[notification.userInfo objectForKey:@"cType"],
+                           @"messageTime":[notification.userInfo objectForKey:@"messageTime"],
+                           @"tId":[notification.userInfo objectForKey:@"tId"]
+    };
+    NSString *LOG_TAG =  @"receiveMessageHasReadNotification";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,dict]];
+    [self.channel invokeMethod:RCMethodCallBackKeyReceiveReadReceipt arguments:dict];
 }
 
 #pragma mark - 传递数据

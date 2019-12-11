@@ -732,6 +732,30 @@ class RongcloudImPlugin {
       finished(userIdList,code);
     }
   }
+  
+  /// 发送某个会话中消息阅读的回执
+  /// 
+  /// [conversationType] 会话类型，参见枚举 [RCConversationType]
+  /// 
+  /// [targetId] 会话 id
+  /// 
+  /// [timestamp] 该会话已阅读的最后一条消息的发送时间戳
+  /// 
+  /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
+  /// 此接口只支持单聊
+  static void sendReadReceiptMessage(int conversationType,String targetId,int timestamp, Function(int code) finished) async {
+    Map map = {
+      "conversationType": conversationType,
+      "targetId": targetId,
+      "timestamp": timestamp
+    };
+
+    Map result = await _channel.invokeMethod(RCMethodKey.SendReadReceiptMessage,map);
+    int code = result["code"];
+    if(finished != null) {
+      finished(code);
+    }
+  }
 
   ///连接状态发生变更
   ///
@@ -797,6 +821,11 @@ class RongcloudImPlugin {
   /// 如果传送的是push内容 建议在 main.dart 使用
   static Function(Map data) onDataReceived;
 
+  ///收到已读消息回执
+  ///
+  ///[data] 回执的内容 {messageTime=已阅读的最后一条消息的sendTime, tId=会话的targetId, ctype=会话类型}
+  ///
+  static Function(Map data) onReceiveReadReceipt;
 
   ///响应原生的事件
   ///
@@ -879,6 +908,12 @@ class RongcloudImPlugin {
           if (onDataReceived != null) {
             Map map = call.arguments;
             onDataReceived(map);
+          }
+          break;
+        case RCMethodCallBackKey.ReceiveReadReceipt:
+          if (onReceiveReadReceipt != null) {
+            Map map = call.arguments;
+            onReceiveReadReceipt(map);
           }
           break;
       }

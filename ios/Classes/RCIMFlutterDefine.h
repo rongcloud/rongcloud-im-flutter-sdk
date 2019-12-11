@@ -39,6 +39,7 @@ static NSString *RCMethodKeyAddToBlackList = @"AddToBlackList";
 static NSString *RCMethodKeyRemoveFromBlackList = @"RemoveFromBlackList";
 static NSString *RCMethodKeyGetBlackListStatus = @"GetBlackListStatus";
 static NSString *RCMethodKeyGetBlackList = @"GetBlackList";
+static NSString *RCMethodKeySendReadReceiptMessage = @"SendReadReceiptMessage";
 
 
 //callback iOS 通知 flutter
@@ -51,6 +52,7 @@ static NSString *RCMethodCallBackKeyUploadMediaProgress = @"uploadMediaProgressC
 static NSString *RCMethodCallBackKeyGetRemoteHistoryMessages = @"getRemoteHistoryMessagesCallBack";
 static NSString *RCMethodCallBackKeyConnectionStatusChange = @"ConnectionStatusChangeCallBack";
 static NSString *RCMethodCallBackKeySendDataToFlutter = @"SendDataToFlutterCallBack";
+static NSString *RCMethodCallBackKeyReceiveReadReceipt = @"ReceiveReadReceiptCallBack";
 
 
 

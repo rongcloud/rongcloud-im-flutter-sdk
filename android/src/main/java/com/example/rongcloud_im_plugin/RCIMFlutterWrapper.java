@@ -37,6 +37,7 @@ import io.rong.imlib.model.UserInfo;
 import io.rong.message.HQVoiceMessage;
 import io.rong.message.ImageMessage;
 import io.rong.message.MessageHandler;
+import io.rong.message.ReadReceiptMessage;
 import io.rong.message.SightMessage;
 import io.rong.message.VoiceMessage;
 
@@ -55,6 +56,31 @@ public class RCIMFlutterWrapper {
     private RCIMFlutterWrapper() {
         messageContentConstructorMap = new HashMap<>();
         mMainHandler = new Handler(Looper.getMainLooper());
+
+        RongIMClient.setReadReceiptListener(new RongIMClient.ReadReceiptListener() {
+            @Override
+            public void onReadReceiptReceived(Message message) {
+                String LOG_TAG = "onReadReceiptReceived";
+                if (message.getContent() instanceof ReadReceiptMessage) {
+                    Map msgMap = new HashMap();
+                    msgMap.put("cType",message.getConversationType().getValue());
+                    msgMap.put("messageTime",((ReadReceiptMessage) message.getContent()).getLastMessageSendTime());
+                    msgMap.put("tId",message.getTargetId());
+                    RCLog.i(LOG_TAG+" start param:"+ msgMap.toString());
+                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeyReceiveReadReceipt,msgMap);
+                }
+            }
+
+            @Override
+            public void onMessageReceiptRequest(Conversation.ConversationType conversationType, String s, String s1) {
+
+            }
+
+            @Override
+            public void onMessageReceiptResponse(Conversation.ConversationType conversationType, String s, String s1, HashMap<String, Long> hashMap) {
+
+            }
+        });
     }
 
     private static class SingleHolder {
@@ -146,6 +172,8 @@ public class RCIMFlutterWrapper {
             getBlackListStatus(call.arguments,result);
         }else if(RCMethodList.MethodKeyGetBlackList.equalsIgnoreCase(call.method)) {
             getBlackList(result);
+        }else if(RCMethodList.MethodKeySendReadReceiptMessage.equalsIgnoreCase(call.method)) {
+            sendReadReceiptMessage(call.arguments,result);
         }
         else {
             result.notImplemented();
@@ -171,6 +199,50 @@ public class RCIMFlutterWrapper {
                 mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendDataToFlutter,map);
             }
         });
+    }
+
+    public void sendReadReceiptMessage(Object arg, final Result result) {
+        String LOG_TAG = "sendReadReceiptMessage";
+        RCLog.i(LOG_TAG+" start param:"+arg.toString());
+        if(arg instanceof  Map) {
+            Map map = (Map)arg;
+            Integer t = (Integer)map.get("conversationType");
+            Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
+            String targetId = (String)map.get("targetId");
+            Number timestamp = (Number)map.get("timestamp");
+            RongIMClient.getInstance().sendReadReceiptMessage(type, targetId, timestamp.longValue(), new IRongCallback.ISendMediaMessageCallback() {
+                @Override
+                public void onProgress(Message message, int i) {
+
+                }
+
+                @Override
+                public void onCanceled(Message message) {
+
+                }
+
+                @Override
+                public void onAttached(Message message) {
+
+                }
+
+                @Override
+                public void onSuccess(Message message) {
+                    Map msgMap = new HashMap();
+                    msgMap.put("code",0);
+                    result.success(msgMap);
+                }
+
+                @Override
+                public void onError(Message message, RongIMClient.ErrorCode errorCode) {
+                    Map msgMap = new HashMap();
+                    msgMap.put("code",errorCode.getValue());
+                    result.success(msgMap);
+                }
+            });
+        }else {
+
+        }
     }
 
     //private method
