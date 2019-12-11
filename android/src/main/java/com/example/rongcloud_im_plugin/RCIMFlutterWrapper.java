@@ -330,7 +330,12 @@ public class RCIMFlutterWrapper {
                         @Override
                         public void run() {
                             RCLog.e("connect "+String.valueOf(code.getValue()));
-                            result.success(new Integer(code.getValue()));
+                            try {
+                                result.success(new Integer(code.getValue()));
+                            }catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
                         }
                     });
 
