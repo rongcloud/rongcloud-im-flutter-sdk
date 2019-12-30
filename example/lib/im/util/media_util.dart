@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'dart:io';
 
-import 'package:audio_recorder/audio_recorder.dart';
+import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,6 +14,8 @@ class MediaUtil {
   factory MediaUtil() => _getInstance();
   static MediaUtil get instance => _getInstance();
   static MediaUtil _instance;
+
+  FlutterAudioRecorder _recorder;
   MediaUtil._internal() {
     // 初始化
   }
@@ -23,10 +25,14 @@ class MediaUtil {
     }
     return _instance;
   }
-  
+
   //请求权限：相册，相机，麦克风
   void requestPermissions() {
-    PermissionHandler().requestPermissions([PermissionGroup.photos,PermissionGroup.camera,PermissionGroup.microphone]);
+    PermissionHandler().requestPermissions([
+      PermissionGroup.photos,
+      PermissionGroup.camera,
+      PermissionGroup.microphone
+    ]);
   }
 
   //拍照，成功则返回照片的本地路径，注：Android 必须要加 file:// 头
@@ -57,19 +63,29 @@ class MediaUtil {
 
   //开始录音
   void startRecordAudio() async {
-    Directory tempDir = await getTemporaryDirectory();
-    String tempPath = tempDir.path +
-        "/" +
-        DateTime.now().millisecondsSinceEpoch.toString() +
-        ".aac";
-    await AudioRecorder.start(
-        path: tempPath, audioOutputFormat: AudioOutputFormat.AAC);
+    print("debug 准备录音并检查权限");
+    bool hasPermission = await FlutterAudioRecorder.hasPermissions;
+    if (hasPermission) {
+      print("debug 录音权限已开启");
+      Directory tempDir = await getTemporaryDirectory();
+      String tempPath = tempDir.path +
+          "/" +
+          DateTime.now().millisecondsSinceEpoch.toString() +
+          ".aac";
+      _recorder = FlutterAudioRecorder(tempPath,
+          audioFormat: AudioFormat.AAC); // or AudioFormat.WAV
+      await _recorder.initialized;
+      await _recorder.start();
+      print("debug 开始录音");
+    }
   }
 
   //录音结束，通过 finished 返回本地路径和语音时长，注：Android 必须要加 file:// 头
   void stopRecordAudio(Function(String path, int duration) finished) async {
-    Recording recording = await AudioRecorder.stop();
-    String path = recording.path;
+    var result = await _recorder.stop();
+    print("Stop recording: ${result.path}");
+    print("Stop recording: ${result.duration}");
+    String path = result.path;
 
     if (path == null) {
       if (finished != null) {
@@ -81,13 +97,13 @@ class MediaUtil {
       path = "file://" + path;
     }
     if (finished != null) {
-      finished(path, recording.duration.inSeconds);
+      finished(path, result.duration.inSeconds);
     }
   }
 
   //播放语音
   void startPlayAudio(String path) {
-    if(flutterSound.isPlaying) {
+    if (flutterSound.isPlaying) {
       stopPlayAudio();
     }
     flutterSound.startPlayer(path);

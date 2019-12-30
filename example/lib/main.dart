@@ -86,7 +86,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         break;
       case AppLifecycleState.paused: // 应用程序不可见，后台
         break;
-      case AppLifecycleState.suspending: // 申请将暂时暂停
+      case AppLifecycleState.detached: // 申请将暂时暂停
         break;
     }
   }  
