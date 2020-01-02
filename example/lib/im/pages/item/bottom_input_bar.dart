@@ -93,18 +93,21 @@ class _BottomInputBarState extends State<BottomInputBar> {
 
   _onVoiceGesLongPressEnd() {
     print("_onVoiceGesLongPressEnd");
-    MediaUtil.instance.stopRecordAudio((String path,int duration) {
-      if(this.delegate != null) {
-        this.delegate.willSendVoice(path,duration);
-      }else {
-        print("没有实现 BottomInputBarDelegate");
-      }
-    });
+
     if(this.delegate != null) {
       this.delegate.willStopRecordVoice();
     }else {
       print("没有实现 BottomInputBarDelegate");
     }
+
+    MediaUtil.instance.stopRecordAudio((String path,int duration) {
+      if(this.delegate != null && path.length > 0) {
+        this.delegate.willSendVoice(path,duration);
+      }else {
+        print("没有实现 BottomInputBarDelegate || 录音路径为空");
+      }
+    });
+    
   }
 
   Widget _getMainInputField() {

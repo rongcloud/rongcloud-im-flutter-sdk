@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'dart:io';
 
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
@@ -6,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_sound/flutter_sound.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 ///媒体工具，负责申请权限，选照片，拍照，录音，播放语音
 class MediaUtil {
@@ -85,19 +87,30 @@ class MediaUtil {
     var result = await _recorder.stop();
     print("Stop recording: ${result.path}");
     print("Stop recording: ${result.duration}");
-    String path = result.path;
+    if (result.duration.inSeconds > 0) {
+      String path = result.path;
 
-    if (path == null) {
-      if (finished != null) {
-        finished(null, 0);
+      if (path == null) {
+        if (finished != null) {
+          finished(null, 0);
+        }
       }
-    }
 
-    if (TargetPlatform.android == defaultTargetPlatform) {
-      path = "file://" + path;
-    }
-    if (finished != null) {
-      finished(path, result.duration.inSeconds);
+      if (TargetPlatform.android == defaultTargetPlatform) {
+        path = "file://" + path;
+      }
+      if (finished != null) {
+        finished(path, result.duration.inSeconds);
+      }
+    } else {
+      Fluttertoast.showToast(
+          msg: "说话时间太短",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIos: 1,
+          backgroundColor: Colors.grey[800],
+          textColor: Colors.white,
+          fontSize: 16.0);
     }
   }
 
