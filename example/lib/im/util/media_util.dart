@@ -79,6 +79,15 @@ class MediaUtil {
       await _recorder.initialized;
       await _recorder.start();
       print("debug 开始录音");
+    } else {
+      Fluttertoast.showToast(
+          msg: "录音权限未开启",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIos: 1,
+          backgroundColor: Colors.grey[800],
+          textColor: Colors.white,
+          fontSize: 16.0);
     }
   }
 
@@ -89,13 +98,11 @@ class MediaUtil {
     print("Stop recording: ${result.duration}");
     if (result.duration.inSeconds > 0) {
       String path = result.path;
-
       if (path == null) {
         if (finished != null) {
           finished(null, 0);
         }
       }
-
       if (TargetPlatform.android == defaultTargetPlatform) {
         path = "file://" + path;
       }
