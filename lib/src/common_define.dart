@@ -53,6 +53,12 @@ class RCBlackListStatus {
   static const int NotIn = 1;//不在黑名单中
 }
 
+//@ 提醒的类型
+class RCMentionedType {
+  static const int All = 1;//@所有人
+  static const int Users =2;//@部分指定用户
+}
+
 class RCConnectionStatus {
   static const int Connected = 0;//连接成功
   static const int Connecting = 1;//连接中

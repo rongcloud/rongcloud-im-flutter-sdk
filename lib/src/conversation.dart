@@ -12,6 +12,7 @@ class Conversation {
   String senderUserId;
   int latestMessageId;
   MessageContent latestMessageContent;
+  int mentionedCount; // 会话中@消息的个数
 
 
   //如果 content 为 null ，说明消息内容本身未被 flutter 层正确解析，则消息内容会保存到该 map 中

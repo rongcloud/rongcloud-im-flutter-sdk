@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart' as prefix;
 
 import '../im/util/user_info_datesource.dart';
 
@@ -36,7 +36,7 @@ class _ContactsPageState extends State<ContactsPage> {
   }
 
   void _onTapUser(UserInfo user) {
-    Map arg = {"coversationType":RCConversationType.Private,"targetId":user.id};
+    Map arg = {"coversationType":prefix.RCConversationType.Private,"targetId":user.id};
     Navigator.pushNamed(context, "/conversation",arguments: arg);
   }
 

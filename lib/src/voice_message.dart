@@ -31,11 +31,17 @@ class VoiceMessage extends MessageContent {
     this.remoteUrl = map["remoteUrl"];
     this.duration = map["duration"];
     this.extra = map["extra"];
+    Map userMap = map["user"];
+    super.decodeUserInfo(userMap);
   }
 
   @override
   String encode() {
     Map map = {"localPath":this.localPath,"duration":this.duration,"extra":this.extra};
+    if (this.sendUserInfo != null) {
+      Map userMap = super.encodeUserInfo(this.sendUserInfo);
+      map["user"] = userMap;
+    }
     return json.encode(map);
   }
 

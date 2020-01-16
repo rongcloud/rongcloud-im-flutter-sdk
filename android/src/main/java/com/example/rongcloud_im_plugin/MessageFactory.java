@@ -73,6 +73,7 @@ public class MessageFactory {
         map.put("objectName",conversation.getObjectName());
         map.put("senderUserId",conversation.getSenderUserId());
         map.put("latestMessageId",conversation.getLatestMessageId());
+        map.put("mentionedCount",conversation.getMentionedCount());
 
         MessageContent content = conversation.getLatestMessage();
         if(content != null) {

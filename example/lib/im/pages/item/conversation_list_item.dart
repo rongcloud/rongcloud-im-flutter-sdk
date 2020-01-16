@@ -118,6 +118,9 @@ class _ConversationListItemState extends State<ConversationListItem> {
     if(digest == null) {
       digest = "";
     }
+    if (conversation.mentionedCount > 0) {
+      digest = "[有人@我] " + digest;
+    }
     return Expanded(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

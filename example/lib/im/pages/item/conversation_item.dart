@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
-import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart' as prefix;
 import 'message_item_factory.dart';
 import 'widget_util.dart';
 import '../../util/style.dart';
 import '../../util/user_info_datesource.dart';
 
 class ConversationItem extends StatefulWidget {
-  Message message ;
+  prefix.Message message ;
   ConversationItemDelegate delegate;
   bool showTime;
 
-  ConversationItem(ConversationItemDelegate delegate,Message msg,bool showTime) {
+  ConversationItem(ConversationItemDelegate delegate,prefix.Message msg,bool showTime) {
     this.message = msg;
     this.delegate = delegate;
     this.showTime = showTime;
@@ -24,13 +24,13 @@ class ConversationItem extends StatefulWidget {
 }
 
 class _ConversationItemState extends State<ConversationItem> {
-  Message message;
+  prefix.Message message;
   ConversationItemDelegate delegate;
   bool showTime;
   UserInfo user;
   Offset tapPos;
 
-  _ConversationItemState(ConversationItemDelegate delegate,Message msg,bool showTime) {
+  _ConversationItemState(ConversationItemDelegate delegate,prefix.Message msg,bool showTime) {
     this.message = msg;
     this.delegate = delegate;
     this.showTime = showTime;
@@ -53,7 +53,7 @@ class _ConversationItemState extends State<ConversationItem> {
   }
 
   Widget subContent() {
-    if (message.messageDirection == RCMessageDirection.Send) {
+    if (message.messageDirection == prefix.RCMessageDirection.Send) {
       return Expanded(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -80,7 +80,7 @@ class _ConversationItemState extends State<ConversationItem> {
           ],
         ),
       );
-    } else if (message.messageDirection == RCMessageDirection.Receive) {
+    } else if (message.messageDirection == prefix.RCMessageDirection.Receive) {
       return Expanded(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -142,7 +142,7 @@ class _ConversationItemState extends State<ConversationItem> {
         Expanded(
           child: Container(
             padding: EdgeInsets.fromLTRB(15, 6, 15, 10),
-            alignment: message.messageDirection == RCMessageDirection.Send
+            alignment: message.messageDirection == prefix.RCMessageDirection.Send
                 ? Alignment.centerRight
                 : Alignment.centerLeft,
             child: GestureDetector(
@@ -170,9 +170,9 @@ class _ConversationItemState extends State<ConversationItem> {
 
 abstract class ConversationItemDelegate {
   //点击消息
-  void didTapMessageItem(Message message);
+  void didTapMessageItem(prefix.Message message);
   //长按消息
-  void didLongPressMessageItem(Message message,Offset tapPos);
+  void didLongPressMessageItem(prefix.Message message,Offset tapPos);
   //点击用户头像
   void didTapUserPortrait(String userId);
 }

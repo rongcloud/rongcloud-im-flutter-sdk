@@ -103,6 +103,7 @@ class MessageFactory extends Object {
     con.objectName = map["objectName"];
     con.senderUserId = map["senderUserId"];
     con.latestMessageId = map["latestMessageId"];
+    con.mentionedCount = map["mentionedCount"];
 
     String contenStr = map["content"];
     MessageContent content = string2MessageContent(contenStr,con.objectName);

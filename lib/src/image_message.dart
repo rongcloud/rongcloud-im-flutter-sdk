@@ -24,11 +24,17 @@ class ImageMessage extends MessageContent {
     this.content = map["content"];
     this.imageUri = map["imageUri"];
     this.extra = map["extra"];
+    Map userMap = map["user"];
+    super.decodeUserInfo(userMap);
   }
 
   @override
   String encode() {
     Map map = {"localPath":this.localPath,"extra":this.extra};
+    if (this.sendUserInfo != null) {
+      Map userMap = super.encodeUserInfo(this.sendUserInfo);
+      map["user"] = userMap;
+    }
     return json.encode(map);
   }
 
