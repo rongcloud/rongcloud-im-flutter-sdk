@@ -59,7 +59,7 @@ class MessageContent implements MessageCoding, MessageContentView {
   }
 
   void decodeMentionedInfo(Map mentionedMap) {
-    if (mentionedMap == null) {
+    if (mentionedMap == null || mentionedMap["userIdList"] == null) {
       return;
     }
     MentionedInfo mentionedInfo = new MentionedInfo();
