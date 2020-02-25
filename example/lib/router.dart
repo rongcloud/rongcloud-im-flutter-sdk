@@ -7,6 +7,7 @@ import 'im/pages/sight/video_record_page.dart';
 
 import 'other/home_page.dart';
 import 'other/debug_page.dart';
+import 'other/message_read_page.dart';
 
 final routes = {
   '/': (context) => HomePage(),
@@ -20,6 +21,8 @@ final routes = {
         VideoRecordPage(arguments: arguments),
   '/video_play':(context, {arguments}) =>
       VideoPlayPage(message: arguments),
+  '/message_read_page':(context, {arguments}) =>
+      MessageReadPage(message: arguments),
 };
 
 var onGenerateRoute = (RouteSettings settings) {

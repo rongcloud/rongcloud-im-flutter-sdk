@@ -83,6 +83,7 @@ class WidgetUtil {
         borderRadius: BorderRadius.circular(5),
         child: Container(
           alignment: Alignment.center,
+          margin: EdgeInsets.fromLTRB(0, 0, 0, 5),
           width: RCLayout.MessageTimeItemWidth,
           height: RCLayout.MessageTimeItemHeight,
           color: Color(RCColor.MessageTimeBgColor),

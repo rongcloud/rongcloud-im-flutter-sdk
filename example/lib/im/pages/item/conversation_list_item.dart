@@ -121,6 +121,9 @@ class _ConversationListItemState extends State<ConversationListItem> {
     if (conversation.mentionedCount > 0) {
       digest = "[有人@我] " + digest;
     }
+    if(conversation.draft!=null && conversation.draft.isNotEmpty){
+      digest = "[草稿] " + conversation.draft;
+    }
     return Expanded(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -176,7 +179,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
         },
         child: Container(
           height: RCLayout.ConListItemHeight,
-          color: Color(RCColor.ConListItemBgColor),
+          color: conversation.isTop ?  Color(RCColor.ConListTopBgColor) : Color(RCColor.ConListItemBgColor),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[

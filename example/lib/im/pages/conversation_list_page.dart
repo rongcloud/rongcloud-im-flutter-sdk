@@ -50,6 +50,22 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
       list.sort((a,b) => b.sentTime.compareTo(a.sentTime));
       conList = list;
     }
+
+    List topList = List();
+    List notTopList = List();
+
+    for (Conversation conversation in list) {
+      if (conversation.isTop) {
+        topList.add(conversation);
+      } else {
+        notTopList.add(conversation);
+      }
+    }
+    for (Conversation conversation in notTopList) {
+      topList.add(conversation);
+    }
+
+    conList = topList;
     _renfreshUI();
   }
 
@@ -68,6 +84,10 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
       if(!hasPackage && left == 0) {
         updateConversationList();
       }
+    });
+
+    EventBus.instance.addListener(EventKeys.ReceiveReadReceipt, (map) {
+      updateConversationList();
     });
 
     RongcloudImPlugin.onConnectionStatusChange = (int connectionStatus) {
@@ -98,6 +118,15 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
     }
   }
 
+  void _setConversationToTop(Conversation conversation, bool isTop) {
+    RongcloudImPlugin.setConversationToTop(conversation.conversationType, conversation.targetId, isTop, (bool status, int code) {
+      if(code == 0) {
+        updateConversationList();
+        _renfreshUI();
+      }
+    });
+  }
+
   Widget _buildConversationListView() {
     return new ListView.builder(
       scrollDirection: Axis.vertical,
@@ -126,7 +155,8 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
   void didLongPressConversation(Conversation conversation,Offset tapPos) {
     Map<String,String> actionMap = {
       RCLongPressAction.DeleteConversationKey:RCLongPressAction.DeleteConversationValue,
-      RCLongPressAction.ClearUnreadKey:RCLongPressAction.ClearUnreadValue
+      RCLongPressAction.ClearUnreadKey:RCLongPressAction.ClearUnreadValue,
+      RCLongPressAction.SetConversationToTopKey:conversation.isTop ? RCLongPressAction.CancelConversationToTopValue : RCLongPressAction.SetConversationToTopValue
     };
     WidgetUtil.showLongPressMenu(context, tapPos,actionMap,(String key) {
       print("当前选中的是 "+ key);
@@ -134,6 +164,12 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
         _deleteConversation(conversation);
       }else if(key == RCLongPressAction.ClearUnreadKey) {
         _clearConversationUnread(conversation);
+      }else if(key == RCLongPressAction.SetConversationToTopKey) {
+        bool isTop = true;
+        if (conversation.isTop) {
+          isTop = false;
+        }
+        _setConversationToTop(conversation, isTop);
       }else {
         print("未实现操作 "+key);
       }

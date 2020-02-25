@@ -93,11 +93,14 @@ class MessageItemFactory extends StatelessWidget {
   //小视频消息 item
   Widget sightMessageItem() {
     SightMessage msg = message.content;
-    Widget previewW  = Container();//缩略图
+    Widget previewW = Container(); //缩略图
     if (msg.content != null && msg.content.length > 0) {
       Uint8List bytes = base64.decode(msg.content);
-      previewW = Image.memory(bytes,fit: BoxFit.fill,);
-    } 
+      previewW = Image.memory(
+        bytes,
+        fit: BoxFit.fill,
+      );
+    }
     Widget bgWidget = Container(
       width: 100,
       height: 150,
@@ -128,7 +131,10 @@ class MessageItemFactory extends StatelessWidget {
             SizedBox(
               width: 5,
             ),
-            Text("${msg.duration}'s",style: TextStyle(color: Colors.white),),
+            Text(
+              "${msg.duration}'s",
+              style: TextStyle(color: Colors.white),
+            ),
           ],
         ),
       ),

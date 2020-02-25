@@ -38,6 +38,13 @@ public class RCMethodList {
     static String MethodKeyGetBlackListStatus = "GetBlackListStatus";
     static String MethodKeyGetBlackList = "GetBlackList";
     static String MethodKeySendReadReceiptMessage = "SendReadReceiptMessage";
+    static String MethodKeyRecallMessage = "recallMessage";
+    static String MethodGetTextMessageDraft = "getTextMessageDraft";
+    static String MethodSaveTextMessageDraft = "saveTextMessageDraft";
+    static String MehtodClearHistoryMessages = "ClearHistoryMessages";
+    static String MehtodSyncConversationReadStatus = "syncConversationReadStatus";
+    static String MehtodSearchConversations = "searchConversations";
+    static String MehtodSearchMessages = "searchMessages";
 
 
 
@@ -53,5 +60,6 @@ public class RCMethodList {
     static String MethodCallBackKeyConnectionStatusChange = "ConnectionStatusChangeCallBack";
     static String MethodCallBackKeySendDataToFlutter = "SendDataToFlutterCallBack";
     static String MethodCallBackKeyReceiveReadReceipt = "ReceiveReadReceiptCallBack";
+    static String MethodCallBackKeyTypingStatus ="TypingStatusChangedCallBack";
 
 }

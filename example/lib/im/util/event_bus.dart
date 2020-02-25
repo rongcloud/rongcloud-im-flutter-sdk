@@ -42,4 +42,8 @@ class EventBus {
 class EventKeys {
   static const String ConversationPageDispose = "ConversationPageDispose";
   static const String ReceiveMessage = "ReceiveMessage";
+  static const String ReceiveReadReceipt = "ReceiveReadReceipt";
+  static const String ReceiveReceiptRequest = "ReceiveReceiptRequest";
+  static const String ReceiveReceiptResponse = "ReceiveReceiptResponse";
+  static const String LongPressUserPortrait = "LongPressUserPortrait";
 }

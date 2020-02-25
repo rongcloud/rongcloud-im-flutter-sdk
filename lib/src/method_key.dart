@@ -37,6 +37,24 @@ class RCMethodKey {
   static const String GetBlackListStatus = 'GetBlackListStatus';
   static const String GetBlackList = 'GetBlackList';
   static const String SendReadReceiptMessage = 'SendReadReceiptMessage';
+  static const String SendReadReceiptRequest = 'SendReadReceiptRequest';
+  static const String SendReadReceiptResponse = 'SendReadReceiptResponse';
+  static const String ClearHistoryMessages = 'ClearHistoryMessages';
+  static const String RecallMessage = 'recallMessage';
+  static const String GetTextMessageDraft = 'getTextMessageDraft';
+  static const String SaveTextMessageDraft = 'saveTextMessageDraft';
+  static const String SyncConversationReadStatus = 'syncConversationReadStatus';
+  static const String SearchConversations = 'searchConversations';
+  static const String SearchMessages = 'searchMessages';
+
+
+  // 聊天室状态存储
+  static const String SetChatRoomEntry = 'SetChatRoomEntry';
+  static const String ForceSetChatRoomEntry = 'ForceSetChatRoomEntry';
+  static const String GetChatRoomEntry = 'GetChatRoomEntry';
+  static const String GetAllChatRoomEntries = 'GetAllChatRoomEntries';
+  static const String RemoveChatRoomEntry = 'RemoveChatRoomEntry';
+  static const String ForceRemoveChatRoomEntry = 'ForceRemoveChatRoomEntry';
 }
 
 //callback list //native 会触发此方法
@@ -51,4 +69,7 @@ class RCMethodCallBackKey {
   static const String ConnectionStatusChange = 'ConnectionStatusChangeCallBack';
   static const String SendDataToFlutter = 'SendDataToFlutterCallBack';
   static const String ReceiveReadReceipt = 'ReceiveReadReceiptCallBack';
+  static const String ReceiptRequest = 'ReceiptRequestCallBack';
+  static const String ReceiptResponse = 'ReceiptResponseCallBack';
+  static const String TypingStatusChanged = 'TypingStatusChangedCallBack';
 }

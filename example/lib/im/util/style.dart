@@ -10,6 +10,7 @@ class RCColor {
   static const ConListTimeColor = 0xff6C7B8B;
   static const ConListItemBgColor = 0xffffffff;
   static const ConListBorderColor = 0xff6C7B8B;
+  static const ConListTopBgColor = 0xFFBBDEFB;
 
   //会话页面，消息相关颜色
   static const MessageSendBgColor = 0xffC8E9FD;
@@ -29,6 +30,7 @@ class RCFont {
   static const double MessageTextFont = 18;
   static const double MessageTimeFont = 12;
   static const double MessageNameFont = 14;
+  static const double MessageNotifiFont = 15;
 
   //加号扩展栏
   static const double ExtIconSize = 40;
@@ -45,6 +47,10 @@ class RCLayout {
   static const double MessageTimeItemWidth = 80;
   static const double MessageTimeItemHeight = 22;
 
+  //小灰条消息宽高
+  static const double MessageNotifiItemWidth = 140;
+  static const double MessageNotifiItemHeight = 30;
+
   //加号扩展栏
   static const double ExtIconLayoutSize = 50;
 }
@@ -60,9 +66,19 @@ class RCLongPressAction {
   static const String ClearUnreadKey = "ClearUnreadKey";
   static const String ClearUnreadValue = "清除未读";
 
+  static const String SetConversationToTopKey = "SetConversationToTopKey";
+  static const String SetConversationToTopValue = "设置置顶";
+  static const String CancelConversationToTopValue = "取消置顶";
+
   static const String CopyKey = "CopyKey";
   static const String CopyValue = "复制";
 
   static const String DeleteKey = "DeleteKey";
   static const String DeleteValue = "删除";
+
+  static const String RecallKey = "RecallMessage";
+  static const String RecallValue = "撤回消息";
+
+  static const String MutiSelectKey = "MutiSelectMessage";
+  static const String MutiSelectValue = "多选";
 }

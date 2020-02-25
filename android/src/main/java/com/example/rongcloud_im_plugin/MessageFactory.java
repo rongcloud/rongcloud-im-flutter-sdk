@@ -13,6 +13,8 @@ import io.rong.imlib.model.ChatRoomMemberInfo;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
+import io.rong.imlib.model.SearchConversationResult;
+import io.rong.imlib.typingmessage.TypingStatus;
 import io.rong.message.ImageMessage;
 import io.rong.message.SightMessage;
 
@@ -61,6 +63,15 @@ public class MessageFactory {
         return jStr;
     }
 
+    public String messageContent2String(MessageContent content) {
+        if (content == null) {
+            return null;
+        }
+        byte[] data = content.encode();
+        String jsonS = new String(data);
+        return jsonS;
+    }
+
     public String conversation2String(Conversation conversation) {
         Map map = new HashMap();
         map.put("conversationType",conversation.getConversationType().getValue());
@@ -74,6 +85,7 @@ public class MessageFactory {
         map.put("senderUserId",conversation.getSenderUserId());
         map.put("latestMessageId",conversation.getLatestMessageId());
         map.put("mentionedCount",conversation.getMentionedCount());
+        map.put("draft",conversation.getDraft());
 
         MessageContent content = conversation.getLatestMessage();
         if(content != null) {
@@ -107,6 +119,25 @@ public class MessageFactory {
         map.put("memberInfoList",memList);
 
         return map;
+    }
+
+    public String typingStatus2String(TypingStatus status) {
+        Map map = new HashMap();
+        map.put("userId",status.getUserId());
+        map.put("typingContentType",status.getTypingContentType());
+        map.put("sentTime",status.getSentTime());
+        JSONObject jObj = new JSONObject(map);
+        String jStr = jObj.toString();
+        return jStr;
+    }
+
+    public String SearchConversationResult2String(SearchConversationResult result) {
+        Map map = new HashMap();
+        map.put("mConversation",conversation2String(result.getConversation()));
+        map.put("mMatchCount",result.getMatchCount());
+        JSONObject jObj = new JSONObject(map);
+        String jStr = jObj.toString();
+        return jStr;
     }
 }
 

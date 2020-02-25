@@ -39,6 +39,21 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     prefix.RongcloudImPlugin.onDataReceived = (Map map) {
       print("object onDataReceived " + map.toString());
     };
+
+    prefix.RongcloudImPlugin.onMessageReceiptRequest = (Map map) {
+      EventBus.instance.commit(EventKeys.ReceiveReceiptRequest, map);
+      print("object onMessageReceiptRequest " + map.toString());
+    };
+
+    prefix.RongcloudImPlugin.onMessageReceiptResponse = (Map map) {
+      EventBus.instance.commit(EventKeys.ReceiveReceiptResponse, map);
+      print("object onMessageReceiptResponse " + map.toString());
+    };
+
+    prefix.RongcloudImPlugin.onReceiveReadReceipt = (Map map) {
+      EventBus.instance.commit(EventKeys.ReceiveReadReceipt, map);
+      print("object onReceiveReadReceipt " + map.toString());
+    };
   }
 
   void _postLocalNotification(prefix.Message msg, int left) async {
