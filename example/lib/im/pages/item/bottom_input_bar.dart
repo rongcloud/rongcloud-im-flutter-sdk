@@ -4,7 +4,6 @@ import '../../util/media_util.dart';
 import '../../util/event_bus.dart';
 import '../../util/user_info_datesource.dart';
 
-
 class BottomInputBar extends StatefulWidget {
   BottomInputBarDelegate delegate;
   _BottomInputBarState state;
@@ -12,10 +11,11 @@ class BottomInputBar extends StatefulWidget {
     this.delegate = delegate;
   }
   @override
-  _BottomInputBarState createState() => state = _BottomInputBarState(this.delegate);
+  _BottomInputBarState createState() =>
+      state = _BottomInputBarState(this.delegate);
 
-  void setTextContent (String textContent){
-    if(textContent == null){
+  void setTextContent(String textContent) {
+    if (textContent == null) {
       textContent = '';
     }
     this.state.textEditingController.text = textContent;
@@ -38,10 +38,8 @@ class _BottomInputBarState extends State<BottomInputBar> {
     this.textField = TextField(
       onSubmitted: _clickSendMessage,
       controller: textEditingController,
-      decoration: InputDecoration(
-          border: InputBorder.none,
-          hintText: '随便说点什么吧'
-        ),
+      decoration:
+          InputDecoration(border: InputBorder.none, hintText: '随便说点什么吧'),
       focusNode: focusNode,
     );
   }
@@ -54,7 +52,7 @@ class _BottomInputBarState extends State<BottomInputBar> {
       delegate.onTextChange(textEditingController.text);
     });
     focusNode.addListener(() {
-      if(focusNode.hasFocus) {
+      if (focusNode.hasFocus) {
         _notifyInputStatusChanged(InputBarStatus.Normal);
       }
     });
@@ -81,23 +79,32 @@ class _BottomInputBarState extends State<BottomInputBar> {
       }
     }
 
-    if(this.delegate != null) {
+    if (this.delegate != null) {
       if (tapUserIdList.length > 0) {
         this.delegate.willSendTextWithMentionedInfo(messageStr, tapUserIdList);
       } else {
         this.delegate.willSendText(messageStr);
       }
-    }else {
+    } else {
       print("没有实现 BottomInputBarDelegate");
     }
     this.textField.controller.text = '';
     this.userIdList.clear();
   }
 
+  switchPhrases() {
+    print("switchPhrases");
+    InputBarStatus status = InputBarStatus.Normal;
+    if (this.inputBarStatus != InputBarStatus.Phrases) {
+      status = InputBarStatus.Phrases;
+    }
+    _notifyInputStatusChanged(status);
+  }
+
   switchVoice() {
     print("switchVoice");
     InputBarStatus status = InputBarStatus.Normal;
-    if(this.inputBarStatus != InputBarStatus.Voice) {
+    if (this.inputBarStatus != InputBarStatus.Voice) {
       status = InputBarStatus.Voice;
     }
     _notifyInputStatusChanged(status);
@@ -105,16 +112,16 @@ class _BottomInputBarState extends State<BottomInputBar> {
 
   switchExtention() {
     print("switchExtention");
-    if(focusNode.hasFocus) {
+    if (focusNode.hasFocus) {
       focusNode.unfocus();
     }
     InputBarStatus status = InputBarStatus.Normal;
-    if(this.inputBarStatus != InputBarStatus.Extention) {
+    if (this.inputBarStatus != InputBarStatus.Extention) {
       status = InputBarStatus.Extention;
     }
-    if(this.delegate != null) {
+    if (this.delegate != null) {
       this.delegate.didTapExtentionButton();
-    }else {
+    } else {
       print("没有实现 BottomInputBarDelegate");
     }
     _notifyInputStatusChanged(status);
@@ -123,9 +130,9 @@ class _BottomInputBarState extends State<BottomInputBar> {
   _onVoiceGesLongPress() {
     print("_onVoiceGesLongPress");
     MediaUtil.instance.startRecordAudio();
-    if(this.delegate != null) {
+    if (this.delegate != null) {
       this.delegate.willStartRecordVoice();
-    }else {
+    } else {
       print("没有实现 BottomInputBarDelegate");
     }
   }
@@ -133,30 +140,29 @@ class _BottomInputBarState extends State<BottomInputBar> {
   _onVoiceGesLongPressEnd() {
     print("_onVoiceGesLongPressEnd");
 
-    if(this.delegate != null) {
+    if (this.delegate != null) {
       this.delegate.willStopRecordVoice();
-    }else {
+    } else {
       print("没有实现 BottomInputBarDelegate");
     }
 
-    MediaUtil.instance.stopRecordAudio((String path,int duration) {
-      if(this.delegate != null && path.length > 0) {
-        this.delegate.willSendVoice(path,duration);
-      }else {
+    MediaUtil.instance.stopRecordAudio((String path, int duration) {
+      if (this.delegate != null && path.length > 0) {
+        this.delegate.willSendVoice(path, duration);
+      } else {
         print("没有实现 BottomInputBarDelegate || 录音路径为空");
       }
     });
-    
   }
 
   Widget _getMainInputField() {
-    Widget widget ;
-    if(this.inputBarStatus == InputBarStatus.Voice) {
+    Widget widget;
+    if (this.inputBarStatus == InputBarStatus.Voice) {
       widget = Container(
         alignment: Alignment.center,
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
-          child: Text("按住 说话",textAlign: TextAlign.center),
+          child: Text("按住 说话", textAlign: TextAlign.center),
           onLongPress: () {
             _onVoiceGesLongPress();
           },
@@ -165,10 +171,10 @@ class _BottomInputBarState extends State<BottomInputBar> {
           },
         ),
       );
-    }else {
+    } else {
       widget = Container(
         padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-          child: this.textField,
+        child: this.textField,
       );
     }
     return Container(
@@ -178,9 +184,8 @@ class _BottomInputBarState extends State<BottomInputBar> {
           Container(
             padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
             decoration: BoxDecoration(
-              border:  new Border.all(color: Colors.black54, width: 0.5),
-              borderRadius:  BorderRadius.circular(8)
-            ),
+                border: new Border.all(color: Colors.black54, width: 0.5),
+                borderRadius: BorderRadius.circular(8)),
           ),
           widget
         ],
@@ -190,9 +195,9 @@ class _BottomInputBarState extends State<BottomInputBar> {
 
   void _notifyInputStatusChanged(InputBarStatus status) {
     this.inputBarStatus = status;
-    if(this.delegate != null) {
+    if (this.delegate != null) {
       this.delegate.inputStatusDidChange(status);
-    }else {
+    } else {
       print("没有实现 BottomInputBarDelegate");
     }
   }
@@ -200,56 +205,82 @@ class _BottomInputBarState extends State<BottomInputBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
-      child: Row(
-        children: <Widget>[
-          IconButton(
-            icon: Icon(Icons.mic),
-            iconSize: 32,
-            onPressed:() {
-              switchVoice();
-            } ,
-          ),
-          Expanded(
-            child : _getMainInputField()
-          ),
-          IconButton(
-            icon: Icon(Icons.add),
-            iconSize: 32,
-            onPressed:() {
-              switchExtention();
-            } ,
-          ),
-        ],
-      ),
-    );
+        color: Colors.white,
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              GestureDetector(
+                  onTap: () {
+                    switchPhrases();
+                  },
+                  child: Container(
+                    padding: EdgeInsets.fromLTRB(6, 6, 12, 6),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: Container(
+                        alignment: Alignment.center,
+                        width: 80,
+                        height: 22,
+                        color: Color(0xffC8C8C8),
+                        child: Text(
+                          '快捷回复',
+                          style: TextStyle(color: Colors.white, fontSize: 14),
+                        ),
+                      ),
+                    ),
+                  )),
+              Row(
+                children: <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.mic),
+                    iconSize: 32,
+                    onPressed: () {
+                      switchVoice();
+                    },
+                  ),
+                  Expanded(child: _getMainInputField()),
+                  IconButton(
+                    icon: Icon(Icons.add),
+                    iconSize: 32,
+                    onPressed: () {
+                      switchExtention();
+                    },
+                  ),
+                ],
+              ),
+            ]));
   }
 }
 
-enum InputBarStatus{
-  Normal,//正常
-  Voice,//语音输入
-  Extention,//扩展栏
+enum InputBarStatus {
+  Normal, //正常
+  Voice, //语音输入
+  Extention, //扩展栏
+  Phrases, //快捷回复
 }
 
 abstract class BottomInputBarDelegate {
   ///输入工具栏状态发生变更
   void inputStatusDidChange(InputBarStatus status);
+
   ///即将发送消息
   void willSendText(String text);
+
   ///即将发送消息
   void willSendTextWithMentionedInfo(String text, List userIdList);
+
   ///即将发送语音
-  void willSendVoice(String path,int duration);
+  void willSendVoice(String path, int duration);
+
   ///即将开始录音
   void willStartRecordVoice();
+
   ///即将停止录音
   void willStopRecordVoice();
+
   ///点击了加号按钮
   void didTapExtentionButton();
+
   ///输入框内容变化监听
   void onTextChange(String text);
 }
-
-
-

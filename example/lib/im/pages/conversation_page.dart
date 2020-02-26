@@ -6,7 +6,6 @@ import 'item/conversation_item.dart';
 import 'item/bottom_input_bar.dart';
 import 'item/widget_util.dart';
 
-import '../util/style.dart';
 import '../util/time.dart';
 import '../util/user_info_datesource.dart';
 import '../util/media_util.dart';
@@ -33,13 +32,14 @@ class _ConversationPageState extends State<ConversationPage>
   int conversationType;
   String targetId;
 
+  List phrasesList = new List(); // 快捷回复，短语数组
   List messageDataSource = new List(); //消息数组
   List<Widget> extWidgetList = new List(); //加号扩展栏的 widget 列表
-  bool showExtentionWidget = false; //是否显示加号扩展栏内容
   ConversationStatus currentStatus; //当前输入工具栏的状态
   String textDraft = ''; //草稿内容
   BottomInputBar bottomInputBar;
   String titleContent;
+  InputBarStatus currentInputStatus;
 
   ScrollController _scrollController = ScrollController();
   BaseInfo info;
@@ -208,7 +208,7 @@ class _ConversationPageState extends State<ConversationPage>
   }
 
   Widget _getExtentionWidget() {
-    if (showExtentionWidget) {
+    if (currentInputStatus == InputBarStatus.Extention) {
       return Container(
           height: 180,
           child: GridView.count(
@@ -217,9 +217,50 @@ class _ConversationPageState extends State<ConversationPage>
             padding: EdgeInsets.all(10),
             children: extWidgetList,
           ));
+    } else if (currentInputStatus == InputBarStatus.Phrases) {
+      return Container(
+          height: 180,
+          child: ListView.separated(
+              key: UniqueKey(),
+              shrinkWrap: true,
+              controller: ScrollController(),
+              itemCount: phrasesList.length,
+              itemBuilder: (BuildContext context, int index) {
+                if (phrasesList.length != null && phrasesList.length > 0) {
+                  String contentStr = phrasesList[index];
+                  return GestureDetector(
+                      onTap: (){
+                        _clickPhrases(contentStr);
+                      },
+                      child: Container(
+                    alignment: Alignment.center,
+                    child: Text(contentStr,
+                        style: new TextStyle(
+                          fontSize: 14, //字体大���
+                        )),
+                    height: 36,
+                  ));
+                } else {
+                  return WidgetUtil.buildEmptyWidget();
+                }
+              },
+              separatorBuilder: (BuildContext context, int index) {
+                return Container(
+                  color: Color(0xffC8C8C8),
+                  height: 0.5,
+                );
+              }));
     } else {
       return WidgetUtil.buildEmptyWidget();
     }
+  }
+
+  void _clickPhrases(String contentStr) async{
+    TextMessage msg = new TextMessage();
+    msg.content = contentStr;
+    Message message =
+        await RongcloudImPlugin.sendMessage(conversationType, targetId, msg);
+    _insertOrReplaceMessage(message);
   }
 
   void _deleteMessage(Message message) {
@@ -289,6 +330,11 @@ class _ConversationPageState extends State<ConversationPage>
     extWidgetList.add(imageWidget);
     extWidgetList.add(cameraWidget);
     extWidgetList.add(videoWidget);
+
+    //初始化短语
+    for (int i = 0; i < 10; i++) {
+      phrasesList.add('快捷回复测试用例 $i');
+    }
   }
 
   void _sendReadReceipt() {
@@ -440,7 +486,7 @@ class _ConversationPageState extends State<ConversationPage>
                       ),
                     ),
                     Container(
-                      height: 55,
+                      height: 82,
                       child: _buildBottomInputBar(),
                     ),
                     _getExtentionWidget(),
@@ -570,11 +616,7 @@ class _ConversationPageState extends State<ConversationPage>
 
   @override
   void inputStatusDidChange(InputBarStatus status) {
-    if (status == InputBarStatus.Extention) {
-      showExtentionWidget = true;
-    } else {
-      showExtentionWidget = false;
-    }
+    currentInputStatus = status;
     _refreshUI();
   }
 
