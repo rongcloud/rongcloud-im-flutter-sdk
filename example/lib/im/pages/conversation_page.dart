@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:rongcloud_im_plugin_example/im/pages/item/bottom_tool_bar.dart';
 
 import '../util/style.dart';
 import 'item/conversation_item.dart';
@@ -27,7 +28,7 @@ class ConversationPage extends StatefulWidget {
 }
 
 class _ConversationPageState extends State<ConversationPage>
-    implements ConversationItemDelegate, BottomInputBarDelegate {
+    implements ConversationItemDelegate, BottomInputBarDelegate, BottomToolBarDelegate {
   Map arguments;
   int conversationType;
   String targetId;
@@ -38,13 +39,14 @@ class _ConversationPageState extends State<ConversationPage>
   ConversationStatus currentStatus; //当前输入工具栏的状态
   String textDraft = ''; //草稿内容
   BottomInputBar bottomInputBar;
+  BottomToolBar bottomToolBar;
   String titleContent;
   InputBarStatus currentInputStatus;
 
   ScrollController _scrollController = ScrollController();
   BaseInfo info;
 
-  bool multiSelect; //是否是多选模式
+  bool multiSelect = false; //是否是多选模式
   List selectedMessageIds = new List(); //已经选择的所有消息Id，只有在 multiSelect 为 YES,才会有有效值
 
   _ConversationPageState({this.arguments});
@@ -185,8 +187,10 @@ class _ConversationPageState extends State<ConversationPage>
   onGetTextMessageDraft() async {
     textDraft =
         await RongcloudImPlugin.getTextMessageDraft(conversationType, targetId);
-    bottomInputBar.setTextContent(textDraft);
-    // _refreshUI();
+    if (bottomInputBar != null) {
+      bottomInputBar.setTextContent(textDraft);    
+    }
+      // _refreshUI();
   }
 
   void _insertOrReplaceMessage(Message message) {
@@ -409,8 +413,32 @@ class _ConversationPageState extends State<ConversationPage>
 
   // 底部输入栏
   Widget _buildBottomInputBar() {
-    bottomInputBar = BottomInputBar(this);
-    return bottomInputBar;
+    if (multiSelect == true) {
+      bottomToolBar = BottomToolBar(this);
+      return bottomToolBar;
+    } else {
+      bottomInputBar = BottomInputBar(this);
+      return bottomInputBar;
+    }
+  }
+
+  // AppBar 右侧按钮
+  List _buildRightButtons() {
+    if (multiSelect == true) {
+      return <Widget>[
+        FlatButton(
+          child: Text("取消"),
+          textColor: Colors.white,
+          onPressed: () {
+            multiSelect = false;
+            selectedMessageIds.clear();
+            _refreshUI();
+          },
+          )
+        ];
+    } else {
+      return <Widget>[];
+    }
   }
 
   void _sendReadReceiptResponse(String messageUId) {
@@ -440,6 +468,7 @@ class _ConversationPageState extends State<ConversationPage>
     return Scaffold(
         appBar: AppBar(
           title: Text(titleContent),
+          actions: _buildRightButtons(),
         ),
         body: Container(
           child: Stack(
@@ -486,7 +515,7 @@ class _ConversationPageState extends State<ConversationPage>
                       ),
                     ),
                     Container(
-                      height: 82,
+                      height: multiSelect ? 55 : 82,
                       child: _buildBottomInputBar(),
                     ),
                     _getExtentionWidget(),
@@ -634,5 +663,16 @@ class _ConversationPageState extends State<ConversationPage>
   @override
   void willStopRecordVoice() {
     _showExtraCenterWidget(ConversationStatus.Normal);
+  }
+
+  @override
+  void didTapDelegate() {
+    List<int> messageIds = new List<int>.from(selectedMessageIds);
+    multiSelect = false;
+    RongcloudImPlugin.deleteMessageByIds(messageIds, (int code) {
+      if (code == 0) {
+        onGetHistoryMessages();
+      }
+    });
   }
 }
