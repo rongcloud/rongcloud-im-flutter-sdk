@@ -831,10 +831,9 @@ class RongcloudImPlugin {
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   /// 此接口只支持群组
   static void sendReadReceiptRequest(
-      Message message, Function(int code) finished) async {
-    int messageId = message.messageId;
+    Message message, Function(int code) finished) async {
     Map messageMap = MessageFactory.instance.message2Map(message);
-    Map map = {"messageId": messageId, "messageMap": messageMap};
+    Map map = {"messageMap": messageMap};
 
     Map result =
         await _channel.invokeMethod(RCMethodKey.SendReadReceiptRequest, map);
@@ -855,15 +854,16 @@ class RongcloudImPlugin {
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   /// 此接口只支持群组
   static void sendReadReceiptResponse(int conversationType, String targetId,
-      List messageList, Function(int code) finished) async {
-    List messageIds = List();
+    List messageList, Function(int code) finished) async {
+    List messageMaps = List();
     for (Message message in messageList) {
-      messageIds.add(message.messageId);
+      Map messageMap = MessageFactory.instance.message2Map(message);
+      messageMaps.add(messageMap);
     }
     Map map = {
       "conversationType": conversationType,
       "targetId": targetId,
-      "messageIds": messageIds
+      "messageMapList": messageMaps
     };
 
     Map result =

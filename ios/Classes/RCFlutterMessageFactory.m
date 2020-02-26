@@ -111,7 +111,7 @@
     return [dic copy];
 }
 
-+ (RCMessage *)string2Message:(NSDictionary *)msgDic {
++ (RCMessage *)dic2Message:(NSDictionary *)msgDic {
     RCMessage *message = [[RCMessage alloc] init];
     message.conversationType = [msgDic[@"conversationType"] integerValue];
     message.targetId = msgDic[@"targetId"];

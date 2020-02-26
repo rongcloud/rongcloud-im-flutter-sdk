@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)message2String:(RCMessage *)message;
 + (NSString *)conversation2String:(RCConversation *)conversation;
 + (NSDictionary *)chatRoomInfo2Dictionary:(RCChatRoomInfo *)chatRoomInfo;
-+ (RCMessage *)string2Message:(NSDictionary *)msgDic;
++ (RCMessage *)dic2Message:(NSDictionary *)msgDic;
 + (NSString *)messageContent2String:(RCMessageContent *)content;
 + (NSString *)typingStatus2String:(RCUserTypingStatus *)status;
 + (NSString *)searchConversationResult2String:(RCSearchConversationResult *)result;

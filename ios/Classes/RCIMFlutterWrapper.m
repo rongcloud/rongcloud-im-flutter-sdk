@@ -805,7 +805,7 @@
         NSDictionary *param = (NSDictionary *)arg;
         NSDictionary *messageDic = param[@"message"];
         NSString *pushContent = param[@"pushContent"];
-        RCMessage *message = [RCFlutterMessageFactory string2Message:messageDic];
+        RCMessage *message = [RCFlutterMessageFactory dic2Message:messageDic];
         NSMutableDictionary *dic = [NSMutableDictionary new];
         [[RCIMClient sharedRCIMClient] recallMessage:message pushContent:pushContent success:^(long messageId) {
             RCMessage *message = [[RCIMClient sharedRCIMClient] getMessage:messageId];
@@ -1200,12 +1200,8 @@
     [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
-        long messageId = [param[@"messageId"] integerValue];
-//        NSDictionary *messageDic = param[@"messageMap"];
-        // 无法拿到 messageUId
-//        RCMessage *message1 = [RCFlutterMessageFactory string2Message:messageDic];
-        // 暂时使用 messageId 获取 Message
-        RCMessage *message = [[RCIMClient sharedRCIMClient] getMessage:messageId];
+        NSDictionary *messageDic = param[@"messageMap"];
+        RCMessage *message = [RCFlutterMessageFactory dic2Message:messageDic];
         [[RCIMClient sharedRCIMClient] sendReadReceiptRequest:message success:^{
             [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
             result(@{@"code":@(0)});
@@ -1223,11 +1219,10 @@
         NSDictionary *param = (NSDictionary *)arg;
         RCConversationType type = [param[@"conversationType"] integerValue];
         NSString *targetId = param[@"targetId"];
-//        NSArray *messageList = param[@"messageList"];
-        NSArray *messageIds = param[@"messageIds"];
-        NSMutableArray *messageList = [NSMutableArray arrayWithCapacity:messageIds.count];
-        for (NSString *messageId in messageIds) {
-            RCMessage *message = [[RCIMClient sharedRCIMClient] getMessage:[messageId integerValue]];
+        NSArray *messageMapList = param[@"messageMapList"];
+        NSMutableArray *messageList = [NSMutableArray arrayWithCapacity:messageMapList.count];
+        for (NSDictionary *messageDic in messageMapList) {
+            RCMessage *message = [RCFlutterMessageFactory dic2Message:messageDic];
             [messageList addObject:message];
         }
         
