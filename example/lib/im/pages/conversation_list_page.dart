@@ -47,25 +47,9 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
   updateConversationList() async {
     List list = await RongcloudImPlugin.getConversationList([RCConversationType.Private,RCConversationType.Group]);
     if(list != null) {
-      list.sort((a,b) => b.sentTime.compareTo(a.sentTime));
+      // list.sort((a,b) => b.sentTime.compareTo(a.sentTime));
       conList = list;
     }
-
-    List topList = List();
-    List notTopList = List();
-
-    for (Conversation conversation in list) {
-      if (conversation.isTop) {
-        topList.add(conversation);
-      } else {
-        notTopList.add(conversation);
-      }
-    }
-    for (Conversation conversation in notTopList) {
-      topList.add(conversation);
-    }
-
-    conList = topList;
     _renfreshUI();
   }
 
