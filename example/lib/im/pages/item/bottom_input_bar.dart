@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../util/media_util.dart';
-import '../../util/event_bus.dart';
-import '../../util/user_info_datesource.dart';
 
 class BottomInputBar extends StatefulWidget {
   BottomInputBarDelegate delegate;
@@ -15,10 +13,7 @@ class BottomInputBar extends StatefulWidget {
       state = _BottomInputBarState(this.delegate);
 
   void setTextContent(String textContent) {
-    if (textContent == null) {
-      textContent = '';
-    }
-    this.state.textEditingController.text = textContent;
+    this.state._refreshUI(textContent);
   }
 }
 
@@ -27,7 +22,6 @@ class _BottomInputBarState extends State<BottomInputBar> {
   TextField textField;
   FocusNode focusNode = FocusNode();
   InputBarStatus inputBarStatus;
-  List<String> userIdList = List();
   TextEditingController textEditingController;
 
   _BottomInputBarState(BottomInputBarDelegate delegate) {
@@ -41,7 +35,17 @@ class _BottomInputBarState extends State<BottomInputBar> {
       decoration:
           InputDecoration(border: InputBorder.none, hintText: '随便说点什么吧'),
       focusNode: focusNode,
+      autofocus: true,
     );
+  }
+
+  void _refreshUI(String textContent) {
+    setState(() {
+      if (textContent == null) {
+        textContent = '';
+      }
+      this.textEditingController.text = this.textEditingController.text + textContent;
+    });
   }
 
   @override
@@ -56,13 +60,6 @@ class _BottomInputBarState extends State<BottomInputBar> {
         _notifyInputStatusChanged(InputBarStatus.Normal);
       }
     });
-
-    EventBus.instance.addListener(EventKeys.LongPressUserPortrait, (userId) {
-      BaseInfo targetInfo = UserInfoDataSource.getUserInfo(userId);
-      String content = "@" + userId + " " + targetInfo.name + " ";
-      this.textField.controller.text = this.textField.controller.text + content;
-      this.userIdList.add(userId);
-    });
   }
 
   void _clickSendMessage(String messageStr) {
@@ -71,25 +68,12 @@ class _BottomInputBarState extends State<BottomInputBar> {
       return;
     }
 
-    // 判断当前输入框是否还包含 @ 的信息
-    List<String> tapUserIdList = List();
-    for (String userId in this.userIdList) {
-      if (messageStr.contains(userId)) {
-        tapUserIdList.add(userId);
-      }
-    }
-
     if (this.delegate != null) {
-      if (tapUserIdList.length > 0) {
-        this.delegate.willSendTextWithMentionedInfo(messageStr, tapUserIdList);
-      } else {
-        this.delegate.willSendText(messageStr);
-      }
+      this.delegate.willSendText(messageStr);
     } else {
       print("没有实现 BottomInputBarDelegate");
     }
     this.textField.controller.text = '';
-    this.userIdList.clear();
   }
 
   switchPhrases() {
@@ -268,9 +252,6 @@ abstract class BottomInputBarDelegate {
 
   ///即将发送消息
   void willSendText(String text);
-
-  ///即将发送消息
-  void willSendTextWithMentionedInfo(String text, List userIdList);
 
   ///即将发送语音
   void willSendVoice(String path, int duration);

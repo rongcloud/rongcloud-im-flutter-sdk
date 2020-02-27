@@ -87,24 +87,13 @@ class _ConversationItemState extends State<ConversationItem> {
                 setState(() {});
               },
             );
-          // return Row(
-          //   children: <Widget>[mutiSelectContent() ,subContent(),_itemAddGestureDetector()],
-          // );
         } else {
           return GestureDetector(
             child: Row(
               children: <Widget>[subContent()],
               ),
-              // onTap: () {
-              //   __onTapedItem();
-              //   setState(() {
-              //   });
-              // },
             );
         }
-        // return Row(
-        //   children: <Widget>[subContent()],
-        //   );
       }
   }
 

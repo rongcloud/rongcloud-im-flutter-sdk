@@ -50,8 +50,8 @@ class _ConversationPageState extends State<ConversationPage>
   BaseInfo info;
 
   bool multiSelect = false; //是否是多选模式
-  List selectedMessageIds =
-      new List(); //已经选择的所有消息Id，只有在 multiSelect 为 YES,才会有有效值
+  List selectedMessageIds = new List(); //已经选择的所有消息Id，只有在 multiSelect 为 YES,才会有有效值
+  List userIdList = new List();
 
   _ConversationPageState({this.arguments});
   @override
@@ -64,6 +64,8 @@ class _ConversationPageState extends State<ConversationPage>
     conversationType = arguments["coversationType"];
     targetId = arguments["targetId"];
     currentStatus = ConversationStatus.Normal;
+    bottomInputBar = BottomInputBar(this);
+    bottomToolBar = BottomToolBar(this);
 
     if (conversationType == RCConversationType.Private) {
       this.info = UserInfoDataSource.getUserInfo(targetId);
@@ -426,10 +428,8 @@ class _ConversationPageState extends State<ConversationPage>
   // 底部输入栏
   Widget _buildBottomInputBar() {
     if (multiSelect == true) {
-      bottomToolBar = BottomToolBar(this);
       return bottomToolBar;
     } else {
-      bottomInputBar = BottomInputBar(this);
       return bottomInputBar;
     }
   }
@@ -583,7 +583,10 @@ class _ConversationPageState extends State<ConversationPage>
   @override
   void didLongPressUserPortrait(String userId, Offset tapPos) {
     if (this.conversationType == RCConversationType.Group) {
-      EventBus.instance.commit(EventKeys.LongPressUserPortrait, userId);
+      BaseInfo targetInfo = UserInfoDataSource.getUserInfo(userId);
+      String content = "@" + userId + " " + targetInfo.name + " ";
+      bottomInputBar.setTextContent(content);
+      userIdList.add(userId);
     }
     print("长按头像");
   }
@@ -592,24 +595,23 @@ class _ConversationPageState extends State<ConversationPage>
   void willSendText(String text) async {
     TextMessage msg = new TextMessage();
     msg.content = text;
-    Message message =
-        await RongcloudImPlugin.sendMessage(conversationType, targetId, msg);
-    _insertOrReplaceMessage(message);
-  }
 
-  @override
-  void willSendTextWithMentionedInfo(String text, List userIdList) async {
-    TextMessage msg = new TextMessage();
-    msg.content = text;
-
+    // 发送消息携带用户信息
+    List<String> tapUserIdList = List();
+    for (String userId in this.userIdList) {
+      if (text.contains(userId) && (!tapUserIdList.contains(userId))) {
+        tapUserIdList.add(userId);
+      }
+    }
     MentionedInfo mentionedInfo = new MentionedInfo();
     mentionedInfo.type = RCMentionedType.Users;
-    mentionedInfo.userIdList = userIdList;
+    mentionedInfo.userIdList = tapUserIdList;
     mentionedInfo.mentionedContent = "这是 mentionedContent";
     msg.mentionedInfo = mentionedInfo;
 
     Message message =
         await RongcloudImPlugin.sendMessage(conversationType, targetId, msg);
+    userIdList.clear();
     _insertOrReplaceMessage(message);
   }
 
