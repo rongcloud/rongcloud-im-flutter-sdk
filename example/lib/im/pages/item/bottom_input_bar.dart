@@ -94,6 +94,9 @@ class _BottomInputBarState extends State<BottomInputBar> {
 
   switchPhrases() {
     print("switchPhrases");
+    if (focusNode.hasFocus) {
+      focusNode.unfocus();
+    }
     InputBarStatus status = InputBarStatus.Normal;
     if (this.inputBarStatus != InputBarStatus.Phrases) {
       status = InputBarStatus.Phrases;

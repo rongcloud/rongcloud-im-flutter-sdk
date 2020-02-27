@@ -3,8 +3,10 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:rongcloud_im_plugin_example/im/pages/item/bottom_tool_bar.dart';
 
 import '../util/style.dart';
-import 'item/conversation_item.dart';
 import 'item/bottom_input_bar.dart';
+import 'item/message_content_list.dart';
+import 'item/conversation_item.dart';
+import 'item/message_content_list.dart';
 import 'item/widget_util.dart';
 
 import '../util/time.dart';
@@ -28,7 +30,7 @@ class ConversationPage extends StatefulWidget {
 }
 
 class _ConversationPageState extends State<ConversationPage>
-    implements ConversationItemDelegate, BottomInputBarDelegate, BottomToolBarDelegate {
+    implements BottomInputBarDelegate, MessageContentListDelegate, BottomToolBarDelegate {
   Map arguments;
   int conversationType;
   String targetId;
@@ -42,12 +44,14 @@ class _ConversationPageState extends State<ConversationPage>
   BottomToolBar bottomToolBar;
   String titleContent;
   InputBarStatus currentInputStatus;
+  ListView phrasesListView;
 
-  ScrollController _scrollController = ScrollController();
+  MessageContentList messageContentList;
   BaseInfo info;
 
   bool multiSelect = false; //是否是多选模式
-  List selectedMessageIds = new List(); //已经选择的所有消息Id，只有在 multiSelect 为 YES,才会有有效值
+  List selectedMessageIds =
+      new List(); //已经选择的所有消息Id，只有在 multiSelect 为 YES,才会有有效值
 
   _ConversationPageState({this.arguments});
   @override
@@ -55,6 +59,8 @@ class _ConversationPageState extends State<ConversationPage>
     super.initState();
     _requestPermissions();
 
+    messageContentList = MessageContentList(
+        messageDataSource, multiSelect, selectedMessageIds, this);
     conversationType = arguments["coversationType"];
     targetId = arguments["targetId"];
     currentStatus = ConversationStatus.Normal;
@@ -75,14 +81,6 @@ class _ConversationPageState extends State<ConversationPage>
     _initExtentionWidgets();
     //获取草稿内容
     onGetTextMessageDraft();
-
-    _scrollController.addListener(() {
-      //此处要用 == 而不是 >= 否则会触发多次
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        _pullMoreHistoryMessage();
-      }
-    });
   }
 
   @override
@@ -160,7 +158,8 @@ class _ConversationPageState extends State<ConversationPage>
           TypingStatus status = typingStatus[typingStatus.length - 1];
           if (status.typingContentType == TextMessage.objectName) {
             titleContent = '对方正在输入...';
-          } else if (status.typingContentType == VoiceMessage.objectName || status.typingContentType == 'RC:VcMsg') {
+          } else if (status.typingContentType == VoiceMessage.objectName ||
+              status.typingContentType == 'RC:VcMsg') {
             titleContent = '对方正在讲话...';
           }
         } else {
@@ -180,6 +179,7 @@ class _ConversationPageState extends State<ConversationPage>
       msgs.sort((a, b) => b.sentTime.compareTo(a.sentTime));
       messageDataSource = msgs;
     }
+    _refreshMessageContentListUI();
     _sendReadReceipt();
     _refreshUI();
   }
@@ -188,9 +188,9 @@ class _ConversationPageState extends State<ConversationPage>
     textDraft =
         await RongcloudImPlugin.getTextMessageDraft(conversationType, targetId);
     if (bottomInputBar != null) {
-      bottomInputBar.setTextContent(textDraft);    
+      bottomInputBar.setTextContent(textDraft);
     }
-      // _refreshUI();
+    // _refreshUI();
   }
 
   void _insertOrReplaceMessage(Message message) {
@@ -208,6 +208,7 @@ class _ConversationPageState extends State<ConversationPage>
     } else {
       messageDataSource.insert(0, message);
     }
+    _refreshMessageContentListUI();
     _refreshUI();
   }
 
@@ -222,44 +223,49 @@ class _ConversationPageState extends State<ConversationPage>
             children: extWidgetList,
           ));
     } else if (currentInputStatus == InputBarStatus.Phrases) {
-      return Container(
-          height: 180,
-          child: ListView.separated(
-              key: UniqueKey(),
-              shrinkWrap: true,
-              controller: ScrollController(),
-              itemCount: phrasesList.length,
-              itemBuilder: (BuildContext context, int index) {
-                if (phrasesList.length != null && phrasesList.length > 0) {
-                  String contentStr = phrasesList[index];
-                  return GestureDetector(
-                      onTap: (){
-                        _clickPhrases(contentStr);
-                      },
-                      child: Container(
-                    alignment: Alignment.center,
-                    child: Text(contentStr,
-                        style: new TextStyle(
-                          fontSize: 14, //字体大���
-                        )),
-                    height: 36,
-                  ));
-                } else {
-                  return WidgetUtil.buildEmptyWidget();
-                }
-              },
-              separatorBuilder: (BuildContext context, int index) {
-                return Container(
-                  color: Color(0xffC8C8C8),
-                  height: 0.5,
-                );
-              }));
+      return Container(height: 180, child: _buildPhrasesList());
     } else {
       return WidgetUtil.buildEmptyWidget();
     }
   }
 
-  void _clickPhrases(String contentStr) async{
+  ListView _buildPhrasesList() {
+    if (phrasesListView != null) {
+      return phrasesListView;
+    }
+    return ListView.separated(
+        key: UniqueKey(),
+        controller: ScrollController(),
+        itemCount: phrasesList.length,
+        itemBuilder: (BuildContext context, int index) {
+          if (phrasesList.length != null && phrasesList.length > 0) {
+            String contentStr = phrasesList[index];
+            return GestureDetector(
+                onTap: () {
+                  _clickPhrases(contentStr);
+                },
+                child: Container(
+                  alignment: Alignment.center,
+                  child: Text(contentStr,
+                      style: new TextStyle(
+                        fontSize: 14, //字体大���
+                      )),
+                  height: 36,
+                ));
+          } else {
+            return WidgetUtil.buildEmptyWidget();
+          }
+        },
+        separatorBuilder: (BuildContext context, int index) {
+          return Container(
+            color: Color(0xffC8C8C8),
+            height: 0.5,
+          );
+        });
+  }
+
+  void _clickPhrases(String contentStr) async {
+    currentInputStatus = InputBarStatus.Normal;
     TextMessage msg = new TextMessage();
     msg.content = contentStr;
     Message message =
@@ -294,6 +300,11 @@ class _ConversationPageState extends State<ConversationPage>
   /// 禁止随意调用 setState 接口刷新 UI，必须调用该接口刷新 UI
   void _refreshUI() {
     setState(() {});
+  }
+
+  void _refreshMessageContentListUI() {
+    messageContentList.updateData(
+        messageDataSource, multiSelect, selectedMessageIds);
   }
 
   void _initExtentionWidgets() {
@@ -343,7 +354,7 @@ class _ConversationPageState extends State<ConversationPage>
 
   void _sendReadReceipt() {
     if (conversationType == RCConversationType.Private) {
-      for(int i=0;i<messageDataSource.length;i++) {
+      for (int i = 0; i < messageDataSource.length; i++) {
         Message message = messageDataSource[i];
         if (message.messageDirection == RCMessageDirection.Receive) {
           RongcloudImPlugin.sendReadReceiptMessage(
@@ -365,18 +376,19 @@ class _ConversationPageState extends State<ConversationPage>
   }
 
   void _syncReadStatus() {
-    for(int i=0;i<messageDataSource.length;i++) {
+    for (int i = 0; i < messageDataSource.length; i++) {
       Message message = messageDataSource[i];
-        if (message.messageDirection == RCMessageDirection.Receive) {
-          RongcloudImPlugin.syncConversationReadStatus(this.conversationType, this.targetId, message.sentTime, (int code){
-            if (code == 0) {
-              print('syncConversationReadStatusSuccess');
-            } else {
-              print('syncConversationReadStatusFailed:code = + $code');
-            }
-          });
-          break;
-        }
+      if (message.messageDirection == RCMessageDirection.Receive) {
+        RongcloudImPlugin.syncConversationReadStatus(
+            this.conversationType, this.targetId, message.sentTime, (int code) {
+          if (code == 0) {
+            print('syncConversationReadStatusSuccess');
+          } else {
+            print('syncConversationReadStatusFailed:code = + $code');
+          }
+        });
+        break;
+      }
     }
   }
 
@@ -434,8 +446,8 @@ class _ConversationPageState extends State<ConversationPage>
             selectedMessageIds.clear();
             _refreshUI();
           },
-          )
-        ];
+        )
+      ];
     } else {
       return <Widget>[];
     }
@@ -453,7 +465,8 @@ class _ConversationPageState extends State<ConversationPage>
       }
     }
     if (readReceiptList.length > 0) {
-      RongcloudImPlugin.sendReadReceiptResponse(this.conversationType, this.targetId, readReceiptList, (int code){
+      RongcloudImPlugin.sendReadReceiptResponse(
+          this.conversationType, this.targetId, readReceiptList, (int code) {
         if (code == 0) {
           print('sendReadReceiptResponseSuccess');
         } else {
@@ -478,40 +491,7 @@ class _ConversationPageState extends State<ConversationPage>
                   children: <Widget>[
                     Flexible(
                       child: Column(
-                        children: <Widget>[
-                          Flexible(
-                            child: ListView.separated(
-                                key: UniqueKey(),
-                                shrinkWrap: true,
-
-                                //因为消息超过一屏，ListView 很难滚动到最底部，所以要翻转显示，同时数据源也要逆序
-                                reverse: true,
-                                controller: _scrollController,
-                                itemCount: messageDataSource.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  if (messageDataSource.length != null &&
-                                      messageDataSource.length > 0) {
-                                    Message tempMessage = messageDataSource[index];
-                                    // bool isSelected = selectedMessageIds.contains(tempMessage.messageId);
-                                    return ConversationItem(
-                                        this,
-                                        tempMessage,
-                                        _needShowTime(index),
-                                        this.multiSelect,
-                                        selectedMessageIds);
-                                  } else {
-                                    return WidgetUtil.buildEmptyWidget();
-                                  }
-                                },
-                                separatorBuilder:
-                                    (BuildContext context, int index) {
-                                  return Container(
-                                    height: 10,
-                                    width: 1,
-                                  );
-                                }),
-                          )
-                        ],
+                        children: <Widget>[Flexible(child: messageContentList)],
                       ),
                     ),
                     Container(
@@ -566,7 +546,7 @@ class _ConversationPageState extends State<ConversationPage>
       RCLongPressAction.DeleteKey: RCLongPressAction.DeleteValue,
       RCLongPressAction.MutiSelectKey: RCLongPressAction.MutiSelectValue
     };
-    if(message.messageDirection == RCMessageDirection.Send){
+    if (message.messageDirection == RCMessageDirection.Send) {
       actionMap[RCLongPressAction.RecallKey] = RCLongPressAction.RecallValue;
     }
     WidgetUtil.showLongPressMenu(context, tapPos, actionMap, (String key) {
@@ -576,6 +556,7 @@ class _ConversationPageState extends State<ConversationPage>
         _recallMessage(message);
       } else if (key == RCLongPressAction.MutiSelectKey) {
         this.multiSelect = true;
+        _refreshMessageContentListUI();
         _refreshUI();
       }
       print("当前选中的是 " + key);
@@ -594,7 +575,7 @@ class _ConversationPageState extends State<ConversationPage>
       if (alreadySaved) {
         selectedMessageIds.remove(message.messageId);
       } else {
-       selectedMessageIds.add(message.messageId);
+        selectedMessageIds.add(message.messageId);
       }
     }
   }
@@ -674,5 +655,10 @@ class _ConversationPageState extends State<ConversationPage>
         onGetHistoryMessages();
       }
     });
+  }
+
+  @override
+  void willpullMoreHistoryMessage() {
+    _pullMoreHistoryMessage();
   }
 }
