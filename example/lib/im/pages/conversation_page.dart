@@ -394,23 +394,6 @@ class _ConversationPageState extends State<ConversationPage>
     }
   }
 
-  bool _needShowTime(int index) {
-    bool needShow = false;
-    //消息是逆序的
-    if (index == messageDataSource.length - 1) {
-      //第一条消息一定显示时间
-      needShow = true;
-    } else {
-      //如果满足条件，则显示时间
-      Message lastMessage = messageDataSource[index + 1];
-      Message curMessage = messageDataSource[index];
-      if (TimeUtil.needShowTime(lastMessage.sentTime, curMessage.sentTime)) {
-        needShow = true;
-      }
-    }
-    return needShow;
-  }
-
   ///长按录制语音的 gif 动画
   Widget _buildExtraCenterWidget() {
     if (this.currentStatus == ConversationStatus.VoiceRecorder) {
@@ -444,6 +427,7 @@ class _ConversationPageState extends State<ConversationPage>
           onPressed: () {
             multiSelect = false;
             selectedMessageIds.clear();
+            _refreshMessageContentListUI();
             _refreshUI();
           },
         )
@@ -556,6 +540,7 @@ class _ConversationPageState extends State<ConversationPage>
         _recallMessage(message);
       } else if (key == RCLongPressAction.MutiSelectKey) {
         this.multiSelect = true;
+        currentInputStatus = InputBarStatus.Normal;
         _refreshMessageContentListUI();
         _refreshUI();
       }

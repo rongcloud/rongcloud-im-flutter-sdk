@@ -37,6 +37,7 @@ class _ConversationItemState extends State<ConversationItem> {
   bool multiSelect;
   bool isSeleceted = false;
   List selectedMessageIds;
+  SelectIcon icon;
 
   _ConversationItemState(
       ConversationItemDelegate delegate, prefix.Message msg, bool showTime, bool multiSelect, List selectedMessageIds) {
@@ -46,6 +47,13 @@ class _ConversationItemState extends State<ConversationItem> {
     this.user = UserInfoDataSource.getUserInfo(msg.senderUserId);
     this.multiSelect = multiSelect;
     this.selectedMessageIds = selectedMessageIds;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    bool isSelected = selectedMessageIds.contains(message.messageId);
+    icon = SelectIcon(isSelected);
   }
 
   @override
@@ -84,7 +92,6 @@ class _ConversationItemState extends State<ConversationItem> {
               ),
               onTap: () {
                 __onTapedItem();
-                setState(() {});
               },
             );
         } else {
@@ -183,19 +190,19 @@ class _ConversationItemState extends State<ConversationItem> {
   Widget mutiSelectContent() {
     // 消息是否添加
     // final alreadySaved = _saved.contains(message);
-    bool isSelected = selectedMessageIds.contains(message.messageId);
     return Container(
       alignment: Alignment.centerLeft,
       padding: EdgeInsets.fromLTRB(0,0, 10, 0),
-      child: new Icon(
-        isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
-        ),
+      child: icon,
     );
   }
+
 
   void __onTapedItem() {
     if (delegate != null) {
       delegate.didTapItem(message);
+      bool isSelected = selectedMessageIds.contains(message.messageId);
+      icon.updateUI(isSelected);
     } else {
       print("没有实现 ConversationItemDelegate");
     }
@@ -318,4 +325,46 @@ abstract class ConversationItemDelegate {
   void didSendMessageRequest(prefix.Message message);
   //点击消息已读人数
   void didTapMessageReadInfo(prefix.Message message);
+}
+
+
+// 多选模式下 cell 显示的 Icon
+class SelectIcon extends StatefulWidget {
+
+  bool isSelected;
+  _SelectIconState state;
+
+  SelectIcon(bool isSelected) {
+    this.isSelected = isSelected;
+  }
+
+  @override
+  _SelectIconState createState() => state = _SelectIconState(isSelected);
+  
+  void updateUI(bool isSelected) {
+    this.state.refreshUI(isSelected);
+  }
+
+}
+
+class _SelectIconState extends State<SelectIcon> {
+
+  bool isSelected;
+
+  _SelectIconState(bool isSelected) {
+    this.isSelected = isSelected;
+  }
+
+  void refreshUI(bool isSelected) {
+    setState(() {
+      this.isSelected = isSelected;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Icon(
+        isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+        );
+  }
 }
