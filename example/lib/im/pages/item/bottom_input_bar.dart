@@ -13,7 +13,11 @@ class BottomInputBar extends StatefulWidget {
       state = _BottomInputBarState(this.delegate);
 
   void setTextContent(String textContent) {
-    this.state._refreshUI(textContent);
+    this.state.setText(textContent);
+  }
+
+  void refreshUI() {
+    this.state._refreshUI();
   }
 }
 
@@ -39,13 +43,17 @@ class _BottomInputBarState extends State<BottomInputBar> {
     );
   }
 
-  void _refreshUI(String textContent) {
-    setState(() {
-      if (textContent == null) {
-        textContent = '';
-      }
-      this.textEditingController.text = this.textEditingController.text + textContent;
-    });
+  void setText(String textContent) {
+    if (textContent == null) {
+      textContent = '';
+    }
+    this.textEditingController.text =
+        this.textEditingController.text + textContent;
+    _refreshUI();
+  }
+
+  void _refreshUI() {
+    setState(() {});
   }
 
   @override

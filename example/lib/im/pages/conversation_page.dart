@@ -28,7 +28,10 @@ class ConversationPage extends StatefulWidget {
 }
 
 class _ConversationPageState extends State<ConversationPage>
-    implements BottomInputBarDelegate, MessageContentListDelegate, BottomToolBarDelegate {
+    implements
+        BottomInputBarDelegate,
+        MessageContentListDelegate,
+        BottomToolBarDelegate {
   Map arguments;
   int conversationType;
   String targetId;
@@ -48,7 +51,8 @@ class _ConversationPageState extends State<ConversationPage>
   BaseInfo info;
 
   bool multiSelect = false; //是否是多选模式
-  List selectedMessageIds = new List(); //已经选择的所有消息Id，只有在 multiSelect 为 YES,才会有有效值
+  List selectedMessageIds =
+      new List(); //已经选择的所有消息Id，只有在 multiSelect 为 YES,才会有有效值
   List userIdList = new List();
 
   _ConversationPageState({this.arguments});
@@ -225,6 +229,9 @@ class _ConversationPageState extends State<ConversationPage>
     } else if (currentInputStatus == InputBarStatus.Phrases) {
       return Container(height: 180, child: _buildPhrasesList());
     } else {
+      if (currentInputStatus == InputBarStatus.Voice) {
+        bottomInputBar.refreshUI();
+      }
       return WidgetUtil.buildEmptyWidget();
     }
   }
@@ -619,7 +626,8 @@ class _ConversationPageState extends State<ConversationPage>
   void onTextChange(String text) {
     // print('input ' + text);
     textDraft = text;
-    RongcloudImPlugin.sendTypingStatus(conversationType, targetId, TextMessage.objectName);
+    RongcloudImPlugin.sendTypingStatus(
+        conversationType, targetId, TextMessage.objectName);
   }
 
   @override
