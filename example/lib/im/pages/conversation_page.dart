@@ -5,8 +5,6 @@ import 'package:rongcloud_im_plugin_example/im/pages/item/bottom_tool_bar.dart';
 import '../util/style.dart';
 import 'item/bottom_input_bar.dart';
 import 'item/message_content_list.dart';
-import 'item/conversation_item.dart';
-import 'item/message_content_list.dart';
 import 'item/widget_util.dart';
 
 import '../util/time.dart';
@@ -621,11 +619,13 @@ class _ConversationPageState extends State<ConversationPage>
   void onTextChange(String text) {
     // print('input ' + text);
     textDraft = text;
+    RongcloudImPlugin.sendTypingStatus(conversationType, targetId, TextMessage.objectName);
   }
 
   @override
   void willStartRecordVoice() {
     _showExtraCenterWidget(ConversationStatus.VoiceRecorder);
+    RongcloudImPlugin.sendTypingStatus(conversationType, targetId, 'RC:VcMsg');
   }
 
   @override

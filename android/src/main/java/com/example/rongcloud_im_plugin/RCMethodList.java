@@ -45,6 +45,7 @@ public class RCMethodList {
     static String MehtodSyncConversationReadStatus = "syncConversationReadStatus";
     static String MehtodSearchConversations = "searchConversations";
     static String MehtodSearchMessages = "searchMessages";
+    static String MehtodSendTypingStatus = "sendTypingStatus";
 
 
 

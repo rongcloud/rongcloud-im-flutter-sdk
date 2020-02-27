@@ -196,6 +196,8 @@ public class RCIMFlutterWrapper {
             searchConversations(call.arguments, result);
         } else if (RCMethodList.MehtodSearchMessages.equalsIgnoreCase(call.method)){
             searchMessages(call.arguments, result);
+        } else if (RCMethodList.MehtodSendTypingStatus.equalsIgnoreCase(call.method)){
+            sendTypingStatus(call.arguments);
         } else {
             result.notImplemented();
         }
@@ -1949,6 +1951,17 @@ public class RCIMFlutterWrapper {
                     result.success(callBackMap);
                 }
             });
+        }
+    }
+
+    // 发送输入状态
+    private void sendTypingStatus(Object arg){
+        if (arg instanceof Map){
+            Map paramMap = (Map) arg;
+            int conversationType = (int) paramMap.get("conversationType");
+            String targetId = (String) paramMap.get("targetId");
+            String typingContentType = (String) paramMap.get("typingContentType");
+            RongIMClient.getInstance().sendTypingStatus(Conversation.ConversationType.setValue(conversationType),targetId,typingContentType);
         }
     }
 

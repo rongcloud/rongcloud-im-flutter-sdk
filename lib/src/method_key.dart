@@ -46,6 +46,7 @@ class RCMethodKey {
   static const String SyncConversationReadStatus = 'syncConversationReadStatus';
   static const String SearchConversations = 'searchConversations';
   static const String SearchMessages = 'searchMessages';
+  static const String SendTypingStatus = 'sendTypingStatus';
 
 
   // 聊天室状态存储

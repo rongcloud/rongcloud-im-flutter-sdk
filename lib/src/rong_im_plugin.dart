@@ -831,7 +831,7 @@ class RongcloudImPlugin {
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   /// 此接口只支持群组
   static void sendReadReceiptRequest(
-    Message message, Function(int code) finished) async {
+      Message message, Function(int code) finished) async {
     Map messageMap = MessageFactory.instance.message2Map(message);
     Map map = {"messageMap": messageMap};
 
@@ -854,7 +854,7 @@ class RongcloudImPlugin {
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   /// 此接口只支持群组
   static void sendReadReceiptResponse(int conversationType, String targetId,
-    List messageList, Function(int code) finished) async {
+      List messageList, Function(int code) finished) async {
     List messageMaps = List();
     for (Message message in messageList) {
       Map messageMap = MessageFactory.instance.message2Map(message);
@@ -931,8 +931,8 @@ class RongcloudImPlugin {
       "autoDelete": autoDelete,
       "notificationExtra": notificationExtra
     };
-    int result = await _channel.invokeMethod(RCMethodKey.SetChatRoomEntry,map);
-    if(finished != null) {
+    int result = await _channel.invokeMethod(RCMethodKey.SetChatRoomEntry, map);
+    if (finished != null) {
       finished(result);
     }
   }
@@ -969,8 +969,9 @@ class RongcloudImPlugin {
       "autoDelete": autoDelete,
       "notificationExtra": notificationExtra
     };
-    int result = await _channel.invokeMethod(RCMethodKey.ForceSetChatRoomEntry,map);
-    if(finished != null) {
+    int result =
+        await _channel.invokeMethod(RCMethodKey.ForceSetChatRoomEntry, map);
+    if (finished != null) {
       finished(result);
     }
   }
@@ -1038,8 +1039,9 @@ class RongcloudImPlugin {
       "sendNotification": sendNotification,
       "notificationExtra": notificationExtra
     };
-    int result = await _channel.invokeMethod(RCMethodKey.RemoveChatRoomEntry,map);
-    if(finished != null) {
+    int result =
+        await _channel.invokeMethod(RCMethodKey.RemoveChatRoomEntry, map);
+    if (finished != null) {
       finished(result);
     }
   }
@@ -1068,8 +1070,9 @@ class RongcloudImPlugin {
       "sendNotification": sendNotification,
       "notificationExtra": notificationExtra
     };
-    int result = await _channel.invokeMethod(RCMethodKey.ForceRemoveChatRoomEntry,map);
-    if(finished != null) {
+    int result =
+        await _channel.invokeMethod(RCMethodKey.ForceRemoveChatRoomEntry, map);
+    if (finished != null) {
       finished(result);
     }
   }
@@ -1440,5 +1443,16 @@ class RongcloudImPlugin {
         finished(null, code);
       }
     }
+  }
+
+  // 发送输入状态
+  static void sendTypingStatus(
+      int conversationType, String targetId, String typingContentType) async {
+    Map paramMap = {
+      "conversationType": conversationType,
+      "targetId": targetId,
+      "typingContentType": typingContentType,
+    };
+    await _channel.invokeMethod(RCMethodKey.SendTypingStatus, paramMap);
   }
 }
