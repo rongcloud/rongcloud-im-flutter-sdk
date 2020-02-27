@@ -307,8 +307,7 @@ class _ConversationItemState extends State<ConversationItem> {
   bool canSendMessageReqdRequest() {
     DateTime time = DateTime.now();
     int nowTime = time.millisecondsSinceEpoch;
-    int time1 = nowTime - message.sentTime;
-    if (nowTime - message.sentTime < 120) {
+    if (nowTime - message.sentTime < 120 * 1000) {
       return true;
     }
     return false;
