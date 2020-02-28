@@ -38,14 +38,16 @@ public class RCMethodList {
     static String MethodKeyGetBlackListStatus = "GetBlackListStatus";
     static String MethodKeyGetBlackList = "GetBlackList";
     static String MethodKeySendReadReceiptMessage = "SendReadReceiptMessage";
+    static String MethodKeySendReadReceiptRequest = "SendReadReceiptRequest";
+    static String MethodKeySendReadReceiptResponse = "SendReadReceiptResponse";
     static String MethodKeyRecallMessage = "recallMessage";
-    static String MethodGetTextMessageDraft = "getTextMessageDraft";
-    static String MethodSaveTextMessageDraft = "saveTextMessageDraft";
-    static String MehtodClearHistoryMessages = "ClearHistoryMessages";
-    static String MehtodSyncConversationReadStatus = "syncConversationReadStatus";
-    static String MehtodSearchConversations = "searchConversations";
-    static String MehtodSearchMessages = "searchMessages";
-    static String MehtodSendTypingStatus = "sendTypingStatus";
+    static String MethodKeyGetTextMessageDraft = "getTextMessageDraft";
+    static String MethodKeySaveTextMessageDraft = "saveTextMessageDraft";
+    static String MethodKeyClearHistoryMessages = "ClearHistoryMessages";
+    static String MethodKeySyncConversationReadStatus = "syncConversationReadStatus";
+    static String MethodKeySearchConversations = "searchConversations";
+    static String MethodKeySearchMessages = "searchMessages";
+    static String MethodKeySendTypingStatus = "sendTypingStatus";
 
 
 

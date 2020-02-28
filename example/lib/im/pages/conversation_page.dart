@@ -7,7 +7,6 @@ import 'item/bottom_input_bar.dart';
 import 'item/message_content_list.dart';
 import 'item/widget_util.dart';
 
-import '../util/time.dart';
 import '../util/user_info_datesource.dart';
 import '../util/media_util.dart';
 import '../util/event_bus.dart';
