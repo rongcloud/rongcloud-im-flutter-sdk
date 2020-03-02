@@ -232,6 +232,7 @@
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
         NSString *objName = param[@"objectName"];
+        long long timestamp = [param[@"timestamp"] longLongValue];
         if([self isMediaMessage:objName]) {
             [self sendMediaMessage:arg result:result];
             return;
@@ -269,6 +270,9 @@
             [dic setObject:@(messageId) forKey:@"messageId"];
             [dic setObject:@(SentStatus_SENT) forKey:@"status"];
             [dic setObject:@(0) forKey:@"code"];
+            if (timestamp > 0) {
+                [dic setObject:@(timestamp) forKey:@"timestamp"];
+            }
             [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
         } error:^(RCErrorCode nErrorCode, long messageId) {
             [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(nErrorCode)]];
@@ -276,6 +280,9 @@
             [dic setObject:@(messageId) forKey:@"messageId"];
             [dic setObject:@(SentStatus_FAILED) forKey:@"status"];
             [dic setObject:@(nErrorCode) forKey:@"code"];
+            if (timestamp > 0) {
+                [dic setObject:@(timestamp) forKey:@"timestamp"];
+            }
             [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
         }];
         NSString *jsonString = [RCFlutterMessageFactory message2String:message];
@@ -293,6 +300,7 @@
     NSString *targetId = param[@"targetId"];
     NSString *contentStr = param[@"content"];
     NSString *pushContent = param[@"pushContent"];
+    long long timestamp = [param[@"timestamp"] longLongValue];
     if(pushContent.length <= 0) {
         pushContent = nil;
     }
@@ -340,7 +348,10 @@
             NSMutableDictionary *dic = [NSMutableDictionary new];
             [dic setObject:@(-1) forKey:@"messageId"];
             [dic setObject:@(SentStatus_FAILED) forKey:@"status"];
-            [dic setObject:@(RC_SIGHT_MSG_DURATION_LIMIT_EXCEED) forKey:@"code"]; 
+            [dic setObject:@(RC_SIGHT_MSG_DURATION_LIMIT_EXCEED) forKey:@"code"];
+            if (timestamp > 0) {
+                [dic setObject:@(timestamp) forKey:@"timestamp"];
+            }
             [self.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
             return;
         }
@@ -357,12 +368,18 @@
         [dic setObject:@(messageId) forKey:@"messageId"];
         [dic setObject:@(SentStatus_SENT) forKey:@"status"];
         [dic setObject:@(0) forKey:@"code"];
+        if (timestamp > 0) {
+            [dic setObject:@(timestamp) forKey:@"timestamp"];
+        }
         [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
     } error:^(RCErrorCode errorCode, long messageId) {
         NSMutableDictionary *dic = [NSMutableDictionary new];
         [dic setObject:@(messageId) forKey:@"messageId"];
         [dic setObject:@(SentStatus_FAILED) forKey:@"status"];
         [dic setObject:@(errorCode) forKey:@"code"];
+        if (timestamp > 0) {
+            [dic setObject:@(timestamp) forKey:@"timestamp"];
+        }
         [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
     } cancel:^(long messageId) {
         

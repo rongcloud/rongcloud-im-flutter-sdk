@@ -13,6 +13,8 @@ import 'connection_status_convert.dart';
 class RongcloudImPlugin {
   static final MethodChannel _channel = const MethodChannel('rongcloud_im_plugin');
 
+  static Map sendMessageCallbacks = Map();
+
   ///初始化 SDK
   ///
   ///[appkey] appkey
@@ -105,6 +107,29 @@ class RongcloudImPlugin {
   /// SDK内置的消息类型，如果您将[pushContent]和[pushData]置为空或者为null，会使用默认的推送格式进行远程推送。
   /// 自定义类型的消息，需要您自己设置pushContent和pushData来定义推送内容，否则将不会进行远程推送。
   static Future<Message> sendMessageCarriesPush(int conversationType, String targetId, MessageContent content, String pushContent, String pushData) async {
+    return sendMessageWithCallBack(conversationType, targetId, content, pushContent, pushData, null);
+  }
+
+  ///发送消息
+  ///
+  ///[conversationType] 会话类型，参见枚举 [RCConversationType]
+  ///
+  ///[targetId] 会话 id
+  ///
+  ///[content] 消息内容 参见 [MessageContent]
+  ///
+  ///[finished] 回调结果，告知 messageId(消息 id)、status(消息发送状态，参见枚举 [RCSentStatus]) 和 code(具体的错误码，0 代表成功)
+  ///
+  /// 当接收方离线并允许远程推送时，会收到远程推送。
+  /// 远程推送中包含两部分内容，一是[pushContent]，用于显示；二是[pushData]，用于携带不显示的数据。
+  ///
+  /// SDK内置的消息类型，如果您将[pushContent]和[pushData]置为空或者为null，会使用默认的推送格式进行远程推送。
+  /// 自定义类型的消息，需要您自己设置pushContent和pushData来定义推送内容，否则将不会进行远程推送。
+  /// 
+  /// 
+  /// 发送消息之后有两种查看结果的方式：1、发送消息的 callback 2、onMessageSend；推荐使用 callback 的方式
+  /// 如果未实现此方法的 callback，则会通过 onMessageSend 返回发送消息的结果
+  static Future<Message> sendMessageWithCallBack(int conversationType, String targetId, MessageContent content, String pushContent, String pushData, Function(int messageId, int status, int code) finished) async {
     if(conversationType == null || targetId == null || content == null) {
       print("send message fail: conversationType or targetId or content is null");
       return null;
@@ -117,14 +142,24 @@ class RongcloudImPlugin {
     }
     String jsonStr = content.encode();
     String objName = content.getObjectName();
+
+    // 此处获取当前时间戳传给原生方法，并且当做 sendMessageCallbacks 的 key 记录 finished
+    DateTime time = DateTime.now();
+    int timestamp = time.millisecondsSinceEpoch;
+
     Map map = {
       'conversationType': conversationType,
       'targetId': targetId,
       "content": jsonStr,
       "objectName": objName,
       "pushContent": pushContent,
-      "pushData": pushData
+      "pushData": pushData,
+      "timestamp": timestamp
     };
+
+    if (finished != null) {
+      sendMessageCallbacks[timestamp] = finished; 
+    }
 
     Map resultMap = await _channel.invokeMethod(RCMethodKey.SendMessage, map);
     if (resultMap == null) {
@@ -833,13 +868,27 @@ class RongcloudImPlugin {
   static void _addNativeMethodCallHandler() {
     _channel.setMethodCallHandler((MethodCall call) {
       switch (call.method) {
-        case RCMethodCallBackKey.SendMessage:
-          if (onMessageSend != null) {
+        case RCMethodCallBackKey.SendMessage: {
             Map argMap = call.arguments;
             int msgId = argMap["messageId"];
             int status = argMap["status"];
             int code = argMap["code"];
-            onMessageSend(msgId, status, code);
+            int timestamp = argMap["timestamp"];
+            if (timestamp != null && timestamp > 0) {
+              Function(int messageId, int status, int code) finished = sendMessageCallbacks[timestamp]; 
+              if (finished != null) {
+                finished(msgId, status, code);
+                sendMessageCallbacks.remove(timestamp);
+              } else {
+                if (onMessageSend != null) {
+                  onMessageSend(msgId, status, code);
+                }
+              }
+            } else {
+              if (onMessageSend != null) {
+                  onMessageSend(msgId, status, code);
+                }
+            }
           }
           break;
 
