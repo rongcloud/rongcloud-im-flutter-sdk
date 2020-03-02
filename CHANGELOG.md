@@ -1,3 +1,8 @@
+## 1.0.7
+
+* SDK:
+* 1.新增带有 callback 的发送消息方法：sendMessageWithCallBack
+
 ## 1.0.6
 
 * SDK:
