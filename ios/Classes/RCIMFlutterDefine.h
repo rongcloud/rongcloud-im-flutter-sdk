@@ -49,6 +49,7 @@ static NSString *RCMethodKeyGetTextMessageDraft = @"getTextMessageDraft";
 static NSString *RCMethodKeySaveTextMessageDraft = @"saveTextMessageDraft";
 static NSString *RCMethodKeySearchConversations = @"searchConversations";
 static NSString *RCMethodKeySearchMessages = @"searchMessages";
+static NSString *RCMethodKeySendTypingStatus = @"sendTypingStatus";
 
 // 聊天室状态存储
 static NSString *RCMethodKeySetChatRoomEntry = @"SetChatRoomEntry";

@@ -148,6 +148,8 @@
         [self searchConversations:call.arguments result:result];
     }else if([RCMethodKeySearchMessages isEqualToString:call.method]) {
         [self searchMessages:call.arguments result:result];
+    }else if([RCMethodKeySendTypingStatus isEqualToString:call.method]) {
+        [self sendTypingStatus:call.arguments result:result];
     }
     else {
         result(FlutterMethodNotImplemented);
@@ -908,6 +910,21 @@
         } else {
             result(@{@"code": @(0), @"messages": @[]});
         }
+    }
+}
+
+#pragma mark - 发送输入状态
+- (void)sendTypingStatus:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"sendTypingStatus";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        
+        RCConversationType type = [param[@"conversationType"] integerValue];
+        NSString *targetId = param[@"targetId"];
+        NSString *typingContentType = param[@"typingContentType"];
+        
+        [[RCIMClient sharedRCIMClient] sendTypingStatus:type targetId:targetId contentType:typingContentType];
     }
 }
 
