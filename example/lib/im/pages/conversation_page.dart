@@ -571,7 +571,7 @@ class _ConversationPageState extends State<ConversationPage>
 
   @override
   void didLongPressUserPortrait(String userId, Offset tapPos) {
-    if (this.conversationType == RCConversationType.Group) {
+    if (conversationType == RCConversationType.Group) {
       BaseInfo targetInfo = UserInfoDataSource.getUserInfo(userId);
       String content = "@" + userId + " " + targetInfo.name + " ";
       bottomInputBar.setTextContent(content);
@@ -585,18 +585,22 @@ class _ConversationPageState extends State<ConversationPage>
     TextMessage msg = new TextMessage();
     msg.content = text;
 
-    // 发送消息携带用户信息
-    List<String> tapUserIdList = List();
-    for (String userId in this.userIdList) {
-      if (text.contains(userId) && (!tapUserIdList.contains(userId))) {
-        tapUserIdList.add(userId);
+    if (conversationType == RCConversationType.Group) {
+      // 群组发送消息携带用户信息
+      List<String> tapUserIdList = List();
+      for (String userId in this.userIdList) {
+        if (text.contains(userId) && (!tapUserIdList.contains(userId))) {
+          tapUserIdList.add(userId);
+        }
+      }
+      if (tapUserIdList.length > 0) {
+        MentionedInfo mentionedInfo = new MentionedInfo();
+        mentionedInfo.type = RCMentionedType.Users;
+        mentionedInfo.userIdList = tapUserIdList;
+        mentionedInfo.mentionedContent = "这是 mentionedContent";
+        msg.mentionedInfo = mentionedInfo;
       }
     }
-    MentionedInfo mentionedInfo = new MentionedInfo();
-    mentionedInfo.type = RCMentionedType.Users;
-    mentionedInfo.userIdList = tapUserIdList;
-    mentionedInfo.mentionedContent = "这是 mentionedContent";
-    msg.mentionedInfo = mentionedInfo;
 
     Message message =
         await RongcloudImPlugin.sendMessage(conversationType, targetId, msg);
