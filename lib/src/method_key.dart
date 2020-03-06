@@ -47,6 +47,7 @@ class RCMethodKey {
   static const String SearchConversations = 'searchConversations';
   static const String SearchMessages = 'searchMessages';
   static const String SendTypingStatus = 'sendTypingStatus';
+  static const String DownloadMediaMessage = 'downloadMediaMessage';
 
 
   // 聊天室状态存储
@@ -73,4 +74,5 @@ class RCMethodCallBackKey {
   static const String ReceiptRequest = 'ReceiptRequestCallBack';
   static const String ReceiptResponse = 'ReceiptResponseCallBack';
   static const String TypingStatusChanged = 'TypingStatusChangedCallBack';
+  static const String DownloadMediaMessage = 'downloadMediaMessageCallBack';
 }

@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:rongcloud_im_plugin_example/im/pages/item/bottom_tool_bar.dart';
+import 'package:path/path.dart' as path;
 
 import '../util/style.dart';
 import 'item/bottom_input_bar.dart';
@@ -348,9 +351,29 @@ class _ConversationPageState extends State<ConversationPage>
       Navigator.pushNamed(context, "/video_record", arguments: map);
     });
 
+    Widget fileWidget =
+        WidgetUtil.buildExtentionWidget(Icons.folder, "文件", () async {
+      List<File> files = await MediaUtil.instance.pickFiles();
+      if (files != null && files.length > 0) {
+        for (File file in files) {
+          String localPaht = file.path;
+          String name = path.basename(localPaht);
+          int lastDotIndex = name.lastIndexOf(".");
+          FileMessage fileMessage = FileMessage.obtain(localPaht);
+          fileMessage.mType = name.substring(lastDotIndex + 1);
+          Message msg = await RongcloudImPlugin.sendMessage(
+              conversationType, targetId, fileMessage);
+          _insertOrReplaceMessage(msg);
+          // 延迟400秒，防止过渡频繁的发送消息导致发送失败的问题
+          sleep(Duration(milliseconds: 400));
+        }
+      }
+    });
+
     extWidgetList.add(imageWidget);
     extWidgetList.add(cameraWidget);
     extWidgetList.add(videoWidget);
+    extWidgetList.add(fileWidget);
 
     //初始化短语
     for (int i = 0; i < 10; i++) {
@@ -506,6 +529,8 @@ class _ConversationPageState extends State<ConversationPage>
       Navigator.pushNamed(context, "/image_preview", arguments: message);
     } else if (message.content is SightMessage) {
       Navigator.pushNamed(context, "/video_play", arguments: message);
+    } else if (message.content is FileMessage) {
+      Navigator.pushNamed(context, "/file_preview", arguments: message);
     }
   }
 

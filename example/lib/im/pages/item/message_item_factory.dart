@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:rongcloud_im_plugin_example/im/util/file.dart';
 import '../../util/media_util.dart';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -148,6 +149,47 @@ class MessageItemFactory extends StatelessWidget {
     );
   }
 
+  Widget fileMessageItem() {
+    FileMessage fileMessage = message.content;
+    return Container(
+        height: 80,
+        width: 260,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+          Container(
+            margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+            child: Image.asset(FileUtil.fileTypeImagePath(fileMessage.mName),
+                width: 50, height: 50),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              Container(
+                width: 180,
+                child: Text(
+                  fileMessage.mName,
+                  textWidthBasis: TextWidthBasis.parent,
+                  softWrap: true,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                  style:
+                      TextStyle(fontSize: 16, color: const Color(0xff000000)),
+                ),
+              ), 
+              Container(
+                margin: EdgeInsets.only(top: 8),
+                width: 180,
+                child: Text(
+                FileUtil.formatFileSize(fileMessage.mSize),
+                style: TextStyle(fontSize: 12, color: const Color(0xff888888)),
+              ))
+            ],
+          )
+        ]));
+  }
+
   Widget messageItem() {
     if (message.content is TextMessage) {
       return textMessageItem();
@@ -157,6 +199,8 @@ class MessageItemFactory extends StatelessWidget {
       return voiceMessageItem();
     } else if (message.content is SightMessage) {
       return sightMessageItem();
+    } else if (message.content is FileMessage) {
+      return fileMessageItem();
     } else {
       return Text("无法识别消息 " + message.objectName);
     }

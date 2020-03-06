@@ -48,6 +48,7 @@ public class RCMethodList {
     static String MethodKeySearchConversations = "searchConversations";
     static String MethodKeySearchMessages = "searchMessages";
     static String MethodKeySendTypingStatus = "sendTypingStatus";
+    static String MethodKeyDownloadMediaMessage = "downloadMediaMessage";
 
 
 
@@ -64,5 +65,6 @@ public class RCMethodList {
     static String MethodCallBackKeySendDataToFlutter = "SendDataToFlutterCallBack";
     static String MethodCallBackKeyReceiveReadReceipt = "ReceiveReadReceiptCallBack";
     static String MethodCallBackKeyTypingStatus ="TypingStatusChangedCallBack";
+    static String MethodCallBackKeyDownloadMediaMessage = "downloadMediaMessageCallBack";
 
 }

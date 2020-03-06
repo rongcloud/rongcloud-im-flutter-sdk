@@ -41,6 +41,7 @@ import io.rong.imlib.model.SearchConversationResult;
 import io.rong.imlib.model.UnknownMessage;
 import io.rong.imlib.model.UserInfo;
 import io.rong.imlib.typingmessage.TypingStatus;
+import io.rong.message.FileMessage;
 import io.rong.message.HQVoiceMessage;
 import io.rong.message.ImageMessage;
 import io.rong.message.MessageHandler;
@@ -202,6 +203,8 @@ public class RCIMFlutterWrapper {
             sendReadReceiptRequest(call.arguments, result);
         } else if (RCMethodList.MethodKeySendReadReceiptResponse.equalsIgnoreCase(call.method)) {
             sendReadReceiptResponse(call.arguments, result);
+        } else if (RCMethodList.MethodKeyDownloadMediaMessage.equalsIgnoreCase(call.method)) {
+            downloadMediaMessage(call.arguments);
         } else {
             result.notImplemented();
         }
@@ -621,6 +624,24 @@ public class RCIMFlutterWrapper {
                     e.printStackTrace();
                 }
 
+            } else if (objectName.equalsIgnoreCase("RC:FileMsg")) {
+                try {
+                    JSONObject jsonObject = new JSONObject(contentStr);
+                    String localPath = (String) jsonObject.get("localPath");
+                    String mType = (String) jsonObject.get("mType");
+                    localPath = getCorrectLocalPath(localPath);
+                    Uri uri = Uri.parse(localPath);
+                    content = FileMessage.obtain(uri);
+                    ((FileMessage) content).setType(mType);
+                    Object o = jsonObject.get("extra");//设置 extra
+                    if (o instanceof String) {
+                        String extra = (String) o;
+                        ((FileMessage) content).setExtra(extra);
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             } else {
 
             }
@@ -1733,7 +1754,8 @@ public class RCIMFlutterWrapper {
     }
 
     private boolean isMediaMessage(String objName) {
-        if (objName.equalsIgnoreCase("RC:ImgMsg") || objName.equalsIgnoreCase("RC:HQVCMsg") || objName.equalsIgnoreCase("RC:SightMsg")) {
+        if (objName.equalsIgnoreCase("RC:ImgMsg") || objName.equalsIgnoreCase("RC:HQVCMsg")
+                || objName.equalsIgnoreCase("RC:SightMsg") || objName.equalsIgnoreCase("RC:FileMsg")) {
             return true;
         }
         return false;
@@ -2027,6 +2049,55 @@ public class RCIMFlutterWrapper {
             String targetId = (String) paramMap.get("targetId");
             String typingContentType = (String) paramMap.get("typingContentType");
             RongIMClient.getInstance().sendTypingStatus(Conversation.ConversationType.setValue(conversationType), targetId, typingContentType);
+        }
+    }
+
+    // 下载媒体文件
+    private void downloadMediaMessage(Object arg) {
+        if (arg instanceof Map) {
+            Map map = (Map) arg;
+            Map messageMap = (Map) map.get("message");
+            Message message = map2Message(messageMap);
+            if (message == null) {
+                return;
+            }
+            RongIMClient.getInstance().downloadMediaMessage(message, new IRongCallback.IDownloadMediaMessageCallback() {
+                @Override
+                public void onSuccess(Message message) {
+                    String messageS = MessageFactory.getInstance().message2String(message);
+                    Map resultMap = new HashMap();
+                    resultMap.put("messageId", message.getMessageId());
+                    resultMap.put("message", messageS);
+                    resultMap.put("code", 0);
+                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeyDownloadMediaMessage, resultMap);
+                }
+
+                @Override
+                public void onProgress(Message message, int i) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("messageId", message.getMessageId());
+                    resultMap.put("progress", i);
+                    resultMap.put("code", 10);
+                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeyDownloadMediaMessage, resultMap);
+                }
+
+                @Override
+                public void onError(Message message, RongIMClient.ErrorCode errorCode) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("messageId", message.getMessageId());
+                    resultMap.put("code", errorCode.getValue());
+                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeyDownloadMediaMessage, resultMap);
+                }
+
+                @Override
+                public void onCanceled(Message message) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("messageId", message.getMessageId());
+                    resultMap.put("code", 20);
+                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeyDownloadMediaMessage, resultMap);
+                }
+            });
+
         }
     }
 

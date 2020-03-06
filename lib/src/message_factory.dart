@@ -154,6 +154,9 @@ class MessageFactory extends Object {
     }else if(objectName == ChatroomKVNotificationMessage.objectName){
       content = new ChatroomKVNotificationMessage();
       content.decode(contentS);
+    }else if(objectName == FileMessage.objectName){
+      content = new FileMessage();
+      content.decode(contentS);
     }
     return content;
   }

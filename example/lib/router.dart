@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rongcloud_im_plugin_example/im/pages/file_preview_page.dart';
 
 import 'im/pages/conversation_page.dart';
 import 'im/pages/image_preview_page.dart';
@@ -23,6 +24,8 @@ final routes = {
       VideoPlayPage(message: arguments),
   '/message_read_page':(context, {arguments}) =>
       MessageReadPage(message: arguments),
+   '/file_preview':(context, {arguments}) =>
+      FilePreviewPage(message: arguments),
 };
 
 var onGenerateRoute = (RouteSettings settings) {

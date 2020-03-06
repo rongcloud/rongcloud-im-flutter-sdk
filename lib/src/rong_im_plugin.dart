@@ -1161,6 +1161,10 @@ class RongcloudImPlugin {
   ///
   static Function(Map data) onMessageReceiptResponse;
 
+  // 下载媒体文件响应
+  static Function(int code, int progress, int messageId, Message message)
+      onDownloadMediaMessageResponse;
+
   //输入状态的监听
   static Function(int conversationType, String targetId, List typingStatus)
       onTypingStatusChanged;
@@ -1284,6 +1288,18 @@ class RongcloudImPlugin {
               statusList.add(status);
             }
             onTypingStatusChanged(conversationType, targetId, statusList);
+          }
+          break;
+        case RCMethodCallBackKey.DownloadMediaMessage:
+          if (onDownloadMediaMessageResponse != null) {
+            Map map = call.arguments;
+            int code = map["code"];
+            int progress = map["progress"];
+            int messageId = map["messageId"];
+            String messageString = map["message"];
+            Message message =
+                MessageFactory.instance.string2Message(messageString);
+            onDownloadMediaMessageResponse(code, progress, messageId, message);
           }
           break;
       }
@@ -1454,5 +1470,12 @@ class RongcloudImPlugin {
       "typingContentType": typingContentType,
     };
     await _channel.invokeMethod(RCMethodKey.SendTypingStatus, paramMap);
+  }
+
+  // 下载媒体文件
+  static void downloadMediaMessage(Message message) async {
+    Map msgMap = MessageFactory.instance.message2Map(message);
+    Map paramMap = {"message": msgMap};
+    await _channel.invokeMethod(RCMethodKey.DownloadMediaMessage, paramMap);
   }
 }
