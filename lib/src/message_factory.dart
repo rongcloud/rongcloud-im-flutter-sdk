@@ -2,7 +2,6 @@ import 'dart:core';
 import 'dart:convert' show json;
 
 import '../rongcloud_im_plugin.dart';
-import 'package:rongcloud_im_plugin/src/chatroom_kv_notification_message.dart';
 import 'message.dart';
 import 'conversation.dart';
 import 'chatroom_info.dart';
@@ -156,6 +155,8 @@ class MessageFactory extends Object {
       content.decode(contentS);
     }else if(objectName == FileMessage.objectName){
       content = new FileMessage();
+    }else if(objectName == RichContentMessage.objectName){
+      content = new RichContentMessage();
       content.decode(contentS);
     }
     return content;

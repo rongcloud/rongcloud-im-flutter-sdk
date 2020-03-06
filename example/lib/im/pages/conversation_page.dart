@@ -531,6 +531,9 @@ class _ConversationPageState extends State<ConversationPage>
       Navigator.pushNamed(context, "/video_play", arguments: message);
     } else if (message.content is FileMessage) {
       Navigator.pushNamed(context, "/file_preview", arguments: message);
+    } else if (message.content is RichContentMessage) {
+      RichContentMessage msg = message.content;
+      Navigator.pushNamed(context, "/webview", arguments: msg.url);
     }
   }
 

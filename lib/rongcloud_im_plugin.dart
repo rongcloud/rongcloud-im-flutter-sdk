@@ -11,6 +11,8 @@ export 'src/voice_message.dart';
 export 'src/sight_message.dart';
 export 'src/recall_notification_message.dart';
 export 'src/file_message.dart';
+export 'src/chatroom_kv_notification_message.dart';
+export 'src/rich_content_message.dart';
 
 //实体类
 export 'src/chatroom_info.dart';

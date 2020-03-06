@@ -190,6 +190,47 @@ class MessageItemFactory extends StatelessWidget {
         ]));
   }
 
+  ///图文消息 item
+  Widget richContentMessageItem() {
+    RichContentMessage msg = message.content;
+
+    return Container(
+      child: Column(children: <Widget>[
+        Container(
+          padding: EdgeInsets.all(10),
+          child: Text(
+            msg.title,
+            style: new TextStyle(color: Colors.black, fontSize: 15),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
+          ),
+        ),
+        Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                width: 200,
+                child: Text(
+                  msg.digest,
+                  style: new TextStyle(color: Colors.black, fontSize: 13),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 3,
+                ),
+              ),
+              Container(
+                width: 45, 
+                height: 45,
+                child: msg.imageURL == null || msg.imageURL.isEmpty ? Image.asset("assets/images/rich_content_msg_default.png") : Image.network(msg.imageURL),
+              ),
+            ],
+          ),
+        ),
+      ]),
+    );
+  }
+
   Widget messageItem() {
     if (message.content is TextMessage) {
       return textMessageItem();
@@ -201,6 +242,8 @@ class MessageItemFactory extends StatelessWidget {
       return sightMessageItem();
     } else if (message.content is FileMessage) {
       return fileMessageItem();
+    } else if (message.content is RichContentMessage) {
+      return richContentMessageItem();
     } else {
       return Text("无法识别消息 " + message.objectName);
     }

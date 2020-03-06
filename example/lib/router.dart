@@ -5,6 +5,7 @@ import 'im/pages/conversation_page.dart';
 import 'im/pages/image_preview_page.dart';
 import 'im/pages/sight/video_play_page.dart';
 import 'im/pages/sight/video_record_page.dart';
+import 'im/pages/webview_page.dart';
 
 import 'other/home_page.dart';
 import 'other/debug_page.dart';
@@ -24,8 +25,10 @@ final routes = {
       VideoPlayPage(message: arguments),
   '/message_read_page':(context, {arguments}) =>
       MessageReadPage(message: arguments),
-   '/file_preview':(context, {arguments}) =>
+  '/file_preview':(context, {arguments}) =>
       FilePreviewPage(message: arguments),
+  '/webview':(context, {arguments}) =>
+      WebViewPage(url: arguments),
 };
 
 var onGenerateRoute = (RouteSettings settings) {
