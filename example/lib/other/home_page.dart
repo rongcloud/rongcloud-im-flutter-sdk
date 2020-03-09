@@ -40,9 +40,13 @@ class _HomePageState extends State<HomePage> {
     //2.连接 im SDK
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.get("token");
-    int rc = await RongcloudImPlugin.connect(token);
-    print('connect result '+rc.toString());
-    if (rc == 31004 || rc == 12) {
+    if (token != null && token.length > 0) {
+      int rc = await RongcloudImPlugin.connect(token);
+      print('connect result '+rc.toString());
+      if (rc == 31004 || rc == 12) {
+        Navigator.of(context).pushAndRemoveUntil(new MaterialPageRoute(builder: (context) => new LoginPage()), (route) => route == null);
+      }
+    } else {
       Navigator.of(context).pushAndRemoveUntil(new MaterialPageRoute(builder: (context) => new LoginPage()), (route) => route == null);
     }
   }
