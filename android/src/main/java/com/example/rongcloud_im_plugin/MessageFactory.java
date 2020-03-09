@@ -37,10 +37,16 @@ public class MessageFactory {
         map.put("conversationType", message.getConversationType().getValue());
         map.put("targetId", message.getTargetId());
         map.put("messageId", message.getMessageId());
-        map.put("messageDirection", message.getMessageDirection().getValue());
+        if (message.getMessageDirection() != null) {
+            map.put("messageDirection", message.getMessageDirection().getValue());
+        }
         map.put("senderUserId", message.getSenderUserId());
-        map.put("receivedStatus", message.getReceivedStatus().getFlag());
-        map.put("sentStatus", message.getSentStatus().getValue());
+        if (message.getReceivedStatus() != null) {
+            map.put("receivedStatus", message.getReceivedStatus().getFlag());
+        }
+        if (message.getSentStatus() != null) {
+            map.put("sentStatus", message.getSentStatus().getValue());
+        }
         map.put("sentTime", message.getSentTime());
         map.put("objectName", message.getObjectName());
         String uid = message.getUId();
