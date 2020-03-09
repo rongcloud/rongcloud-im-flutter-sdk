@@ -50,6 +50,7 @@ static NSString *RCMethodKeySaveTextMessageDraft = @"saveTextMessageDraft";
 static NSString *RCMethodKeySearchConversations = @"searchConversations";
 static NSString *RCMethodKeySearchMessages = @"searchMessages";
 static NSString *RCMethodKeySendTypingStatus = @"sendTypingStatus";
+static NSString *RCMethodKeyDownloadMediaMessage = @"downloadMediaMessage";
 
 // 聊天室状态存储
 static NSString *RCMethodKeySetChatRoomEntry = @"SetChatRoomEntry";
@@ -73,6 +74,7 @@ static NSString *RCMethodCallBackKeyReceiveReadReceipt = @"ReceiveReadReceiptCal
 static NSString *RCMethodCallBackKeyReceiptRequest = @"ReceiptRequestCallBack";
 static NSString *RCMethodCallBackKeyReceiptResponse = @"ReceiptResponseCallBack";
 static NSString *RCMethodCallBackKeyTypingStatusChangedCallBack = @"TypingStatusChangedCallBack";
+static NSString *RCMethodCallBackKeyDownloadMediaMessageCallBack = @"DownloadMediaMessageCallBack";
 
 
 

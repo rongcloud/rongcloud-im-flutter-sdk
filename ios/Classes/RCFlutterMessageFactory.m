@@ -74,10 +74,22 @@
     
     RCMessageContent *content = message.content;
     content = [self convertLocalPathIfNeed:content];
+    if ([content isKindOfClass:[RCFileMessage class]]) {
+        content = [self converFileMessage:content];
+    }
     NSData *data = content.encode;
     NSString *contentStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     [dic setObject:contentStr forKey:@"content"];
     return [dic copy];
+}
+
++ (RCMessageContent *)converFileMessage:(RCMessageContent *)content {
+    if([content isKindOfClass:[RCMediaMessageContent class]]) {
+        RCFileMessage *msg = (RCFileMessage *)content;
+        msg.name = msg.name?:@"";
+        msg.localPath = msg.localPath?:@"";
+    }
+    return content;
 }
 
 + (RCMessageContent *)convertLocalPathIfNeed:(RCMessageContent *)content {

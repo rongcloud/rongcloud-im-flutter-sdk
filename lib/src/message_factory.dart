@@ -155,6 +155,7 @@ class MessageFactory extends Object {
       content.decode(contentS);
     }else if(objectName == FileMessage.objectName){
       content = new FileMessage();
+      content.decode(contentS);
     }else if(objectName == RichContentMessage.objectName){
       content = new RichContentMessage();
       content.decode(contentS);
