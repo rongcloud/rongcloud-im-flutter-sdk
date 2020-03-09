@@ -10,6 +10,7 @@ import 'im/pages/webview_page.dart';
 import 'other/home_page.dart';
 import 'other/debug_page.dart';
 import 'other/message_read_page.dart';
+import 'other/chat_debug_page.dart';
 
 final routes = {
   '/': (context) => HomePage(),
@@ -29,6 +30,9 @@ final routes = {
       FilePreviewPage(message: arguments),
   '/webview':(context, {arguments}) =>
       WebViewPage(url: arguments),
+  '/chat_debug':(context, {arguments}) =>
+      ChatDebugPage(arguments: arguments),
+      
 };
 
 var onGenerateRoute = (RouteSettings settings) {

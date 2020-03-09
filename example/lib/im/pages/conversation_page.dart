@@ -444,6 +444,11 @@ class _ConversationPageState extends State<ConversationPage>
     }
   }
 
+  void _pushToDebug() {
+    Map arg = {"coversationType":conversationType,"targetId":targetId};
+    Navigator.pushNamed(context, "/chat_debug",arguments: arg);
+  }
+
   // AppBar 右侧按钮
   List _buildRightButtons() {
     if (multiSelect == true) {
@@ -460,7 +465,14 @@ class _ConversationPageState extends State<ConversationPage>
         )
       ];
     } else {
-      return <Widget>[];
+      return <Widget>[
+          IconButton(
+            icon: Icon(Icons.more),
+            onPressed: () {
+              _pushToDebug();
+            },
+          ),
+        ];
     }
   }
 
