@@ -37,6 +37,7 @@ class _MessageContentListState extends State<MessageContentList>
   List messageDataSource = new List();
   ScrollController _scrollController;
   bool multiSelect;
+  double mPosition = 0;
   List selectedMessageIds = new List();
 
   _MessageContentListState(List messageDataSource, bool multiSelect,
@@ -45,23 +46,18 @@ class _MessageContentListState extends State<MessageContentList>
     this.messageDataSource = messageDataSource;
     this.multiSelect = multiSelect;
     this.selectedMessageIds = selectedMessageIds;
-    this._scrollController = ScrollController();
+    // this._scrollController = ScrollController();
   }
 
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(() {
-      //此处要用 == 而不是 >= 否则会触发多次
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        delegate.willpullMoreHistoryMessage();
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    this._scrollController = ScrollController(initialScrollOffset: mPosition);
+    _addScroolListener();
     return ListView.separated(
         key: UniqueKey(),
         shrinkWrap: true,
@@ -86,6 +82,17 @@ class _MessageContentListState extends State<MessageContentList>
             width: 1,
           );
         });
+  }
+
+  void _addScroolListener(){
+    _scrollController.addListener(() {
+      //此处要用 == 而不是 >= 否则会触发多次
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        delegate.willpullMoreHistoryMessage();
+      }
+      mPosition = _scrollController.position.pixels;
+    });
   }
 
   bool _needShowTime(int index) {
