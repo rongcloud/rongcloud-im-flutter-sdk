@@ -30,38 +30,41 @@ public class MessageFactory {
     }
 
     public String message2String(Message message) {
+        if (message == null) {
+            return "";
+        }
         Map map = new HashMap();
-        map.put("conversationType",message.getConversationType().getValue());
-        map.put("targetId",message.getTargetId());
-        map.put("messageId",message.getMessageId());
-        map.put("messageDirection",message.getMessageDirection().getValue());
-        map.put("senderUserId",message.getSenderUserId());
-        map.put("receivedStatus",message.getReceivedStatus().getFlag());
-        map.put("sentStatus",message.getSentStatus().getValue());
-        map.put("sentTime",message.getSentTime());
-        map.put("objectName",message.getObjectName());
+        map.put("conversationType", message.getConversationType().getValue());
+        map.put("targetId", message.getTargetId());
+        map.put("messageId", message.getMessageId());
+        map.put("messageDirection", message.getMessageDirection().getValue());
+        map.put("senderUserId", message.getSenderUserId());
+        map.put("receivedStatus", message.getReceivedStatus().getFlag());
+        map.put("sentStatus", message.getSentStatus().getValue());
+        map.put("sentTime", message.getSentTime());
+        map.put("objectName", message.getObjectName());
         String uid = message.getUId();
-        if(uid == null || uid.length() <= 0) {
+        if (uid == null || uid.length() <= 0) {
             uid = "";
         }
-        map.put("messageUId",uid);
+        map.put("messageUId", uid);
 
         MessageContent content = message.getContent();
-        if(message.getContent() instanceof ImageMessage) {
+        if (message.getContent() instanceof ImageMessage) {
             RCMessageHandler.encodeImageMessage(message);
-        }else if(message.getContent() instanceof SightMessage) {
+        } else if (message.getContent() instanceof SightMessage) {
             RCMessageHandler.encodeSightMessage(message);
         }
         // 判断 TextMessage 内容不能为 null
-        if (content instanceof TextMessage){
-           if (((TextMessage)content).getContent() == null){
-               ((TextMessage)content).setContent("");
-           }
+        if (content instanceof TextMessage) {
+            if (((TextMessage) content).getContent() == null) {
+                ((TextMessage) content).setContent("");
+            }
         }
         byte[] data = content.encode();
         String jsonS = new String(data);
 
-        map.put("content",jsonS);
+        map.put("content", jsonS);
 
         JSONObject jObj = new JSONObject(map);
 
@@ -81,25 +84,25 @@ public class MessageFactory {
 
     public String conversation2String(Conversation conversation) {
         Map map = new HashMap();
-        map.put("conversationType",conversation.getConversationType().getValue());
-        map.put("targetId",conversation.getTargetId());
-        map.put("unreadMessageCount",conversation.getUnreadMessageCount());
-        map.put("receivedStatus",conversation.getReceivedStatus().getFlag());
-        map.put("sentStatus",conversation.getSentStatus().getValue());
-        map.put("sentTime",conversation.getSentTime());
-        map.put("isTop",conversation.isTop());
-        map.put("objectName",conversation.getObjectName());
-        map.put("senderUserId",conversation.getSenderUserId());
-        map.put("latestMessageId",conversation.getLatestMessageId());
-        map.put("mentionedCount",conversation.getMentionedCount());
-        map.put("draft",conversation.getDraft());
+        map.put("conversationType", conversation.getConversationType().getValue());
+        map.put("targetId", conversation.getTargetId());
+        map.put("unreadMessageCount", conversation.getUnreadMessageCount());
+        map.put("receivedStatus", conversation.getReceivedStatus().getFlag());
+        map.put("sentStatus", conversation.getSentStatus().getValue());
+        map.put("sentTime", conversation.getSentTime());
+        map.put("isTop", conversation.isTop());
+        map.put("objectName", conversation.getObjectName());
+        map.put("senderUserId", conversation.getSenderUserId());
+        map.put("latestMessageId", conversation.getLatestMessageId());
+        map.put("mentionedCount", conversation.getMentionedCount());
+        map.put("draft", conversation.getDraft());
 
         MessageContent content = conversation.getLatestMessage();
-        if(content != null) {
+        if (content != null) {
             byte[] data = content.encode();
             String jsonS = new String(data);
-            map.put("content",jsonS);
-        }else {
+            map.put("content", jsonS);
+        } else {
 //            map.put("content","");
         }
 
@@ -112,27 +115,27 @@ public class MessageFactory {
 
     public Map chatRoom2Map(ChatRoomInfo chatRoomInfo) {
         Map map = new HashMap();
-        map.put("targetId",chatRoomInfo.getChatRoomId());
-        map.put("memberOrder",chatRoomInfo.getMemberOrder().getValue());
-        map.put("totalMemeberCount",chatRoomInfo.getTotalMemberCount());
+        map.put("targetId", chatRoomInfo.getChatRoomId());
+        map.put("memberOrder", chatRoomInfo.getMemberOrder().getValue());
+        map.put("totalMemeberCount", chatRoomInfo.getTotalMemberCount());
 
         List memList = new ArrayList();
-        for(ChatRoomMemberInfo memInfo : chatRoomInfo.getMemberInfo()) {
+        for (ChatRoomMemberInfo memInfo : chatRoomInfo.getMemberInfo()) {
             Map memMap = new HashMap();
-            memMap.put("userId",memInfo.getUserId());
-            memMap.put("joinTime",memInfo.getJoinTime());
+            memMap.put("userId", memInfo.getUserId());
+            memMap.put("joinTime", memInfo.getJoinTime());
             memList.add(memMap);
         }
-        map.put("memberInfoList",memList);
+        map.put("memberInfoList", memList);
 
         return map;
     }
 
     public String typingStatus2String(TypingStatus status) {
         Map map = new HashMap();
-        map.put("userId",status.getUserId());
-        map.put("typingContentType",status.getTypingContentType());
-        map.put("sentTime",status.getSentTime());
+        map.put("userId", status.getUserId());
+        map.put("typingContentType", status.getTypingContentType());
+        map.put("sentTime", status.getSentTime());
         JSONObject jObj = new JSONObject(map);
         String jStr = jObj.toString();
         return jStr;
@@ -140,8 +143,8 @@ public class MessageFactory {
 
     public String SearchConversationResult2String(SearchConversationResult result) {
         Map map = new HashMap();
-        map.put("mConversation",conversation2String(result.getConversation()));
-        map.put("mMatchCount",result.getMatchCount());
+        map.put("mConversation", conversation2String(result.getConversation()));
+        map.put("mMatchCount", result.getMatchCount());
         JSONObject jObj = new JSONObject(map);
         String jStr = jObj.toString();
         return jStr;
