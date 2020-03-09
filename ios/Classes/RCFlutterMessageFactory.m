@@ -116,6 +116,7 @@
     [dic setObject:conversation.senderUserId forKey:@"senderUserId"];
     [dic setObject:@(conversation.lastestMessageId) forKey:@"latestMessageId"];
     [dic setObject:@(conversation.mentionedCount) forKey:@"mentionedCount"];
+    [dic setObject:conversation.draft forKey:@"draft"];
     RCMessageContent *content = conversation.lastestMessage;
     NSData *data = content.encode;
     NSString *contentStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
