@@ -74,5 +74,5 @@ class RCMethodCallBackKey {
   static const String ReceiptRequest = 'ReceiptRequestCallBack';
   static const String ReceiptResponse = 'ReceiptResponseCallBack';
   static const String TypingStatusChanged = 'TypingStatusChangedCallBack';
-  static const String DownloadMediaMessage = 'downloadMediaMessageCallBack';
+  static const String DownloadMediaMessage = 'DownloadMediaMessageCallBack';
 }
