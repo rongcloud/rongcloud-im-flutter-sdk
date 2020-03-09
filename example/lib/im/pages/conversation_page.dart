@@ -663,6 +663,7 @@ class _ConversationPageState extends State<ConversationPage>
   void inputStatusDidChange(InputBarStatus status) {
     currentInputStatus = status;
     _refreshUI();
+    bottomInputBar.refreshUI();
   }
 
   @override
