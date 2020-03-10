@@ -51,6 +51,7 @@ class RCMethodKey {
   static const String SetNotificationQuietHours = 'setNotificationQuietHours';
   static const String RemoveNotificationQuietHours = 'removeNotificationQuietHours';
   static const String GetNotificationQuietHours = 'getNotificationQuietHours';
+  static const String GetUnreadMentionedMessages = 'getUnreadMentionedMessages';
 
 
   // 聊天室状态存储

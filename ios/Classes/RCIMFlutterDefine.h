@@ -54,6 +54,7 @@ static NSString *RCMethodKeyDownloadMediaMessage = @"downloadMediaMessage";
 static NSString *RCMethodKeySetNotificationQuietHours = @"setNotificationQuietHours";
 static NSString *RCMethodKeyRemoveNotificationQuietHours = @"removeNotificationQuietHours";
 static NSString *RCMethodKeyGetNotificationQuietHours = @"getNotificationQuietHours";
+static NSString *RCMethodKeyGetUnreadMentionedMessages = @"getUnreadMentionedMessages";
 
 // 聊天室状态存储
 static NSString *RCMethodKeySetChatRoomEntry = @"SetChatRoomEntry";

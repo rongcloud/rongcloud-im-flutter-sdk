@@ -4,6 +4,7 @@ import 'dart:core';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import 'item/widget_util.dart';
@@ -41,7 +42,6 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
   void dispose() {
     super.dispose();
     EventBus.instance.removeListener(EventKeys.ConversationPageDispose);
-    EventBus.instance.removeListener(EventKeys.ReceiveMessage);
   }
 
   updateConversationList() async {
@@ -161,7 +161,10 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
   }
 
   @override
-  void didTapConversation(Conversation conversation) {
+  void didTapConversation(Conversation conversation) async {
+
+    List msgs = await RongcloudImPlugin.getUnreadMentionedMessages(conversation.conversationType, conversation.targetId);
+    print("getUnreadMentionedMessages：" + msgs.length.toString());
     Map arg = {"coversationType":conversation.conversationType,"targetId":conversation.targetId};
     Navigator.pushNamed(context, "/conversation",arguments: arg);
   }

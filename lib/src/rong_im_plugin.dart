@@ -944,6 +944,28 @@ class RongcloudImPlugin {
     }
   }
 
+  /// 获取会话中@提醒自己的消息
+  /// 
+  /// [conversationType] 会话类型，参见枚举 [RCConversationType]
+  /// 
+  /// [targetId] 会话 id
+  /// 
+  /// 此方法从本地获取被@提醒的消息(最多返回10条信息)
+  /// clearMessagesUnreadStatus: targetId: 以及设置消息接收状态接口 setMessageReceivedStatus:receivedStatus:会同步清除被提示信息状态。
+  static Future<List /*Message*/ > getUnreadMentionedMessages(int conversationType, String targetId) async {
+    Map map = {"conversationType": conversationType, "targetId": targetId};
+    List list = await _channel.invokeMethod(RCMethodKey.GetUnreadMentionedMessages, map);
+    if (list == null) {
+      return null;
+    }
+    List messageList = new List();
+    for (String conStr in list) {
+      Message msg = MessageFactory.instance.string2Message(conStr);
+      messageList.add(msg);
+    }
+    return messageList;
+  }
+
   /// 设置聊天室自定义属性
   ///
   /// [chatroomId] 聊天室 Id

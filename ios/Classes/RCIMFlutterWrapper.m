@@ -158,6 +158,8 @@
         [self removeNotificationQuietHours:call.arguments result:result];
     }else if([RCMethodKeyGetNotificationQuietHours isEqualToString:call.method]) {
         [self getNotificationQuietHours:call.arguments result:result];
+    }else if([RCMethodKeyGetUnreadMentionedMessages isEqualToString:call.method]) {
+        [self getUnreadMentionedMessages:call.arguments result:result];
     }
     else {
         result(FlutterMethodNotImplemented);
@@ -1013,6 +1015,24 @@
     } error:^(RCErrorCode status) {
         result(@{@"code": @(0)});
     }];
+}
+
+- (void)getUnreadMentionedMessages:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"getUnreadMentionedMessages";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        
+        RCConversationType type = [param[@"conversationType"] integerValue];
+        NSString *targetId = param[@"targetId"];
+        NSArray *messages = [[RCIMClient sharedRCIMClient] getUnreadMentionedMessages:type targetId:targetId];
+        NSMutableArray *arr = [NSMutableArray new];
+        for(RCMessage *msg in messages) {
+            NSString *msgStr = [RCFlutterMessageFactory message2String:msg];
+            [arr addObject:msgStr];
+        }
+        result(arr);
+    }
 }
 
 #pragma mark - 聊天室状态存储 (使用前必须先联系商务开通)
