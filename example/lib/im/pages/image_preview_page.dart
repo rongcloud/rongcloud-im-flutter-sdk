@@ -35,7 +35,12 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
     }else {
       widget = Image.network(msg.imageUri);
     }
-    return widget;
+    Container container = Container(
+      margin: EdgeInsets.all(2),
+      child: widget,
+      alignment: Alignment.center,
+    );
+    return container;
   }
   
   @override
