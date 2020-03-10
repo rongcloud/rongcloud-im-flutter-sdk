@@ -152,6 +152,12 @@
         [self sendTypingStatus:call.arguments result:result];
     }else if([RCMethodKeyDownloadMediaMessage isEqualToString:call.method]) {
         [self downloadMediaMessage:call.arguments result:result];
+    }else if([RCMethodKeySetNotificationQuietHours isEqualToString:call.method]) {
+        [self setNotificationQuietHours:call.arguments result:result];
+    }else if([RCMethodKeyRemoveNotificationQuietHours isEqualToString:call.method]) {
+        [self removeNotificationQuietHours:call.arguments result:result];
+    }else if([RCMethodKeyGetNotificationQuietHours isEqualToString:call.method]) {
+        [self getNotificationQuietHours:call.arguments result:result];
     }
     else {
         result(FlutterMethodNotImplemented);
@@ -965,6 +971,48 @@
             [self.channel invokeMethod:RCMethodCallBackKeyDownloadMediaMessageCallBack arguments:callbackDic];
         }];
     }
+}
+
+
+#pragma mark - 全局消息提醒
+- (void)setNotificationQuietHours:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"setNotificationQuietHours";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        
+        NSString *startTime = param[@"startTime"];
+        int spanMins = [param[@"spanMins"] intValue];
+        [[RCIMClient sharedRCIMClient] setNotificationQuietHours:startTime spanMins:spanMins success:^{
+            result(@(0));
+        } error:^(RCErrorCode status) {
+            result(@(status));
+        }];
+    }
+}
+
+- (void)removeNotificationQuietHours:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"removeNotificationQuietHours";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    [[RCIMClient sharedRCIMClient] removeNotificationQuietHours:^{
+        result(@(0));
+    } error:^(RCErrorCode status) {
+        result(@(status));
+    }];
+}
+
+- (void)getNotificationQuietHours:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"sendTypingStatus";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    [[RCIMClient sharedRCIMClient] getNotificationQuietHours:^(NSString *startTime, int spansMin) {
+        NSMutableDictionary *dict = [NSMutableDictionary new];
+        [dict setObject:@(0) forKey:@"code"];
+        [dict setObject:startTime forKey:@"startTime"];
+        [dict setObject:@(spansMin) forKey:@"spansMin"];
+        result(dict);
+    } error:^(RCErrorCode status) {
+        result(@{@"code": @(0)});
+    }];
 }
 
 #pragma mark - 聊天室状态存储 (使用前必须先联系商务开通)

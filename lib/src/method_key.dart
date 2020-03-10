@@ -48,6 +48,9 @@ class RCMethodKey {
   static const String SearchMessages = 'searchMessages';
   static const String SendTypingStatus = 'sendTypingStatus';
   static const String DownloadMediaMessage = 'downloadMediaMessage';
+  static const String SetNotificationQuietHours = 'setNotificationQuietHours';
+  static const String RemoveNotificationQuietHours = 'removeNotificationQuietHours';
+  static const String GetNotificationQuietHours = 'getNotificationQuietHours';
 
 
   // 聊天室状态存储

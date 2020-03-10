@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart' as prefix ;
 
 class DebugPage extends StatelessWidget {
@@ -7,18 +8,13 @@ class DebugPage extends StatelessWidget {
 
   DebugPage() {
     titles = [
-      "加入黑名单",
-      "移除黑名单",
-      "查看黑名单状态",
-      "获取黑名单列表",
-      "设置免打扰",
-      "取消免打扰",
-      "查看免打扰",
+      "设置全局屏蔽某个时间段的消息提醒",
+      "查询已设置的全局时间段消息提醒屏蔽",
+      "删除已设置的全局时间段消息提醒屏蔽",
       "获取特定会话",
       "获取特定方向的消息列表",
       "分页获取会话",
       "消息携带用户信息",
-      "消息携带@信息",
     ];
   }
 
@@ -26,105 +22,53 @@ class DebugPage extends StatelessWidget {
     print("did tap debug " + titles[index]);
     switch (index) {
       case 0:
-        _addBlackList();
+        _setNotificationQuietHours();
         break;
       case 1:
-        _removeBalckList();
+        _getNotificationQuietHours();
         break;
       case 2:
-        _getBlackStatus();
+        _removeNotificationQuietHours();
         break;
       case 3:
-        _getBlackList();
-        break;
-      case 4:
-        _setConStatusEnable();
-        break;
-      case 5:
-        _setConStatusDisanable();
-        break;
-      case 6:
-        _getConStatus();
-        break;
-      case 7:
         _getCons();
         break;
-      case 8:
+      case 4:
         _getMessagesByDirection();
         break;
-      case 9:
+      case 5:
         _getConversationListByPage();
         break;
-      case 10:
+      case 6:
         _sendMessageAddSendUserInfo();
-        break;
-      case 11:
-        _sendMessageAddMentionedInfo();
         break;
     }
   }
 
-  void _addBlackList() {
-    print("_addBlackList");
-    prefix.RongcloudImPlugin.addToBlackList(blackUserId, (int code) {
-      print("_addBlackList:" + blackUserId + " code:" + code.toString());
+  void _setNotificationQuietHours() {
+    print("_setNotificationQuietHours");
+    prefix.RongcloudImPlugin.setNotificationQuietHours("12:10:10", 120, (int code) {
+      String toast = "setNotificationQuietHours:" + blackUserId + " code:" + code.toString();
+      print(toast);
+      Fluttertoast.showToast(msg: toast);
     });
   }
 
-  void _removeBalckList() {
-    print("_removeBalckList");
-    prefix.RongcloudImPlugin.removeFromBlackList(blackUserId, (int code) {
-      print("_removeBalckList:" + blackUserId + " code:" + code.toString());
+  void _getNotificationQuietHours() {
+    print("_getNotificationQuietHours");
+    prefix.RongcloudImPlugin.getNotificationQuietHours((int code, String startTime, int spansMin) {
+      String toast = "getNotificationQuietHours: startTime:" + startTime + " spansMin:" + spansMin.toString() + " code:" + code.toString();
+      print(toast);
+      Fluttertoast.showToast(msg: toast, timeInSecForIos: 2);
     });
   }
 
-  void _getBlackStatus() {
-    print("_getBlackStatus");
-    prefix.RongcloudImPlugin.getBlackListStatus(blackUserId,
-        (int blackStatus, int code) {
-      if (0 == code) {
-        if (prefix.RCBlackListStatus.In == blackStatus) {
-          print("用户:" + blackUserId + " 在黑名单中");
-        } else {
-          print("用户:" + blackUserId + " 不在黑名单中");
-        }
-      } else {
-        print("用户:" + blackUserId + " 黑名单状态查询失败" + code.toString());
-      }
-    });
-  }
-
-  void _getBlackList() {
-    print("_getBlackList");
-    prefix.RongcloudImPlugin.getBlackList((List/*<String>*/ userIdList, int code) {
-      print("_getBlackList:" +
-          userIdList.toString() +
-          " code:" +
-          code.toString());
-      userIdList.forEach((userId) {
-        print("userId:" + userId);
-      });
-    });
-  }
-
-  void _setConStatusEnable() {
-    prefix.RongcloudImPlugin.setConversationNotificationStatus(
-        prefix.RCConversationType.Private, "SealTalk", true, (int status, int code) {
-      print("setConversationNotificationStatus1 status " + status.toString());
-    });
-  }
-
-  void _setConStatusDisanable() {
-    prefix.RongcloudImPlugin.setConversationNotificationStatus(
-        prefix.RCConversationType.Private, "SealTalk", false, (int status, int code) {
-      print("setConversationNotificationStatus2 status " + status.toString());
-    });
-  }
-
-  void _getConStatus() {
-    prefix.RongcloudImPlugin.getConversationNotificationStatus(
-        prefix.RCConversationType.Private, "SealTalk", (int status, int code) {
-      print("getConversationNotificationStatus3 status " + status.toString());
+  void _removeNotificationQuietHours() {
+    print("_removeNotificationQuietHours");
+    prefix.RongcloudImPlugin.removeNotificationQuietHours((int code) {
+      String toast = "removeNotificationQuietHours:" + blackUserId + " code:" + code.toString();
+      print(toast);
+      Fluttertoast.showToast(msg: toast);
     });
   }
 
@@ -192,23 +136,9 @@ class DebugPage extends StatelessWidget {
     msg.sendUserInfo = sendUserInfo;
 
     prefix.Message message = await prefix.RongcloudImPlugin.sendMessage(prefix.RCConversationType.Private, "SealTalk", msg);
-    print("send message add sendUserInfo:"+message.content.getObjectName()+" msgContent:"+message.content.encode());
-  }
-
-  void _sendMessageAddMentionedInfo() async {
-    prefix.TextMessage msg = new prefix.TextMessage();
-    msg.content = "测试文本消息携带@信息";
-    /*
-    测试携带 @ 信息
-    */
-    prefix.MentionedInfo mentionedInfo = new prefix.MentionedInfo();
-    mentionedInfo.type = prefix.RCMentionedType.Users;
-    mentionedInfo.userIdList = ["SealTalk"];
-    mentionedInfo.mentionedContent = "这是 mentionedContent";
-    msg.mentionedInfo = mentionedInfo;
-
-    prefix.Message message = await prefix.RongcloudImPlugin.sendMessage(prefix.RCConversationType.Private, "SealTalk", msg);
-    print("send message add mentionedInfo:"+message.content.getObjectName()+" msgContent:"+message.content.encode());
+    String toast = "send message add sendUserInfo:"+message.content.getObjectName()+" msgContent:"+message.content.encode();
+    print(toast);
+    Fluttertoast.showToast(msg: toast, timeInSecForIos: 3);
   }
 
   @override

@@ -899,6 +899,51 @@ class RongcloudImPlugin {
     }
   }
 
+  /// 全局屏蔽某个时间段的消息提醒
+  /// 
+  /// [startTime] 开始屏蔽消息提醒的时间，格式为HH:MM:SS
+  /// 
+  /// [spanMins] 需要屏蔽消息提醒的分钟数，0 < spanMins < 1440
+  /// 
+  /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
+  /// 
+  /// 此方法设置的屏蔽时间会在每天该时间段时生效。
+  static void setNotificationQuietHours(String startTime, int spanMins, Function(int code) finished) async {
+    Map map = {
+      "startTime": startTime,
+      "spanMins": spanMins
+    };
+    int result = await _channel.invokeMethod(RCMethodKey.SetNotificationQuietHours, map);
+    if (finished != null) {
+      finished(result);
+    }
+  }
+
+  /// 删除已设置的全局时间段消息提醒屏蔽
+  /// 
+  /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
+  /// 
+  static void removeNotificationQuietHours(Function(int code) finished) async {
+    int result = await _channel.invokeMethod(RCMethodKey.RemoveNotificationQuietHours);
+    if (finished != null) {
+      finished(result);
+    }
+  }
+
+  /// 查询已设置的全局时间段消息提醒屏蔽
+  /// 
+  /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败；startTime 代表已设置的屏蔽开始时间，spansMin 代表已设置的屏蔽时间分钟数，0 < spansMin < 1440
+  /// 
+  static void getNotificationQuietHours(Function(int code, String startTime, int spansMin) finished) async {
+    Map result = await _channel.invokeMethod(RCMethodKey.GetNotificationQuietHours);
+    int code = result["code"];
+    String startTime = result["startTime"];
+    int spansMin = result["spansMin"];
+    if (finished != null) {
+      finished(code, startTime, spansMin);
+    }
+  }
+
   /// 设置聊天室自定义属性
   ///
   /// [chatroomId] 聊天室 Id
