@@ -48,7 +48,7 @@ class DebugPage extends StatelessWidget {
   void _setNotificationQuietHours() {
     print("_setNotificationQuietHours");
     prefix.RongcloudImPlugin.setNotificationQuietHours("12:10:10", 120, (int code) {
-      String toast = "setNotificationQuietHours:" + blackUserId + " code:" + code.toString();
+      String toast = "设置全局屏蔽某个时间段的消息提醒:\n" + (code == 0 ? "设置成功" :  "设置失败, code:" + code.toString());
       print(toast);
       Fluttertoast.showToast(msg: toast);
     });
@@ -57,7 +57,7 @@ class DebugPage extends StatelessWidget {
   void _getNotificationQuietHours() {
     print("_getNotificationQuietHours");
     prefix.RongcloudImPlugin.getNotificationQuietHours((int code, String startTime, int spansMin) {
-      String toast = "getNotificationQuietHours: startTime:" + startTime + " spansMin:" + spansMin.toString() + " code:" + code.toString();
+      String toast = "查询已设置的全局时间段消息提醒屏蔽\n: startTime:" + startTime + " spansMin:" + spansMin.toString() + (code == 0 ? "" :  "\n设置失败, code:" + code.toString());
       print(toast);
       Fluttertoast.showToast(msg: toast, timeInSecForIos: 2);
     });
@@ -66,7 +66,7 @@ class DebugPage extends StatelessWidget {
   void _removeNotificationQuietHours() {
     print("_removeNotificationQuietHours");
     prefix.RongcloudImPlugin.removeNotificationQuietHours((int code) {
-      String toast = "removeNotificationQuietHours:" + blackUserId + " code:" + code.toString();
+      String toast = "删除已设置的全局时间段消息提醒屏蔽:\n" + (code == 0 ? "删除成功" :  "删除失败, code:" + code.toString());
       print(toast);
       Fluttertoast.showToast(msg: toast);
     });
@@ -136,7 +136,7 @@ class DebugPage extends StatelessWidget {
     msg.sendUserInfo = sendUserInfo;
 
     prefix.Message message = await prefix.RongcloudImPlugin.sendMessage(prefix.RCConversationType.Private, "SealTalk", msg);
-    String toast = "send message add sendUserInfo:"+message.content.getObjectName()+" msgContent:"+message.content.encode();
+    String toast = "发送消息携带用户信息:\n 消息的 objectName:"+message.content.getObjectName()+"\nmsgContent:"+ message.content.encode();
     print(toast);
     Fluttertoast.showToast(msg: toast, timeInSecForIos: 3);
   }

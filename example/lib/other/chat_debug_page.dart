@@ -77,18 +77,18 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   void _addBlackList() {
     print("_addBlackList");
     RongcloudImPlugin.addToBlackList(targetId, (int code) {
-      print("_addBlackList:" + targetId + " code:" + code.toString());
-      String text = code == 0 ? "加入黑名单成功" : "加入黑名单失败， $code";
-      Fluttertoast.showToast(msg: text);
+      String toast = code == 0 ? "加入黑名单成功" : "加入黑名单失败， $code";
+      print(toast);
+      Fluttertoast.showToast(msg: toast);
     });
   }
 
   void _removeBalckList() {
     print("_removeBalckList");
     RongcloudImPlugin.removeFromBlackList(targetId, (int code) {
-      print("_removeBalckList:" + targetId + " code:" + code.toString());
-      String text = code == 0 ? "取消黑名单成功" : "取消黑名单失败， $code";
-      Fluttertoast.showToast(msg: text);
+      String toast = code == 0 ? "取消黑名单成功" : "取消黑名单失败，错误码: $code";
+      print(toast);
+      Fluttertoast.showToast(msg: toast);
     });
   }
 
@@ -115,16 +115,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     print("_getBlackList");
     RongcloudImPlugin.getBlackList((List/*<String>*/ userIdList, int code) {
       Fluttertoast.showToast(
-          msg: "_getBlackList:" +
-              userIdList.toString() +
-              " code:" +
-              code.toString(),
-          timeInSecForIos: 2);
-
-      print("_getBlackList:" +
-          userIdList.toString() +
-          " code:" +
-          code.toString());
+          msg: "获取黑名单列表:\n userId 列表:" + userIdList.toString() + (code == 0 ? "" : "\n获取失败，错误码 code:" + code.toString()), timeInSecForIos: 2);
       userIdList.forEach((userId) {
         print("userId:" + userId);
       });
@@ -135,7 +126,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     RongcloudImPlugin.setConversationNotificationStatus(
         RCConversationType.Private, "SealTalk", true, (int status, int code) {
       print("setConversationNotificationStatus1 status " + status.toString());
-      String text = code == 0 ? "设置免打扰成功" : "设置免打扰失败， $code";
+      String text = code == 0 ? "设置免打扰成功" : "设置免打扰失败，错误码: $code";
       Fluttertoast.showToast(msg: text);
     });
   }
@@ -144,7 +135,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     RongcloudImPlugin.setConversationNotificationStatus(
         RCConversationType.Private, "SealTalk", false, (int status, int code) {
       print("setConversationNotificationStatus2 status " + status.toString());
-      String text = code == 0 ? "取消免打扰成功" : "取消免打扰失败， $code";
+      String text = code == 0 ? "取消免打扰成功" : "取消免打扰失败，错误码: $code";
       Fluttertoast.showToast(msg: text);
     });
   }
@@ -152,8 +143,9 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   void _getConStatus() {
     RongcloudImPlugin.getConversationNotificationStatus(
         RCConversationType.Private, "SealTalk", (int status, int code) {
-      print("getConversationNotificationStatus3 status " + status.toString());
-      Fluttertoast.showToast(msg: "查看免打扰状态 " + status.toString());
+      String toast = "getConversationNotificationStatus3 免打扰状态:" + (status == 0? "免打扰":"有消息提醒");
+      print(toast);
+      Fluttertoast.showToast(msg: toast);
     });
   }
 
