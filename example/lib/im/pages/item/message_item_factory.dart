@@ -153,7 +153,7 @@ class MessageItemFactory extends StatelessWidget {
     FileMessage fileMessage = message.content;
     return Container(
         height: 80,
-        width: 260,
+        width: 240,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -167,7 +167,7 @@ class MessageItemFactory extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
               Container(
-                width: 180,
+                width: 160,
                 child: Text(
                   fileMessage.mName,
                   textWidthBasis: TextWidthBasis.parent,
@@ -180,7 +180,7 @@ class MessageItemFactory extends StatelessWidget {
               ), 
               Container(
                 margin: EdgeInsets.only(top: 8),
-                width: 180,
+                width: 160,
                 child: Text(
                 FileUtil.formatFileSize(fileMessage.mSize),
                 style: TextStyle(fontSize: 12, color: const Color(0xff888888)),
@@ -195,6 +195,7 @@ class MessageItemFactory extends StatelessWidget {
     RichContentMessage msg = message.content;
 
     return Container(
+      width: 240,
       child: Column(children: <Widget>[
         Container(
           padding: EdgeInsets.all(10),
@@ -211,7 +212,7 @@ class MessageItemFactory extends StatelessWidget {
             children: <Widget>[
               Container(
                 padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
-                width: 200,
+                width: 180,
                 child: Text(
                   msg.digest,
                   style: new TextStyle(color: Colors.black, fontSize: 13),
@@ -220,9 +221,11 @@ class MessageItemFactory extends StatelessWidget {
                 ),
               ),
               Container(
-                width: 45, 
+                width: 45,
                 height: 45,
-                child: msg.imageURL == null || msg.imageURL.isEmpty ? Image.asset("assets/images/rich_content_msg_default.png") : Image.network(msg.imageURL),
+                child: msg.imageURL == null || msg.imageURL.isEmpty
+                    ? Image.asset("assets/images/rich_content_msg_default.png")
+                    : Image.network(msg.imageURL),
               ),
             ],
           ),
