@@ -80,7 +80,7 @@ static NSString *RCMethodCallBackKeyReceiptRequest = @"ReceiptRequestCallBack";
 static NSString *RCMethodCallBackKeyReceiptResponse = @"ReceiptResponseCallBack";
 static NSString *RCMethodCallBackKeyTypingStatusChangedCallBack = @"TypingStatusChangedCallBack";
 static NSString *RCMethodCallBackKeyDownloadMediaMessageCallBack = @"DownloadMediaMessageCallBack";
-
+static NSString *RCMethodCallBackKeyRecallMessageCallBack = @"RecallMessageCallBack";
 
 
 

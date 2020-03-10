@@ -1485,6 +1485,13 @@
     [self.channel invokeMethod:RCMethodCallBackKeyReceiptResponse arguments:statusDic];
 }
 
+- (void)onMessageRecalled:(long)messageId {
+    RCMessage *recalledMsg = [[RCIMClient sharedRCIMClient] getMessage:messageId];
+    NSString *jsonString = [RCFlutterMessageFactory message2String:recalledMsg];
+    NSDictionary *dict = @{@"message": jsonString};
+    [self.channel invokeMethod:RCMethodCallBackKeyRecallMessageCallBack arguments:dict];
+}
+
 #pragma mark - RCConnectionStatusChangeDelegate
 - (void)onConnectionStatusChanged:(RCConnectionStatus)status {
     NSString *LOG_TAG =  @"onConnectionStatusChanged";
