@@ -139,6 +139,65 @@ class RongcloudImPlugin {
     return msg;
   }
 
+  ///发送定向消息
+  ///
+  ///[conversationType] 会话类型，参见枚举 [RCConversationType]
+  ///
+  ///[targetId] 会话 id
+  ///
+  ///[userIdList] 接收消息的用户 ID 列表
+  ///
+  ///[content] 消息内容 参见 [MessageContent]
+  ///
+  ///[pushContent] 接收方离线时需要显示的远程推送内容
+  ///
+  ///[pushData] 接收方离线时需要在远程推送中携带的非显示数据
+  /// 
+  /// 此方法用于在群组和讨论组中发送消息给其中的部分用户，其它用户不会收到这条消息。
+  /// 目前仅支持群组和讨论组。
+  static Future<Message> sendDirectionalMessage(
+      int conversationType,
+      String targetId,
+      List userIdList,
+      MessageContent content,
+      {String pushContent,
+      String pushData}) async {
+    if (conversationType == null || targetId == null || content == null) {
+      print(
+          "send directional message fail: conversationType or targetId or content is null");
+      return null;
+    }
+    if (userIdList.length <= 0) {
+        print("userIdList 为空");
+        return null;
+    }
+    if (pushContent == null) {
+      pushContent = "";
+    }
+    if (pushData == null) {
+      pushData = "";
+    }
+    String jsonStr = content.encode();
+    String objName = content.getObjectName();
+    Map map = {
+      'conversationType': conversationType,
+      'targetId': targetId,
+      'userIdList': userIdList,
+      "content": jsonStr,
+      "objectName": objName,
+      "pushContent": pushContent,
+      "pushData": pushData
+    };
+
+    Map resultMap = await _channel.invokeMethod(RCMethodKey.SendDirectionalMessage, map);
+    if (resultMap == null) {
+      return null;
+    }
+    String messageString = resultMap["message"];
+    Message msg = MessageFactory.instance.string2Message(messageString);
+    return msg;
+  }
+
   ///获取历史消息
   ///
   ///[conversationType] 会话类型，参见枚举 [RCConversationType]

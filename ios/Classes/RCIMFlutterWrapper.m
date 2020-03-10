@@ -160,6 +160,8 @@
         [self getNotificationQuietHours:call.arguments result:result];
     }else if([RCMethodKeyGetUnreadMentionedMessages isEqualToString:call.method]) {
         [self getUnreadMentionedMessages:call.arguments result:result];
+    }else if([RCMethodKeySendDirectionalMessage isEqualToString:call.method]) {
+        [self sendDirectionalMessage:call.arguments result:result];
     }
     else {
         result(FlutterMethodNotImplemented);
@@ -425,6 +427,67 @@
     [dic setObject:jsonString forKey:@"message"];
     [dic setObject:@(SentStatus_SENDING) forKey:@"status"];
     result(dic);
+}
+
+- (void)sendDirectionalMessage:(id)arg result:(FlutterResult)result{
+    NSString *LOG_TAG = @"sendDirectionalMessage";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        NSString *objName = param[@"objectName"];
+        if([self isMediaMessage:objName]) {
+            [self sendMediaMessage:arg result:result];
+            return;
+        }
+        RCConversationType type = [param[@"conversationType"] integerValue];
+        NSString *targetId = param[@"targetId"];
+        NSArray *userIdList = param[@"userIdList"];
+        NSString *contentStr = param[@"content"];
+        NSString *pushContent = param[@"pushContent"];
+        if(pushContent.length <= 0) {
+            pushContent = nil;
+        }
+        NSString *pushData = param[@"pushData"];
+        if(pushData.length <= 0) {
+            pushData = nil;
+        }
+        NSData *data = [contentStr dataUsingEncoding:NSUTF8StringEncoding];
+        Class clazz = [[RCMessageMapper sharedMapper] messageClassWithTypeIdenfifier:objName];
+        
+        RCMessageContent *content = nil;
+        if([objName isEqualToString:RCVoiceMessageTypeIdentifier]) {
+            content = [self getVoiceMessage:data];
+        }else {
+            content = [[RCMessageMapper sharedMapper] messageContentWithClass:clazz fromData:data];
+        }
+        if(content == nil) {
+            [RCLog e:[NSString stringWithFormat:@"%@  message content is nil",LOG_TAG]];
+            result(nil);
+            return;
+        }
+        
+        __weak typeof(self) ws = self;
+        RCMessage *message = [[RCIMClient sharedRCIMClient] sendDirectionalMessage:type targetId:targetId toUserIdList:userIdList content:content pushContent:pushContent pushData:pushData success:^(long messageId) {
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:@(messageId) forKey:@"messageId"];
+            [dic setObject:@(SentStatus_SENT) forKey:@"status"];
+            [dic setObject:@(0) forKey:@"code"];
+            [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
+        } error:^(RCErrorCode nErrorCode, long messageId) {
+            [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(nErrorCode)]];
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:@(messageId) forKey:@"messageId"];
+            [dic setObject:@(SentStatus_FAILED) forKey:@"status"];
+            [dic setObject:@(nErrorCode) forKey:@"code"];
+            [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
+        }];
+        NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:jsonString forKey:@"message"];
+        [dic setObject:@(SentStatus_SENDING) forKey:@"status"];
+        result(dic);
+    }
 }
 
 - (void)joinChatRoom:(id)arg {
