@@ -68,9 +68,10 @@ public class MessageFactory {
             }
         }
         byte[] data = content.encode();
-        String jsonS = new String(data);
-
-        map.put("content", jsonS);
+        if (data != null && data.length > 0) {
+            String jsonS = new String(data);
+            map.put("content", jsonS);
+        }
 
         JSONObject jObj = new JSONObject(map);
 
@@ -106,8 +107,10 @@ public class MessageFactory {
         MessageContent content = conversation.getLatestMessage();
         if (content != null) {
             byte[] data = content.encode();
-            String jsonS = new String(data);
-            map.put("content", jsonS);
+            if (data != null && data.length > 0) {
+                String jsonS = new String(data);
+                map.put("content", jsonS);
+            }
         } else {
 //            map.put("content","");
         }
