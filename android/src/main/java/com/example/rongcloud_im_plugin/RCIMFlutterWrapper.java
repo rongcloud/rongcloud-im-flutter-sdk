@@ -2101,6 +2101,15 @@ public class RCIMFlutterWrapper {
         }
     }
 
+    //设置
+//    private void setChatRoomEntry(Object arg, final Result result) {
+//        if (arg instanceof Map) {
+//            Map paramMap = (Map) arg;
+//            String chatRoomId = "";
+//            RongIMClient.getInstance().setChatRoomEntry();
+//        }
+//    }
+
     private Message map2Message(Map messageMap) {
         String contentStr = null;
         Message message = new Message();
@@ -2131,5 +2140,4 @@ public class RCIMFlutterWrapper {
         message.setContent(content);
         return message;
     }
-
 }

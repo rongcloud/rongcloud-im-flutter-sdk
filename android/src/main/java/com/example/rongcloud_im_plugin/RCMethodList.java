@@ -50,6 +50,13 @@ public class RCMethodList {
     static String MethodKeySendTypingStatus = "sendTypingStatus";
     static String MethodKeyDownloadMediaMessage = "downloadMediaMessage";
 
+    //聊天室存储
+    static String MethodKeySetChatRoomEntry = "SetChatRoomEntry";
+    static String MethodKeyForceSetChatRoomEntry = "ForceSetChatRoomEntry";
+    static String MethodKeyGetChatRoomEntry = "GetChatRoomEntry";
+    static String MethodKeyGetAllChatRoomEntries = "GetAllChatRoomEntries";
+    static String MethodKeyRemoveChatRoomEntry = "RemoveChatRoomEntry";
+    static String MethodKeyForceRemoveChatRoomEntry = "ForceRemoveChatRoomEntry";
 
 
 
