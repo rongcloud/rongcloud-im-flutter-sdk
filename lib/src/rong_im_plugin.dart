@@ -152,24 +152,20 @@ class RongcloudImPlugin {
   ///[pushContent] 接收方离线时需要显示的远程推送内容
   ///
   ///[pushData] 接收方离线时需要在远程推送中携带的非显示数据
-  /// 
+  ///
   /// 此方法用于在群组和讨论组中发送消息给其中的部分用户，其它用户不会收到这条消息。
   /// 目前仅支持群组和讨论组。
-  static Future<Message> sendDirectionalMessage(
-      int conversationType,
-      String targetId,
-      List userIdList,
-      MessageContent content,
-      {String pushContent,
-      String pushData}) async {
+  static Future<Message> sendDirectionalMessage(int conversationType,
+      String targetId, List userIdList, MessageContent content,
+      {String pushContent, String pushData}) async {
     if (conversationType == null || targetId == null || content == null) {
       print(
           "send directional message fail: conversationType or targetId or content is null");
       return null;
     }
     if (userIdList.length <= 0) {
-        print("userIdList 为空");
-        return null;
+      print("userIdList 为空");
+      return null;
     }
     if (pushContent == null) {
       pushContent = "";
@@ -189,7 +185,8 @@ class RongcloudImPlugin {
       "pushData": pushData
     };
 
-    Map resultMap = await _channel.invokeMethod(RCMethodKey.SendDirectionalMessage, map);
+    Map resultMap =
+        await _channel.invokeMethod(RCMethodKey.SendDirectionalMessage, map);
     if (resultMap == null) {
       return null;
     }
@@ -237,7 +234,7 @@ class RongcloudImPlugin {
   ///
   ///[messageId] 消息 id，基于该消息获取更多的消息
   ///
-  ///[historyMsgDirection] 历史消息的方向，基于 messageId 获取之前的消息还是之后的消息，参见枚举 [RCHistoryMessageDirection]，非法值按 Behind 处理
+  ///[historyMsgDirection] 历史消息的方向，����于 messageId 获取之前的消息还是之后的消息，参见枚举 [RCHistoryMessageDirection]，非法值按 Behind 处理
   ///
   ///[count] 需要获取的消息数
   ///
@@ -959,42 +956,44 @@ class RongcloudImPlugin {
   }
 
   /// 全局屏蔽某个时间段的消息提醒
-  /// 
+  ///
   /// [startTime] 开始屏蔽消息提醒的时间，格式为HH:MM:SS
-  /// 
+  ///
   /// [spanMins] 需要屏蔽消息提醒的分钟数，0 < spanMins < 1440
-  /// 
+  ///
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
-  /// 
+  ///
   /// 此方法设置的屏蔽时间会在每天该时间段时生效。
-  static void setNotificationQuietHours(String startTime, int spanMins, Function(int code) finished) async {
-    Map map = {
-      "startTime": startTime,
-      "spanMins": spanMins
-    };
-    int result = await _channel.invokeMethod(RCMethodKey.SetNotificationQuietHours, map);
+  static void setNotificationQuietHours(
+      String startTime, int spanMins, Function(int code) finished) async {
+    Map map = {"startTime": startTime, "spanMins": spanMins};
+    int result =
+        await _channel.invokeMethod(RCMethodKey.SetNotificationQuietHours, map);
     if (finished != null) {
       finished(result);
     }
   }
 
   /// 删除已设置的全局时间段消息提醒屏蔽
-  /// 
+  ///
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
-  /// 
+  ///
   static void removeNotificationQuietHours(Function(int code) finished) async {
-    int result = await _channel.invokeMethod(RCMethodKey.RemoveNotificationQuietHours);
+    int result =
+        await _channel.invokeMethod(RCMethodKey.RemoveNotificationQuietHours);
     if (finished != null) {
       finished(result);
     }
   }
 
   /// 查询已设置的全局时间段消息提醒屏蔽
-  /// 
+  ///
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败；startTime 代表已设置的屏蔽开始时间，spansMin 代表已设置的屏蔽时间分钟数，0 < spansMin < 1440
-  /// 
-  static void getNotificationQuietHours(Function(int code, String startTime, int spansMin) finished) async {
-    Map result = await _channel.invokeMethod(RCMethodKey.GetNotificationQuietHours);
+  ///
+  static void getNotificationQuietHours(
+      Function(int code, String startTime, int spansMin) finished) async {
+    Map result =
+        await _channel.invokeMethod(RCMethodKey.GetNotificationQuietHours);
     int code = result["code"];
     String startTime = result["startTime"];
     int spansMin = result["spansMin"];
@@ -1004,16 +1003,18 @@ class RongcloudImPlugin {
   }
 
   /// 获取会话中@提醒自己的消息
-  /// 
+  ///
   /// [conversationType] 会话类型，参见枚举 [RCConversationType]
-  /// 
+  ///
   /// [targetId] 会话 id
-  /// 
+  ///
   /// 此方法从本地获取被@提醒的消息(最多返回10条信息)
   /// clearMessagesUnreadStatus: targetId: 以及设置消息接收状态接口 setMessageReceivedStatus:receivedStatus:会同步清除被提示信息状态。
-  static Future<List /*Message*/ > getUnreadMentionedMessages(int conversationType, String targetId) async {
+  static Future<List /*Message*/ > getUnreadMentionedMessages(
+      int conversationType, String targetId) async {
     Map map = {"conversationType": conversationType, "targetId": targetId};
-    List list = await _channel.invokeMethod(RCMethodKey.GetUnreadMentionedMessages, map);
+    List list = await _channel.invokeMethod(
+        RCMethodKey.GetUnreadMentionedMessages, map);
     if (list == null) {
       return null;
     }
@@ -1149,7 +1150,7 @@ class RongcloudImPlugin {
   ///
   /// [sendNotification] 是否需要发送通知，如果发送通知，聊天室中的其他用户会接收到 RCChatroomKVNotificationMessage 通知消息，消息内容中包含操作类型(type)、属性名称(key)、属性名称对应的值(value)和自定义字段(extra)
   ///
-  /// [notificationExtra] 通知的自定义字段，RC:chrmKVNotiMsg 通知消息中会包含此字段，最大长度 2 kb
+  /// [notificationExtra] 通知的自定义字段，RC:chrmKVNotiMsg ������消息中会包含此字段，最大长度 2 kb
   ///
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   /// 此接口只支持聊天室，必须先开通聊天室属性自定义功能
@@ -1295,6 +1296,9 @@ class RongcloudImPlugin {
   static Function(int conversationType, String targetId, List typingStatus)
       onTypingStatusChanged;
 
+  //撤回消息监听
+  static Function(Message msg) onRecallMessageReceived;
+
   ///响应原生的事件
   ///
   static void _addNativeMethodCallHandler() {
@@ -1426,6 +1430,15 @@ class RongcloudImPlugin {
             Message message =
                 MessageFactory.instance.string2Message(messageString);
             onDownloadMediaMessageResponse(code, progress, messageId, message);
+          }
+          break;
+        case RCMethodCallBackKey.RecallMessage:
+          if (onRecallMessageReceived != null) {
+            Map map = call.arguments;
+            String messageString = map["message"];
+            Message message =
+                MessageFactory.instance.string2Message(messageString);
+            onRecallMessageReceived(message);
           }
           break;
       }

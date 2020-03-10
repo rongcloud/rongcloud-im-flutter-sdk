@@ -174,6 +174,14 @@ class _ConversationPageState extends State<ConversationPage>
         _refreshUI();
       }
     };
+
+    RongcloudImPlugin.onRecallMessageReceived = (Message message) async {
+      if (message != null) {
+        if (message.targetId == this.targetId) {
+          _insertOrReplaceMessage(message);
+        }
+      }
+    };
   }
 
   onGetHistoryMessages() async {
@@ -445,8 +453,8 @@ class _ConversationPageState extends State<ConversationPage>
   }
 
   void _pushToDebug() {
-    Map arg = {"coversationType":conversationType,"targetId":targetId};
-    Navigator.pushNamed(context, "/chat_debug",arguments: arg);
+    Map arg = {"coversationType": conversationType, "targetId": targetId};
+    Navigator.pushNamed(context, "/chat_debug", arguments: arg);
   }
 
   // AppBar 右侧按钮
@@ -466,13 +474,13 @@ class _ConversationPageState extends State<ConversationPage>
       ];
     } else {
       return <Widget>[
-          IconButton(
-            icon: Icon(Icons.more),
-            onPressed: () {
-              _pushToDebug();
-            },
-          ),
-        ];
+        IconButton(
+          icon: Icon(Icons.more),
+          onPressed: () {
+            _pushToDebug();
+          },
+        ),
+      ];
     }
   }
 

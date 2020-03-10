@@ -355,6 +355,7 @@ public class RCIMFlutterWrapper {
             setReceiveMessageListener();
             setConnectStatusListener();
             setTypingStatusListener();
+            setOnRecallMessageListener();
         } else {
             Log.e("RCIM flutter init", "非法参数");
         }
@@ -1712,6 +1713,26 @@ public class RCIMFlutterWrapper {
         });
     }
 
+    private void setOnRecallMessageListener(){
+        RongIMClient.getInstance().setOnRecallMessageListener(new RongIMClient.OnRecallMessageListener() {
+            @Override
+            public boolean onMessageRecalled(final Message message, final RecallNotificationMessage recallNotificationMessage) {
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        message.setContent(recallNotificationMessage);
+                        message.setObjectName("RC:RcNtf");
+                        String messageS = MessageFactory.getInstance().message2String(message);
+                        final Map map = new HashMap();
+                        map.put("message", messageS);
+                        mChannel.invokeMethod(RCMethodList.MethodCallBackRecallMessage, map);
+                    }
+                });
+                return false;
+            }
+        });
+    }
+
     /*
        输入状态的监听
      */
@@ -1738,7 +1759,6 @@ public class RCIMFlutterWrapper {
             }
         });
     }
-
 
     private void setConnectStatusListener() {
         RongIMClient.setConnectionStatusListener(new RongIMClient.ConnectionStatusListener() {

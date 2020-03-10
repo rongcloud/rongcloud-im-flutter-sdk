@@ -73,5 +73,6 @@ public class RCMethodList {
     static String MethodCallBackKeyReceiveReadReceipt = "ReceiveReadReceiptCallBack";
     static String MethodCallBackKeyTypingStatus ="TypingStatusChangedCallBack";
     static String MethodCallBackKeyDownloadMediaMessage = "DownloadMediaMessageCallBack";
+    static String MethodCallBackRecallMessage = "RecallMessageCallBack";
 
 }

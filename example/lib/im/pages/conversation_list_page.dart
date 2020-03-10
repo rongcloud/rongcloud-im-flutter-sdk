@@ -161,10 +161,7 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
   }
 
   @override
-  void didTapConversation(Conversation conversation) async {
-
-    List msgs = await RongcloudImPlugin.getUnreadMentionedMessages(conversation.conversationType, conversation.targetId);
-    print("getUnreadMentionedMessages：" + msgs.length.toString());
+  void didTapConversation(Conversation conversation) {
     Map arg = {"coversationType":conversation.conversationType,"targetId":conversation.targetId};
     Navigator.pushNamed(context, "/conversation",arguments: arg);
   }
