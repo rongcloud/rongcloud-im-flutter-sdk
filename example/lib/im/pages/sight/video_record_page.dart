@@ -143,7 +143,7 @@ class _VideoRecordPageState extends State<VideoRecordPage>
 
   void resetData() {
     videoPath = null;
-    if (videoPlayerController.value.isPlaying) {
+    if (videoPlayerController != null && videoPlayerController.value != null && videoPlayerController.value.isPlaying) {
       videoPlayerController.pause();
     }
     videoPlayerController = null;
