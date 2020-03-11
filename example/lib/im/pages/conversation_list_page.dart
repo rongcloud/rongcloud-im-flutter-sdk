@@ -32,6 +32,7 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
 
     EventBus.instance.addListener(EventKeys.ConversationPageDispose, (arg) {
       Timer(Duration(milliseconds:10), (){
+        addIMhandler();
         updateConversationList();
         _renfreshUI();
       });
