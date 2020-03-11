@@ -124,7 +124,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
 
   void _setConStatusEnable() {
     RongcloudImPlugin.setConversationNotificationStatus(
-        RCConversationType.Private, "SealTalk", true, (int status, int code) {
+        RCConversationType.Private, targetId, true, (int status, int code) {
       print("setConversationNotificationStatus1 status " + status.toString());
       String text = code == 0 ? "设置免打扰成功" : "设置免打扰失败，错误码: $code";
       Fluttertoast.showToast(msg: text);
@@ -133,7 +133,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
 
   void _setConStatusDisanable() {
     RongcloudImPlugin.setConversationNotificationStatus(
-        RCConversationType.Private, "SealTalk", false, (int status, int code) {
+        RCConversationType.Private, targetId, false, (int status, int code) {
       print("setConversationNotificationStatus2 status " + status.toString());
       String text = code == 0 ? "取消免打扰成功" : "取消免打扰失败，错误码: $code";
       Fluttertoast.showToast(msg: text);
@@ -142,7 +142,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
 
   void _getConStatus() {
     RongcloudImPlugin.getConversationNotificationStatus(
-        RCConversationType.Private, "SealTalk", (int status, int code) {
+        RCConversationType.Private, targetId, (int status, int code) {
       String toast = "getConversationNotificationStatus3 免打扰状态:" + (status == 0? "免打扰":"有消息提醒");
       print(toast);
       Fluttertoast.showToast(msg: toast);
