@@ -1043,7 +1043,7 @@ class RongcloudImPlugin {
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   /// 此接口只支持聊天室，必须先开通聊天室属性自定义功能
   static void setChatRoomEntry(
-      String chatroomId,
+      String chatRoomId,
       String key,
       String value,
       bool sendNotification,
@@ -1051,7 +1051,7 @@ class RongcloudImPlugin {
       String notificationExtra,
       Function(int code) finished) async {
     Map map = {
-      "chatroomId": chatroomId,
+      "chatRoomId": chatRoomId,
       "key": key,
       "value": value,
       "sendNotification": sendNotification,
@@ -1081,7 +1081,7 @@ class RongcloudImPlugin {
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   /// 此接口只支持聊天室，必须先开通聊天室属性自定义功能
   static void forceSetChatRoomEntry(
-      String chatroomId,
+      String chatRoomId,
       String key,
       String value,
       bool sendNotification,
@@ -1089,7 +1089,7 @@ class RongcloudImPlugin {
       String notificationExtra,
       Function(int code) finished) async {
     Map map = {
-      "chatroomId": chatroomId,
+      "chatRoomId": chatRoomId,
       "key": key,
       "value": value,
       "sendNotification": sendNotification,
@@ -1111,9 +1111,9 @@ class RongcloudImPlugin {
   ///
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败，entry 为返回的 map
   /// 此接口只支持聊天室，必须先开通聊天室属性自定义功能
-  static void getChatRoomEntry(String chatroomId, String key,
+  static void getChatRoomEntry(String chatRoomId, String key,
       Function(Map entry, int code) finished) async {
-    Map map = {"chatroomId": chatroomId, "key": key};
+    Map map = {"chatRoomId": chatRoomId, "key": key};
 
     Map result = await _channel.invokeMethod(RCMethodKey.GetChatRoomEntry, map);
     int code = result["code"];
@@ -1130,8 +1130,8 @@ class RongcloudImPlugin {
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败，entry 为返回的 map
   /// 此接口只支持聊天室，必须先开通聊天室属性自定义功能
   static void getAllChatRoomEntries(
-      String chatroomId, Function(Map entry, int code) finished) async {
-    Map map = {"chatroomId": chatroomId};
+      String chatRoomId, Function(Map entry, int code) finished) async {
+    Map map = {"chatRoomId": chatRoomId};
 
     Map result =
         await _channel.invokeMethod(RCMethodKey.GetAllChatRoomEntries, map);
@@ -1155,13 +1155,13 @@ class RongcloudImPlugin {
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   /// 此接口只支持聊天室，必须先开通聊天室属性自定义功能
   static void removeChatRoomEntry(
-      String chatroomId,
+      String chatRoomId,
       String key,
       bool sendNotification,
       String notificationExtra,
       Function(int code) finished) async {
     Map map = {
-      "chatroomId": chatroomId,
+      "chatRoomId": chatRoomId,
       "key": key,
       "sendNotification": sendNotification,
       "notificationExtra": notificationExtra
@@ -1186,13 +1186,13 @@ class RongcloudImPlugin {
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   /// 此接口只支持聊天室，必须先开通聊天室属性自定义功能
   static void forceRemoveChatRoomEntry(
-      String chatroomId,
+      String chatRoomId,
       String key,
       bool sendNotification,
       String notificationExtra,
       Function(int code) finished) async {
     Map map = {
-      "chatroomId": chatroomId,
+      "chatRoomId": chatRoomId,
       "key": key,
       "sendNotification": sendNotification,
       "notificationExtra": notificationExtra

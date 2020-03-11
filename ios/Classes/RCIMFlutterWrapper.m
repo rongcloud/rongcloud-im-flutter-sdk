@@ -1104,14 +1104,14 @@
     [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
-        NSString *chatroomId = param[@"chatroomId"];
+        NSString *chatRoomId = param[@"chatRoomId"];
         NSString *key = param[@"key"];
         NSString *value = param[@"value"];
         BOOL sendNotification = [param[@"sendNotification"] boolValue];
         BOOL autoDelete = [param[@"autoDelete"] boolValue];
         NSString *notificationExtra = param[@"notificationExtra"];
         
-        [[RCIMClient sharedRCIMClient] setChatRoomEntry:chatroomId key:key value:value sendNotification:sendNotification autoDelete:autoDelete notificationExtra:notificationExtra success:^{
+        [[RCIMClient sharedRCIMClient] setChatRoomEntry:chatRoomId key:key value:value sendNotification:sendNotification autoDelete:autoDelete notificationExtra:notificationExtra success:^{
             result(@(0));
         } error:^(RCErrorCode nErrorCode) {
             result(@(nErrorCode));
@@ -1124,14 +1124,14 @@
     [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
-        NSString *chatroomId = param[@"chatroomId"];
+        NSString *chatRoomId = param[@"chatRoomId"];
         NSString *key = param[@"key"];
         NSString *value = param[@"value"];
         BOOL sendNotification = [param[@"sendNotification"] boolValue];
         BOOL autoDelete = [param[@"autoDelete"] boolValue];
         NSString *notificationExtra = param[@"notificationExtra"];
         
-        [[RCIMClient sharedRCIMClient] forceSetChatRoomEntry:chatroomId key:key value:value sendNotification:sendNotification autoDelete:autoDelete notificationExtra:notificationExtra success:^{
+        [[RCIMClient sharedRCIMClient] forceSetChatRoomEntry:chatRoomId key:key value:value sendNotification:sendNotification autoDelete:autoDelete notificationExtra:notificationExtra success:^{
             result(@(0));
         } error:^(RCErrorCode nErrorCode) {
             result(@(nErrorCode));
@@ -1144,10 +1144,10 @@
     [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
-        NSString *chatroomId = param[@"chatroomId"];
+        NSString *chatRoomId = param[@"chatRoomId"];
         NSString *key = param[@"key"];
         
-        [[RCIMClient sharedRCIMClient] getChatRoomEntry:chatroomId key:key success:^(NSDictionary *entry) {
+        [[RCIMClient sharedRCIMClient] getChatRoomEntry:chatRoomId key:key success:^(NSDictionary *entry) {
             NSMutableDictionary *dict = [NSMutableDictionary new];
             if (entry) {
                 [dict setObject:entry forKey:@"entry"];
@@ -1165,9 +1165,9 @@
     [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
-        NSString *chatroomId = param[@"chatroomId"];
+        NSString *chatRoomId = param[@"chatRoomId"];
         
-        [[RCIMClient sharedRCIMClient] getAllChatRoomEntries:chatroomId success:^(NSDictionary *entry) {
+        [[RCIMClient sharedRCIMClient] getAllChatRoomEntries:chatRoomId success:^(NSDictionary *entry) {
             NSMutableDictionary *dict = [NSMutableDictionary new];
             if (entry) {
                 [dict setObject:entry forKey:@"entry"];
@@ -1185,12 +1185,12 @@
     [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
-        NSString *chatroomId = param[@"chatroomId"];
+        NSString *chatRoomId = param[@"chatRoomId"];
         NSString *key = param[@"key"];
         BOOL sendNotification = [param[@"sendNotification"] boolValue];
         NSString *notificationExtra = param[@"notificationExtra"];
         
-        [[RCIMClient sharedRCIMClient] removeChatRoomEntry:chatroomId key:key sendNotification:sendNotification notificationExtra:notificationExtra success:^{
+        [[RCIMClient sharedRCIMClient] removeChatRoomEntry:chatRoomId key:key sendNotification:sendNotification notificationExtra:notificationExtra success:^{
             result(@(0));
         } error:^(RCErrorCode nErrorCode) {
             result(@(nErrorCode));
@@ -1203,12 +1203,12 @@
     [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
-        NSString *chatroomId = param[@"chatroomId"];
+        NSString *chatRoomId = param[@"chatRoomId"];
         NSString *key = param[@"key"];
         BOOL sendNotification = [param[@"sendNotification"] boolValue];
         NSString *notificationExtra = param[@"notificationExtra"];
         
-        [[RCIMClient sharedRCIMClient] forceRemoveChatRoomEntry:chatroomId key:key sendNotification:sendNotification notificationExtra:notificationExtra success:^{
+        [[RCIMClient sharedRCIMClient] forceRemoveChatRoomEntry:chatRoomId key:key sendNotification:sendNotification notificationExtra:notificationExtra success:^{
             result(@(0));
         } error:^(RCErrorCode nErrorCode) {
             result(@(nErrorCode));

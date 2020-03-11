@@ -205,6 +205,18 @@ public class RCIMFlutterWrapper {
             sendReadReceiptResponse(call.arguments, result);
         } else if (RCMethodList.MethodKeyDownloadMediaMessage.equalsIgnoreCase(call.method)) {
             downloadMediaMessage(call.arguments);
+        } else if (RCMethodList.MethodKeySetChatRoomEntry.equalsIgnoreCase(call.method)) {
+            setChatRoomEntry(call.arguments, result);
+        } else if (RCMethodList.MethodKeyForceSetChatRoomEntry.equalsIgnoreCase(call.method)) {
+            forceSetChatRoomEntry(call.arguments, result);
+        } else if (RCMethodList.MethodKeyGetChatRoomEntry.equalsIgnoreCase(call.method)) {
+            getChatRoomEntry(call.arguments, result);
+        } else if (RCMethodList.MethodKeyGetAllChatRoomEntries.equalsIgnoreCase(call.method)) {
+            getAllChatRoomEntries(call.arguments, result);
+        } else if (RCMethodList.MethodKeyRemoveChatRoomEntry.equalsIgnoreCase(call.method)) {
+            removeChatRoomEntry(call.arguments, result);
+        } else if (RCMethodList.MethodKeyForceRemoveChatRoomEntry.equalsIgnoreCase(call.method)) {
+            forceSetChatRoomEntry(call.arguments, result);
         } else {
             result.notImplemented();
         }
@@ -1713,7 +1725,7 @@ public class RCIMFlutterWrapper {
         });
     }
 
-    private void setOnRecallMessageListener(){
+    private void setOnRecallMessageListener() {
         RongIMClient.getInstance().setOnRecallMessageListener(new RongIMClient.OnRecallMessageListener() {
             @Override
             public boolean onMessageRecalled(final Message message, final RecallNotificationMessage recallNotificationMessage) {
@@ -2121,14 +2133,144 @@ public class RCIMFlutterWrapper {
         }
     }
 
-    //设置
-//    private void setChatRoomEntry(Object arg, final Result result) {
-//        if (arg instanceof Map) {
-//            Map paramMap = (Map) arg;
-//            String chatRoomId = "";
-//            RongIMClient.getInstance().setChatRoomEntry();
-//        }
-//    }
+    //设置聊天室自定义属性
+    private void setChatRoomEntry(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            String chatRoomId = (String) paramMap.get("chatRoomId");
+            String key = (String) paramMap.get("key");
+            String value = (String) paramMap.get("value");
+            boolean sendNotification = (boolean) paramMap.get("sendNotification");
+            boolean autoDelete = (boolean) paramMap.get("autoDelete");
+            String notificationExtra = (String) paramMap.get("notificationExtra");
+            RongIMClient.getInstance().setChatRoomEntry(chatRoomId, key, value, sendNotification, autoDelete, notificationExtra, new RongIMClient.OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    result.success(0);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    result.success(errorCode.getValue());
+                }
+            });
+        }
+    }
+
+    private void forceSetChatRoomEntry(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            String chatRoomId = (String) paramMap.get("chatRoomId");
+            String key = (String) paramMap.get("key");
+            String value = (String) paramMap.get("value");
+            boolean sendNotification = (boolean) paramMap.get("sendNotification");
+            boolean autoDelete = (boolean) paramMap.get("autoDelete");
+            String notificationExtra = (String) paramMap.get("notificationExtra");
+            RongIMClient.getInstance().forceSetChatRoomEntry(chatRoomId, key, value, sendNotification, autoDelete, notificationExtra, new RongIMClient.OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    result.success(0);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    result.success(errorCode.getValue());
+                }
+            });
+        }
+    }
+
+    private void getChatRoomEntry(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            String chatRoomId = (String) paramMap.get("chatRoomId");
+            String key = (String) paramMap.get("key");
+            RongIMClient.getInstance().getChatRoomEntry(chatRoomId, key, new RongIMClient.ResultCallback<Map<String, String>>() {
+                @Override
+                public void onSuccess(Map<String, String> stringStringMap) {
+                    HashMap resultMap = new HashMap();
+                    resultMap.put("code", 0);
+                    resultMap.put("entry", stringStringMap);
+                    result.success(resultMap);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    HashMap resultMap = new HashMap();
+                    resultMap.put("code", errorCode.getValue());
+                    resultMap.put("entry", new HashMap<String, String>());
+                    result.success(resultMap);
+                }
+            });
+        }
+    }
+
+    private void getAllChatRoomEntries(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            String chatRoomId = (String) paramMap.get("chatRoomId");
+            RongIMClient.getInstance().getAllChatRoomEntries(chatRoomId, new RongIMClient.ResultCallback<Map<String, String>>() {
+                @Override
+                public void onSuccess(Map<String, String> stringStringMap) {
+                    HashMap resultMap = new HashMap();
+                    resultMap.put("code", 0);
+                    resultMap.put("entry", stringStringMap);
+                    result.success(resultMap);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    HashMap resultMap = new HashMap();
+                    resultMap.put("code", errorCode.getValue());
+                    resultMap.put("entry", new HashMap<String, String>());
+                    result.success(resultMap);
+                }
+            });
+        }
+    }
+
+    private void removeChatRoomEntry(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            String chatRoomId = (String) paramMap.get("chatRoomId");
+            String key = (String) paramMap.get("key");
+            boolean sendNotification = (boolean) paramMap.get("sendNotification");
+            String notificationExtra = (String) paramMap.get("notificationExtra");
+            RongIMClient.getInstance().removeChatRoomEntry(chatRoomId, key, sendNotification, notificationExtra, new RongIMClient.OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    result.success(0);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    result.success(errorCode.getValue());
+                }
+            });
+        }
+    }
+
+    private void forceRemoveChatRoomEntry(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            String chatRoomId = (String) paramMap.get("chatRoomId");
+            String key = (String) paramMap.get("key");
+            boolean sendNotification = (boolean) paramMap.get("sendNotification");
+            String notificationExtra = (String) paramMap.get("notificationExtra");
+            RongIMClient.getInstance().forceRemoveChatRoomEntry(chatRoomId, key, sendNotification, notificationExtra, new RongIMClient.OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    result.success(0);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    result.success(errorCode.getValue());
+                }
+            });
+        }
+    }
+
 
     private Message map2Message(Map messageMap) {
         String contentStr = null;
