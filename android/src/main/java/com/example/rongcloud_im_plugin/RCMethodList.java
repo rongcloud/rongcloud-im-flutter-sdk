@@ -49,6 +49,11 @@ public class RCMethodList {
     static String MethodKeySearchMessages = "searchMessages";
     static String MethodKeySendTypingStatus = "sendTypingStatus";
     static String MethodKeyDownloadMediaMessage = "downloadMediaMessage";
+    static String MethodKeySetNotificationQuietHours = "setNotificationQuietHours";
+    static String MethodKeyRemoveNotificationQuietHours = "removeNotificationQuietHours";
+    static String MethodKeyGetNotificationQuietHours = "getNotificationQuietHours";
+    static String MethodKeyGetUnreadMentionedMessages = "getUnreadMentionedMessages";
+    static String MethodKeySendDirectionalMessage = "sendDirectionalMessage";
 
     //聊天室存储
     static String MethodKeySetChatRoomEntry = "SetChatRoomEntry";

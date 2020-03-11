@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Log;
 
 
@@ -31,7 +32,6 @@ import io.rong.common.fwlog.FwLog;
 import io.rong.imlib.AnnotationNotFoundException;
 import io.rong.imlib.IRongCallback;
 import io.rong.imlib.MessageTag;
-import io.rong.imlib.RongCommonDefine;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.ChatRoomInfo;
 import io.rong.imlib.model.Conversation;
@@ -216,7 +216,17 @@ public class RCIMFlutterWrapper {
         } else if (RCMethodList.MethodKeyRemoveChatRoomEntry.equalsIgnoreCase(call.method)) {
             removeChatRoomEntry(call.arguments, result);
         } else if (RCMethodList.MethodKeyForceRemoveChatRoomEntry.equalsIgnoreCase(call.method)) {
-            forceSetChatRoomEntry(call.arguments, result);
+            forceRemoveChatRoomEntry(call.arguments, result);
+        } else if (RCMethodList.MethodKeySetNotificationQuietHours.equalsIgnoreCase(call.method)) {
+            setNotificationQuietHours(call.arguments, result);
+        } else if (RCMethodList.MethodKeyRemoveNotificationQuietHours.equalsIgnoreCase(call.method)) {
+            removeNotificationQuietHours(call.arguments, result);
+        } else if (RCMethodList.MethodKeyGetNotificationQuietHours.equalsIgnoreCase(call.method)) {
+            getNotificationQuietHours(result);
+        } else if (RCMethodList.MethodKeyGetUnreadMentionedMessages.equalsIgnoreCase(call.method)) {
+            getUnreadMentionedMessages(call.arguments, result);
+        } else if (RCMethodList.MethodKeySendDirectionalMessage.equalsIgnoreCase(call.method)) {
+            sendDirectionalMessage(call.arguments, result);
         } else {
             result.notImplemented();
         }
@@ -2271,6 +2281,152 @@ public class RCIMFlutterWrapper {
         }
     }
 
+    //设置消息通知免打扰时间
+    private void setNotificationQuietHours(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            String startTime = (String) paramMap.get("startTime");
+            int spanMins = (int) paramMap.get("spanMins");
+            RongIMClient.getInstance().setNotificationQuietHours(startTime, spanMins, new RongIMClient.OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    result.success(0);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    result.success(errorCode.getValue());
+                }
+            });
+        }
+    }
+
+    // 删除已设置的全局时间段消息提醒屏蔽
+    private void removeNotificationQuietHours(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            String startTime = (String) paramMap.get("startTime");
+            int spanMins = (int) paramMap.get("spanMins");
+            RongIMClient.getInstance().setNotificationQuietHours(startTime, spanMins, new RongIMClient.OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    result.success(0);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    result.success(errorCode.getValue());
+                }
+            });
+        }
+    }
+
+    private void getNotificationQuietHours(final Result result) {
+        RongIMClient.getInstance().getNotificationQuietHours(new RongIMClient.GetNotificationQuietHoursCallback() {
+            @Override
+            public void onSuccess(String startTime, int spanMinutes) {
+                HashMap resultMap = new HashMap();
+                resultMap.put("code", 0);
+                resultMap.put("startTime", startTime);
+                resultMap.put("spansMin", spanMinutes);
+                result.success(resultMap);
+            }
+
+            @Override
+            public void onError(RongIMClient.ErrorCode errorCode) {
+                HashMap resultMap = new HashMap();
+                resultMap.put("code", errorCode.getValue());
+                result.success(resultMap);
+            }
+        });
+    }
+
+    private void getUnreadMentionedMessages(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            int conversationType = (int) paramMap.get("conversationType");
+            String targetId = (String) paramMap.get("targetId");
+            RongIMClient.getInstance().getUnreadMentionedMessages(Conversation.ConversationType.setValue(conversationType), targetId, new RongIMClient.ResultCallback<List<Message>>() {
+                @Override
+                public void onSuccess(List<Message> messages) {
+                    Map callBackMap = new HashMap();
+                    if (messages == null) {
+                        callBackMap.put("messages", new ArrayList());
+                        result.success(callBackMap);
+                        return;
+                    }
+                    List list = new ArrayList();
+                    for (Message msg : messages) {
+                        String messageS = MessageFactory.getInstance().message2String(msg);
+                        list.add(messageS);
+                    }
+                    callBackMap.put("messages", list);
+                    result.success(callBackMap);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    Map callBackMap = new HashMap();
+                    callBackMap.put("messages", new ArrayList());
+                    result.success(callBackMap);
+                }
+            });
+        }
+    }
+
+    private void sendDirectionalMessage(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            int conversationType = (int) paramMap.get("conversationType");
+            String targetId = (String) paramMap.get("targetId");
+            List<String> userIdList = (List<String>) paramMap.get("userIdList");
+            String content = (String) paramMap.get("content");
+            String objectName = (String) paramMap.get("objectName");
+            String pushContent = (String) paramMap.get("pushContent");
+            String pushData = (String) paramMap.get("pushData");
+            if (TextUtils.isEmpty(content)) {
+                return;
+            }
+            byte[] bytes = content.getBytes();
+            if (bytes.length <= 0) {
+                return;
+            }
+            MessageContent messageContent = newMessageContent(objectName, bytes);
+            if (userIdList == null) {
+                return;
+            }
+            String[] userIdArr = new String[userIdList.size()];
+            userIdList.toArray(userIdArr);
+            RongIMClient.getInstance().sendDirectionalMessage(Conversation.ConversationType.setValue(conversationType), targetId, messageContent, userIdArr, pushContent, pushData, new IRongCallback.ISendMessageCallback() {
+                @Override
+                public void onAttached(Message message) {
+                    String messageS = MessageFactory.getInstance().message2String(message);
+                    Map msgMap = new HashMap();
+                    msgMap.put("message", messageS);
+                    msgMap.put("status", 10);
+                    result.success(msgMap);
+                }
+
+                @Override
+                public void onSuccess(Message message) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("messageId", message.getMessageId());
+                    resultMap.put("status", 30);
+                    resultMap.put("code", 0);
+                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
+                }
+
+                @Override
+                public void onError(Message message, RongIMClient.ErrorCode errorCode) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("messageId", message.getMessageId());
+                    resultMap.put("status", 20);
+                    resultMap.put("code", errorCode.getValue());
+                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
+                }
+            });
+        }
+    }
 
     private Message map2Message(Map messageMap) {
         String contentStr = null;

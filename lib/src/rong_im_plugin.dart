@@ -1016,7 +1016,7 @@ class RongcloudImPlugin {
     List list = await _channel.invokeMethod(
         RCMethodKey.GetUnreadMentionedMessages, map);
     if (list == null) {
-      return null;
+      return List();
     }
     List messageList = new List();
     for (String conStr in list) {
