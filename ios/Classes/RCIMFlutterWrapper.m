@@ -1539,7 +1539,7 @@
 #pragma mark - private method
 
 - (BOOL)isMediaMessage:(NSString *)objName {
-    if([objName isEqualToString:@"RC:ImgMsg"] || [objName isEqualToString:@"RC:HQVCMsg"] || [objName isEqualToString:@"RC:SightMsg"]) {
+    if([objName isEqualToString:@"RC:ImgMsg"] || [objName isEqualToString:@"RC:HQVCMsg"] || [objName isEqualToString:@"RC:SightMsg"] || [objName isEqualToString:@"RC:FileMsg"]) {
         return YES;
     }
     return NO;

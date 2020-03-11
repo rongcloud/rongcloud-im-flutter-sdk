@@ -9,8 +9,8 @@ class FileMessage extends MessageContent{
   int progress;
   String localPath;
   String mMediaUrl;
-  String extra;
-  String mName;
+  String extra = "";
+  String mName = "";
 
   /// [localPath] 本地路径，Android 必须以 file:// 开头
   static FileMessage obtain(String localPath) {
@@ -35,7 +35,10 @@ class FileMessage extends MessageContent{
   @override
   String encode() {
     Map map = {"localPath":this.localPath,"extra":this.extra,"mType":mType
-    ,"name":mName,"size":mSize,"fileUrl":mMediaUrl};
+    ,"name":mName,"size":mSize};
+    if (mMediaUrl != null && mMediaUrl.length > 0) {
+      map['fileUrl'] = mMediaUrl;
+    }
     if (this.sendUserInfo != null) {
       Map userMap = super.encodeUserInfo(this.sendUserInfo);
       map["user"] = userMap;
