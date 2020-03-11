@@ -76,6 +76,8 @@ public class RCMethodList {
     static String MethodCallBackKeyConnectionStatusChange = "ConnectionStatusChangeCallBack";
     static String MethodCallBackKeySendDataToFlutter = "SendDataToFlutterCallBack";
     static String MethodCallBackKeyReceiveReadReceipt = "ReceiveReadReceiptCallBack";
+    static String MethodCallBackKeyReceiptRequest = "ReceiptRequestCallBack";
+    static String MethodCallBackKeyReceiptResponse = "ReceiptResponseCallBack";
     static String MethodCallBackKeyTypingStatus ="TypingStatusChangedCallBack";
     static String MethodCallBackKeyDownloadMediaMessage = "DownloadMediaMessageCallBack";
     static String MethodCallBackRecallMessage = "RecallMessageCallBack";

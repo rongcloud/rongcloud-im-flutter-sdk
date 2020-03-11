@@ -81,12 +81,35 @@ public class RCIMFlutterWrapper {
             }
 
             @Override
-            public void onMessageReceiptRequest(Conversation.ConversationType conversationType, String s, String s1) {
+            public void onMessageReceiptRequest(final Conversation.ConversationType conversationType, final String targetId, final String messageUId) {
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!TextUtils.isEmpty(messageUId)) {
+                            Map msgMap = new HashMap();
+                            msgMap.put("targetId", targetId);
+                            msgMap.put("conversationType", conversationType.getValue());
+                            msgMap.put("messageUId", messageUId);
+                            mChannel.invokeMethod(RCMethodList.MethodCallBackKeyReceiptRequest, msgMap);
+                        }
+                    }
+                });
 
             }
 
             @Override
-            public void onMessageReceiptResponse(Conversation.ConversationType conversationType, String s, String s1, HashMap<String, Long> hashMap) {
+            public void onMessageReceiptResponse(final Conversation.ConversationType conversationType, final String targetId, final String messageUId, final HashMap<String, Long> readerList) {
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Map msgMap = new HashMap();
+                        msgMap.put("targetId", targetId);
+                        msgMap.put("conversationType", conversationType.getValue());
+                        msgMap.put("messageUId", messageUId);
+                        msgMap.put("readerList", readerList);
+                        mChannel.invokeMethod(RCMethodList.MethodCallBackKeyReceiptResponse, msgMap);
+                    }
+                });
 
             }
         });
