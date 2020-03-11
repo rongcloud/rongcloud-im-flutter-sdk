@@ -1,18 +1,24 @@
 package com.example.rongcloud_im_plugin;
 
 
+import android.text.TextUtils;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.rong.common.RLog;
 import io.rong.imlib.model.ChatRoomInfo;
 import io.rong.imlib.model.ChatRoomMemberInfo;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
+import io.rong.imlib.model.ReadReceiptInfo;
 import io.rong.imlib.model.SearchConversationResult;
 import io.rong.imlib.typingmessage.TypingStatus;
 import io.rong.message.ImageMessage;
@@ -46,6 +52,14 @@ public class MessageFactory {
         }
         if (message.getSentStatus() != null) {
             map.put("sentStatus", message.getSentStatus().getValue());
+        }
+        ReadReceiptInfo readInfo = message.getReadReceiptInfo();
+        if (readInfo != null) {
+            HashMap readReceiptMap = new HashMap();
+            readReceiptMap.put("isReceiptRequestMessage",readInfo.isReadReceiptMessage());
+            readReceiptMap.put("hasRespond",readInfo.hasRespond());
+            readReceiptMap.put("userIdList",readInfo.getRespondUserIdList());
+            map.put("readReceiptInfo", readReceiptMap);
         }
         map.put("sentTime", message.getSentTime());
         map.put("objectName", message.getObjectName());
