@@ -4,7 +4,6 @@ import 'dart:core';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import 'item/widget_util.dart';
@@ -23,6 +22,7 @@ class ConversationListPage extends StatefulWidget {
 class _ConversationListPageState extends State<ConversationListPage> implements ConversationListItemDelegate{
 
   List conList = new List();
+  List displayConversationType = [RCConversationType.Private,RCConversationType.Group];
 
   @override
   void initState() {
@@ -46,7 +46,7 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
   }
 
   updateConversationList() async {
-    List list = await RongcloudImPlugin.getConversationList([RCConversationType.Private,RCConversationType.Group]);
+    List list = await RongcloudImPlugin.getConversationList(displayConversationType);
     if(list != null) {
       // list.sort((a,b) => b.sentTime.compareTo(a.sentTime));
       conList = list;
@@ -62,11 +62,12 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
 
   addIMhandler() {
     EventBus.instance.addListener(EventKeys.ReceiveMessage, (map) {
-      // Message msg = map["message"];
+      Message msg = map["message"];
       int left = map["left"];
       bool hasPackage = map["hasPackage"];
+      bool isDisplayConversation = msg.conversationType != null && displayConversationType.contains(msg.conversationType);
       //如果离线消息过多，那么可以等到 hasPackage 为 false 并且 left == 0 时更新会话列表
-      if(!hasPackage && left == 0) {
+      if(!hasPackage && left == 0 && isDisplayConversation) {
         updateConversationList();
       }
     });

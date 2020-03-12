@@ -11,6 +11,7 @@ import 'other/home_page.dart';
 import 'other/debug_page.dart';
 import 'other/message_read_page.dart';
 import 'other/chat_debug_page.dart';
+import 'other/chatroom_debug_page.dart';
 
 final routes = {
   '/': (context) => HomePage(),
@@ -32,6 +33,8 @@ final routes = {
       WebViewPage(url: arguments),
   '/chat_debug':(context, {arguments}) =>
       ChatDebugPage(arguments: arguments),
+  '/chatroom_debug':(context, {arguments}) =>
+      ChatRoomDebugPage(),
       
 };
 

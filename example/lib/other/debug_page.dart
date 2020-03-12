@@ -15,10 +15,11 @@ class DebugPage extends StatelessWidget {
       "获取特定方向的消息列表",
       "分页获取会话",
       "消息携带用户信息",
+      "聊天室状态存储测试",
     ];
   }
 
-  void _didTap(int index) {
+  void _didTap(int index, BuildContext context) {
     print("did tap debug " + titles[index]);
     switch (index) {
       case 0:
@@ -41,6 +42,9 @@ class DebugPage extends StatelessWidget {
         break;
       case 6:
         _sendMessageAddSendUserInfo();
+        break;
+      case 7:
+        _pushToChatRoomDebug(context);
         break;
     }
   }
@@ -141,6 +145,10 @@ class DebugPage extends StatelessWidget {
     Fluttertoast.showToast(msg: toast, timeInSecForIos: 3);
   }
 
+  void _pushToChatRoomDebug(BuildContext context) {
+    Navigator.pushNamed(context, "/chatroom_debug");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -153,7 +161,7 @@ class DebugPage extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           return MaterialButton(
             onPressed: () {
-              _didTap(index);
+              _didTap(index, context);
             },
             child: Text(titles[index]),
             color: Colors.blue,
