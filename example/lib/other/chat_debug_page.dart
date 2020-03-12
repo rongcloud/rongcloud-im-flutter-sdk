@@ -29,6 +29,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
       "设置免打扰",
       "取消免打扰",
       "查看免打扰",
+      "搜索会话消息记录"
     ];
     if (conversationType == RCConversationType.Private) {
       List onlyPrivateTitles = [
@@ -65,6 +66,8 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
         break;
       case "查看免打扰":
         _getConStatus();
+        break;
+        case "搜索会话消息记录":
         break;
     }
   }

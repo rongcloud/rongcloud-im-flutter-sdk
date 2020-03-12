@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:core';
 
@@ -19,10 +18,13 @@ class ConversationListPage extends StatefulWidget {
   }
 }
 
-class _ConversationListPageState extends State<ConversationListPage> implements ConversationListItemDelegate{
-
+class _ConversationListPageState extends State<ConversationListPage>
+    implements ConversationListItemDelegate {
   List conList = new List();
-  List displayConversationType = [RCConversationType.Private,RCConversationType.Group];
+  List<int> displayConversationType = [
+    RCConversationType.Private,
+    RCConversationType.Group
+  ];
 
   @override
   void initState() {
@@ -31,7 +33,7 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
     updateConversationList();
 
     EventBus.instance.addListener(EventKeys.ConversationPageDispose, (arg) {
-      Timer(Duration(milliseconds:10), (){
+      Timer(Duration(milliseconds: 10), () {
         addIMhandler();
         updateConversationList();
         _renfreshUI();
@@ -46,8 +48,9 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
   }
 
   updateConversationList() async {
-    List list = await RongcloudImPlugin.getConversationList(displayConversationType);
-    if(list != null) {
+    List list =
+        await RongcloudImPlugin.getConversationList(displayConversationType);
+    if (list != null) {
       // list.sort((a,b) => b.sentTime.compareTo(a.sentTime));
       conList = list;
     }
@@ -55,9 +58,7 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
   }
 
   void _renfreshUI() {
-    setState(() {
-      
-    });
+    setState(() {});
   }
 
   addIMhandler() {
@@ -65,9 +66,10 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
       Message msg = map["message"];
       int left = map["left"];
       bool hasPackage = map["hasPackage"];
-      bool isDisplayConversation = msg.conversationType != null && displayConversationType.contains(msg.conversationType);
+      bool isDisplayConversation = msg.conversationType != null &&
+          displayConversationType.contains(msg.conversationType);
       //如果离线消息过多，那么可以等到 hasPackage 为 false 并且 left == 0 时更新会话列表
-      if(!hasPackage && left == 0 && isDisplayConversation) {
+      if (!hasPackage && left == 0 && isDisplayConversation) {
         updateConversationList();
       }
     });
@@ -77,7 +79,7 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
     });
 
     RongcloudImPlugin.onConnectionStatusChange = (int connectionStatus) {
-      if(RCConnectionStatus.Connected == connectionStatus) {
+      if (RCConnectionStatus.Connected == connectionStatus) {
         updateConversationList();
       }
     };
@@ -85,9 +87,11 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
 
   void _deleteConversation(Conversation conversation) {
     //删除会话需要刷新会话列表数据
-    RongcloudImPlugin.removeConversation(conversation.conversationType, conversation.targetId, (bool success) {
-      if(success) {
-        RongcloudImPlugin.deleteMessages(conversation.conversationType, conversation.targetId, (int code) {
+    RongcloudImPlugin.removeConversation(
+        conversation.conversationType, conversation.targetId, (bool success) {
+      if (success) {
+        RongcloudImPlugin.deleteMessages(
+            conversation.conversationType, conversation.targetId, (int code) {
           updateConversationList();
           _renfreshUI();
         });
@@ -97,16 +101,19 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
 
   void _clearConversationUnread(Conversation conversation) async {
     //清空未读需要刷新会话列表数据
-    bool success = await RongcloudImPlugin.clearMessagesUnreadStatus(conversation.conversationType, conversation.targetId);
-    if(success) {
+    bool success = await RongcloudImPlugin.clearMessagesUnreadStatus(
+        conversation.conversationType, conversation.targetId);
+    if (success) {
       updateConversationList();
       _renfreshUI();
     }
   }
 
   void _setConversationToTop(Conversation conversation, bool isTop) {
-    RongcloudImPlugin.setConversationToTop(conversation.conversationType, conversation.targetId, isTop, (bool status, int code) {
-      if(code == 0) {
+    RongcloudImPlugin.setConversationToTop(
+        conversation.conversationType, conversation.targetId, isTop,
+        (bool status, int code) {
+      if (code == 0) {
         updateConversationList();
         _renfreshUI();
       }
@@ -117,11 +124,12 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
     return new ListView.builder(
       scrollDirection: Axis.vertical,
       itemCount: conList.length,
-      itemBuilder: (BuildContext context,int index) {
-        if(conList.length <= 0) {
+      itemBuilder: (BuildContext context, int index) {
+        if (conList.length <= 0) {
           return WidgetUtil.buildEmptyWidget();
         }
-        return ConversationListItem(delegate:this,conversation:conList[index]);
+        return ConversationListItem(
+            delegate: this, conversation: conList[index]);
       },
     );
   }
@@ -138,34 +146,39 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
   }
 
   @override
-  void didLongPressConversation(Conversation conversation,Offset tapPos) {
-    Map<String,String> actionMap = {
-      RCLongPressAction.DeleteConversationKey:RCLongPressAction.DeleteConversationValue,
-      RCLongPressAction.ClearUnreadKey:RCLongPressAction.ClearUnreadValue,
-      RCLongPressAction.SetConversationToTopKey:conversation.isTop ? RCLongPressAction.CancelConversationToTopValue : RCLongPressAction.SetConversationToTopValue
+  void didLongPressConversation(Conversation conversation, Offset tapPos) {
+    Map<String, String> actionMap = {
+      RCLongPressAction.DeleteConversationKey:
+          RCLongPressAction.DeleteConversationValue,
+      RCLongPressAction.ClearUnreadKey: RCLongPressAction.ClearUnreadValue,
+      RCLongPressAction.SetConversationToTopKey: conversation.isTop
+          ? RCLongPressAction.CancelConversationToTopValue
+          : RCLongPressAction.SetConversationToTopValue
     };
-    WidgetUtil.showLongPressMenu(context, tapPos,actionMap,(String key) {
-      print("当前选中的是 "+ key);
-      if(key == RCLongPressAction.DeleteConversationKey) {
+    WidgetUtil.showLongPressMenu(context, tapPos, actionMap, (String key) {
+      print("当前选中的是 " + key);
+      if (key == RCLongPressAction.DeleteConversationKey) {
         _deleteConversation(conversation);
-      }else if(key == RCLongPressAction.ClearUnreadKey) {
+      } else if (key == RCLongPressAction.ClearUnreadKey) {
         _clearConversationUnread(conversation);
-      }else if(key == RCLongPressAction.SetConversationToTopKey) {
+      } else if (key == RCLongPressAction.SetConversationToTopKey) {
         bool isTop = true;
         if (conversation.isTop) {
           isTop = false;
         }
         _setConversationToTop(conversation, isTop);
-      }else {
-        print("未实现操作 "+key);
+      } else {
+        print("未实现操作 " + key);
       }
     });
   }
 
   @override
   void didTapConversation(Conversation conversation) {
-    Map arg = {"coversationType":conversation.conversationType,"targetId":conversation.targetId};
-    Navigator.pushNamed(context, "/conversation",arguments: arg);
+    Map arg = {
+      "coversationType": conversation.conversationType,
+      "targetId": conversation.targetId
+    };
+    Navigator.pushNamed(context, "/conversation", arguments: arg);
   }
-  
 }
