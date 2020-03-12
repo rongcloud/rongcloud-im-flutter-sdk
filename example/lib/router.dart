@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin_example/im/pages/file_preview_page.dart';
+import 'package:rongcloud_im_plugin_example/other/search_message_page.dart';
 
 import 'im/pages/conversation_page.dart';
 import 'im/pages/image_preview_page.dart';
@@ -17,25 +18,20 @@ final routes = {
   '/': (context) => HomePage(),
   '/conversation': (context, {arguments}) =>
       ConversationPage(arguments: arguments),
-  '/image_preview':(context, {arguments}) =>
+  '/image_preview': (context, {arguments}) =>
       ImagePreviewPage(message: arguments),
-  '/debug':(context) =>
-      DebugPage(),
-  '/video_record':(context, {arguments}) =>
-        VideoRecordPage(arguments: arguments),
-  '/video_play':(context, {arguments}) =>
-      VideoPlayPage(message: arguments),
-  '/message_read_page':(context, {arguments}) =>
+  '/debug': (context) => DebugPage(),
+  '/video_record': (context, {arguments}) =>
+      VideoRecordPage(arguments: arguments),
+  '/video_play': (context, {arguments}) => VideoPlayPage(message: arguments),
+  '/message_read_page': (context, {arguments}) =>
       MessageReadPage(message: arguments),
-  '/file_preview':(context, {arguments}) =>
+  '/file_preview': (context, {arguments}) =>
       FilePreviewPage(message: arguments),
-  '/webview':(context, {arguments}) =>
-      WebViewPage(url: arguments),
-  '/chat_debug':(context, {arguments}) =>
-      ChatDebugPage(arguments: arguments),
-  '/chatroom_debug':(context, {arguments}) =>
-      ChatRoomDebugPage(),
-      
+  '/webview': (context, {arguments}) => WebViewPage(url: arguments),
+  '/chat_debug': (context, {arguments}) => ChatDebugPage(arguments: arguments),
+  '/chatroom_debug': (context, {arguments}) => ChatRoomDebugPage(),
+  '/search_message': (context, {arguments}) => SearchMessagePage(arguments: arguments),
 };
 
 var onGenerateRoute = (RouteSettings settings) {

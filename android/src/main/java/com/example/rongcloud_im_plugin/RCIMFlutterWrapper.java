@@ -2220,19 +2220,30 @@ public class RCIMFlutterWrapper {
             String key = (String) paramMap.get("key");
             RongIMClient.getInstance().getChatRoomEntry(chatRoomId, key, new RongIMClient.ResultCallback<Map<String, String>>() {
                 @Override
-                public void onSuccess(Map<String, String> stringStringMap) {
-                    HashMap resultMap = new HashMap();
-                    resultMap.put("code", 0);
-                    resultMap.put("entry", stringStringMap);
-                    result.success(resultMap);
+                public void onSuccess(final Map<String, String> stringStringMap) {
+                    mMainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            HashMap resultMap = new HashMap();
+                            resultMap.put("code", 0);
+                            resultMap.put("entry", stringStringMap);
+                            result.success(resultMap);
+                        }
+                    });
                 }
 
                 @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    HashMap resultMap = new HashMap();
-                    resultMap.put("code", errorCode.getValue());
-                    resultMap.put("entry", new HashMap<String, String>());
-                    result.success(resultMap);
+                public void onError(final RongIMClient.ErrorCode errorCode) {
+                    mMainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            HashMap resultMap = new HashMap();
+                            resultMap.put("code", errorCode.getValue());
+                            resultMap.put("entry", new HashMap<String, String>());
+                            result.success(resultMap);
+                        }
+                    });
+
                 }
             });
         }
@@ -2244,19 +2255,30 @@ public class RCIMFlutterWrapper {
             String chatRoomId = (String) paramMap.get("chatRoomId");
             RongIMClient.getInstance().getAllChatRoomEntries(chatRoomId, new RongIMClient.ResultCallback<Map<String, String>>() {
                 @Override
-                public void onSuccess(Map<String, String> stringStringMap) {
-                    HashMap resultMap = new HashMap();
-                    resultMap.put("code", 0);
-                    resultMap.put("entry", stringStringMap);
-                    result.success(resultMap);
+                public void onSuccess(final Map<String, String> stringStringMap) {
+                    mMainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            HashMap resultMap = new HashMap();
+                            resultMap.put("code", 0);
+                            resultMap.put("entry", stringStringMap);
+                            result.success(resultMap);
+                        }
+                    });
                 }
 
                 @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    HashMap resultMap = new HashMap();
-                    resultMap.put("code", errorCode.getValue());
-                    resultMap.put("entry", new HashMap<String, String>());
-                    result.success(resultMap);
+                public void onError(final RongIMClient.ErrorCode errorCode) {
+                    mMainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            HashMap resultMap = new HashMap();
+                            resultMap.put("code", errorCode.getValue());
+                            resultMap.put("entry", new HashMap<String, String>());
+                            result.success(resultMap);
+                        }
+                    });
+
                 }
             });
         }

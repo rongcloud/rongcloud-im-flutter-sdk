@@ -68,6 +68,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
         _getConStatus();
         break;
         case "搜索会话消息记录":
+        _goToSearchMessagePage();
         break;
     }
   }
@@ -149,6 +150,14 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
       print(toast);
       Fluttertoast.showToast(msg: toast);
     });
+  }
+
+  void _goToSearchMessagePage(){
+    Map arg = {
+      "coversationType": conversationType,
+      "targetId": targetId
+    };
+    Navigator.pushNamed(context, "/search_message", arguments: arg);
   }
 
   @override

@@ -17,6 +17,10 @@ class Message extends Object {
   
   //如果 content 为 null ，说明消息内容本身未被 flutter 层正确解析，则消息内容会保存到该 map 中
   Map originContentMap;
+
+  String toString(){
+  return "messageId:$messageId messageUId:$messageUId objectName:$objectName conversationType:$conversationType targetId:$targetId  conversationType:$conversationType messageDirection:$messageDirection senderUserId:$senderUserId receivedStatus:$receivedStatus sentStatus:$sentStatus sentTime:$sentTime content:${content.encode()}";
+}
 }
 
 class ReadReceiptInfo extends Object {
