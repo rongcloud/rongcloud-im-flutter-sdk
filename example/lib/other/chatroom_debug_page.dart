@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import '../im/util/code_util.dart';
+import '../im/util/dialog_util.dart';
 
 class ChatRoomDebugPage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() =>
-      _ChatRoomDebugPageState();
+  State<StatefulWidget> createState() => _ChatRoomDebugPageState();
 }
 
 class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
@@ -16,23 +17,27 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
   @override
   void initState() {
     super.initState();
-      titles = [
-        "加入聊天室 1",
-        "设置 KV",
-        "强制设置 KV",
-        "删除 KV",
-        "强制删除 KV",
-        "获取单个 KV",
-        "获取所有 KV",
-        "退出聊天室 1",
-      ];
+    titles = [
+      "加入聊天室 1",
+      "设置 KV",
+      "强制设置 KV",
+      "删除 KV",
+      "强制删除 KV",
+      "获取单个 KV",
+      "获取所有 KV",
+      "退出聊天室 1",
+    ];
 
     RongcloudImPlugin.onJoinChatRoom = (String targetId, int status) {
-      Fluttertoast.showToast(msg: "加入聊天室 $targetId " + (status == 0 ? "成功" : "失败"), timeInSecForIos: 2);
+      Fluttertoast.showToast(
+          msg: "加入聊天室 $targetId " + (status == 0 ? "成功" : "失败"),
+          timeInSecForIos: 2);
     };
 
     RongcloudImPlugin.onQuitChatRoom = (String targetId, int status) {
-      Fluttertoast.showToast(msg: "退出聊天室 $targetId " + (status == 0 ? "成功" : "失败"), timeInSecForIos: 2);
+      Fluttertoast.showToast(
+          msg: "退出聊天室 $targetId " + (status == 0 ? "成功" : "失败"),
+          timeInSecForIos: 2);
     };
   }
 
@@ -71,38 +76,52 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
   }
 
   void _setEntry() {
-    RongcloudImPlugin.setChatRoomEntry(targetId, "key1", "value1", true, true, "notificationExtra", (int code) {
-      Fluttertoast.showToast(msg: "设置 KV：{key1: value1}, 发送通知，退出时删除，code：$code", timeInSecForIos: 2);
+    RongcloudImPlugin.setChatRoomEntry(
+        targetId, "key1", "value1", true, true, "notificationExtra",
+        (int code) {
+      DialogUtil.showAlertDiaLog(context,
+          "设置 KV：{key1: value1}, 发送通知，退出时删除，code：" + CodeUtil.codeString(code));
     });
   }
 
   void _forceSetEntry() {
-    RongcloudImPlugin.forceSetChatRoomEntry(targetId, "key2", "value2", false, false, "notificationExtra", (int code) {
-      Fluttertoast.showToast(msg: "强制删除 KV：{key2: value2}, 不发送通知，退出时不删除，code：$code", timeInSecForIos: 2);
+    RongcloudImPlugin.forceSetChatRoomEntry(
+        targetId, "key2", "value2", false, false, "notificationExtra",
+        (int code) {
+      DialogUtil.showAlertDiaLog(
+          context,
+          "强制删除 KV：{key2: value2}, 不发送通知，退出时不删除，code：" +
+              CodeUtil.codeString(code));
     });
   }
 
   void _removeEntry() {
-    RongcloudImPlugin.removeChatRoomEntry(targetId, "key1", true, "notificationExtra",  (int code) {
-      Fluttertoast.showToast(msg: "删除 KV：key1, 发送通知，code：$code", timeInSecForIos: 2);
+    RongcloudImPlugin.removeChatRoomEntry(
+        targetId, "key1", true, "notificationExtra", (int code) {
+      DialogUtil.showAlertDiaLog(
+          context, "删除 KV：key1, 发送通知，code：" + CodeUtil.codeString(code));
     });
   }
 
   void _forceRemoveEntry() {
-    RongcloudImPlugin.forceRemoveChatRoomEntry(targetId, "key2", false, "notificationExtra",  (int code) {
-      Fluttertoast.showToast(msg: "强制删除 KV：key2, 不发送通知，code：$code", timeInSecForIos: 2);
+    RongcloudImPlugin.forceRemoveChatRoomEntry(
+        targetId, "key2", false, "notificationExtra", (int code) {
+      DialogUtil.showAlertDiaLog(
+          context, "强制删除 KV：key2, 不发送通知，code：" + CodeUtil.codeString(code));
     });
   }
 
   void _getEntry() {
     RongcloudImPlugin.getChatRoomEntry(targetId, "key1", (Map entry, int code) {
-      Fluttertoast.showToast(msg: "获取单个 KV：key1, code：$code，entry：$entry", timeInSecForIos: 2);
+      DialogUtil.showAlertDiaLog(context,
+          "获取单个 KV：key1, code：" + CodeUtil.codeString(code) + "，entry：$entry");
     });
   }
 
   void _getAllEntry() {
     RongcloudImPlugin.getAllChatRoomEntries(targetId, (Map entry, int code) {
-      Fluttertoast.showToast(msg: "获取所有 KV：code：$code，entry：$entry", timeInSecForIos: 3);
+      DialogUtil.showAlertDiaLog(context,
+          "获取所有 KV：code：" + CodeUtil.codeString(code) + "，entry：$entry");
     });
   }
 
@@ -114,7 +133,7 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Chat Debug"),
+        title: Text("ChatRoom Debug"),
       ),
       body: ListView.builder(
         scrollDirection: Axis.vertical,

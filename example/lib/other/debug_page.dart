@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart' as prefix ;
+import '../im/util/dialog_util.dart';
 
-class DebugPage extends StatelessWidget {
-  List titles;
-  String blackUserId = "blackUserId";
+class DebugPage extends StatefulWidget {
 
-  DebugPage() {
-    titles = [
+  @override
+  State<StatefulWidget> createState() =>
+      _DebugPageState();
+}
+
+class _DebugPageState extends State<DebugPage> {
+
+  List titles =[
       "设置全局屏蔽某个时间段的消息提醒",
       "查询已设置的全局时间段消息提醒屏蔽",
       "删除已设置的全局时间段消息提醒屏蔽",
@@ -17,7 +21,6 @@ class DebugPage extends StatelessWidget {
       "消息携带用户信息",
       "聊天室状态存储测试",
     ];
-  }
 
   void _didTap(int index, BuildContext context) {
     print("did tap debug " + titles[index]);
@@ -54,7 +57,7 @@ class DebugPage extends StatelessWidget {
     prefix.RongcloudImPlugin.setNotificationQuietHours("12:10:10", 120, (int code) {
       String toast = "设置全局屏蔽某个时间段的消息提醒:\n" + (code == 0 ? "设置成功" :  "设置失败, code:" + code.toString());
       print(toast);
-      Fluttertoast.showToast(msg: toast);
+      DialogUtil.showAlertDiaLog(context, toast);
     });
   }
 
@@ -63,7 +66,7 @@ class DebugPage extends StatelessWidget {
     prefix.RongcloudImPlugin.getNotificationQuietHours((int code, String startTime, int spansMin) {
       String toast = "查询已设置的全局时间段消息提醒屏蔽\n: startTime:" + startTime + " spansMin:" + spansMin.toString() + (code == 0 ? "" :  "\n设置失败, code:" + code.toString());
       print(toast);
-      Fluttertoast.showToast(msg: toast, timeInSecForIos: 2);
+      DialogUtil.showAlertDiaLog(context, toast);
     });
   }
 
@@ -72,7 +75,7 @@ class DebugPage extends StatelessWidget {
     prefix.RongcloudImPlugin.removeNotificationQuietHours((int code) {
       String toast = "删除已设置的全局时间段消息提醒屏蔽:\n" + (code == 0 ? "删除成功" :  "删除失败, code:" + code.toString());
       print(toast);
-      Fluttertoast.showToast(msg: toast);
+      DialogUtil.showAlertDiaLog(context, toast);
     });
   }
 
@@ -142,7 +145,7 @@ class DebugPage extends StatelessWidget {
     prefix.Message message = await prefix.RongcloudImPlugin.sendMessage(prefix.RCConversationType.Private, "SealTalk", msg);
     String toast = "发送消息携带用户信息:\n 消息的 objectName:"+message.content.getObjectName()+"\nmsgContent:"+ message.content.encode();
     print(toast);
-    Fluttertoast.showToast(msg: toast, timeInSecForIos: 3);
+    DialogUtil.showAlertDiaLog(context, toast);
   }
 
   void _pushToChatRoomDebug(BuildContext context) {
