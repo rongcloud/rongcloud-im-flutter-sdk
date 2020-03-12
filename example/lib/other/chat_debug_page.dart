@@ -25,50 +25,45 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     super.initState();
     conversationType = arguments["coversationType"];
     targetId = arguments["targetId"];
-
+    titles = [
+      "设置免打扰",
+      "取消免打扰",
+      "查看免打扰",
+    ];
     if (conversationType == RCConversationType.Private) {
-      isPrivate = true;
-      titles = [
+      List onlyPrivateTitles = [
         "加入黑名单",
         "移除黑名单",
         "查看黑名单状态",
         "获取黑名单列表",
-        "设置免打扰",
-        "取消免打扰",
-        "查看免打扰",
       ];
+      titles.addAll(onlyPrivateTitles);
     } else if (conversationType == RCConversationType.Group) {
-      isPrivate = false;
-      titles = [
-        "设置免打扰",
-        "取消免打扰",
-        "查看免打扰",
-      ];
     }
   }
 
   void _didTap(int index) {
     print("did tap debug " + titles[index]);
-    switch (index) {
-      case 0:
-        isPrivate ? _addBlackList() : _setConStatusEnable();
+    switch (titles[index]) {
+      case "加入黑名单":
+        _addBlackList();
         break;
-      case 1:
-        isPrivate ? _removeBalckList() : _setConStatusDisanable();
+      case "移除黑名单":
+        _removeBalckList();
         break;
-      case 2:
-        isPrivate ? _getBlackStatus() : _getConStatus();
+      case "查看黑名单状态":
+        _getBlackStatus();
         break;
-      case 3:
-        isPrivate ? _getBlackList() : _getBlackList();
+      case "获取黑名单列表":
+        _getBlackList();
         break;
-      case 4:
+      case "设置免打扰":
         _setConStatusEnable();
         break;
-      case 5:
+      case "取消免打扰":
         _setConStatusDisanable();
         break;
-      case 6:
+      case "查看免打扰":
         _getConStatus();
         break;
     }
@@ -115,7 +110,10 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     print("_getBlackList");
     RongcloudImPlugin.getBlackList((List/*<String>*/ userIdList, int code) {
       Fluttertoast.showToast(
-          msg: "获取黑名单列表:\n userId 列表:" + userIdList.toString() + (code == 0 ? "" : "\n获取失败，错误码 code:" + code.toString()), timeInSecForIos: 2);
+          msg: "获取黑名单列表:\n userId 列表:" +
+              userIdList.toString() +
+              (code == 0 ? "" : "\n获取失败，错误码 code:" + code.toString()),
+          timeInSecForIos: 2);
       userIdList.forEach((userId) {
         print("userId:" + userId);
       });
@@ -143,7 +141,8 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   void _getConStatus() {
     RongcloudImPlugin.getConversationNotificationStatus(
         RCConversationType.Private, targetId, (int status, int code) {
-      String toast = "getConversationNotificationStatus3 免打扰状态:" + (status == 0? "免打扰":"有消息提醒");
+      String toast = "getConversationNotificationStatus3 免打扰状态:" +
+          (status == 0 ? "免打扰" : "有消息提醒");
       print(toast);
       Fluttertoast.showToast(msg: toast);
     });
