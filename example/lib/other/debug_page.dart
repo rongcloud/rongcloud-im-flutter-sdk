@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart' as prefix ;
 import '../im/util/dialog_util.dart';
+import '../im/util/event_bus.dart';
 
 class DebugPage extends StatefulWidget {
 
@@ -54,7 +55,8 @@ class _DebugPageState extends State<DebugPage> {
 
   void _setNotificationQuietHours() {
     print("_setNotificationQuietHours");
-    prefix.RongcloudImPlugin.setNotificationQuietHours("12:10:10", 120, (int code) {
+    prefix.RongcloudImPlugin.setNotificationQuietHours("09:00:00", 600, (int code) {
+      EventBus.instance.commit(EventKeys.UpdateNotificationQuietStatus, {});
       String toast = "设置全局屏蔽某个时间段的消息提醒:\n" + (code == 0 ? "设置成功" :  "设置失败, code:" + code.toString());
       print(toast);
       DialogUtil.showAlertDiaLog(context, toast);
@@ -73,6 +75,7 @@ class _DebugPageState extends State<DebugPage> {
   void _removeNotificationQuietHours() {
     print("_removeNotificationQuietHours");
     prefix.RongcloudImPlugin.removeNotificationQuietHours((int code) {
+      EventBus.instance.commit(EventKeys.UpdateNotificationQuietStatus, {});
       String toast = "删除已设置的全局时间段消息提醒屏蔽:\n" + (code == 0 ? "删除成功" :  "删除失败, code:" + code.toString());
       print(toast);
       DialogUtil.showAlertDiaLog(context, toast);

@@ -18,7 +18,9 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   AppLifecycleState currentState = AppLifecycleState.resumed;
-
+  DateTime notificationQuietEndTime;
+  DateTime notificationQuietStartTime;
+  
   @override
   void initState() {
     super.initState();
@@ -28,11 +30,15 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
     WidgetsBinding.instance.addObserver(this);
 
+    EventBus.instance.addListener(EventKeys.UpdateNotificationQuietStatus, (map) {
+      _getNotificationQuietHours();
+    });
+
     prefix.RongcloudImPlugin.onMessageReceivedWrapper = (prefix.Message msg, int left, bool hasPackage, bool offline) {
       String hasP = hasPackage ? "true":"false";
       String off = offline ? "true":"false";
       print("object onMessageReceivedWrapper objName:"+msg.content.getObjectName()+" msgContent:"+msg.content.encode()+" left:"+left.toString()+" hasPackage:"+hasP+" offline:"+off);
-      if(currentState == AppLifecycleState.paused) {
+      if(currentState == AppLifecycleState.paused && !checkNoficationQuietStatus()) {
         _postLocalNotification(msg,left);
       }else {
         //通知其他页面收到消息
@@ -58,6 +64,32 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       EventBus.instance.commit(EventKeys.ReceiveReadReceipt, map);
       print("object onReceiveReadReceipt " + map.toString());
     };
+  }
+
+  void _getNotificationQuietHours() {
+    prefix.RongcloudImPlugin.getNotificationQuietHours((int code, String startTime, int spansMin) {
+      if (startTime != null && startTime.length > 0 && spansMin > 0) {
+        DateTime now = DateTime.now();
+        String nowString = now.year.toString() + "-" + now.month.toString().padLeft(2, '0') + "-" +  now.day.toString().padLeft(2, '0') + " " + startTime;
+        DateTime start = DateTime.parse(nowString);
+        notificationQuietStartTime = start;
+        notificationQuietEndTime = start.add(Duration(minutes: spansMin));
+      } else {
+        notificationQuietStartTime = null;
+        notificationQuietEndTime = null;
+      }
+    });
+  }
+
+  bool checkNoficationQuietStatus() {
+    bool isNotificationQuiet = false;
+    
+    DateTime now = DateTime.now();
+    if (notificationQuietStartTime != null && notificationQuietEndTime != null && now.isAfter(notificationQuietStartTime) && now.isBefore(notificationQuietEndTime)) {
+      isNotificationQuiet = true;
+    }
+
+    return isNotificationQuiet;
   }
 
   void _postLocalNotification(prefix.Message msg, int left) async {

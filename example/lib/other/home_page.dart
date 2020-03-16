@@ -7,7 +7,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import 'login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import '../im/util/event_bus.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -43,6 +43,7 @@ class _HomePageState extends State<HomePage> {
     if (token != null && token.length > 0) {
       int rc = await RongcloudImPlugin.connect(token);
       print('connect result '+rc.toString());
+      EventBus.instance.commit(EventKeys.UpdateNotificationQuietStatus, {});
       if (rc == 31004 || rc == 12) {
         Navigator.of(context).pushAndRemoveUntil(new MaterialPageRoute(builder: (context) => new LoginPage()), (route) => route == null);
       }
