@@ -100,7 +100,7 @@ class _SearchMessagePageState extends State<SearchMessagePage> {
       messageList.clear();
       _refreshUI();
     }
-    RongcloudImPlugin.searchMessages(conversationType, targetId, keyWord, 0, 0,
+    RongcloudImPlugin.searchMessages(conversationType, targetId, keyWord, 50, 0,
         (List/*<Message>*/ msgList, int code) {
       if (code == 0 && msgList != null) {
         messageList = msgList;

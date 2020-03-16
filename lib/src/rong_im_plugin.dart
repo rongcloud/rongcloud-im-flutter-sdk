@@ -1557,7 +1557,7 @@ class RongcloudImPlugin {
   // conversationType 指定的会话类型。
   // targetId         指定的会话 id。
   // keyword          搜索的关键字。
-  // count            返回的搜索结果数量, 传0时会返回所有搜索到的消息, 非0时,逐页返回。
+  // count            返回的搜索结果数量, count > 0。
   // beginTime        查询记录的起始时间, 传0时从最新消息开始搜索。从该时间往前搜索。
   // resultCallback   搜索结果回调。
   static void searchMessages(
