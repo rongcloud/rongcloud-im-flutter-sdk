@@ -39,7 +39,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       String off = offline ? "true":"false";
       print("object onMessageReceivedWrapper objName:"+msg.content.getObjectName()+" msgContent:"+msg.content.encode()+" left:"+left.toString()+" hasPackage:"+hasP+" offline:"+off);
       if(currentState == AppLifecycleState.paused && !checkNoficationQuietStatus()) {
-        _postLocalNotification(msg,left);
+        prefix.RongcloudImPlugin.getConversationNotificationStatus(msg.conversationType, msg.targetId, (int status, int code) {
+          if (status == 1) {
+            _postLocalNotification(msg,left);
+          }
+      });
       }else {
         //通知其他页面收到消息
         EventBus.instance.commit(EventKeys.ReceiveMessage, {"message":msg,"left":left,"hasPackage":hasPackage});
