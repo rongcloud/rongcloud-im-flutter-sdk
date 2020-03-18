@@ -332,10 +332,17 @@ class _ConversationPageState extends State<ConversationPage>
         return;
       }
       print("imagepath " + imgPath);
-      ImageMessage imgMsg = ImageMessage.obtain(imgPath);
-      Message msg = await RongcloudImPlugin.sendMessage(
+      if (imgPath.endsWith("gif")) {
+        GifMessage gifMsg = GifMessage.obtain(imgPath);
+        Message msg = await RongcloudImPlugin.sendMessage(
+          conversationType, targetId, gifMsg);
+        _insertOrReplaceMessage(msg);
+      } else {
+        ImageMessage imgMsg = ImageMessage.obtain(imgPath);
+        Message msg = await RongcloudImPlugin.sendMessage(
           conversationType, targetId, imgMsg);
-      _insertOrReplaceMessage(msg);
+        _insertOrReplaceMessage(msg);
+      }
     });
 
     Widget cameraWidget =
@@ -545,7 +552,7 @@ class _ConversationPageState extends State<ConversationPage>
     if (message.content is VoiceMessage) {
       VoiceMessage msg = message.content;
       MediaUtil.instance.startPlayAudio(msg.remoteUrl);
-    } else if (message.content is ImageMessage) {
+    } else if (message.content is ImageMessage || message.content is GifMessage) {
       Navigator.pushNamed(context, "/image_preview", arguments: message);
     } else if (message.content is SightMessage) {
       Navigator.pushNamed(context, "/video_play", arguments: message);

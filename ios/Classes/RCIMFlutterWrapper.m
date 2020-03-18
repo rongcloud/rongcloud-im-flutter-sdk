@@ -384,6 +384,17 @@
         
         content = [RCFileMessage messageWithFile:localPath];
         ((RCFileMessage *)content).extra = extra;
+    } else if ([objName isEqualToString:@"RC:GIFMsg"]) {
+        NSData *data = [contentStr dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *msgDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+        NSString *localPath = [msgDic valueForKey:@"localPath"];
+        localPath = [self getCorrectLocalPath:localPath];
+        NSString *extra = [msgDic valueForKey:@"extra"];
+        NSData *gifDate = [NSData dataWithContentsOfFile:localPath];
+        UIImage *image = [UIImage imageWithContentsOfFile:localPath];
+        content = [RCGIFMessage messageWithGIFImageData:gifDate width:image.size.width height:image.size.height];
+        ((RCGIFMessage *)content).localPath = localPath;
+        ((RCGIFMessage *)content).extra = extra;
     } else {
         NSLog(@"%s 非法的媒体消息类型",__func__);
         return;
@@ -1539,7 +1550,7 @@
 #pragma mark - private method
 
 - (BOOL)isMediaMessage:(NSString *)objName {
-    if([objName isEqualToString:@"RC:ImgMsg"] || [objName isEqualToString:@"RC:HQVCMsg"] || [objName isEqualToString:@"RC:SightMsg"] || [objName isEqualToString:@"RC:FileMsg"]) {
+    if([objName isEqualToString:@"RC:ImgMsg"] || [objName isEqualToString:@"RC:HQVCMsg"] || [objName isEqualToString:@"RC:SightMsg"] || [objName isEqualToString:@"RC:FileMsg"] || [objName isEqualToString:@"RC:GIFMsg"]) {
         return YES;
     }
     return NO;

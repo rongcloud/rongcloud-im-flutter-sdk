@@ -49,6 +49,41 @@ class MessageItemFactory extends StatelessWidget {
     return widget;
   }
 
+  ///动图消息 item
+  Widget gifMessageItem(BuildContext context) {
+    GifMessage msg = message.content;
+    Widget widget;
+    if (msg.localPath != null) {
+      String path = MediaUtil.instance.getCorrectedLocalPath(msg.localPath);
+      File file = File(path);
+      if (file != null && file.existsSync()) {
+        widget = Image.file(file);
+      } else {
+        widget = Image.network(msg.remoteUrl);
+        // 没有 localPath 时下载该媒体消息，更新 localPath
+        RongcloudImPlugin.downloadMediaMessage(message);
+      }
+    } else if (msg.remoteUrl != null) {
+      widget = Image.network(msg.remoteUrl);
+      RongcloudImPlugin.downloadMediaMessage(message);
+    } else {
+      print("GifMessage localPath && remoteUrl is null");
+    }
+
+    double screenWidth = MediaQuery.of(context).size.width;
+    if (msg.width != null &&
+        msg.height != null &&
+        msg.width > 0 &&
+        msg.height > 0 && msg.width > screenWidth / 3){
+      return Container(
+        width: msg.width.toDouble() / 3,
+        height: msg.height.toDouble() / 3,
+        child: widget,
+      );
+    }
+    return widget;
+  }
+
   ///语音消息 item
   Widget voiceMessageItem() {
     VoiceMessage msg = message.content;
@@ -154,9 +189,8 @@ class MessageItemFactory extends StatelessWidget {
     return Container(
         height: 80,
         width: 240,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
+        child:
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
           Container(
             margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
             child: Image.asset(FileUtil.fileTypeImagePath(fileMessage.mName),
@@ -177,14 +211,15 @@ class MessageItemFactory extends StatelessWidget {
                   style:
                       TextStyle(fontSize: 16, color: const Color(0xff000000)),
                 ),
-              ), 
+              ),
               Container(
-                margin: EdgeInsets.only(top: 8),
-                width: 160,
-                child: Text(
-                FileUtil.formatFileSize(fileMessage.mSize),
-                style: TextStyle(fontSize: 12, color: const Color(0xff888888)),
-              ))
+                  margin: EdgeInsets.only(top: 8),
+                  width: 160,
+                  child: Text(
+                    FileUtil.formatFileSize(fileMessage.mSize),
+                    style:
+                        TextStyle(fontSize: 12, color: const Color(0xff888888)),
+                  ))
             ],
           )
         ]));
@@ -234,7 +269,7 @@ class MessageItemFactory extends StatelessWidget {
     );
   }
 
-  Widget messageItem() {
+  Widget messageItem(BuildContext context) {
     if (message.content is TextMessage) {
       return textMessageItem();
     } else if (message.content is ImageMessage) {
@@ -247,6 +282,8 @@ class MessageItemFactory extends StatelessWidget {
       return fileMessageItem();
     } else if (message.content is RichContentMessage) {
       return richContentMessageItem();
+    } else if (message.content is GifMessage) {
+      return gifMessageItem(context);
     } else {
       return Text("无法识别消息 " + message.objectName);
     }
@@ -264,7 +301,7 @@ class MessageItemFactory extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: _getMessageWidgetBGColor(message.messageDirection),
-      child: messageItem(),
+      child: messageItem(context),
     );
   }
 }

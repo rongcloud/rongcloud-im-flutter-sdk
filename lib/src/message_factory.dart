@@ -159,6 +159,9 @@ class MessageFactory extends Object {
     }else if(objectName == RichContentMessage.objectName){
       content = new RichContentMessage();
       content.decode(contentS);
+    }else if(objectName == GifMessage.objectName){
+      content = new GifMessage();
+      content.decode(contentS);
     }
     return content;
   }
