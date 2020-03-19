@@ -151,12 +151,13 @@ class _ConversationListItemState extends State<ConversationListItem> {
     if(count <=0 || count == null) {
       return WidgetUtil.buildEmptyWidget();
     }
+    double width = count > 100 ? 25 : RCLayout.ConListUnreadSize;
     return Container(
-      width: RCLayout.ConListUnreadSize,
+      width: width,
       height: RCLayout.ConListUnreadSize,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(RCLayout.ConListUnreadSize/2.0),
+        borderRadius: BorderRadius.circular(width/2.0),
         color: Color(RCColor.ConListUnreadColor)
       ),
       child: Text(count.toString(),style:TextStyle(fontSize: RCFont.ConListUnreadFont,color: Color(RCColor.ConListUnreadTextColor)))
