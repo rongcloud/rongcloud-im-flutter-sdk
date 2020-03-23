@@ -126,7 +126,8 @@ class _ConversationPageState extends State<ConversationPage>
 
     EventBus.instance.addListener(EventKeys.ReceiveReadReceipt, (map) {
       String tId = map["tId"];
-      if (tId == this.targetId) {
+      Message lastMessage = this.messageDataSource.first;
+      if (tId == this.targetId && lastMessage.messageDirection == RCMessageDirection.Send && lastMessage.receivedStatus != RCReceivedStatus.Read){
         onGetHistoryMessages();
       }
     });
