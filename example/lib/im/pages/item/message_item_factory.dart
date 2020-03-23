@@ -59,13 +59,43 @@ class MessageItemFactory extends StatelessWidget {
       if (file != null && file.existsSync()) {
         widget = Image.file(file);
       } else {
-        widget = Image.network(msg.remoteUrl);
         // 没有 localPath 时下载该媒体消息，更新 localPath
         RongcloudImPlugin.downloadMediaMessage(message);
+        widget = Image.network(
+          msg.remoteUrl,
+          fit: BoxFit.cover,
+          loadingBuilder: (BuildContext context, Widget child,
+              ImageChunkEvent loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Center(
+              child: CircularProgressIndicator(
+                value: loadingProgress.expectedTotalBytes != null
+                    ? loadingProgress.cumulativeBytesLoaded /
+                        loadingProgress.expectedTotalBytes
+                    : null,
+              ),
+            );
+          },
+        );
       }
     } else if (msg.remoteUrl != null) {
-      widget = Image.network(msg.remoteUrl);
       RongcloudImPlugin.downloadMediaMessage(message);
+      widget = Image.network(
+          msg.remoteUrl,
+          fit: BoxFit.cover,
+          loadingBuilder: (BuildContext context, Widget child,
+              ImageChunkEvent loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Center(
+              child: CircularProgressIndicator(
+                value: loadingProgress.expectedTotalBytes != null
+                    ? loadingProgress.cumulativeBytesLoaded /
+                        loadingProgress.expectedTotalBytes
+                    : null,
+              ),
+            );
+          },
+        );
     } else {
       print("GifMessage localPath && remoteUrl is null");
     }
@@ -74,7 +104,8 @@ class MessageItemFactory extends StatelessWidget {
     if (msg.width != null &&
         msg.height != null &&
         msg.width > 0 &&
-        msg.height > 0 && msg.width > screenWidth / 3){
+        msg.height > 0 &&
+        msg.width > screenWidth / 3) {
       return Container(
         width: msg.width.toDouble() / 3,
         height: msg.height.toDouble() / 3,
