@@ -21,6 +21,7 @@ import io.rong.imlib.model.MessageContent;
 import io.rong.imlib.model.ReadReceiptInfo;
 import io.rong.imlib.model.SearchConversationResult;
 import io.rong.imlib.typingmessage.TypingStatus;
+import io.rong.message.GIFMessage;
 import io.rong.message.ImageMessage;
 import io.rong.message.SightMessage;
 import io.rong.message.TextMessage;
@@ -74,6 +75,8 @@ public class MessageFactory {
             RCMessageHandler.encodeImageMessage(message);
         } else if (message.getContent() instanceof SightMessage) {
             RCMessageHandler.encodeSightMessage(message);
+        } else if (message.getContent() instanceof GIFMessage){
+            RCMessageHandler.encodeGifMessage(message);
         }
         // 判断 TextMessage 内容不能为 null
         if (content instanceof TextMessage) {

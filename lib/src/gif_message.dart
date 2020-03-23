@@ -61,6 +61,9 @@ class GifMessage extends MessageContent {
       Map userMap = super.encodeUserInfo(this.sendUserInfo);
       map["user"] = userMap;
     }
+    if(this.remoteUrl !=null && this.remoteUrl.isNotEmpty){
+      map["remoteUrl"] = this.remoteUrl;
+    }
     return json.encode(map);
   }
 

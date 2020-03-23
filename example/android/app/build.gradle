@@ -41,8 +41,9 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         ndk {
-            abiFilters "armeabi-v7a","x86"
+            abiFilters "armeabi-v7a"
         }
+        //,"x86"
     }
 
     signingConfigs {
