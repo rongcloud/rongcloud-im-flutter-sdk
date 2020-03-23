@@ -390,10 +390,14 @@
         NSString *localPath = [msgDic valueForKey:@"localPath"];
         localPath = [self getCorrectLocalPath:localPath];
         NSString *extra = [msgDic valueForKey:@"extra"];
-        NSData *gifDate = [NSData dataWithContentsOfFile:localPath];
-        UIImage *image = [UIImage imageWithContentsOfFile:localPath];
-        content = [RCGIFMessage messageWithGIFImageData:gifDate width:image.size.width height:image.size.height];
-        ((RCGIFMessage *)content).localPath = localPath;
+        long width = [[msgDic valueForKey:@"width"] longValue];
+        long height = [[msgDic valueForKey:@"height"] longValue];
+        if (width <= 0 || height <= 0) {
+            UIImage *image = [UIImage imageWithContentsOfFile:localPath];
+            width = image.size.width;
+            height = image.size.height;
+        }
+        content = [RCGIFMessage messageWithGIFURI:localPath width:width height:height];
         ((RCGIFMessage *)content).extra = extra;
     } else {
         NSLog(@"%s 非法的媒体消息类型",__func__);

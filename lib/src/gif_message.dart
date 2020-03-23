@@ -15,9 +15,11 @@ class GifMessage extends MessageContent {
 
   /// 根据 localPath 构建 GifMessage
   /// [localPath] 本地路径，Android 必须以 file:// 开头
-  static GifMessage obtain(String localPath) {
+  static GifMessage obtain(String localPath, {int width = 0, int height = 0}) {
     GifMessage msg = new GifMessage();
     msg.localPath = localPath;
+    msg.width = width;
+    msg.height = height;
     return msg;
   }
 
