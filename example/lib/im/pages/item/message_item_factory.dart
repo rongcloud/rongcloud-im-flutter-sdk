@@ -40,9 +40,11 @@ class MessageItemFactory extends StatelessWidget {
         if (file != null && file.existsSync()) {
           widget = Image.file(file);
         } else {
+          RongcloudImPlugin.downloadMediaMessage(message);
           widget = Image.network(msg.imageUri);
         }
       } else {
+        RongcloudImPlugin.downloadMediaMessage(message);
         widget = Image.network(msg.imageUri);
       }
     }
