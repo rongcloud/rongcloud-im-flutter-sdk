@@ -85,6 +85,10 @@ class _ConversationListPageState extends State<ConversationListPage>
         updateConversationList();
       }
     };
+
+    RongcloudImPlugin.onRecallMessageReceived = (Message message) {
+      updateConversationList();
+    };
   }
 
   void _deleteConversation(Conversation conversation) {
@@ -95,7 +99,6 @@ class _ConversationListPageState extends State<ConversationListPage>
         RongcloudImPlugin.deleteMessages(
             conversation.conversationType, conversation.targetId, (int code) {
           updateConversationList();
-          _renfreshUI();
         });
       }
     });
@@ -107,7 +110,6 @@ class _ConversationListPageState extends State<ConversationListPage>
         conversation.conversationType, conversation.targetId);
     if (success) {
       updateConversationList();
-      _renfreshUI();
     }
   }
 
@@ -117,12 +119,11 @@ class _ConversationListPageState extends State<ConversationListPage>
         (bool status, int code) {
       if (code == 0) {
         updateConversationList();
-        _renfreshUI();
       }
     });
   }
 
-  void _addScroolListener(){
+  void _addScroolListener() {
     _scrollController.addListener(() {
       mPosition = _scrollController.position.pixels;
     });
