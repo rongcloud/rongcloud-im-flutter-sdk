@@ -14,6 +14,7 @@ import '../util/user_info_datesource.dart';
 import '../util/media_util.dart';
 import '../util/event_bus.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 
 enum ConversationStatus {
   Normal, //正常
@@ -354,6 +355,7 @@ class _ConversationPageState extends State<ConversationPage>
       }
 
       print("imagepath " + imgPath);
+      _saveImage(imgPath);
       ImageMessage imgMsg = ImageMessage.obtain(imgPath);
       Message msg = await RongcloudImPlugin.sendMessage(
           conversationType, targetId, imgMsg);
@@ -395,6 +397,11 @@ class _ConversationPageState extends State<ConversationPage>
     for (int i = 0; i < 10; i++) {
       phrasesList.add('快捷回复测试用例 $i');
     }
+  }
+
+  void _saveImage(String imagePath) async {
+    final result = await ImageGallerySaver.saveFile(imagePath);
+    print("save image result: " + result.toString());
   }
 
   void _sendReadReceipt() {

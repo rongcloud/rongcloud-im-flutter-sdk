@@ -11,6 +11,7 @@ import 'package:video_player/video_player.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'record_top_item.dart';
 import 'record_bottom_item.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 
 class VideoRecordPage extends StatefulWidget {
   final Map arguments;
@@ -263,10 +264,16 @@ class _VideoRecordPageState extends State<VideoRecordPage>
       print("onFinishEvent con $conversationType targetId $targetId");
       SightMessage sightMessage = SightMessage.obtain(videoPath, recodeTime);
       RongcloudImPlugin.sendMessage(conversationType, targetId, sightMessage);
+      _saveVideo(videoPath);
       onPop();
     } else {
       print("onFinishEvent videoPath is null");
     }
+  }
+
+  void _saveVideo(String videoPath) async {
+    final result = await ImageGallerySaver.saveFile(videoPath);
+    print("save video result: " + result.toString());
   }
 
   @override
