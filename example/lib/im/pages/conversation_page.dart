@@ -193,6 +193,7 @@ class _ConversationPageState extends State<ConversationPage>
       msgs.sort((a, b) => b.sentTime.compareTo(a.sentTime));
       messageDataSource = msgs;
     }
+    _sendReadReceipt();
     _refreshMessageContentListUI();
   }
 
