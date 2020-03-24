@@ -65,7 +65,10 @@ class _HomePageState extends State<HomePage> {
         },
         currentIndex: curIndex,
       ),
-      body: vcList[curIndex],
+      body: IndexedStack(
+        index: curIndex,
+        children: <Widget>[new ConversationListPage(),new ContactsPage()],
+      ),
     );
   }
   

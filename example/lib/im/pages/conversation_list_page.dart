@@ -25,6 +25,8 @@ class _ConversationListPageState extends State<ConversationListPage>
     RCConversationType.Private,
     RCConversationType.Group
   ];
+  ScrollController _scrollController;
+  double mPosition = 0;
 
   @override
   void initState() {
@@ -120,10 +122,17 @@ class _ConversationListPageState extends State<ConversationListPage>
     });
   }
 
+  void _addScroolListener(){
+    _scrollController.addListener(() {
+      mPosition = _scrollController.position.pixels;
+    });
+  }
+
   Widget _buildConversationListView() {
     return new ListView.builder(
       scrollDirection: Axis.vertical,
       itemCount: conList.length,
+      controller: _scrollController,
       itemBuilder: (BuildContext context, int index) {
         if (conList.length <= 0) {
           return WidgetUtil.buildEmptyWidget();
@@ -136,6 +145,8 @@ class _ConversationListPageState extends State<ConversationListPage>
 
   @override
   Widget build(BuildContext context) {
+    this._scrollController = ScrollController(initialScrollOffset: mPosition);
+    _addScroolListener();
     return new Scaffold(
       appBar: AppBar(
         title: Text("RongCloud IM"),
