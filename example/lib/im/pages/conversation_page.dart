@@ -122,13 +122,12 @@ class _ConversationPageState extends State<ConversationPage>
       if (msg.targetId == this.targetId) {
         _insertOrReplaceMessage(msg);
       }
-      _refreshUI();
+      _sendReadReceipt();
     });
 
     EventBus.instance.addListener(EventKeys.ReceiveReadReceipt, (map) {
       String tId = map["tId"];
-      Message lastMessage = this.messageDataSource.first;
-      if (tId == this.targetId && lastMessage.messageDirection == RCMessageDirection.Send && lastMessage.receivedStatus != RCReceivedStatus.Read){
+      if (tId == this.targetId){
         onGetHistoryMessages();
       }
     });
@@ -155,7 +154,6 @@ class _ConversationPageState extends State<ConversationPage>
       if (msg.targetId == this.targetId) {
         _insertOrReplaceMessage(msg);
       }
-      _refreshUI();
     };
 
     RongcloudImPlugin.onTypingStatusChanged =
@@ -196,8 +194,6 @@ class _ConversationPageState extends State<ConversationPage>
       messageDataSource = msgs;
     }
     _refreshMessageContentListUI();
-    _sendReadReceipt();
-    _refreshUI();
   }
 
   onGetTextMessageDraft() async {
@@ -225,7 +221,6 @@ class _ConversationPageState extends State<ConversationPage>
       messageDataSource.insert(0, message);
     }
     _refreshMessageContentListUI();
-    _refreshUI();
   }
 
   Widget _getExtentionWidget() {
@@ -296,7 +291,6 @@ class _ConversationPageState extends State<ConversationPage>
     //删除消息完成需要刷新消息数据源
     RongcloudImPlugin.deleteMessageByIds([message.messageId], (int code) {
       onGetHistoryMessages();
-      _refreshUI();
     });
   }
 
