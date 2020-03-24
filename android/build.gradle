@@ -1,4 +1,4 @@
-group 'com.example.rongcloud_im_plugin'
+group 'io.rong.flutter.imlib'
 version '1.0-SNAPSHOT'
 
 buildscript {

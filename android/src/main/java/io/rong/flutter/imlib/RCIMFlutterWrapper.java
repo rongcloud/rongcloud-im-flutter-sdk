@@ -1,4 +1,4 @@
-package com.example.rongcloud_im_plugin;
+package io.rong.flutter.imlib;
 
 import android.content.Context;
 import android.net.Uri;
