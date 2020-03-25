@@ -77,9 +77,19 @@
     if ([content isKindOfClass:[RCFileMessage class]]) {
         content = [self converFileMessage:content];
     }
-    NSData *data = content.encode;
-    NSString *contentStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    [dic setObject:contentStr forKey:@"content"];
+    if ([content isKindOfClass:[RCPublicServiceCommandMessage class]]) {
+        if (((RCPublicServiceCommandMessage *)content).command) {
+            NSData *data = content.encode;
+            NSString *contentStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            [dic setObject:contentStr forKey:@"content"];
+        } else {
+            [dic setObject:@"" forKey:@"content"];
+        }
+    } else {
+        NSData *data = content.encode;
+        NSString *contentStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        [dic setObject:contentStr forKey:@"content"];
+    }
     return [dic copy];
 }
 

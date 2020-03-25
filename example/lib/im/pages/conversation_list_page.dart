@@ -76,10 +76,6 @@ class _ConversationListPageState extends State<ConversationListPage>
       }
     });
 
-    EventBus.instance.addListener(EventKeys.ReceiveReadReceipt, (map) {
-      updateConversationList();
-    });
-
     RongcloudImPlugin.onConnectionStatusChange = (int connectionStatus) {
       if (RCConnectionStatus.Connected == connectionStatus) {
         updateConversationList();
