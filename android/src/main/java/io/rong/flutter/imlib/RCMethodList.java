@@ -54,6 +54,7 @@ public class RCMethodList {
     static String MethodKeyGetNotificationQuietHours = "getNotificationQuietHours";
     static String MethodKeyGetUnreadMentionedMessages = "getUnreadMentionedMessages";
     static String MethodKeySendDirectionalMessage = "sendDirectionalMessage";
+    static String MethodKeySaveMediaToPublicDir = "saveMediaToPublicDir";
 
     //聊天室存储
     static String MethodKeySetChatRoomEntry = "SetChatRoomEntry";

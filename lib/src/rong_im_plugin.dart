@@ -1617,4 +1617,9 @@ class RongcloudImPlugin {
     Map paramMap = {"message": msgMap};
     await _channel.invokeMethod(RCMethodKey.DownloadMediaMessage, paramMap);
   }
+
+  static void saveMediaToPublicDir(String filePath, String type) async {
+    Map paramMap = {"filePath": filePath, "type": type};
+    await _channel.invokeMethod(RCMethodKey.SaveMediaToPublicDir, paramMap);
+  }
 }

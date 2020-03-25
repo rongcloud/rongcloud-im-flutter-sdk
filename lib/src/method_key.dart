@@ -53,6 +53,7 @@ class RCMethodKey {
   static const String GetNotificationQuietHours = 'getNotificationQuietHours';
   static const String GetUnreadMentionedMessages = 'getUnreadMentionedMessages';
   static const String SendDirectionalMessage = 'sendDirectionalMessage';
+  static const String SaveMediaToPublicDir = 'saveMediaToPublicDir';
 
 
   // 聊天室状态存储

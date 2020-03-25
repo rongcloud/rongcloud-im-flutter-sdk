@@ -349,9 +349,10 @@ class _ConversationPageState extends State<ConversationPage>
       if (imgPath == null) {
         return;
       }
-
       print("imagepath " + imgPath);
-      _saveImage(imgPath);
+      String temp = imgPath.replaceAll("file://", "");
+      // 保存不需要 file 开头的路径
+      _saveImage(temp);
       ImageMessage imgMsg = ImageMessage.obtain(imgPath);
       Message msg = await RongcloudImPlugin.sendMessage(
           conversationType, targetId, imgMsg);
