@@ -104,6 +104,7 @@ class _ConversationPageState extends State<ConversationPage>
     EventBus.instance.removeListener(EventKeys.ReceiveReadReceipt);
     EventBus.instance.removeListener(EventKeys.ReceiveReceiptRequest);
     EventBus.instance.removeListener(EventKeys.ReceiveReceiptResponse);
+    MediaUtil.instance.stopPlayAudio();
   }
 
   void _pullMoreHistoryMessage() async {
@@ -554,7 +555,13 @@ class _ConversationPageState extends State<ConversationPage>
     print("didTapMessageItem " + message.objectName);
     if (message.content is VoiceMessage) {
       VoiceMessage msg = message.content;
-      MediaUtil.instance.startPlayAudio(msg.remoteUrl);
+      if (msg.localPath != null && msg.localPath.isNotEmpty) {
+        MediaUtil.instance.startPlayAudio(msg.localPath);
+      } else {
+        MediaUtil.instance.startPlayAudio(msg.remoteUrl);
+        RongcloudImPlugin.downloadMediaMessage(message);
+      }
+      
     } else if (message.content is ImageMessage || message.content is GifMessage) {
       Navigator.pushNamed(context, "/image_preview", arguments: message);
     } else if (message.content is SightMessage) {
