@@ -117,7 +117,7 @@ class _ConversationItemState extends State<ConversationItem> {
                   Container(
                     alignment: Alignment.centerRight,
                     padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
-                    child: Text(this.user.name,
+                    child: Text(this.user.id,
                         style: TextStyle(
                             fontSize: RCFont.MessageNameFont,
                             color: Color(RCColor.MessageNameBgColor))),
@@ -171,7 +171,7 @@ class _ConversationItemState extends State<ConversationItem> {
                     alignment: Alignment.centerLeft,
                     padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
                     child: Text(
-                      this.user.name,
+                      this.user.id,
                       style: TextStyle(color: Color(RCColor.MessageNameBgColor)),
                     ),
                   ),

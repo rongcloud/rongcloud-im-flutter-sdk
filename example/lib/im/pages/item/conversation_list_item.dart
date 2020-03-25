@@ -110,10 +110,12 @@ class _ConversationListItemState extends State<ConversationListItem> {
   }
 
   Widget _buildTitle(){
-    String title = this.info.name;
+    String title = (conversation.conversationType == RCConversationType.Private ? "单聊：" : "群聊：") + this.info.id;
     String digest = "";
     if(conversation.latestMessageContent != null) {
       digest = conversation.latestMessageContent.conversationDigest();
+    } else {
+      digest = "无法识别消息 " + conversation.objectName;
     }
     if(digest == null) {
       digest = "";

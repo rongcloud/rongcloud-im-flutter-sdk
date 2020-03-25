@@ -78,7 +78,7 @@ class _ConversationPageState extends State<ConversationPage>
       this.info = UserInfoDataSource.getGroupInfo(targetId);
     }
 
-    titleContent = '与${this.info.name}的会话';
+    titleContent = '与 $targetId 的会话';
 
     //增加 IM 监听
     _addIMHandler();
@@ -169,7 +169,7 @@ class _ConversationPageState extends State<ConversationPage>
             titleContent = '对方正在讲话...';
           }
         } else {
-          titleContent = '与${this.info.name}的会话';
+          titleContent = '与 $targetId 的会话';
         }
         _refreshUI();
       }
