@@ -37,7 +37,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     prefix.RongcloudImPlugin.onMessageReceivedWrapper = (prefix.Message msg, int left, bool hasPackage, bool offline) {
       String hasP = hasPackage ? "true":"false";
       String off = offline ? "true":"false";
-      print("object onMessageReceivedWrapper objName:"+msg.content.getObjectName()+" msgContent:"+msg.content.encode()+" left:"+left.toString()+" hasPackage:"+hasP+" offline:"+off);
+      if (msg.content != null) {
+        print("object onMessageReceivedWrapper objName:"+msg.content.getObjectName()+" msgContent:"+msg.content.encode()+" left:"+left.toString()+" hasPackage:"+hasP+" offline:"+off); 
+      } else {
+        print("object onMessageReceivedWrapper objName:"+msg.objectName+"content is null left:"+left.toString()+" hasPackage:"+hasP+" offline:"+off);
+      }
       if(currentState == AppLifecycleState.paused && !checkNoficationQuietStatus()) {
         EventBus.instance.commit(EventKeys.ReceiveMessage, {"message":msg,"left":left,"hasPackage":hasPackage});
         prefix.RongcloudImPlugin.getConversationNotificationStatus(msg.conversationType, msg.targetId, (int status, int code) {
