@@ -28,18 +28,18 @@ class HttpUtil {
   }
 
   static void post(String url, Function callback, {Map params, Function errorCallback}) async {
-    try {
+    // try {
       Response response;
       response = await Dio().post(url, data: params);
       print(response);
       if (callback != null) {
         callback(response.data);
       }
-    } catch (e) {
-      print(e);
-      if (errorCallback != null) {
-        errorCallback(e);
-      }
-    }
+    // } catch (e) {
+    //   print(e);
+    //   if (errorCallback != null) {
+    //     errorCallback(e);
+    //   }
+    // }
   }
 }

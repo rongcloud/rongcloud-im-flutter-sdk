@@ -41,10 +41,10 @@ class _LoginPageState extends State<LoginPage> {
       if (data != null) {
         Map body = data;
         int errorCode = body["code"];
-        Map result = body["result"];
-        String id = result["id"];
-        String token = result["token"];
         if (errorCode == 200) {
+          Map result = body["result"];
+          String id = result["id"];
+          String token = result["token"];
           _saveUserInfo(id, token);
           Navigator.of(context).pushAndRemoveUntil(new MaterialPageRoute(builder: (context) => new HomePage()), (route) => route == null);
         } else {
