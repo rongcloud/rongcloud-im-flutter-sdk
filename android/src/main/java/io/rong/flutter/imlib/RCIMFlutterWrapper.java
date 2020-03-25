@@ -2367,22 +2367,17 @@ public class RCIMFlutterWrapper {
 
     // 删除已设置的全局时间段消息提醒屏蔽
     private void removeNotificationQuietHours(Object arg, final Result result) {
-        if (arg instanceof Map) {
-            Map paramMap = (Map) arg;
-            String startTime = (String) paramMap.get("startTime");
-            int spanMins = (int) paramMap.get("spanMins");
-            RongIMClient.getInstance().setNotificationQuietHours(startTime, spanMins, new RongIMClient.OperationCallback() {
-                @Override
-                public void onSuccess() {
-                    result.success(0);
-                }
+        RongIMClient.getInstance().removeNotificationQuietHours(new RongIMClient.OperationCallback() {
+            @Override
+            public void onSuccess() {
+                result.success(0);
+            }
 
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    result.success(errorCode.getValue());
-                }
-            });
-        }
+            @Override
+            public void onError(RongIMClient.ErrorCode errorCode) {
+                result.success(errorCode.getValue());
+            }
+        });
     }
 
     private void getNotificationQuietHours(final Result result) {
