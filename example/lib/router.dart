@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:rongcloud_im_plugin_example/im/pages/file_preview_page.dart';
-import 'package:rongcloud_im_plugin_example/other/search_message_page.dart';
+import 'im/pages/file_preview_page.dart';
+import 'other/search_message_page.dart';
 
 import 'im/pages/conversation_page.dart';
 import 'im/pages/image_preview_page.dart';

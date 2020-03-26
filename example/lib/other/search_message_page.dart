@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rongcloud_im_plugin_example/im/pages/item/widget_util.dart';
+import '../im/pages/item/widget_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 class SearchMessagePage extends StatefulWidget {

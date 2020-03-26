@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:rongcloud_im_plugin_example/im/pages/item/bottom_tool_bar.dart';
+import 'item/bottom_tool_bar.dart';
 import 'package:path/path.dart' as path;
 
 import '../util/style.dart';

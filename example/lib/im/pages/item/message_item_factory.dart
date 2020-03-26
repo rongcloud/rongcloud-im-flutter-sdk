@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:rongcloud_im_plugin_example/im/util/file.dart';
+import '../../util/file.dart';
 import '../../util/media_util.dart';
 import 'dart:convert';
 import 'dart:typed_data';

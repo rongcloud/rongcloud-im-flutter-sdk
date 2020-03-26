@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:rongcloud_im_plugin_example/im/pages/item/widget_util.dart';
-import 'package:rongcloud_im_plugin_example/im/util/file.dart';
+import 'item/widget_util.dart';
+import '../../im/util/file.dart';
 import 'package:open_file/open_file.dart';
 
 class FilePreviewPage extends StatefulWidget {
