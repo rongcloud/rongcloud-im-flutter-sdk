@@ -22,20 +22,35 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
 
   //优先加载本地路径图片，否则加载网络图片
   Widget getImageWidget() {
-    ImageMessage msg = message.content;
+    String localPath;
+    String remoteUrl;
+    if (message.content is GifMessage) {
+      GifMessage msg = message.content;
+      localPath = msg.localPath;
+      remoteUrl = msg.remoteUrl;
+    } else {
+      ImageMessage msg = message.content;
+      localPath = msg.localPath;
+      remoteUrl = msg.imageUri;
+    }
     Widget widget;
-    if(msg.localPath != null) {
-      String path = MediaUtil.instance.getCorrectedLocalPath(msg.localPath);
+    if(localPath != null) {
+      String path = MediaUtil.instance.getCorrectedLocalPath(localPath);
       File file = File(path);
       if(file != null && file.existsSync()) {
         widget = Image.file(file);
       }else {
-        widget = Image.network(msg.imageUri);
+        widget = Image.network(remoteUrl);
       }
     }else {
-      widget = Image.network(msg.imageUri);
+      widget = Image.network(remoteUrl);
     }
-    return widget;
+    Container container = Container(
+      margin: EdgeInsets.all(2),
+      child: widget,
+      alignment: Alignment.center,
+    );
+    return container;
   }
   
   @override

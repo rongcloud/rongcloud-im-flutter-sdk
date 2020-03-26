@@ -1,8 +1,9 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
-
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:image_picker/image_picker.dart';
@@ -33,7 +34,8 @@ class MediaUtil {
     PermissionHandler().requestPermissions([
       PermissionGroup.photos,
       PermissionGroup.camera,
-      PermissionGroup.microphone
+      PermissionGroup.microphone,
+      PermissionGroup.storage
     ]);
   }
 
@@ -61,6 +63,12 @@ class MediaUtil {
       imgPath = "file://" + imgfile.path;
     }
     return imgPath;
+  }
+
+  //选择本地文件，成功返回文件信息
+  Future<List<File>> pickFiles() async {
+    List<File> files = await FilePicker.getMultiFile();
+    return files;
   }
 
   //开始录音

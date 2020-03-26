@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:rongcloud_im_plugin_example/im/util/file.dart';
 import '../../util/media_util.dart';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -39,11 +40,79 @@ class MessageItemFactory extends StatelessWidget {
         if (file != null && file.existsSync()) {
           widget = Image.file(file);
         } else {
+          RongcloudImPlugin.downloadMediaMessage(message);
           widget = Image.network(msg.imageUri);
         }
       } else {
+        RongcloudImPlugin.downloadMediaMessage(message);
         widget = Image.network(msg.imageUri);
       }
+    }
+    return widget;
+  }
+
+  ///动图消息 item
+  Widget gifMessageItem(BuildContext context) {
+    GifMessage msg = message.content;
+    Widget widget;
+    if (msg.localPath != null) {
+      String path = MediaUtil.instance.getCorrectedLocalPath(msg.localPath);
+      File file = File(path);
+      if (file != null && file.existsSync()) {
+        widget = Image.file(file);
+      } else {
+        // 没有 localPath 时下载该媒体消息，更新 localPath
+        RongcloudImPlugin.downloadMediaMessage(message);
+        widget = Image.network(
+          msg.remoteUrl,
+          fit: BoxFit.cover,
+          loadingBuilder: (BuildContext context, Widget child,
+              ImageChunkEvent loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Center(
+              child: CircularProgressIndicator(
+                value: loadingProgress.expectedTotalBytes != null
+                    ? loadingProgress.cumulativeBytesLoaded /
+                        loadingProgress.expectedTotalBytes
+                    : null,
+              ),
+            );
+          },
+        );
+      }
+    } else if (msg.remoteUrl != null) {
+      RongcloudImPlugin.downloadMediaMessage(message);
+      widget = Image.network(
+        msg.remoteUrl,
+        fit: BoxFit.cover,
+        loadingBuilder: (BuildContext context, Widget child,
+            ImageChunkEvent loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Center(
+            child: CircularProgressIndicator(
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes
+                  : null,
+            ),
+          );
+        },
+      );
+    } else {
+      print("GifMessage localPath && remoteUrl is null");
+    }
+
+    double screenWidth = MediaQuery.of(context).size.width;
+    if (msg.width != null &&
+        msg.height != null &&
+        msg.width > 0 &&
+        msg.height > 0 &&
+        msg.width > screenWidth / 3) {
+      return Container(
+        width: msg.width.toDouble() / 3,
+        height: msg.height.toDouble() / 3,
+        child: widget,
+      );
     }
     return widget;
   }
@@ -93,11 +162,14 @@ class MessageItemFactory extends StatelessWidget {
   //小视频消息 item
   Widget sightMessageItem() {
     SightMessage msg = message.content;
-    Widget previewW  = Container();//缩略图
+    Widget previewW = Container(); //缩略图
     if (msg.content != null && msg.content.length > 0) {
       Uint8List bytes = base64.decode(msg.content);
-      previewW = Image.memory(bytes,fit: BoxFit.fill,);
-    } 
+      previewW = Image.memory(
+        bytes,
+        fit: BoxFit.fill,
+      );
+    }
     Widget bgWidget = Container(
       width: 100,
       height: 150,
@@ -128,7 +200,10 @@ class MessageItemFactory extends StatelessWidget {
             SizedBox(
               width: 5,
             ),
-            Text("${msg.duration}'s",style: TextStyle(color: Colors.white),),
+            Text(
+              "${msg.duration}'s",
+              style: TextStyle(color: Colors.white),
+            ),
           ],
         ),
       ),
@@ -142,7 +217,92 @@ class MessageItemFactory extends StatelessWidget {
     );
   }
 
-  Widget messageItem() {
+  Widget fileMessageItem() {
+    FileMessage fileMessage = message.content;
+    return Container(
+        height: 80,
+        width: 240,
+        child:
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+          Container(
+            margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+            child: Image.asset(FileUtil.fileTypeImagePath(fileMessage.mName),
+                width: 50, height: 50),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              Container(
+                width: 160,
+                child: Text(
+                  fileMessage.mName,
+                  textWidthBasis: TextWidthBasis.parent,
+                  softWrap: true,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                  style:
+                      TextStyle(fontSize: 16, color: const Color(0xff000000)),
+                ),
+              ),
+              Container(
+                  margin: EdgeInsets.only(top: 8),
+                  width: 160,
+                  child: Text(
+                    FileUtil.formatFileSize(fileMessage.mSize),
+                    style:
+                        TextStyle(fontSize: 12, color: const Color(0xff888888)),
+                  ))
+            ],
+          )
+        ]));
+  }
+
+  ///图文消息 item
+  Widget richContentMessageItem() {
+    RichContentMessage msg = message.content;
+
+    return Container(
+      width: 240,
+      child: Column(children: <Widget>[
+        Container(
+          padding: EdgeInsets.all(10),
+          child: Text(
+            msg.title,
+            style: new TextStyle(color: Colors.black, fontSize: 15),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
+          ),
+        ),
+        Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                width: 180,
+                child: Text(
+                  msg.digest,
+                  style: new TextStyle(color: Colors.black, fontSize: 13),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 3,
+                ),
+              ),
+              Container(
+                width: 45,
+                height: 45,
+                child: msg.imageURL == null || msg.imageURL.isEmpty
+                    ? Image.asset("assets/images/rich_content_msg_default.png")
+                    : Image.network(msg.imageURL),
+              ),
+            ],
+          ),
+        ),
+      ]),
+    );
+  }
+
+  Widget messageItem(BuildContext context) {
     if (message.content is TextMessage) {
       return textMessageItem();
     } else if (message.content is ImageMessage) {
@@ -151,6 +311,12 @@ class MessageItemFactory extends StatelessWidget {
       return voiceMessageItem();
     } else if (message.content is SightMessage) {
       return sightMessageItem();
+    } else if (message.content is FileMessage) {
+      return fileMessageItem();
+    } else if (message.content is RichContentMessage) {
+      return richContentMessageItem();
+    } else if (message.content is GifMessage) {
+      return gifMessageItem(context);
     } else {
       return Text("无法识别消息 " + message.objectName);
     }
@@ -168,7 +334,7 @@ class MessageItemFactory extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: _getMessageWidgetBGColor(message.messageDirection),
-      child: messageItem(),
+      child: messageItem(context),
     );
   }
 }

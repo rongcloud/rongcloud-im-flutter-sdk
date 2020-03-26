@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart' as prefix;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../im/util/user_info_datesource.dart';
+import 'login_page.dart';
 
 class ContactsPage extends StatefulWidget {
   @override
@@ -44,6 +46,13 @@ class _ContactsPageState extends State<ContactsPage> {
     Navigator.pushNamed(context, "/debug");
   }
 
+  void _logout() async {
+    prefix.RongcloudImPlugin.disconnect(false);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove("token");
+    Navigator.of(context).pushAndRemoveUntil(new MaterialPageRoute(builder: (context) => new LoginPage()), (route) => route == null);
+  }
+
   Widget getWidget(UserInfo user) {
     return Container(
             height: 50.0,
@@ -80,6 +89,12 @@ class _ContactsPageState extends State<ContactsPage> {
             icon: Icon(Icons.more),
             onPressed: () {
               _pushToDebug();
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.power_settings_new),
+            onPressed: () {
+              _logout();
             },
           ),
         ],

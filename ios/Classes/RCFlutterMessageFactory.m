@@ -7,6 +7,12 @@
 
 #import "RCFlutterMessageFactory.h"
 
+@interface RCMessageMapper : NSObject
++ (instancetype)sharedMapper;
+- (Class)messageClassWithTypeIdenfifier:(NSString *)identifier;
+- (RCMessageContent *)messageContentWithClass:(Class)messageClass fromData:(NSData *)jsonData;
+@end
+
 @implementation RCFlutterMessageFactory
 + (NSString *)message2String:(RCMessage *)message {
     NSDictionary *dic = [self message2Dic:message];
@@ -57,12 +63,43 @@
     [dic setObject:@(message.sentTime) forKey:@"sentTime"];
     [dic setObject:message.objectName forKey:@"objectName"];
     [dic setObject:message.messageUId?:@"" forKey:@"messageUId"];
+    RCReadReceiptInfo *readReceiptInfo = message.readReceiptInfo;
+    NSMutableDictionary *readReceiptDict = [NSMutableDictionary new];
+    [readReceiptDict setObject:@(readReceiptInfo.hasRespond) forKey:@"hasRespond"];
+    [readReceiptDict setObject:@(readReceiptInfo.isReceiptRequestMessage) forKey:@"isReceiptRequestMessage"];
+    if (readReceiptInfo.userIdList) {
+        [readReceiptDict setObject:readReceiptInfo.userIdList forKey:@"userIdList"];
+    }
+    [dic setObject:readReceiptDict forKey:@"readReceiptInfo"];
+    
     RCMessageContent *content = message.content;
     content = [self convertLocalPathIfNeed:content];
-    NSData *data = content.encode;
-    NSString *contentStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    [dic setObject:contentStr forKey:@"content"];
+    if ([content isKindOfClass:[RCFileMessage class]]) {
+        content = [self converFileMessage:content];
+    }
+    if ([content isKindOfClass:[RCPublicServiceCommandMessage class]]) {
+        if (((RCPublicServiceCommandMessage *)content).command) {
+            NSData *data = content.encode;
+            NSString *contentStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            [dic setObject:contentStr forKey:@"content"];
+        } else {
+            [dic setObject:@"" forKey:@"content"];
+        }
+    } else {
+        NSData *data = content.encode;
+        NSString *contentStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        [dic setObject:contentStr forKey:@"content"];
+    }
     return [dic copy];
+}
+
++ (RCMessageContent *)converFileMessage:(RCMessageContent *)content {
+    if([content isKindOfClass:[RCMediaMessageContent class]]) {
+        RCFileMessage *msg = (RCFileMessage *)content;
+        msg.name = msg.name?:@"";
+        msg.localPath = msg.localPath?:@"";
+    }
+    return content;
 }
 
 + (RCMessageContent *)convertLocalPathIfNeed:(RCMessageContent *)content {
@@ -89,10 +126,79 @@
     [dic setObject:conversation.senderUserId forKey:@"senderUserId"];
     [dic setObject:@(conversation.lastestMessageId) forKey:@"latestMessageId"];
     [dic setObject:@(conversation.mentionedCount) forKey:@"mentionedCount"];
+    [dic setObject:conversation.draft forKey:@"draft"];
     RCMessageContent *content = conversation.lastestMessage;
     NSData *data = content.encode;
     NSString *contentStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     [dic setObject:contentStr forKey:@"content"];
     return [dic copy];
+}
+
++ (RCMessage *)dic2Message:(NSDictionary *)msgDic {
+    RCMessage *message = [[RCMessage alloc] init];
+    message.conversationType = [msgDic[@"conversationType"] integerValue];
+    message.targetId = msgDic[@"targetId"];
+    message.messageId = [msgDic[@"messageId"] integerValue];
+    message.messageDirection = [msgDic[@"messageDirection"] integerValue];
+    message.senderUserId = msgDic[@"senderUserId"];
+    message.receivedStatus = [msgDic[@"receivedStatus"] integerValue];
+    message.sentStatus = [msgDic[@"sentStatus"] integerValue];
+    message.sentTime = [msgDic[@"sentTime"] integerValue];
+    message.objectName = msgDic[@"objectName"];
+    message.messageUId = msgDic[@"messageUId"];
+    
+    NSString *contentStr = msgDic[@"content"];
+    NSData *data = [contentStr dataUsingEncoding:NSUTF8StringEncoding];
+    Class clazz = [[RCMessageMapper sharedMapper] messageClassWithTypeIdenfifier:message.objectName];
+    
+    RCMessageContent *content = nil;
+    if([message.objectName isEqualToString:RCVoiceMessageTypeIdentifier]) {
+        content = [self getVoiceMessage:data];
+    }else {
+         content = [[RCMessageMapper sharedMapper] messageContentWithClass:clazz fromData:data];
+    }
+    message.content = content;
+    return message;
+}
+
++ (NSString *)messageContent2String:(RCMessageContent *)content {
+    if (!content) {
+        return @"";
+    }
+    NSData *data = content.encode;
+    NSString *contentStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    return contentStr;
+}
+
++ (NSString *)typingStatus2String:(RCUserTypingStatus *)status {
+    NSMutableDictionary *dic = [NSMutableDictionary new];
+    [dic setObject:status.userId?:@"" forKey:@"userId"];
+    [dic setObject:status.contentType?:@"" forKey:@"typingContentType"];
+    return [self dict2String:dic];
+}
++ (NSString *)searchConversationResult2String:(RCSearchConversationResult *)result {
+    NSMutableDictionary *dic = [NSMutableDictionary new];
+    [dic setObject:[self conversation2String:result.conversation] forKey:@"mConversation"];
+    [dic setObject:@(result.matchCount)?:@(0) forKey:@"mMatchCount"];
+    return [self dict2String:dic];
+}
+
++ (NSString *)dict2String:(NSDictionary *)dict {
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dict options:0 error:nil];
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    return jsonString;
+}
+
++ (RCMessageContent *)getVoiceMessage:(NSData *)data {
+    NSDictionary *contentDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+    NSString *localPath = contentDic[@"localPath"];
+    int duration = [contentDic[@"duration"] intValue];
+    if(![[NSFileManager defaultManager] fileExistsAtPath:localPath]) {
+        NSLog(@"创建语音消息失败：语音文件路径不存在:%@",localPath);
+        return nil;
+    }
+    NSData *voiceData= [NSData dataWithContentsOfFile:localPath];
+    RCVoiceMessage *msg = [RCVoiceMessage messageWithAudio:voiceData duration:duration];
+    return msg;
 }
 @end

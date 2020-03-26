@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:rongcloud_im_plugin/src/util/type_util.dart';
+import '../rongcloud_im_plugin.dart';
 import 'common_define.dart';
 import 'conversation.dart';
 import 'message.dart';
@@ -9,9 +10,11 @@ import 'message_factory.dart';
 import 'method_key.dart';
 import 'message_content.dart';
 import 'connection_status_convert.dart';
+import 'recall_notification_message.dart';
 
 class RongcloudImPlugin {
-  static final MethodChannel _channel = const MethodChannel('rongcloud_im_plugin');
+  static final MethodChannel _channel =
+      const MethodChannel('rongcloud_im_plugin');
 
   static Map sendMessageCallbacks = Map();
 
@@ -58,10 +61,7 @@ class RongcloudImPlugin {
   ///2、如果使用http，则设置为cn.xxx.com:port或cn.xxx.com格式，其中域名部分也可以是IP，如果不指定端口，将默认使用80端口。
   ///
   static void setServerInfo(String naviServer, String fileServer) {
-    Map map = {
-      "naviServer": naviServer,
-      "fileServer": fileServer
-    };
+    Map map = {"naviServer": naviServer, "fileServer": fileServer};
     _channel.invokeMethod(RCMethodKey.SetServerInfo, map);
   }
 
@@ -73,12 +73,9 @@ class RongcloudImPlugin {
   ///
   ///[portraitUrl] 用户头像
   /// 此方法只针对iOS生效
-  static void updateCurrentUserInfo(String userId, String name, String portraitUrl) {
-    Map map = {
-      "userId": userId,
-      "name": name,
-      "portraitUrl": portraitUrl
-    };
+  static void updateCurrentUserInfo(
+      String userId, String name, String portraitUrl) {
+    Map map = {"userId": userId, "name": name, "portraitUrl": portraitUrl};
     _channel.invokeMethod(RCMethodKey.SetCurrentUserInfo, map);
   }
 
@@ -89,7 +86,8 @@ class RongcloudImPlugin {
   ///[targetId] 会话 id
   ///
   ///[content] 消息内容 参见 [MessageContent]
-  static Future<Message> sendMessage(int conversationType, String targetId, MessageContent content) async {
+  static Future<Message> sendMessage(
+      int conversationType, String targetId, MessageContent content) async {
     return sendMessageCarriesPush(conversationType, targetId, content, "", "");
   }
 
@@ -134,10 +132,10 @@ class RongcloudImPlugin {
       print("send message fail: conversationType or targetId or content is null");
       return null;
     }
-    if(pushContent == null) {
+    if (pushContent == null) {
       pushContent = "";
     }
-    if(pushData == null) {
+    if (pushData == null) {
       pushData = "";
     }
     String jsonStr = content.encode();
@@ -170,6 +168,62 @@ class RongcloudImPlugin {
     return msg;
   }
 
+  ///发送定向消息
+  ///
+  ///[conversationType] 会话类型，参见枚举 [RCConversationType]
+  ///
+  ///[targetId] 会话 id
+  ///
+  ///[userIdList] 接收消息的用户 ID 列表
+  ///
+  ///[content] 消息内容 参见 [MessageContent]
+  ///
+  ///[pushContent] 接收方离线时需要显示的远程推送内容
+  ///
+  ///[pushData] 接收方离线时需要在远程推送中携带的非显示数据
+  ///
+  /// 此方法用于在群组和讨论组中发送消息给其中的部分用户，其它用户不会收到这条消息。
+  /// 目前仅支持群组和讨论组。
+  static Future<Message> sendDirectionalMessage(int conversationType,
+      String targetId, List userIdList, MessageContent content,
+      {String pushContent, String pushData}) async {
+    if (conversationType == null || targetId == null || content == null) {
+      print(
+          "send directional message fail: conversationType or targetId or content is null");
+      return null;
+    }
+    if (userIdList.length <= 0) {
+      print("userIdList 为空");
+      return null;
+    }
+    if (pushContent == null) {
+      pushContent = "";
+    }
+    if (pushData == null) {
+      pushData = "";
+    }
+    String jsonStr = content.encode();
+    String objName = content.getObjectName();
+    Map map = {
+      'conversationType': conversationType,
+      'targetId': targetId,
+      'userIdList': userIdList,
+      "content": jsonStr,
+      "objectName": objName,
+      "pushContent": pushContent,
+      "pushData": pushData
+    };
+
+    Map resultMap =
+        await _channel.invokeMethod(RCMethodKey.SendDirectionalMessage, map);
+    if (resultMap == null) {
+      return null;
+    }
+    String messageString = resultMap["message"];
+    Message msg = MessageFactory.instance.string2Message(messageString);
+    return msg;
+  }
+
   ///获取历史消息
   ///
   ///[conversationType] 会话类型，参见枚举 [RCConversationType]
@@ -179,7 +233,8 @@ class RongcloudImPlugin {
   ///[messageId] 消息 id，每次进入聊天页面可以传 0
   ///
   ///[count] 需要获取的消息数
-  static Future<List> getHistoryMessage(int conversationType, String targetId, int messageId, int count) async {
+  static Future<List> getHistoryMessage(
+      int conversationType, String targetId, int messageId, int count) async {
     Map map = {
       'conversationType': conversationType,
       'targetId': targetId,
@@ -208,13 +263,14 @@ class RongcloudImPlugin {
   ///
   ///[messageId] 消息 id，基于该消息获取更多的消息
   ///
-  ///[historyMsgDirection] 历史消息的方向，基于 messageId 获取之前的消息还是之后的消息，参见枚举 [RCHistoryMessageDirection]，非法值按 Behind 处理
+  ///[historyMsgDirection] 历史消息的方向，����于 messageId 获取之前的消息还是之后的消息，参见枚举 [RCHistoryMessageDirection]，非法值按 Behind 处理
   ///
   ///[count] 需要获取的消息数
   ///
   ///[return] 获取到的消息列表
-  static Future<List> getHistoryMessages(int conversationType, String targetId,int sentTime, int beforeCount,int afterCount) async {
-    if(conversationType == null || targetId == null) {
+  static Future<List> getHistoryMessages(int conversationType, String targetId,
+      int sentTime, int beforeCount, int afterCount) async {
+    if (conversationType == null || targetId == null) {
       print("getHistoryMessages error: conversationType or targetId null");
       return null;
     }
@@ -223,9 +279,10 @@ class RongcloudImPlugin {
       'targetId': targetId,
       "sentTime": TypeUtil.getProperInt(sentTime),
       "beforeCount": TypeUtil.getProperInt(beforeCount),
-      "afterCount":TypeUtil.getProperInt(afterCount),
+      "afterCount": TypeUtil.getProperInt(afterCount),
     };
-    List list = await _channel.invokeMethod(RCMethodKey.GetHistoryMessages, map);
+    List list =
+        await _channel.invokeMethod(RCMethodKey.GetHistoryMessages, map);
     if (list == null) {
       return null;
     }
@@ -237,13 +294,33 @@ class RongcloudImPlugin {
     return msgList;
   }
 
+  static clearHistoryMessages(int conversationType, String targetId,
+      int recordTime, bool clearRemote, Function(int code) finished) async {
+    if (conversationType == null || targetId == null) {
+      print("getHistoryMessages error: conversationType or targetId null");
+      return null;
+    }
+    Map map = {
+      'conversationType': conversationType,
+      'targetId': targetId,
+      "recordTime": TypeUtil.getProperInt(recordTime),
+      "clearRemote": clearRemote,
+    };
+
+    int code =
+        await _channel.invokeMethod(RCMethodKey.ClearHistoryMessages, map);
+    if (finished != null) {
+      finished(code);
+    }
+  }
+
   ///获取本地单条消息
   ///
   ///[messageId] 消息 id
   static Future<Message> getMessage(int messageId) async {
-    Map map = {"messageId":messageId};
-    String msgStr = await _channel.invokeMethod(RCMethodKey.GetMessage,map);
-    if(msgStr == null) {
+    Map map = {"messageId": messageId};
+    String msgStr = await _channel.invokeMethod(RCMethodKey.GetMessage, map);
+    if (msgStr == null) {
       return null;
     }
     Message msg = MessageFactory.instance.string2Message(msgStr);
@@ -267,12 +344,11 @@ class RongcloudImPlugin {
   ///根据传入的会话类型来获取会话列表
   ///
   /// [conversationTypeList] 会话类型数组，参见枚举 [RCConversationType]
-  static Future<List/*Conversation*/> getConversationList(List<int/*RCConversationType*/> conversationTypeList) async {
-
-    Map map = {
-      "conversationTypeList": conversationTypeList
-    };
-    List list = await _channel.invokeMethod(RCMethodKey.GetConversationList,map);
+  static Future<List /*Conversation*/ > getConversationList(
+      List<int /*RCConversationType*/ > conversationTypeList) async {
+    Map map = {"conversationTypeList": conversationTypeList};
+    List list =
+        await _channel.invokeMethod(RCMethodKey.GetConversationList, map);
     if (list == null) {
       return null;
     }
@@ -287,17 +363,21 @@ class RongcloudImPlugin {
   ///根据传入的会话类型来分页获取会话列表
   ///
   /// [conversationTypeList] 会话类型数组，参见枚举 [RCConversationType]
-  /// 
+  ///
   /// [count] 需要获取的会话个数，当实际取回的会话个数小于 count 值时，表明已取完数据
-  /// 
+  ///
   /// [startTime] 会话的时间戳，获取这个时间戳之前的会话列表，第一次传 0
-  static Future<List/*Conversation*/> getConversationListByPage(List<int/*RCConversationType*/> conversationTypeList,int count,int startTime) async {
-    Map map= {
+  static Future<List /*Conversation*/ > getConversationListByPage(
+      List<int /*RCConversationType*/ > conversationTypeList,
+      int count,
+      int startTime) async {
+    Map map = {
       "conversationTypeList": conversationTypeList,
       "count": count,
       "startTime": startTime
     };
-    List list = await _channel.invokeMethod(RCMethodKey.GetConversationListByPage,map);
+    List list =
+        await _channel.invokeMethod(RCMethodKey.GetConversationListByPage, map);
     if (list == null) {
       return null;
     }
@@ -316,13 +396,15 @@ class RongcloudImPlugin {
   ///[targetId] 会话 id
   ///
   ///[return] 返回结果为会话的详细数据，如果不存在该会话，那么会返回 null
-  static Future<Conversation> getConversation(int conversationType, String targetId) async {
-    if(conversationType == null || targetId == null) {
+  static Future<Conversation> getConversation(
+      int conversationType, String targetId) async {
+    if (conversationType == null || targetId == null) {
       print("getConversation error, conversationType or targetId is null");
       return null;
     }
-    Map param = {"conversationType":conversationType,"targetId":targetId};
-    String conStr = await _channel.invokeMethod(RCMethodKey.GetConversation,param);
+    Map param = {"conversationType": conversationType, "targetId": targetId};
+    String conStr =
+        await _channel.invokeMethod(RCMethodKey.GetConversation, param);
     Conversation con = MessageFactory.instance.string2Conversation(conStr);
     return con;
   }
@@ -334,12 +416,11 @@ class RongcloudImPlugin {
   ///[targetId] 会话 id
   ///
   ///[finished] 回调结果，告知结果成功与否
-  static void removeConversation(int conversationType, String targetId, Function(bool success) finished) async {
-    Map map = {
-      'conversationType': conversationType,
-      'targetId': targetId
-    };
-    bool success = await _channel.invokeMethod(RCMethodKey.RemoveConversation, map);
+  static void removeConversation(int conversationType, String targetId,
+      Function(bool success) finished) async {
+    Map map = {'conversationType': conversationType, 'targetId': targetId};
+    bool success =
+        await _channel.invokeMethod(RCMethodKey.RemoveConversation, map);
     if (finished != null) {
       finished(success);
     }
@@ -350,12 +431,11 @@ class RongcloudImPlugin {
   ///[conversationType] 会话类型，参见枚举 [RCConversationType]
   ///
   ///[targetId] 会话 id
-  static Future<bool> clearMessagesUnreadStatus(int conversationType, String targetId) async {
-    Map map = {
-      'conversationType': conversationType,
-      'targetId': targetId
-    };
-    bool rc = await _channel.invokeMethod(RCMethodKey.ClearMessagesUnreadStatus, map);
+  static Future<bool> clearMessagesUnreadStatus(
+      int conversationType, String targetId) async {
+    Map map = {'conversationType': conversationType, 'targetId': targetId};
+    bool rc =
+        await _channel.invokeMethod(RCMethodKey.ClearMessagesUnreadStatus, map);
     return rc;
   }
 
@@ -369,10 +449,7 @@ class RongcloudImPlugin {
   ///
   /// 会通过 [onJoinChatRoom] 回调加入的结果
   static void joinChatRoom(String targetId, int messageCount) {
-    Map map = {
-      "targetId": targetId,
-      "messageCount": messageCount
-    };
+    Map map = {"targetId": targetId, "messageCount": messageCount};
     _channel.invokeMethod(RCMethodKey.JoinChatRoom, map);
   }
 
@@ -382,9 +459,7 @@ class RongcloudImPlugin {
   ///
   /// 会通过 [onQuitChatRoom] 回调退出的结果
   static void quitChatRoom(String targetId) {
-    Map map = {
-      "targetId": targetId
-    };
+    Map map = {"targetId": targetId};
     _channel.invokeMethod(RCMethodKey.QuitChatRoom, map);
   }
 
@@ -396,7 +471,8 @@ class RongcloudImPlugin {
   ///
   ///[memberOrder] 获取的成员加入聊天室的顺序，参见枚举 [RCChatRoomMemberOrder]
   ///
-  static Future getChatRoomInfo(String targetId, int memeberCount, int memberOrder) async {
+  static Future getChatRoomInfo(
+      String targetId, int memeberCount, int memberOrder) async {
     if (memeberCount > 20) {
       memeberCount = 20;
     }
@@ -405,7 +481,8 @@ class RongcloudImPlugin {
       "memeberCount": memeberCount,
       "memberOrder": memberOrder
     };
-    Map resultMap = await _channel.invokeMethod(RCMethodKey.GetChatRoomInfo, map);
+    Map resultMap =
+        await _channel.invokeMethod(RCMethodKey.GetChatRoomInfo, map);
     return MessageFactory.instance.map2ChatRoomInfo(resultMap);
   }
 
@@ -424,14 +501,20 @@ class RongcloudImPlugin {
   ///
   /// 此方法从服务器端获取之前的历史消息，但是必须先开通历史消息云存储功能。
   /// 例如，本地会话中有10条消息，您想拉取更多保存在服务器的消息的话，recordTime应传入最早的消息的发送时间戳，count传入1~20之间的数值。
-  static void getRemoteHistoryMessages(int conversationType, String targetId, int recordTime, int count, Function(List /*<Message>*/ msgList, int code) finished) async {
+  static void getRemoteHistoryMessages(
+      int conversationType,
+      String targetId,
+      int recordTime,
+      int count,
+      Function(List/*<Message>*/ msgList, int code) finished) async {
     Map map = {
       'conversationType': conversationType,
       'targetId': targetId,
       'recordTime': recordTime,
       'count': count
     };
-    Map resultMap = await _channel.invokeMethod(RCMethodCallBackKey.GetRemoteHistoryMessages, map);
+    Map resultMap = await _channel.invokeMethod(
+        RCMethodCallBackKey.GetRemoteHistoryMessages, map);
     int code = resultMap["code"];
     if (code == 0) {
       List msgStrList = resultMap["messages"];
@@ -449,7 +532,7 @@ class RongcloudImPlugin {
       if (finished != null) {
         finished(l, code);
       }
-    }else {
+    } else {
       if (finished != null) {
         finished(null, code);
       }
@@ -470,8 +553,15 @@ class RongcloudImPlugin {
   ///
   /// [sendTime] 发送时间
   ///
-  /// [finished] 回调结果，会告知具体的消息和对应的错误码
-  static void insertIncomingMessage(int conversationType, String targetId, String senderUserId, int receivedStatus, MessageContent content, int sendTime, Function(Message msg, int code) finished) async {
+  /// [finished] 回调结果，会告知具体的消息和对应的错�����码
+  static void insertIncomingMessage(
+      int conversationType,
+      String targetId,
+      String senderUserId,
+      int receivedStatus,
+      MessageContent content,
+      int sendTime,
+      Function(Message msg, int code) finished) async {
     String jsonStr = content.encode();
     String objName = content.getObjectName();
     Map map = {
@@ -483,7 +573,8 @@ class RongcloudImPlugin {
       "content": jsonStr,
       "sendTime": sendTime
     };
-    Map msgMap = await _channel.invokeMethod(RCMethodKey.InsertIncomingMessage, map);
+    Map msgMap =
+        await _channel.invokeMethod(RCMethodKey.InsertIncomingMessage, map);
     String msgString = msgMap["message"];
     int code = msgMap["code"];
     if (msgString == null) {
@@ -511,7 +602,13 @@ class RongcloudImPlugin {
   /// [sendTime] 发送时间
   ///
   /// [finished] 回调结果，会告知具体的消息和对应的错误码
-  static void insertOutgoingMessage(int conversationType, String targetId, int sendStatus, MessageContent content, int sendTime, Function(Message msg, int code) finished) async {
+  static void insertOutgoingMessage(
+      int conversationType,
+      String targetId,
+      int sendStatus,
+      MessageContent content,
+      int sendTime,
+      Function(Message msg, int code) finished) async {
     String jsonStr = content.encode();
     String objName = content.getObjectName();
     Map map = {
@@ -522,7 +619,8 @@ class RongcloudImPlugin {
       "content": jsonStr,
       "sendTime": sendTime
     };
-    Map msgMap = await _channel.invokeMethod(RCMethodKey.InsertOutgoingMessage, map);
+    Map msgMap =
+        await _channel.invokeMethod(RCMethodKey.InsertOutgoingMessage, map);
     String msgString = msgMap["message"];
     int code = msgMap["code"];
     if (msgString == null) {
@@ -536,27 +634,29 @@ class RongcloudImPlugin {
       finished(message, code);
     }
   }
-  
+
   /// 删除特定会话的消息
-  /// 
+  ///
   /// [conversationType] 会话类型，参见枚举 [RCConversationType]
   ///
   /// [targetId] 会话 id
-  static void deleteMessages(int conversationType,String targetId,Function(int code)finished) async {
-    Map map = {"conversationType": conversationType,"targetId": targetId};
-    int code = await _channel.invokeMethod(RCMethodKey.DeleteMessages,map);
-    if(finished != null) {
+  static void deleteMessages(int conversationType, String targetId,
+      Function(int code) finished) async {
+    Map map = {"conversationType": conversationType, "targetId": targetId};
+    int code = await _channel.invokeMethod(RCMethodKey.DeleteMessages, map);
+    if (finished != null) {
       finished(code);
     }
   }
 
   /// 批量删除消息
-  /// 
+  ///
   /// [messageIds] 需要删除的 messageId List
-  static void deleteMessageByIds(List<int> messageIds,Function(int code)finished) async {
+  static void deleteMessageByIds(
+      List<int> messageIds, Function(int code) finished) async {
     Map map = {"messageIds": messageIds};
-    int code = await _channel.invokeMethod(RCMethodKey.DeleteMessageByIds,map);
-    if(finished != null) {
+    int code = await _channel.invokeMethod(RCMethodKey.DeleteMessageByIds, map);
+    if (finished != null) {
       finished(code);
     }
   }
@@ -564,7 +664,8 @@ class RongcloudImPlugin {
   /// 获取所有的未读数
   ///
   /// [finished] 回调结果，code 为 0 代表正常
-  static void getTotalUnreadCount(Function(int count, int code) finished) async {
+  static void getTotalUnreadCount(
+      Function(int count, int code) finished) async {
     Map map = await _channel.invokeMethod(RCMethodKey.GetTotalUnreadCount);
     if (finished != null) {
       finished(map["count"], map["code"]);
@@ -578,12 +679,11 @@ class RongcloudImPlugin {
   /// [targetId] 会话 id
   ///
   /// [finished] 回调结果，code 为 0 代表正常
-  static void getUnreadCount(int conversationType, String targetId, Function(int count, int code) finished) async {
-    Map map = {
-      "conversationType": conversationType,
-      "targetId": targetId
-    };
-    Map unreadMap = await _channel.invokeMethod(RCMethodKey.GetUnreadCountTargetId, map);
+  static void getUnreadCount(int conversationType, String targetId,
+      Function(int count, int code) finished) async {
+    Map map = {"conversationType": conversationType, "targetId": targetId};
+    Map unreadMap =
+        await _channel.invokeMethod(RCMethodKey.GetUnreadCountTargetId, map);
     if (finished != null) {
       finished(unreadMap["count"], unreadMap["code"]);
     }
@@ -596,12 +696,14 @@ class RongcloudImPlugin {
   /// [isContain] 是否包含免打扰会话
   ///
   /// [finished] 回调结果，code 为 0 代表正常
-  static void getUnreadCountConversationTypeList(List<int> conversationTypeList, bool isContain, Function(int count, int code) finished) async {
+  static void getUnreadCountConversationTypeList(List<int> conversationTypeList,
+      bool isContain, Function(int count, int code) finished) async {
     Map map = {
       "conversationTypeList": conversationTypeList,
       "isContain": isContain
     };
-    Map unreadMap = await _channel.invokeMethod(RCMethodKey.GetUnreadCountConversationTypeList, map);
+    Map unreadMap = await _channel.invokeMethod(
+        RCMethodKey.GetUnreadCountConversationTypeList, map);
     if (finished != null) {
       finished(unreadMap["count"], unreadMap["code"]);
     }
@@ -614,13 +716,18 @@ class RongcloudImPlugin {
   /// [targetId] 会话 id
   ///
   /// [finished] 回调结果，status 参见 [RCConversationNotificationStatus]，code 为 0 代表正常
-  static void setConversationNotificationStatus(int conversationType, String targetId, bool isBlocked, Function(int status, int code) finished) async {
+  static void setConversationNotificationStatus(
+      int conversationType,
+      String targetId,
+      bool isBlocked,
+      Function(int status, int code) finished) async {
     Map map = {
       "conversationType": conversationType,
       "targetId": targetId,
       "isBlocked": isBlocked
     };
-    Map statusMap = await _channel.invokeMethod(RCMethodKey.SetConversationNotificationStatus, map);
+    Map statusMap = await _channel.invokeMethod(
+        RCMethodKey.SetConversationNotificationStatus, map);
     if (finished != null) {
       finished(statusMap["status"], statusMap["code"]);
     }
@@ -633,12 +740,11 @@ class RongcloudImPlugin {
   /// [targetId] 会话 id
   ///
   /// [finished] 回调结果，status 参见 [RCConversationNotificationStatus]，code 为 0 代表正常
-  static void getConversationNotificationStatus(int conversationType, String targetId, Function(int status, int code) finished) async {
-    Map map = {
-      "conversationType": conversationType,
-      "targetId": targetId
-    };
-    Map statusMap = await _channel.invokeMethod(RCMethodKey.GetConversationNotificationStatus, map);
+  static void getConversationNotificationStatus(int conversationType,
+      String targetId, Function(int status, int code) finished) async {
+    Map map = {"conversationType": conversationType, "targetId": targetId};
+    Map statusMap = await _channel.invokeMethod(
+        RCMethodKey.GetConversationNotificationStatus, map);
     if (finished != null) {
       finished(statusMap["status"], statusMap["code"]);
     }
@@ -649,14 +755,14 @@ class RongcloudImPlugin {
   /// [conversationTypeList] 会话类型数组，参见枚举 [RCConversationType]
   ///
   /// [finished] 回调结果，code 为 0 代表正常
-  static void getBlockedConversationList(List<int> conversationTypeList, Function(List<Conversation> convertionList, int code) finished) async {
-    Map map = {
-      "conversationTypeList": conversationTypeList
-    };
-    Map conversationMap = await _channel.invokeMethod(RCMethodKey.GetBlockedConversationList, map);
+  static void getBlockedConversationList(List<int> conversationTypeList,
+      Function(List<Conversation> convertionList, int code) finished) async {
+    Map map = {"conversationTypeList": conversationTypeList};
+    Map conversationMap = await _channel.invokeMethod(
+        RCMethodKey.GetBlockedConversationList, map);
 
     List conversationList = conversationMap["conversationMap"];
-    if(conversationList == null) {
+    if (conversationList == null) {
       if (finished != null) {
         finished(null, conversationMap["code"]);
       }
@@ -681,13 +787,15 @@ class RongcloudImPlugin {
   /// [isTop] 是否设置置顶
   ///
   /// [finished] 回调结果，code 为 0 代表正常
-  static void setConversationToTop(int conversationType, String targetId, bool isTop, Function(bool status, int code) finished) async {
+  static void setConversationToTop(int conversationType, String targetId,
+      bool isTop, Function(bool status, int code) finished) async {
     Map map = {
       "conversationType": conversationType,
       "targetId": targetId,
       "isTop": isTop
     };
-    Map conversationMap = await _channel.invokeMethod(RCMethodKey.SetConversationToTop, map);
+    Map conversationMap =
+        await _channel.invokeMethod(RCMethodKey.SetConversationToTop, map);
     if (finished != null) {
       finished(conversationMap["status"], conversationMap["code"]);
     }
@@ -712,45 +820,49 @@ class RongcloudImPlugin {
 //  }
 
   /// 将用户加入黑名单，黑名单针对用户 id 生效，即使换设备也依然生效。
-  /// 
+  ///
   /// [userId] 需要加入黑名单的用户 id
   ///
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   static void addToBlackList(String userId, Function(int code) finished) async {
-    Map map = {"userId":userId};
-    int code = await _channel.invokeMethod(RCMethodKey.AddToBlackList,map);
-    if(finished != null) {
+    Map map = {"userId": userId};
+    int code = await _channel.invokeMethod(RCMethodKey.AddToBlackList, map);
+    if (finished != null) {
       finished(code);
     }
   }
 
   /// 将用户移除黑名单
-  /// 
+  ///
   /// [userId] 需要移除黑名单的用户 id
   ///
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
-  static void removeFromBlackList(String userId,Function(int code) finished) async {
-    Map map = {"userId":userId};
-    int code = await _channel.invokeMethod(RCMethodKey.RemoveFromBlackList,map);
-    if(finished != null) {
+  static void removeFromBlackList(
+      String userId, Function(int code) finished) async {
+    Map map = {"userId": userId};
+    int code =
+        await _channel.invokeMethod(RCMethodKey.RemoveFromBlackList, map);
+    if (finished != null) {
       finished(code);
     }
   }
 
   /// 获取特定用户的黑名单状态
-  /// 
+  ///
   /// [userId] 需要加入黑名单的用户 id
   ///
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   ///
   /// [blackListStatus] 黑名单状态，0 代表在黑名单，1 代表不在黑名单，详细参见 [RCBlackListStatus]
-  static void getBlackListStatus(String userId,Function(int blackListStatus,int code) finished) async {
-    Map map = {"userId":userId};
-    Map result = await _channel.invokeMethod(RCMethodKey.GetBlackListStatus,map);
+  static void getBlackListStatus(
+      String userId, Function(int blackListStatus, int code) finished) async {
+    Map map = {"userId": userId};
+    Map result =
+        await _channel.invokeMethod(RCMethodKey.GetBlackListStatus, map);
     int status = result["status"];
     int code = result["code"];
-    if(finished != null) {
-      finished(status,code);
+    if (finished != null) {
+      finished(status, code);
     }
   }
 
@@ -759,36 +871,365 @@ class RongcloudImPlugin {
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   ///
   /// [userIdList] 黑名单用户 id 列表
-  static void getBlackList(Function(List/*<String>*/ userIdList,int code) finished) async {
+  static void getBlackList(
+      Function(List/*<String>*/ userIdList, int code) finished) async {
     Map result = await _channel.invokeMethod(RCMethodKey.GetBlackList);
     List userIdList = result["userIdList"];
     int code = result["code"];
-    if(finished != null) {
-      finished(userIdList,code);
+    if (finished != null) {
+      finished(userIdList, code);
     }
   }
-  
+
   /// 发送某个会话中消息阅读的回执
-  /// 
+  ///
   /// [conversationType] 会话类型，参见枚举 [RCConversationType]
-  /// 
+  ///
   /// [targetId] 会话 id
-  /// 
+  ///
   /// [timestamp] 该会话已阅读的最后一条消息的发送时间戳
-  /// 
+  ///
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   /// 此接口只支持单聊
-  static void sendReadReceiptMessage(int conversationType,String targetId,int timestamp, Function(int code) finished) async {
+  static void sendReadReceiptMessage(int conversationType, String targetId,
+      int timestamp, Function(int code) finished) async {
     Map map = {
       "conversationType": conversationType,
       "targetId": targetId,
       "timestamp": timestamp
     };
 
-    Map result = await _channel.invokeMethod(RCMethodKey.SendReadReceiptMessage,map);
+    Map result =
+        await _channel.invokeMethod(RCMethodKey.SendReadReceiptMessage, map);
     int code = result["code"];
-    if(finished != null) {
+    if (finished != null) {
       finished(code);
+    }
+  }
+
+  /// 请求消息阅读回执
+  ///
+  /// [message] 要求阅读回执的消息
+  ///
+  /// [timestamp] 该会话已阅读的最后一条消息的发送时间戳
+  ///
+  /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
+  /// 此接口只支持群组
+  static void sendReadReceiptRequest(
+      Message message, Function(int code) finished) async {
+    Map messageMap = MessageFactory.instance.message2Map(message);
+    Map map = {"messageMap": messageMap};
+
+    Map result =
+        await _channel.invokeMethod(RCMethodKey.SendReadReceiptRequest, map);
+    int code = result["code"];
+    if (finished != null) {
+      finished(code);
+    }
+  }
+
+  /// 发送阅读回执
+  ///
+  /// [conversationType] 会话类型，参见枚举 [RCConversationType]
+  ///
+  /// [targetId] 会话 id
+  ///
+  /// [messageList] 已经阅读了的消息列表
+  ///
+  /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
+  /// 此接口只支持群组
+  static void sendReadReceiptResponse(int conversationType, String targetId,
+      List messageList, Function(int code) finished) async {
+    List messageMaps = List();
+    for (Message message in messageList) {
+      Map messageMap = MessageFactory.instance.message2Map(message);
+      messageMaps.add(messageMap);
+    }
+    Map map = {
+      "conversationType": conversationType,
+      "targetId": targetId,
+      "messageMapList": messageMaps
+    };
+
+    Map result =
+        await _channel.invokeMethod(RCMethodKey.SendReadReceiptResponse, map);
+    int code = result["code"];
+    if (finished != null) {
+      finished(code);
+    }
+  }
+
+  /// 同步会话阅读状态
+  ///
+  /// [conversationType] 会话类型，参见枚举 [RCConversationType]
+  ///
+  /// [targetId] 会话 id
+  ///
+  /// [timestamp] 该会话已阅读的最后一条消息的发送时间戳
+  ///
+  /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
+  ///
+  static void syncConversationReadStatus(int conversationType, String targetId,
+      int timestamp, Function(int code) finished) async {
+    Map map = {
+      "conversationType": conversationType,
+      "targetId": targetId,
+      "timestamp": timestamp
+    };
+
+    int result = await _channel.invokeMethod(
+        RCMethodKey.SyncConversationReadStatus, map);
+    if (finished != null) {
+      finished(result);
+    }
+  }
+
+  /// 全局屏蔽某个时间段的消息提醒
+  ///
+  /// [startTime] 开始屏蔽消息提醒的时间，格式为HH:MM:SS
+  ///
+  /// [spanMins] 需要屏蔽消息提醒的分钟数，0 < spanMins < 1440
+  ///
+  /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
+  ///
+  /// 此方法设置的屏蔽时间会在每天该时间段时生效。
+  static void setNotificationQuietHours(
+      String startTime, int spanMins, Function(int code) finished) async {
+    Map map = {"startTime": startTime, "spanMins": spanMins};
+    int result =
+        await _channel.invokeMethod(RCMethodKey.SetNotificationQuietHours, map);
+    if (finished != null) {
+      finished(result);
+    }
+  }
+
+  /// 删除已设置的全局时间段消息提醒屏蔽
+  ///
+  /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
+  ///
+  static void removeNotificationQuietHours(Function(int code) finished) async {
+    int result =
+        await _channel.invokeMethod(RCMethodKey.RemoveNotificationQuietHours);
+    if (finished != null) {
+      finished(result);
+    }
+  }
+
+  /// 查询已设置的全局时间段消息提醒屏蔽
+  ///
+  /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败；startTime 代表已设置的屏蔽开始时间，spansMin 代表已设置的屏蔽时间分钟数，0 < spansMin < 1440
+  ///
+  static void getNotificationQuietHours(
+      Function(int code, String startTime, int spansMin) finished) async {
+    Map result =
+        await _channel.invokeMethod(RCMethodKey.GetNotificationQuietHours);
+    int code = result["code"];
+    String startTime = result["startTime"];
+    int spansMin = result["spansMin"];
+    if (finished != null) {
+      finished(code, startTime, spansMin);
+    }
+  }
+
+  /// 获取会话中@提醒自己的消息
+  ///
+  /// [conversationType] 会话类型，参见枚举 [RCConversationType]
+  ///
+  /// [targetId] 会话 id
+  ///
+  /// 此方法从本地获取被@提醒的消息(最多返回10条信息)
+  /// clearMessagesUnreadStatus: targetId: 以及设置消息接收状态接口 setMessageReceivedStatus:receivedStatus:会同步清除被提示信息状态。
+  static Future<List /*Message*/ > getUnreadMentionedMessages(
+      int conversationType, String targetId) async {
+    Map map = {"conversationType": conversationType, "targetId": targetId};
+    List list = await _channel.invokeMethod(
+        RCMethodKey.GetUnreadMentionedMessages, map);
+    if (list == null) {
+      return List();
+    }
+    List messageList = new List();
+    for (String conStr in list) {
+      Message msg = MessageFactory.instance.string2Message(conStr);
+      messageList.add(msg);
+    }
+    return messageList;
+  }
+
+  /// 设置聊天室自定义属性
+  ///
+  /// [chatroomId] 聊天室 Id
+  ///
+  /// [key] 聊天室属性名称，Key 支持大小写英文字母、数字、部分特殊符号 + = - _ 的组合方式，最大长度 128 个字符
+  ///
+  /// [value] 聊天室属性对应的值，最大长度 4096 个字符
+  ///
+  /// [sendNotification] 是否需要发送通知，如果发送通知，聊天室中的其他用户会接收到 RCChatroomKVNotificationMessage 通知消息，消息内容中包含操作类型(type)、属性名称(key)、属性名称对应的值(value)和自定义字段(extra)
+  ///
+  /// [autoDelete] 用户掉线或退出时，是否自动删除该 Key、Value 值；自动删除时不会发送通知
+  ///
+  /// [notificationExtra] 通知的自定义字段，RC:chrmKVNotiMsg 通知消息中会包含此字段，最大长度 2 kb
+  ///
+  /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
+  /// 此接口只支持聊天室，必须先开通聊天室属性自定义功能
+  static void setChatRoomEntry(
+      String chatRoomId,
+      String key,
+      String value,
+      bool sendNotification,
+      bool autoDelete,
+      String notificationExtra,
+      Function(int code) finished) async {
+    Map map = {
+      "chatRoomId": chatRoomId,
+      "key": key,
+      "value": value,
+      "sendNotification": sendNotification,
+      "autoDelete": autoDelete,
+      "notificationExtra": notificationExtra
+    };
+    int result = await _channel.invokeMethod(RCMethodKey.SetChatRoomEntry, map);
+    if (finished != null) {
+      finished(result);
+    }
+  }
+
+  /// 强制设置聊天室自定义属性
+  ///
+  /// [chatroomId] 聊天室 Id
+  ///
+  /// [key] 聊天室属性名称，Key 支持大小写英文字母、数字、部分特殊符号 + = - _ 的组合方式，最大长度 128 个字符
+  ///
+  /// [value] 聊天室属性对应的值，最大长度 4096 个字符
+  ///
+  /// [sendNotification] 是否需要发送通知，如果发送通知，聊天室中的其他用户会接收到 RCChatroomKVNotificationMessage 通知消息，消息内容中包含操作类型(type)、属性名称(key)、属性名称对应的值(value)和自定义字段(extra)
+  ///
+  /// [autoDelete] 用户掉线或退出时，是否自动删除该 Key、Value 值；自动删除时不会发送通知
+  ///
+  /// [notificationExtra] 通知的自定义字段，RC:chrmKVNotiMsg 通知消息中会包含此字段，最大长度 2 kb
+  ///
+  /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
+  /// 此接口只支持聊天室，必须先开通聊天室属性自定义功能
+  static void forceSetChatRoomEntry(
+      String chatRoomId,
+      String key,
+      String value,
+      bool sendNotification,
+      bool autoDelete,
+      String notificationExtra,
+      Function(int code) finished) async {
+    Map map = {
+      "chatRoomId": chatRoomId,
+      "key": key,
+      "value": value,
+      "sendNotification": sendNotification,
+      "autoDelete": autoDelete,
+      "notificationExtra": notificationExtra
+    };
+    int result =
+        await _channel.invokeMethod(RCMethodKey.ForceSetChatRoomEntry, map);
+    if (finished != null) {
+      finished(result);
+    }
+  }
+
+  /// 获取聊天室单个属性
+  ///
+  /// [chatroomId] 聊天室 Id
+  ///
+  /// [key] 聊天室属性名称
+  ///
+  /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败，entry 为返回的 map
+  /// 此接口只支持聊天室，必须先开通聊天室属性自定义功能
+  static void getChatRoomEntry(String chatRoomId, String key,
+      Function(Map entry, int code) finished) async {
+    Map map = {"chatRoomId": chatRoomId, "key": key};
+
+    Map result = await _channel.invokeMethod(RCMethodKey.GetChatRoomEntry, map);
+    int code = result["code"];
+    Map entry = result["entry"];
+    if (finished != null) {
+      finished(entry, code);
+    }
+  }
+
+  /// 获取聊天室所有自定义属性
+  ///
+  /// [chatroomId] 聊天室 Id
+  ///
+  /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败，entry 为返回的 map
+  /// 此接口只支持聊天室，必须先开通聊天室属性自定义功能
+  static void getAllChatRoomEntries(
+      String chatRoomId, Function(Map entry, int code) finished) async {
+    Map map = {"chatRoomId": chatRoomId};
+
+    Map result =
+        await _channel.invokeMethod(RCMethodKey.GetAllChatRoomEntries, map);
+    int code = result["code"];
+    Map entry = result["entry"];
+    if (finished != null) {
+      finished(entry, code);
+    }
+  }
+
+  /// 删除聊天室自定义属性
+  ///
+  /// [chatroomId] 聊天室 Id
+  ///
+  /// [key] 聊天室属性名称
+  ///
+  /// [sendNotification] 是否需要发送通知，如果发送通知，聊天室中的其他用户会接收到 RCChatroomKVNotificationMessage 通知消息，消息内容中包含操作类型(type)、属性名称(key)、属性名称对应的值(value)和自定义字段(extra)
+  ///
+  /// [notificationExtra] 通知的自定义字段，RC:chrmKVNotiMsg ������消息中会包含此字段，最大长度 2 kb
+  ///
+  /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
+  /// 此接口只支持聊天室，必须先开通聊天室属性自定义功能
+  static void removeChatRoomEntry(
+      String chatRoomId,
+      String key,
+      bool sendNotification,
+      String notificationExtra,
+      Function(int code) finished) async {
+    Map map = {
+      "chatRoomId": chatRoomId,
+      "key": key,
+      "sendNotification": sendNotification,
+      "notificationExtra": notificationExtra
+    };
+    int result =
+        await _channel.invokeMethod(RCMethodKey.RemoveChatRoomEntry, map);
+    if (finished != null) {
+      finished(result);
+    }
+  }
+
+  /// 强制删除聊天室自定义属性
+  ///
+  /// [chatroomId] 聊天室 Id
+  ///
+  /// [key] 聊天室属性名称
+  ///
+  /// [sendNotification] 是否需要发送通知，如果发送通知，聊天室中的其他用户会接收到 RCChatroomKVNotificationMessage 通知消息，消息内容中包含操作类型(type)、属性名称(key)、属性名称对应的值(value)和自定义字段(extra)
+  ///
+  /// [notificationExtra] 通知的自定义字段，RC:chrmKVNotiMsg 通知消息中会包含此字段，最大长度 2 kb
+  ///
+  /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
+  /// 此接口只支持聊天室，必须先开通聊天室属性自定义功能
+  static void forceRemoveChatRoomEntry(
+      String chatRoomId,
+      String key,
+      bool sendNotification,
+      String notificationExtra,
+      Function(int code) finished) async {
+    Map map = {
+      "chatRoomId": chatRoomId,
+      "key": key,
+      "sendNotification": sendNotification,
+      "notificationExtra": notificationExtra
+    };
+    int result =
+        await _channel.invokeMethod(RCMethodKey.ForceRemoveChatRoomEntry, map);
+    if (finished != null) {
+      finished(result);
     }
   }
 
@@ -826,7 +1267,8 @@ class RongcloudImPlugin {
   ///[offline] 消息是否是离线消息
   ///
   ///SDK 分批拉取离线消息，当离线消息量巨大的时候，建议当 left == 0 且 hasPackage == false 时刷新会话列表
-  static Function(Message msg, int left, bool hasPackage, bool offline) onMessageReceivedWrapper;
+  static Function(Message msg, int left, bool hasPackage, bool offline)
+      onMessageReceivedWrapper;
 
   ///加入聊天的回调
   ///
@@ -858,10 +1300,33 @@ class RongcloudImPlugin {
 
   ///收到已读消息回执
   ///
-  ///[data] 回执的内容 {messageTime=已阅读的最后一条消息的sendTime, tId=会话的targetId, ctype=会话类型}
+  ///[data] 回执的内容 {messageTime=已��读����最后一条消息的sendTime, tId=会话的targetId, ctype=会话类型}
   ///
   ///eg:{messageTime=1575530815100, tId='c1Its71dc', ctype=1}
   static Function(Map data) onReceiveReadReceipt;
+
+  ///请求消息已读回执
+  ///
+  ///[data] 回执的内容 {messageUId=请求已读回执的消息ID, conversationType=会话类型, targetId=会话的targetId}
+  ///
+  static Function(Map data) onMessageReceiptRequest;
+
+  ///消息已读回执响应（收到阅读回执响应，可以按照 messageUId 更新消息的阅读数）
+  ///
+  ///[data] 回执的内容 {messageUId=请求已读回执的消息ID, conversationType=会话类型, targetId=会话的targetId, userIdList=已读userId列表}
+  ///
+  static Function(Map data) onMessageReceiptResponse;
+
+  // 下载媒体文件响应
+  static Function(int code, int progress, int messageId, Message message)
+      onDownloadMediaMessageResponse;
+
+  //输入状态的监听
+  static Function(int conversationType, String targetId, List typingStatus)
+      onTypingStatusChanged;
+
+  //撤回消息监听
+  static Function(Message msg) onRecallMessageReceived;
 
   ///响应原生的事件
   ///
@@ -892,30 +1357,34 @@ class RongcloudImPlugin {
           }
           break;
 
-        case RCMethodCallBackKey.ReceiveMessage: {
-          int count = 0;
-          if (onMessageReceived != null) {
-            count ++;
-            Map map = call.arguments;
-            int left = map["left"];
-            String messageString = map["message"];
-            Message msg = MessageFactory.instance.string2Message(messageString);
-            onMessageReceived(msg, left);
+        case RCMethodCallBackKey.ReceiveMessage:
+          {
+            int count = 0;
+            if (onMessageReceived != null) {
+              count++;
+              Map map = call.arguments;
+              int left = map["left"];
+              String messageString = map["message"];
+              Message msg =
+                  MessageFactory.instance.string2Message(messageString);
+              onMessageReceived(msg, left);
+            }
+            if (onMessageReceivedWrapper != null) {
+              count++;
+              Map map = call.arguments;
+              int left = map["left"];
+              String messageString = map["message"];
+              bool hasPackage = map["hasPackage"];
+              bool offline = map["offline"];
+              Message msg =
+                  MessageFactory.instance.string2Message(messageString);
+              onMessageReceivedWrapper(msg, left, hasPackage, offline);
+            }
+            if (count == 2) {
+              print(
+                  "警告：同时实现了 onMessageReceived 和 onMessageReceivedWrapper 两个接收消息的回调，可能会出现重复接收消息或者重复刷新的问题，建议只实现其中一个！！！");
+            }
           }
-          if (onMessageReceivedWrapper != null) {
-            count ++;
-            Map map = call.arguments;
-            int left = map["left"];
-            String messageString = map["message"];
-            bool hasPackage = map["hasPackage"];
-            bool offline = map["offline"];
-            Message msg = MessageFactory.instance.string2Message(messageString);
-            onMessageReceivedWrapper(msg,left,hasPackage,offline);
-          }
-          if (count == 2) {
-            print("警告：同时实现了 onMessageReceived 和 onMessageReceivedWrapper 两个接收消息的回调，可能会出现重复接收消息或者重复刷新的问题，建议只实现其中一个！！！");
-          }
-        }
           break;
 
         case RCMethodCallBackKey.JoinChatRoom:
@@ -966,8 +1435,234 @@ class RongcloudImPlugin {
             onReceiveReadReceipt(map);
           }
           break;
+
+        case RCMethodCallBackKey.ReceiptRequest:
+          if (onMessageReceiptRequest != null) {
+            Map map = call.arguments;
+            onMessageReceiptRequest(map);
+          }
+          break;
+        case RCMethodCallBackKey.ReceiptResponse:
+          if (onMessageReceiptResponse != null) {
+            Map map = call.arguments;
+            onMessageReceiptResponse(map);
+          }
+          break;
+        case RCMethodCallBackKey.TypingStatusChanged:
+          if (onTypingStatusChanged != null) {
+            Map map = call.arguments;
+            int conversationType = map["conversationType"];
+            String targetId = map["targetId"];
+            List list = map["typingStatus"];
+            List statusList = new List();
+            for (String statusStr in list) {
+              TypingStatus status =
+                  MessageFactory.instance.string2TypingStatus(statusStr);
+              statusList.add(status);
+            }
+            onTypingStatusChanged(conversationType, targetId, statusList);
+          }
+          break;
+        case RCMethodCallBackKey.DownloadMediaMessage:
+          if (onDownloadMediaMessageResponse != null) {
+            Map map = call.arguments;
+            int code = map["code"];
+            int progress = map["progress"];
+            int messageId = map["messageId"];
+            String messageString = map["message"];
+            Message message =
+                MessageFactory.instance.string2Message(messageString);
+            onDownloadMediaMessageResponse(code, progress, messageId, message);
+          }
+          break;
+        case RCMethodCallBackKey.RecallMessage:
+          if (onRecallMessageReceived != null) {
+            Map map = call.arguments;
+            String messageString = map["message"];
+            Message message =
+                MessageFactory.instance.string2Message(messageString);
+            onRecallMessageReceived(message);
+          }
+          break;
       }
       return;
     });
+  }
+
+  ///撤回消息
+  ///
+  ///
+  /// 当接收方离线并允许远程推送时，会收到远程推送。
+  /// 远程推送中包含两部分内容，一是[pushContent]，用于显示；二是[pushData]，用于携带不显示的数据。
+  ///
+  /// SDK内置的消息类型，如果您将[pushContent]和[pushData]置为空或者为null，会使用默认的推送格式进行远程推送。
+  /// 自定义类型的消息，需要您自己设置pushContent和pushData来定义推送内容，否则将不会进行远程推送。
+  static Future<RecallNotificationMessage> recallMessage(
+      Message message, String pushContent) async {
+    if (message == null) {
+      print(
+          "send message fail: conversationType or targetId or content is null");
+      return null;
+    }
+    if (pushContent == null) {
+      pushContent = "";
+    }
+    Map msgMap = MessageFactory.instance.message2Map(message);
+    Map map = {"message": msgMap, "pushContent": pushContent};
+    Map resultMap = await _channel.invokeMethod(RCMethodKey.RecallMessage, map);
+    if (resultMap == null) {
+      return null;
+    }
+    String messageString = resultMap["recallNotificationMessage"];
+    if (messageString == null || messageString.isEmpty) {
+      print(
+          "send message fail: conversationType or targetId or content is null");
+      return null;
+    }
+    RecallNotificationMessage msg = MessageFactory.instance
+        .string2MessageContent(
+            messageString, RecallNotificationMessage.objectName);
+    return msg;
+  }
+
+  //根据消息类型，targetId 获取某一会话的文字消息草稿。用于获取用户输入但未发送的暂存消息。
+  static Future<String> getTextMessageDraft(
+      int conversationType, String targetId) async {
+    if (conversationType == null || targetId == null) {
+      print(
+          "saveTextMessageDraft fail: conversationType or targetId or content is null");
+      return null;
+    }
+    Map paramMap = {
+      "conversationType": conversationType,
+      "targetId": targetId,
+    };
+    String result =
+        await _channel.invokeMethod(RCMethodKey.GetTextMessageDraft, paramMap);
+    return result;
+  }
+
+  //根据消息类型，targetId 保存某一会话的文字消息草稿。用于暂存用户输入但未发送的消息
+  static Future<bool> saveTextMessageDraft(
+      int conversationType, String targetId, String textContent) async {
+    if (conversationType == null || targetId == null || textContent == null) {
+      print(
+          "saveTextMessageDraft fail: conversationType or targetId or content is null");
+      return null;
+    }
+    Map paramMap = {
+      "conversationType": conversationType,
+      "targetId": targetId,
+      "content": textContent
+    };
+    bool result =
+        await _channel.invokeMethod(RCMethodKey.SaveTextMessageDraft, paramMap);
+    return result;
+  }
+
+  //搜索会话（根据关键词）
+  // keyword           搜索的关键字。
+  // conversationTypes 搜索的会话类型。
+  // objectNames       搜索的消息类型,例如:RC:TxtMsg。
+  // resultCallback    搜索结果回调。
+  static void searchConversations(
+      String keyword,
+      List conversationTypes,
+      List objectNames,
+      Function(int code, List searchConversationResult) finished) async {
+    Map paramMap = {
+      "keyword": keyword,
+      "conversationTypes": conversationTypes,
+      "objectNames": objectNames
+    };
+    Map result =
+        await _channel.invokeMethod(RCMethodKey.SearchConversations, paramMap);
+    if (result != null) {
+      int code = result['code'];
+      List resultList = new List();
+      if (code == 0) {
+        List searchConversationResult = result['SearchConversationResult'];
+        for (String resultStr in searchConversationResult) {
+          SearchConversationResult searchConversationResult = MessageFactory
+              .instance
+              .string2SearchConversationResult(resultStr);
+          resultList.add(searchConversationResult);
+        }
+      }
+      if (finished != null) {
+        finished(code, resultList);
+      }
+    }
+  }
+
+  // 根据会话,搜索本地历史消息。
+  // 搜索结果可分页返回。
+  // conversationType 指定的会话类型。
+  // targetId         指定的会话 id。
+  // keyword          搜索的关键字。
+  // count            返回的搜索结果数量, count > 0。
+  // beginTime        查询记录的起始时间, 传0时从最新消息开始搜索。从该时间往前搜索。
+  // resultCallback   搜索结果回调。
+  static void searchMessages(
+      int conversationType,
+      String targetId,
+      String keyword,
+      int count,
+      int beginTime,
+      Function(List/*<Message>*/ msgList, int code) finished) async {
+    Map paramMap = {
+      "conversationType": conversationType,
+      "targetId": targetId,
+      "keyword": keyword,
+      "count": count,
+      "beginTime": beginTime,
+    };
+    Map resultMap =
+        await _channel.invokeMethod(RCMethodKey.SearchMessages, paramMap);
+    int code = resultMap["code"];
+    if (code == 0) {
+      List msgStrList = resultMap["messages"];
+      if (msgStrList == null) {
+        if (finished != null) {
+          finished(null, code);
+        }
+        return;
+      }
+      List l = new List();
+      for (String msgStr in msgStrList) {
+        Message m = MessageFactory.instance.string2Message(msgStr);
+        l.add(m);
+      }
+      if (finished != null) {
+        finished(l, code);
+      }
+    } else {
+      if (finished != null) {
+        finished(null, code);
+      }
+    }
+  }
+
+  // 发送输入状态
+  static void sendTypingStatus(
+      int conversationType, String targetId, String typingContentType) async {
+    Map paramMap = {
+      "conversationType": conversationType,
+      "targetId": targetId,
+      "typingContentType": typingContentType,
+    };
+    await _channel.invokeMethod(RCMethodKey.SendTypingStatus, paramMap);
+  }
+
+  // 下载媒体文件
+  static void downloadMediaMessage(Message message) async {
+    Map msgMap = MessageFactory.instance.message2Map(message);
+    Map paramMap = {"message": msgMap};
+    await _channel.invokeMethod(RCMethodKey.DownloadMediaMessage, paramMap);
+  }
+
+  static void saveMediaToPublicDir(String filePath, String type) async {
+    Map paramMap = {"filePath": filePath, "type": type};
+    await _channel.invokeMethod(RCMethodKey.SaveMediaToPublicDir, paramMap);
   }
 }

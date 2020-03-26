@@ -1,4 +1,4 @@
-package com.example.rongcloud_im_plugin;
+package io.rong.flutter.imlib;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -18,10 +18,13 @@ import io.rong.common.FileUtils;
 import io.rong.common.RLog;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Message;
+import io.rong.message.GIFMessage;
 import io.rong.message.ImageMessage;
 import io.rong.message.SightMessage;
 import io.rong.message.utils.BitmapUtil;
+
 import static android.provider.MediaStore.Video.Thumbnails.MINI_KIND;
+
 import android.media.ThumbnailUtils;
 
 public class RCMessageHandler {
@@ -45,7 +48,7 @@ public class RCMessageHandler {
 
         Uri uri = obtainMediaFileSavedUri();
 
-        ImageMessage model = (ImageMessage)message.getContent();
+        ImageMessage model = (ImageMessage) message.getContent();
         String name = message.getMessageId() + ".jpg";
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -78,7 +81,7 @@ public class RCMessageHandler {
                     RLog.d("ImageMessageHandler", "Image format:" + imageFormat);
                     if (options.outWidth <= THUMB_COMPRESSED_SIZE && options.outHeight <= THUMB_COMPRESSED_SIZE) {
                         byte var28 = -1;
-                        switch(imageFormat.hashCode()) {
+                        switch (imageFormat.hashCode()) {
                             case -1487018032:
                                 if (imageFormat.equals("image/webp")) {
                                     var28 = 1;
@@ -90,7 +93,7 @@ public class RCMessageHandler {
                                 }
                         }
 
-                        switch(var28) {
+                        switch (var28) {
                             case 0:
                             case 1:
                                 BitmapFactory.Options bmOptions = new BitmapFactory.Options();
@@ -170,7 +173,7 @@ public class RCMessageHandler {
                     BitmapFactory.decodeFile(localPath, options);
                     file = new File(localPath);
                     long fileSize = file.length() / 1024L;
-                    if ((options.outWidth > COMPRESSED_SIZE || options.outHeight > COMPRESSED_SIZE) && !model.isFull() && fileSize > (long)MAX_ORIGINAL_IMAGE_SIZE) {
+                    if ((options.outWidth > COMPRESSED_SIZE || options.outHeight > COMPRESSED_SIZE) && !model.isFull() && fileSize > (long) MAX_ORIGINAL_IMAGE_SIZE) {
                         bitmap = BitmapUtil.getResizedBitmap(context, model.getLocalUri(), COMPRESSED_SIZE, COMPRESSED_SIZE);
                         if (bitmap != null) {
                             String dir = uri.toString() + "/image/local/";
@@ -260,13 +263,53 @@ public class RCMessageHandler {
         }
     }
 
+    public static void encodeGifMessage(Message message) {
+        GIFMessage model = (GIFMessage) message.getContent();
+        Uri uri = obtainMediaFileSavedUri();
+        String name = message.getMessageId() + ".gif";
+        String localPath;
+
+        if (model.getLocalPath() != null
+                && model.getLocalPath().getScheme() != null
+                && model.getLocalPath().getScheme().equals("file")) {
+
+            localPath = uri.toString() + IMAGE_LOCAL_PATH + name;
+
+            // copy 到缓存目录
+            File file = new File(localPath);
+            if (file.exists()) {
+                model.setLocalUri(Uri.parse("file://" + uri.toString() + IMAGE_LOCAL_PATH + name));
+            } else {
+                localPath = model.getLocalUri().toString().substring(5);
+                if ((FileUtils.copyFile(new File(localPath), uri.toString() + IMAGE_LOCAL_PATH, name)) != null) {
+                    model.setLocalUri(Uri.parse("file://" + uri.toString() + IMAGE_LOCAL_PATH + name));
+                }
+            }
+
+            Bitmap bitmap = BitmapFactory.decodeFile(localPath);
+
+            if (bitmap != null) {
+//                final int width = bitmap.getWidth();
+//                final int height = bitmap.getHeight();
+
+//                model.setWidth(width);
+//                model.setHeight(height);
+                final File imgFile = new File(localPath);
+//                model.setGifDataSize(imgFile.length());
+                model.setName(imgFile.getName());
+            }
+
+
+        }
+    }
+
     static private String shortMD5(String... args) {
         try {
             StringBuilder builder = new StringBuilder();
             String[] var3 = args;
             int var4 = args.length;
 
-            for(int var5 = 0; var5 < var4; ++var5) {
+            for (int var5 = 0; var5 < var4; ++var5) {
                 String arg = var3[var5];
                 builder.append(arg);
             }
@@ -290,7 +333,7 @@ public class RCMessageHandler {
         String appkey = RCIMFlutterWrapper.getInstance().getAppkey();
         String currentUserId = RongIMClient.getInstance().getCurrentUserId();
 
-        String key = shortMD5(appkey,currentUserId);
+        String key = shortMD5(appkey, currentUserId);
         File file = context.getFilesDir();
         String path = file.getAbsolutePath();
         Uri uri = Uri.parse(path + File.separator + key);

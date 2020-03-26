@@ -43,6 +43,16 @@ android {
         ndk {
             abiFilters "armeabi-v7a"
         }
+        //,"x86"
+    }
+
+    signingConfigs {
+        config {
+            storeFile file("rong_flutter.key")
+            storePassword "rongcloud"
+            keyAlias "rongcloud"
+            keyPassword "rongcloud"
+        }
     }
 
     buildTypes {

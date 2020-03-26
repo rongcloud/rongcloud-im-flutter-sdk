@@ -1,4 +1,4 @@
-package com.example.rongcloud_im_plugin;
+package io.rong.flutter.imlib;
 
 public class RCMethodList {
     //method list
@@ -38,7 +38,31 @@ public class RCMethodList {
     static String MethodKeyGetBlackListStatus = "GetBlackListStatus";
     static String MethodKeyGetBlackList = "GetBlackList";
     static String MethodKeySendReadReceiptMessage = "SendReadReceiptMessage";
+    static String MethodKeySendReadReceiptRequest = "SendReadReceiptRequest";
+    static String MethodKeySendReadReceiptResponse = "SendReadReceiptResponse";
+    static String MethodKeyRecallMessage = "recallMessage";
+    static String MethodKeyGetTextMessageDraft = "getTextMessageDraft";
+    static String MethodKeySaveTextMessageDraft = "saveTextMessageDraft";
+    static String MethodKeyClearHistoryMessages = "ClearHistoryMessages";
+    static String MethodKeySyncConversationReadStatus = "syncConversationReadStatus";
+    static String MethodKeySearchConversations = "searchConversations";
+    static String MethodKeySearchMessages = "searchMessages";
+    static String MethodKeySendTypingStatus = "sendTypingStatus";
+    static String MethodKeyDownloadMediaMessage = "downloadMediaMessage";
+    static String MethodKeySetNotificationQuietHours = "setNotificationQuietHours";
+    static String MethodKeyRemoveNotificationQuietHours = "removeNotificationQuietHours";
+    static String MethodKeyGetNotificationQuietHours = "getNotificationQuietHours";
+    static String MethodKeyGetUnreadMentionedMessages = "getUnreadMentionedMessages";
+    static String MethodKeySendDirectionalMessage = "sendDirectionalMessage";
+    static String MethodKeySaveMediaToPublicDir = "saveMediaToPublicDir";
 
+    //聊天室存储
+    static String MethodKeySetChatRoomEntry = "SetChatRoomEntry";
+    static String MethodKeyForceSetChatRoomEntry = "ForceSetChatRoomEntry";
+    static String MethodKeyGetChatRoomEntry = "GetChatRoomEntry";
+    static String MethodKeyGetAllChatRoomEntries = "GetAllChatRoomEntries";
+    static String MethodKeyRemoveChatRoomEntry = "RemoveChatRoomEntry";
+    static String MethodKeyForceRemoveChatRoomEntry = "ForceRemoveChatRoomEntry";
 
 
 
@@ -53,5 +77,10 @@ public class RCMethodList {
     static String MethodCallBackKeyConnectionStatusChange = "ConnectionStatusChangeCallBack";
     static String MethodCallBackKeySendDataToFlutter = "SendDataToFlutterCallBack";
     static String MethodCallBackKeyReceiveReadReceipt = "ReceiveReadReceiptCallBack";
+    static String MethodCallBackKeyReceiptRequest = "ReceiptRequestCallBack";
+    static String MethodCallBackKeyReceiptResponse = "ReceiptResponseCallBack";
+    static String MethodCallBackKeyTypingStatus ="TypingStatusChangedCallBack";
+    static String MethodCallBackKeyDownloadMediaMessage = "DownloadMediaMessageCallBack";
+    static String MethodCallBackRecallMessage = "RecallMessageCallBack";
 
 }

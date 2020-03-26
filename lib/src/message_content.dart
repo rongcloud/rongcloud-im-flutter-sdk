@@ -65,6 +65,9 @@ class MessageContent implements MessageCoding, MessageContentView {
     MentionedInfo mentionedInfo = new MentionedInfo();
     mentionedInfo.type = mentionedMap["type"];
     if (mentionedInfo.type == RCMentionedType.Users) {
+      if (mentionedMap["userIdList"] == null) {
+        return;
+      }
       List<String> userIdList = new List<String>.from(mentionedMap["userIdList"]);
       mentionedInfo.userIdList = userIdList;
     }

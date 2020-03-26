@@ -1,6 +1,7 @@
 import 'dart:core';
 import 'dart:convert' show json;
 
+import '../rongcloud_im_plugin.dart';
 import 'message.dart';
 import 'conversation.dart';
 import 'chatroom_info.dart';
@@ -12,6 +13,7 @@ import 'voice_message.dart';
 import 'sight_message.dart';
 
 import 'util/type_util.dart';
+import 'recall_notification_message.dart';
 
 class MessageFactory extends Object {
   factory MessageFactory() =>_getInstance();
@@ -75,6 +77,14 @@ class MessageFactory extends Object {
     message.sentTime = map["sentTime"];
     message.objectName = map["objectName"];
     message.messageUId = map["messageUId"];
+    Map readReceiptMap = map["readReceiptInfo"];
+    if (readReceiptMap != null) {
+      ReadReceiptInfo readReceiptInfo = ReadReceiptInfo();
+      readReceiptInfo.isReceiptRequestMessage = readReceiptMap["isReceiptRequestMessage"];
+      readReceiptInfo.hasRespond = readReceiptMap["hasRespond"];
+      readReceiptInfo.userIdList = readReceiptMap["userIdList"];
+      message.readReceiptInfo = readReceiptInfo;
+    }
     String contenStr = map["content"];
     MessageContent content = string2MessageContent(contenStr,message.objectName);
     if(contenStr == null || contenStr == "") {
@@ -104,6 +114,7 @@ class MessageFactory extends Object {
     con.senderUserId = map["senderUserId"];
     con.latestMessageId = map["latestMessageId"];
     con.mentionedCount = map["mentionedCount"];
+    con.draft = map["draft"];
 
     String contenStr = map["content"];
     MessageContent content = string2MessageContent(contenStr,con.objectName);
@@ -136,6 +147,21 @@ class MessageFactory extends Object {
     }else if(objectName == SightMessage.objectName) {
       content = new SightMessage();
       content.decode(contentS);
+    }else if(objectName == RecallNotificationMessage.objectName){
+      content = new RecallNotificationMessage();
+      content.decode(contentS);
+    }else if(objectName == ChatroomKVNotificationMessage.objectName){
+      content = new ChatroomKVNotificationMessage();
+      content.decode(contentS);
+    }else if(objectName == FileMessage.objectName){
+      content = new FileMessage();
+      content.decode(contentS);
+    }else if(objectName == RichContentMessage.objectName){
+      content = new RichContentMessage();
+      content.decode(contentS);
+    }else if(objectName == GifMessage.objectName){
+      content = new GifMessage();
+      content.decode(contentS);
     }
     return content;
   }
@@ -144,5 +170,54 @@ class MessageFactory extends Object {
   Map messageContent2Map(MessageContent content) {
     Map map = new Map();
     return map;
+  }
+
+  Map message2Map(Message message) {
+    Map map = new Map();
+    map["conversationType"] = message.conversationType;
+    map["targetId"] = message.targetId;
+    map["messageId"] = message.messageId;
+    map["messageDirection"] = message.messageDirection;
+    map["senderUserId"] = message.senderUserId;
+    map["receivedStatus"] =  message.receivedStatus;
+    map["sentStatus"] = message.sentStatus;
+    map["sentTime"] =  message.sentTime;
+    map["objectName"] =  message.objectName;
+    map["messageUId"] = message.messageUId;
+    if(message.content!=null){
+      map["content"] = message.content.encode();
+    }
+    return map;
+  }
+
+  TypingStatus string2TypingStatus(String statusJsonStr) {
+    if(TypeUtil.isEmptyString(statusJsonStr)) {
+      return null;
+    }
+    Map map = json.decode(statusJsonStr);
+    return map2TypingStatus(map);
+  }
+
+  TypingStatus map2TypingStatus(Map map) {
+    TypingStatus status = new TypingStatus();
+    status.userId = map["userId"];
+    status.typingContentType = map["typingContentType"];
+    status.sentTime = map["sentTime"];
+    return status;
+  }
+
+  SearchConversationResult string2SearchConversationResult(String resultStr){
+    if(TypeUtil.isEmptyString(resultStr)) {
+      return null;
+    }
+    Map map = json.decode(resultStr);
+    return map2SearchConversationResult(map);
+  }
+
+  SearchConversationResult map2SearchConversationResult(Map map) {
+    SearchConversationResult result = new SearchConversationResult();
+    result.mConversation = string2Conversation(map["mConversation"]) ;
+    result.mMatchCount = map["mMatchCount"];
+    return result;
   }
 }

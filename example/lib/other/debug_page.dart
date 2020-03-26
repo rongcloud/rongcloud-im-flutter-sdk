@@ -1,178 +1,167 @@
 import 'package:flutter/material.dart';
-import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart' as prefix ;
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart' as prefix;
+import '../im/util/dialog_util.dart';
+import '../im/util/event_bus.dart';
 
-class DebugPage extends StatelessWidget {
-  List titles;
-  String blackUserId = "blackUserId";
+class DebugPage extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _DebugPageState();
+}
 
-  DebugPage() {
-    titles = [
-      "加入黑名单",
-      "移除黑名单",
-      "查看黑名单状态",
-      "获取黑名单列表",
-      "设置免打扰",
-      "取消免打扰",
-      "查看免打扰",
-      "获取特定会话",
-      "获取特定方向的消息列表",
-      "分页获取会话",
-      "消息携带用户信息",
-      "消息携带@信息",
-    ];
-  }
+class _DebugPageState extends State<DebugPage> {
+  List titles = [
+    "设置全局屏蔽某个时间段的消息提醒",
+    "查询已设置的全局时间段消息提醒屏蔽",
+    "删除已设置的全局时间段消息提醒屏蔽",
+    "获取特定会话",
+    "获取特定方向的消息列表",
+    "分页获取会话",
+    "消息携带用户信息",
+    "聊天室状态存储测试",
+  ];
 
-  void _didTap(int index) {
+  void _didTap(int index, BuildContext context) {
     print("did tap debug " + titles[index]);
     switch (index) {
       case 0:
-        _addBlackList();
+        _setNotificationQuietHours();
         break;
       case 1:
-        _removeBalckList();
+        _getNotificationQuietHours();
         break;
       case 2:
-        _getBlackStatus();
+        _removeNotificationQuietHours();
         break;
       case 3:
-        _getBlackList();
-        break;
-      case 4:
-        _setConStatusEnable();
-        break;
-      case 5:
-        _setConStatusDisanable();
-        break;
-      case 6:
-        _getConStatus();
-        break;
-      case 7:
         _getCons();
         break;
-      case 8:
+      case 4:
         _getMessagesByDirection();
         break;
-      case 9:
+      case 5:
         _getConversationListByPage();
         break;
-      case 10:
+      case 6:
         _sendMessageAddSendUserInfo();
         break;
-      case 11:
-        _sendMessageAddMentionedInfo();
+      case 7:
+        _pushToChatRoomDebug(context);
         break;
     }
   }
 
-  void _addBlackList() {
-    print("_addBlackList");
-    prefix.RongcloudImPlugin.addToBlackList(blackUserId, (int code) {
-      print("_addBlackList:" + blackUserId + " code:" + code.toString());
+  void _setNotificationQuietHours() {
+    print("_setNotificationQuietHours");
+    prefix.RongcloudImPlugin.setNotificationQuietHours("09:00:00", 600,
+        (int code) {
+      EventBus.instance.commit(EventKeys.UpdateNotificationQuietStatus, {});
+      String toast = "设置全局屏蔽某个时间段的消息提醒:\n" +
+          (code == 0 ? "设置成功" : "设置失败, code:" + code.toString());
+      print(toast);
+      DialogUtil.showAlertDiaLog(context, toast);
     });
   }
 
-  void _removeBalckList() {
-    print("_removeBalckList");
-    prefix.RongcloudImPlugin.removeFromBlackList(blackUserId, (int code) {
-      print("_removeBalckList:" + blackUserId + " code:" + code.toString());
+  void _getNotificationQuietHours() {
+    print("_getNotificationQuietHours");
+    prefix.RongcloudImPlugin.getNotificationQuietHours(
+        (int code, String startTime, int spansMin) {
+      String toast = "查询已设置的全局时间段消息提醒屏蔽\n: startTime:" +
+          startTime +
+          " spansMin:" +
+          spansMin.toString() +
+          (code == 0 ? "" : "\n设置失败, code:" + code.toString());
+      print(toast);
+      DialogUtil.showAlertDiaLog(context, toast);
     });
   }
 
-  void _getBlackStatus() {
-    print("_getBlackStatus");
-    prefix.RongcloudImPlugin.getBlackListStatus(blackUserId,
-        (int blackStatus, int code) {
-      if (0 == code) {
-        if (prefix.RCBlackListStatus.In == blackStatus) {
-          print("用户:" + blackUserId + " 在黑名单中");
-        } else {
-          print("用户:" + blackUserId + " 不在黑名单中");
-        }
-      } else {
-        print("用户:" + blackUserId + " 黑名单状态查询失败" + code.toString());
-      }
-    });
-  }
-
-  void _getBlackList() {
-    print("_getBlackList");
-    prefix.RongcloudImPlugin.getBlackList((List/*<String>*/ userIdList, int code) {
-      print("_getBlackList:" +
-          userIdList.toString() +
-          " code:" +
-          code.toString());
-      userIdList.forEach((userId) {
-        print("userId:" + userId);
-      });
-    });
-  }
-
-  void _setConStatusEnable() {
-    prefix.RongcloudImPlugin.setConversationNotificationStatus(
-        prefix.RCConversationType.Private, "SealTalk", true, (int status, int code) {
-      print("setConversationNotificationStatus1 status " + status.toString());
-    });
-  }
-
-  void _setConStatusDisanable() {
-    prefix.RongcloudImPlugin.setConversationNotificationStatus(
-        prefix.RCConversationType.Private, "SealTalk", false, (int status, int code) {
-      print("setConversationNotificationStatus2 status " + status.toString());
-    });
-  }
-
-  void _getConStatus() {
-    prefix.RongcloudImPlugin.getConversationNotificationStatus(
-        prefix.RCConversationType.Private, "SealTalk", (int status, int code) {
-      print("getConversationNotificationStatus3 status " + status.toString());
+  void _removeNotificationQuietHours() {
+    print("_removeNotificationQuietHours");
+    prefix.RongcloudImPlugin.removeNotificationQuietHours((int code) {
+      EventBus.instance.commit(EventKeys.UpdateNotificationQuietStatus, {});
+      String toast = "删除已设置的全局时间段消息提醒屏蔽:\n" +
+          (code == 0 ? "删除成功" : "删除失败, code:" + code.toString());
+      print(toast);
+      DialogUtil.showAlertDiaLog(context, toast);
     });
   }
 
   void _getCons() async {
     int conversationType = prefix.RCConversationType.Private;
-    String targetId =  "SealTalk";
-    prefix.Conversation con = await prefix.RongcloudImPlugin.getConversation(conversationType,targetId);
-    if(con != null) {
-      print("getConversation type:"+con.conversationType.toString()+" targetId:"+con.targetId);
-    }else {
-      print("不存在该会话 type:"+conversationType.toString()+" targetId:"+targetId);
+    String targetId = "SealTalk";
+    prefix.Conversation con = await prefix.RongcloudImPlugin.getConversation(
+        conversationType, targetId);
+    if (con != null) {
+      print("getConversation type:" +
+          con.conversationType.toString() +
+          " targetId:" +
+          con.targetId);
+    } else {
+      print("不存在该会话 type:" +
+          conversationType.toString() +
+          " targetId:" +
+          targetId);
     }
   }
 
   void _getMessagesByDirection() async {
     int conversationType = prefix.RCConversationType.Private;
-    String targetId =  "SealTalk";
+    String targetId = "SealTalk";
     int sentTime = 1567756686643;
     int beforeCount = 10;
     int afterCount = 10;
-    List msgs = await prefix.RongcloudImPlugin.getHistoryMessages(conversationType, targetId, sentTime, beforeCount, afterCount);
-    if(msgs == null)  {
-      print("未获取消息列表 type:"+conversationType.toString()+" targetId:"+targetId);
-    }else {
-      for(prefix.Message msg in msgs) {
-        print("getHistoryMessages messageId:"+msg.messageId.toString()+" objName:"+ msg.objectName +" sentTime:"+msg.sentTime.toString());
+    List msgs = await prefix.RongcloudImPlugin.getHistoryMessages(
+        conversationType, targetId, sentTime, beforeCount, afterCount);
+    if (msgs == null) {
+      print("未获取消息列表 type:" +
+          conversationType.toString() +
+          " targetId:" +
+          targetId);
+    } else {
+      for (prefix.Message msg in msgs) {
+        print("getHistoryMessages messageId:" +
+            msg.messageId.toString() +
+            " objName:" +
+            msg.objectName +
+            " sentTime:" +
+            msg.sentTime.toString());
       }
     }
   }
 
   void _getConversationListByPage() async {
-    List list = await prefix.RongcloudImPlugin.getConversationListByPage([prefix.RCConversationType.Private,prefix.RCConversationType.Group], 2, 0);
-    prefix.Conversation lastCon ;
+    List list = await prefix.RongcloudImPlugin.getConversationListByPage(
+        [prefix.RCConversationType.Private, prefix.RCConversationType.Group],
+        2,
+        0);
+    prefix.Conversation lastCon;
     if (list != null && list.length > 0) {
-      list.sort((a,b) => b.sentTime.compareTo(a.sentTime));
-      for(int i=0;i<list.length;i++) {
+      list.sort((a, b) => b.sentTime.compareTo(a.sentTime));
+      for (int i = 0; i < list.length; i++) {
         prefix.Conversation con = list[i];
-        print("first targetId:"+con.targetId+" "+"time:"+con.sentTime.toString());
+        print("first targetId:" +
+            con.targetId +
+            " " +
+            "time:" +
+            con.sentTime.toString());
         lastCon = con;
       }
     }
-    if(lastCon != null) {
-      list = await prefix.RongcloudImPlugin.getConversationListByPage([prefix.RCConversationType.Private,prefix.RCConversationType.Group], 2, lastCon.sentTime);
+    if (lastCon != null) {
+      list = await prefix.RongcloudImPlugin.getConversationListByPage(
+          [prefix.RCConversationType.Private, prefix.RCConversationType.Group],
+          2,
+          lastCon.sentTime);
       if (list != null && list.length > 0) {
-        list.sort((a,b) => b.sentTime.compareTo(a.sentTime));
-        for(int i=0;i<list.length;i++) {
+        list.sort((a, b) => b.sentTime.compareTo(a.sentTime));
+        for (int i = 0; i < list.length; i++) {
           prefix.Conversation con = list[i];
-          print("last targetId:"+con.targetId+" "+"time:"+con.sentTime.toString());
+          print("last targetId:" +
+              con.targetId +
+              " " +
+              "time:" +
+              con.sentTime.toString());
         }
       }
     }
@@ -191,24 +180,18 @@ class DebugPage extends StatelessWidget {
     sendUserInfo.extra = "textSendUser.extra";
     msg.sendUserInfo = sendUserInfo;
 
-    prefix.Message message = await prefix.RongcloudImPlugin.sendMessage(prefix.RCConversationType.Private, "SealTalk", msg);
-    print("send message add sendUserInfo:"+message.content.getObjectName()+" msgContent:"+message.content.encode());
+    prefix.Message message = await prefix.RongcloudImPlugin.sendMessage(
+        prefix.RCConversationType.Private, "SealTalk", msg);
+    String toast = "发送消息携带用户信息:\n 消息的 objectName:" +
+        message.content.getObjectName() +
+        "\nmsgContent:" +
+        message.content.encode();
+    print(toast);
+    DialogUtil.showAlertDiaLog(context, toast);
   }
 
-  void _sendMessageAddMentionedInfo() async {
-    prefix.TextMessage msg = new prefix.TextMessage();
-    msg.content = "测试文本消息携带@信息";
-    /*
-    测试携带 @ 信息
-    */
-    prefix.MentionedInfo mentionedInfo = new prefix.MentionedInfo();
-    mentionedInfo.type = prefix.RCMentionedType.Users;
-    mentionedInfo.userIdList = ["SealTalk"];
-    mentionedInfo.mentionedContent = "这是 mentionedContent";
-    msg.mentionedInfo = mentionedInfo;
-
-    prefix.Message message = await prefix.RongcloudImPlugin.sendMessage(prefix.RCConversationType.Private, "SealTalk", msg);
-    print("send message add mentionedInfo:"+message.content.getObjectName()+" msgContent:"+message.content.encode());
+  void _pushToChatRoomDebug(BuildContext context) {
+    Navigator.pushNamed(context, "/chatroom_debug");
   }
 
   @override
@@ -223,7 +206,7 @@ class DebugPage extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           return MaterialButton(
             onPressed: () {
-              _didTap(index);
+              _didTap(index, context);
             },
             child: Text(titles[index]),
             color: Colors.blue,

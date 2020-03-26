@@ -128,3 +128,8 @@ class RCErrorCode {
   /// 小视频消息时长超限，最长 10s
   static const int SightMessageDurationLimitExceed = 34002;
 }
+
+class RCSaveMediaType {
+  static const String IMAGE = 'image';
+  static const String VIDEO = 'video';
+}
