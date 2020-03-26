@@ -1,5 +1,5 @@
 ## 1.1.0
-
+`从 1.1.0 开始为方便排查 Android 问题将 IM Flutter SDK Android 的包名改为 io.rong.flutter.imlib`
 * SDK:
 * 1.新增动图、文件、图文消息
 * 2.新增群组已读回执相关接口

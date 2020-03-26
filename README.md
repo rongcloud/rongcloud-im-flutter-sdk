@@ -33,6 +33,8 @@ dependencies:
 
 然后在项目路径执行 `flutter packages get` 来下载 Flutter Plugin
 
+> **从 1.1.0 开始为方便排查 Android 问题将 IM Flutter SDK Android 的包名改为 io.rong.flutter.imlib**
+
 # 集成步骤
 
 
