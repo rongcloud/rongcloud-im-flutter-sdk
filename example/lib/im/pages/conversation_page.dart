@@ -57,6 +57,7 @@ class _ConversationPageState extends State<ConversationPage>
   List selectedMessageIds =
       new List(); //已经选择的所有消息Id，只有在 multiSelect 为 YES,才会有有效值
   List userIdList = new List();
+  int recordTime = 0;
 
   _ConversationPageState({this.arguments});
   @override
@@ -109,6 +110,14 @@ class _ConversationPageState extends State<ConversationPage>
 
   void _pullMoreHistoryMessage() async {
     //todo 加载更多历史消息
+
+    int messageId = -1;
+    Message tempMessage = messageDataSource.last;
+    if (tempMessage != null && tempMessage.messageId > 0) {
+      messageId = tempMessage.messageId;
+      recordTime = tempMessage.sentTime;
+    }
+    onLoadMoreHistoryMessages(messageId);
   }
 
   ///请求相应的权限，只会在此一次触发
@@ -128,7 +137,7 @@ class _ConversationPageState extends State<ConversationPage>
 
     EventBus.instance.addListener(EventKeys.ReceiveReadReceipt, (map) {
       String tId = map["tId"];
-      if (tId == this.targetId){
+      if (tId == this.targetId) {
         onGetHistoryMessages();
       }
     });
@@ -196,6 +205,39 @@ class _ConversationPageState extends State<ConversationPage>
     }
     _sendReadReceipt();
     _refreshMessageContentListUI();
+  }
+
+  onLoadMoreHistoryMessages(int messageId) async {
+    print("get more history message");
+
+    List msgs = await RongcloudImPlugin.getHistoryMessage(
+        conversationType, targetId, messageId, 20);
+    if (msgs != null) {
+      msgs.sort((a, b) => b.sentTime.compareTo(a.sentTime));
+      messageDataSource += msgs;
+      if (msgs.length < 20) {
+        Message tempMessage = messageDataSource.last;
+        recordTime = tempMessage.sentTime;
+        onLoadRemoteHistoryMessages();
+      }
+    }
+    _refreshMessageContentListUI();
+  }
+
+  onLoadRemoteHistoryMessages() async {
+    print("get more history message");
+
+    RongcloudImPlugin.getRemoteHistoryMessages(
+        conversationType, targetId, recordTime, 20,
+        (List/*<Message>*/ msgList, int code) {
+      if (msgList != null) {
+        msgList.sort((a, b) => b.sentTime.compareTo(a.sentTime));
+        messageDataSource += msgList;
+        if (msgList.length == 20) {
+          _refreshMessageContentListUI();
+        }
+      }
+    });
   }
 
   onGetTextMessageDraft() async {
@@ -333,12 +375,12 @@ class _ConversationPageState extends State<ConversationPage>
       if (imgPath.endsWith("gif")) {
         GifMessage gifMsg = GifMessage.obtain(imgPath);
         Message msg = await RongcloudImPlugin.sendMessage(
-          conversationType, targetId, gifMsg);
+            conversationType, targetId, gifMsg);
         _insertOrReplaceMessage(msg);
       } else {
         ImageMessage imgMsg = ImageMessage.obtain(imgPath);
         Message msg = await RongcloudImPlugin.sendMessage(
-          conversationType, targetId, imgMsg);
+            conversationType, targetId, imgMsg);
         _insertOrReplaceMessage(msg);
       }
     });
@@ -556,14 +598,16 @@ class _ConversationPageState extends State<ConversationPage>
     print("didTapMessageItem " + message.objectName);
     if (message.content is VoiceMessage) {
       VoiceMessage msg = message.content;
-      if (msg.localPath != null && msg.localPath.isNotEmpty && File(msg.localPath).existsSync()) {
+      if (msg.localPath != null &&
+          msg.localPath.isNotEmpty &&
+          File(msg.localPath).existsSync()) {
         MediaUtil.instance.startPlayAudio(msg.localPath);
       } else {
         MediaUtil.instance.startPlayAudio(msg.remoteUrl);
         RongcloudImPlugin.downloadMediaMessage(message);
       }
-      
-    } else if (message.content is ImageMessage || message.content is GifMessage) {
+    } else if (message.content is ImageMessage ||
+        message.content is GifMessage) {
       Navigator.pushNamed(context, "/image_preview", arguments: message);
     } else if (message.content is SightMessage) {
       Navigator.pushNamed(context, "/video_play", arguments: message);
