@@ -225,12 +225,12 @@ class _ConversationPageState extends State<ConversationPage>
   }
 
   onLoadRemoteHistoryMessages() async {
-    print("get more history message");
+    print("get Remote history message");
 
     RongcloudImPlugin.getRemoteHistoryMessages(
         conversationType, targetId, recordTime, 20,
         (List/*<Message>*/ msgList, int code) {
-      if (msgList != null) {
+      if (code == 0 && msgList != null) {
         msgList.sort((a, b) => b.sentTime.compareTo(a.sentTime));
         messageDataSource += msgList;
         if (msgList.length == 20) {
