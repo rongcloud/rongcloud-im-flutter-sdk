@@ -52,7 +52,7 @@ ndk {
 
 混淆打包也可能会发生类似的问题。 
 
-Flutter 在执行 flutter build apk 时会自动对代码进行混淆编译。
+Flutter 在执行 `flutter build apk` 时会自动对代码进行混淆编译。
 
 [详细参见官网链接](https://flutter.dev/docs/deployment/android#r8)
 

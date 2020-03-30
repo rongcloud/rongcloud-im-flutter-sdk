@@ -4,9 +4,9 @@
 
 [Flutter 官网](https://flutter.dev/)
 
-[融云 iOS 文档集成](https://www.rongcloud.cn/docs/ios.html)
+[融云 iOS 文档集成](https://docs.rongcloud.cn/im/imkit/ios/quick-start/import/)
 
-[融云 Android 文档集成](https://www.rongcloud.cn/docs/android.html)
+[融云 Android 文档集成](https://docs.rongcloud.cn/im/imkit/android/quick-start/creatapp/)
 
 源码地址 [Github](https://github.com/rongcloud/rongcloud-im-flutter-sdk)，任何问题可以通过 Github Issues 提问
 
@@ -68,7 +68,7 @@ RongcloudImPlugin.disconnect(bool needPush)
 ```
 onSendMessage() async{
       TextMessage txtMessage = new TextMessage();
-      txtMessage.content = "这条消息来自 flutter";
+      txtMessage.content = "这条消息来自 Flutter";
       Message msg = await RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, txtMessage);
       print("send message start senderUserId = "+msg.senderUserId);
   }
@@ -87,7 +87,7 @@ onSendImageMessage() async {
 
 发送小视频消息
 
-详细参见[小视频消息文档](doc/小视频.md)
+详细参见[小视频消息文档](https://github.com/rongcloud/rongcloud-im-flutter-sdk/blob/master/doc/%E5%B0%8F%E8%A7%86%E9%A2%91.md)
 
 发送结果回调
 
@@ -109,9 +109,22 @@ onSendImageMessage() async {
 
 ## 接收消息
 
+> **注：以下两个接收消息的回调只能实现一个，否则会出现重复收到消息的情况**
+
+如果离线消息量不大，可以使用下面这个回调；
+
 ```
 //消息接收回调
     RongcloudImPlugin.onMessageReceived = (Message msg,int left) {
+      print("receive message messsageId:"+msg.messageId.toString()+" left:"+left.toString());
+    };
+```
+
+下面这个回调是 SDK 分批拉取离线消息，当离线消息量巨大的时候，建议当 left == 0 且 hasPackage == false 时刷新会话列表：
+
+```
+//消息接收回调
+    RongcloudImPlugin.onMessageReceivedWrapper = (Message msg, int left, bool hasPackage, bool offline) {
       print("receive message messsageId:"+msg.messageId.toString()+" left:"+left.toString());
     };
 ```
@@ -373,4 +386,4 @@ RongcloudImPlugin.onReceiveReadReceipt = (Map map) {
 
 更多接口请[参考](https://github.com/rongcloud/rongcloud-im-flutter-sdk)
 
-[常见问题](./doc)
+[常见问题](https://github.com/rongcloud/rongcloud-im-flutter-sdk/tree/master/doc)
