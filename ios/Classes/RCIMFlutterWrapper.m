@@ -354,26 +354,54 @@
         pushData = nil;
     }
     RCMessageContent *content = nil;
+    RCUserInfo *sendUserInfo = nil;
+    RCMentionedInfo *mentionedInfo = nil;
+    NSData *data = [contentStr dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *msgDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+    if ([msgDic valueForKey:@"user"]) {
+        NSDictionary *userDict = [msgDic valueForKey:@"user"];
+        NSString *userId = [userDict valueForKey:@"id"] ?: @"";
+        NSString *name = [userDict valueForKey:@"name"] ?: @"";
+        NSString *portraitUri = [userDict valueForKey:@"portrait"] ?: @"";
+        sendUserInfo = [[RCUserInfo alloc] initWithUserId:userId name:name portrait:portraitUri];
+    }
+    
+    if ([msgDic valueForKey:@"mentionedInfo"]) {
+        NSDictionary *mentionedInfoDict = [msgDic valueForKey:@"mentionedInfo"];
+        RCMentionedType type = [[mentionedInfoDict valueForKey:@"type"] intValue] ?: 1;
+        NSArray *userIdList = [mentionedInfoDict valueForKey:@"userIdList"] ?: @[];
+        NSString *mentionedContent = [mentionedInfoDict valueForKey:@"mentionedContent"] ?: @"";
+        mentionedInfo = [[RCMentionedInfo alloc] initWithMentionedType:type userIdList:userIdList mentionedContent:mentionedContent];
+    }
+    
     if([objName isEqualToString:@"RC:ImgMsg"]) {
-        NSData *data = [contentStr dataUsingEncoding:NSUTF8StringEncoding];
-        NSDictionary *msgDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
         NSString *localPath = [msgDic valueForKey:@"localPath"];
         localPath = [self getCorrectLocalPath:localPath];
         NSString *extra = [msgDic valueForKey:@"extra"];
         content = [RCImageMessage messageWithImageURI:localPath];
-        ((RCImageMessage *)content).extra = extra;
+        RCImageMessage *imgMsg = (RCImageMessage *)content;
+        imgMsg.extra = extra;
+        if (sendUserInfo) {
+            imgMsg.senderUserInfo = sendUserInfo;
+        }
+        if (mentionedInfo) {
+            imgMsg.mentionedInfo = mentionedInfo;
+        }
     } else if ([objName isEqualToString:@"RC:HQVCMsg"]) {
-        NSData *data = [contentStr dataUsingEncoding:NSUTF8StringEncoding];
-        NSDictionary *msgDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
         NSString *localPath = [msgDic valueForKey:@"localPath"];
         localPath = [self getCorrectLocalPath:localPath];
         long duration = [[msgDic valueForKey:@"duration"] longValue];
         NSString *extra = [msgDic valueForKey:@"extra"];
         content = [RCHQVoiceMessage messageWithPath:localPath duration:duration];
-        ((RCHQVoiceMessage *)content).extra = extra;
+        RCHQVoiceMessage *hqVoiceMsg = (RCHQVoiceMessage *)content;
+        hqVoiceMsg.extra = extra;
+        if (sendUserInfo) {
+            hqVoiceMsg.senderUserInfo = sendUserInfo;
+        }
+        if (mentionedInfo) {
+            hqVoiceMsg.mentionedInfo = mentionedInfo;
+        }
     } else if ([objName isEqualToString:@"RC:SightMsg"]) {
-        NSData *data = [contentStr dataUsingEncoding:NSUTF8StringEncoding];
-        NSDictionary *msgDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
         NSString *localPath = [msgDic valueForKey:@"localPath"];
         localPath = [self getCorrectLocalPath:localPath];
         long duration = [[msgDic valueForKey:@"duration"] longValue];
@@ -381,20 +409,30 @@
         
         UIImage *thumbImg = [RCFlutterUtil getVideoPreViewImage:localPath];
         content = [RCSightMessage messageWithLocalPath:localPath thumbnail:thumbImg duration:duration];
-        ((RCSightMessage *)content).extra = extra;
+        RCSightMessage *sightMsg = (RCSightMessage *)content;
+        sightMsg.extra = extra;
+        if (sendUserInfo) {
+            sightMsg.senderUserInfo = sendUserInfo;
+        }
+        if (mentionedInfo) {
+            sightMsg.mentionedInfo = mentionedInfo;
+        }
     } else if ([objName isEqualToString:@"RC:FileMsg"]) {
-        NSData *data = [contentStr dataUsingEncoding:NSUTF8StringEncoding];
-        NSDictionary *msgDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
         NSString *localPath = [msgDic valueForKey:@"localPath"];
         localPath = [self getCorrectLocalPath:localPath];
         //           NSString *mType = [msgDic valueForKey:@"mType"];
         NSString *extra = [msgDic valueForKey:@"extra"];
         
         content = [RCFileMessage messageWithFile:localPath];
-        ((RCFileMessage *)content).extra = extra;
+        RCFileMessage *fileMsg = (RCFileMessage *)content;
+        fileMsg.extra = extra;
+        if (sendUserInfo) {
+            fileMsg.senderUserInfo = sendUserInfo;
+        }
+        if (mentionedInfo) {
+            fileMsg.mentionedInfo = mentionedInfo;
+        }
     } else if ([objName isEqualToString:@"RC:GIFMsg"]) {
-        NSData *data = [contentStr dataUsingEncoding:NSUTF8StringEncoding];
-        NSDictionary *msgDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
         NSString *localPath = [msgDic valueForKey:@"localPath"];
         localPath = [self getCorrectLocalPath:localPath];
         NSString *extra = [msgDic valueForKey:@"extra"];
@@ -406,7 +444,14 @@
             height = image.size.height;
         }
         content = [RCGIFMessage messageWithGIFURI:localPath width:width height:height];
-        ((RCGIFMessage *)content).extra = extra;
+        RCGIFMessage *gifMsg = (RCGIFMessage *)content;
+        gifMsg.extra = extra;
+        if (sendUserInfo) {
+            gifMsg.senderUserInfo = sendUserInfo;
+        }
+        if (mentionedInfo) {
+            gifMsg.mentionedInfo = mentionedInfo;
+        }
     } else {
         NSLog(@"%s 非法的媒体消息类型",__func__);
         return;
