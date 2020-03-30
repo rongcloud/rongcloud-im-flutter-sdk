@@ -696,7 +696,7 @@ class _ConversationPageState extends State<ConversationPage>
     msg.content = text;
 
     if (conversationType == RCConversationType.Group) {
-      // 群组发送消息携带用户信息
+      // 群组发送消息携带@信息
       List<String> tapUserIdList = List();
       for (String userId in this.userIdList) {
         if (text.contains(userId) && (!tapUserIdList.contains(userId))) {
