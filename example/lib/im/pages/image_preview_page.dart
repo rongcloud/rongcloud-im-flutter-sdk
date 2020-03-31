@@ -45,12 +45,14 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
     }else {
       widget = Image.network(remoteUrl);
     }
-    Container container = Container(
-      margin: EdgeInsets.all(2),
-      child: widget,
-      alignment: Alignment.center,
-    );
-    return container;
+    // Container container = Container(
+    //   margin: EdgeInsets.all(2),
+    //   child: widget,
+    //   alignment: Alignment.center,
+    // );
+    // return container;
+    return widget;
+    // return container;
   }
   
   @override
@@ -59,9 +61,9 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
       appBar: AppBar(
         title: Text("图片预览"),
       ),
-      body: Container(
-        child: getImageWidget(),
-      ),
+      body: ListView(children: <Widget>[
+        getImageWidget(),
+      ],)
     );
   }
   
