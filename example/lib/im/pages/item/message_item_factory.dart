@@ -33,7 +33,9 @@ class MessageItemFactory extends StatelessWidget {
     if (msg.content != null && msg.content.length > 0) {
       Uint8List bytes = base64.decode(msg.content);
       widget = Image.memory(bytes);
-      RongcloudImPlugin.downloadMediaMessage(message);
+      if (msg.localPath == null) {
+        RongcloudImPlugin.downloadMediaMessage(message);
+      }
     } else {
       if (msg.localPath != null) {
         String path = MediaUtil.instance.getCorrectedLocalPath(msg.localPath);
