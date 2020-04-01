@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -34,16 +33,46 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
       remoteUrl = msg.imageUri;
     }
     Widget widget;
-    if(localPath != null) {
+    if (localPath != null) {
       String path = MediaUtil.instance.getCorrectedLocalPath(localPath);
       File file = File(path);
-      if(file != null && file.existsSync()) {
+      if (file != null && file.existsSync()) {
         widget = Image.file(file);
-      }else {
-        widget = Image.network(remoteUrl);
+      } else {
+        widget = Image.network(
+          remoteUrl,
+          fit: BoxFit.cover,
+          loadingBuilder: (BuildContext context, Widget child,
+              ImageChunkEvent loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Center(
+              child: CircularProgressIndicator(
+                value: loadingProgress.expectedTotalBytes != null
+                    ? loadingProgress.cumulativeBytesLoaded /
+                        loadingProgress.expectedTotalBytes
+                    : null,
+              ),
+            );
+          },
+        );
       }
-    }else {
-      widget = Image.network(remoteUrl);
+    } else {
+      widget = Image.network(
+        remoteUrl,
+        fit: BoxFit.cover,
+        loadingBuilder: (BuildContext context, Widget child,
+            ImageChunkEvent loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Center(
+            child: CircularProgressIndicator(
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes
+                  : null,
+            ),
+          );
+        },
+      );
     }
     // Container container = Container(
     //   margin: EdgeInsets.all(2),
@@ -54,17 +83,15 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
     return widget;
     // return container;
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("图片预览"),
-      ),
-      body: SingleChildScrollView(child: 
-        getImageWidget(),
-      )
-    );
+        appBar: AppBar(
+          title: Text("图片预览"),
+        ),
+        body: SingleChildScrollView(
+          child: getImageWidget(),
+        ));
   }
-  
 }
