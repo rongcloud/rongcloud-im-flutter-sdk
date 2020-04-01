@@ -192,6 +192,14 @@ class _ConversationPageState extends State<ConversationPage>
         }
       }
     };
+
+    RongcloudImPlugin.onDownloadMediaMessageResponse =
+        (int code, int progress, int messageId, Message message) async {
+      // 下载媒体消息后更新对应的消息
+      if (code == 0) {
+        _replaceMeidaMessage(message);
+      }
+    };
   }
 
   onGetHistoryMessages() async {
@@ -247,6 +255,21 @@ class _ConversationPageState extends State<ConversationPage>
       bottomInputBar.setTextContent(textDraft);
     }
     // _refreshUI();
+  }
+
+  void _replaceMeidaMessage(Message message) {
+    for (int i = 0; i < messageDataSource.length; i++) {
+      Message msg = messageDataSource[i];
+      if (msg.messageId == message.messageId) {
+        MessageContent messageContent = msg.content;
+        if (messageContent is ImageMessage ||
+            messageContent is SightMessage ||
+            messageContent is GifMessage) {
+          messageDataSource[i] = message;
+        }
+      }
+      break;
+    }
   }
 
   void _insertOrReplaceMessage(Message message) {
