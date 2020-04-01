@@ -102,6 +102,17 @@ onSendGifMessage() async {
 
 发送文件消息
 
+```dart
+onSendFileMessage() async {
+    // localPath 为文件本地路径,注意 Android 必须以 file:// 开头
+    FileMessage fileMessage = FileMessage.obtain(localPaht);
+    // 文件后缀如 "png" "txt"
+    fileMessage.mType = "XXX";
+    Message msg = await RongcloudImPlugin.sendMessage(
+              conversationType, targetId, fileMessage);
+  }
+
+```
 
 发送结果回调
 
@@ -405,8 +416,19 @@ RongcloudImPlugin.onReceiveReadReceipt = (Map map) {
 
 
 ## 消息撤回
-
-
+### 撤回消息调用如下接口会返回 RecallNotificationMessage 类型的消息体，需要把原有消息的内容替换，刷新 ui 显示为此类型消息的展示
+```dart
+void _recallMessage(Message message) async {
+    RecallNotificationMessage recallNotifiMessage =
+        await RongcloudImPlugin.recallMessage(message, "");
+    if (recallNotifiMessage != null) {
+      message.content = recallNotifiMessage;
+      _insertOrReplaceMessage(message);
+    } else {
+      showShortToast("撤回失败");
+    }
+  }
+```
 ## 草稿
 
 
@@ -422,7 +444,24 @@ RongcloudImPlugin.onReceiveReadReceipt = (Map map) {
 详细参见[多端阅读消息数同步](https://github.com/rongcloud/rongcloud-im-flutter-sdk/blob/master/doc/%E5%90%8C%E6%AD%A5%E4%BC%9A%E8%AF%9D%E5%B7%B2%E8%AF%BB%E7%8A%B6%E6%80%81.md)
 
 ## 消息搜索
-
+### 1.搜索关键词相关的会话信息
+```dart
+static void searchConversations(
+      String keyword,
+      List conversationTypes,
+      List objectNames,
+      Function(int code, List searchConversationResult) finished)
+```
+### 2.在根据搜索会话返回的信息，针对某个会话搜索相应会话的消息
+```dart
+static void searchMessages(
+      int conversationType,
+      String targetId,
+      String keyword,
+      int count,
+      int beginTime,
+      Function(List/*<Message>*/ msgList, int code) finished) 
+```
 
 ## 全局消息提醒
 
