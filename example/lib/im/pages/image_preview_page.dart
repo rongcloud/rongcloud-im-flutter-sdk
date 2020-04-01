@@ -61,9 +61,9 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
       appBar: AppBar(
         title: Text("图片预览"),
       ),
-      body: ListView(children: <Widget>[
+      body: SingleChildScrollView(child: 
         getImageWidget(),
-      ],)
+      )
     );
   }
   
