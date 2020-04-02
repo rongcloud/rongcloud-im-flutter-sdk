@@ -49,7 +49,7 @@ class _MessageReadPageState extends State<MessageReadPage> {
             color: Colors.white,
             child:InkWell(
               child: new ListTile(
-                title: new Text(user.name + "   " + user.id),
+                title: new Text(user.id),
                 leading: Container(
                     width: 36,
                     height: 36,

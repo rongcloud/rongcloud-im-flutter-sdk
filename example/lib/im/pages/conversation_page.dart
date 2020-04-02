@@ -706,7 +706,7 @@ class _ConversationPageState extends State<ConversationPage>
   void didLongPressUserPortrait(String userId, Offset tapPos) {
     if (conversationType == RCConversationType.Group) {
       BaseInfo targetInfo = UserInfoDataSource.getUserInfo(userId);
-      String content = "@" + userId + " " + targetInfo.name + " ";
+      String content = "@" + userId + " ";
       bottomInputBar.setTextContent(content);
       userIdList.add(userId);
     }

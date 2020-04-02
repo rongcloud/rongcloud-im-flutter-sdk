@@ -62,7 +62,7 @@ class _ContactsPageState extends State<ContactsPage> {
                 _onTapUser(user);
               },
               child: new ListTile(
-                title: new Text(user.name),
+                title: new Text(user.id),
                 leading: Container(
                     width: 36,
                     height: 36,
@@ -83,6 +83,7 @@ class _ContactsPageState extends State<ContactsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text("RongCloud IM"),
         actions: <Widget>[
           IconButton(
