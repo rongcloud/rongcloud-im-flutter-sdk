@@ -10,6 +10,7 @@ import 'item/conversation_list_item.dart';
 
 import '../util/style.dart';
 import '../util/event_bus.dart';
+import '../util/dialog_util.dart';
 
 class ConversationListPage extends StatefulWidget {
   @override
@@ -77,7 +78,13 @@ class _ConversationListPageState extends State<ConversationListPage>
     });
 
     RongcloudImPlugin.onConnectionStatusChange = (int connectionStatus) {
-      if (RCConnectionStatus.Connected == connectionStatus) {
+      if (RCConnectionStatus.Connected != connectionStatus &&
+          RCConnectionStatus.Connecting != connectionStatus) {
+        String toast = "连接状态变化 $connectionStatus, 请退出后重新登录";
+        DialogUtil.showAlertDiaLog(context, toast,
+            confirmButton: FlatButton(
+                onPressed: () => Navigator.pop(context), child: Text("重新登录")));
+      } else if (RCConnectionStatus.Connected == connectionStatus) {
         updateConversationList();
       }
     };
