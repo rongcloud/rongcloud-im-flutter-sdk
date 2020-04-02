@@ -24,6 +24,8 @@ class ChatroomKVNotificationMessage extends MessageContent {
     this.extra = map["extra"];
     Map userMap = map["user"];
     super.decodeUserInfo(userMap);
+    Map menthionedMap = map["mentionedInfo"];
+    super.decodeMentionedInfo(menthionedMap);
   }
 
   @override
@@ -34,6 +36,10 @@ class ChatroomKVNotificationMessage extends MessageContent {
       map["user"] = userMap;
     } else {
       map["user"] = {};
+    }
+    if (this.mentionedInfo != null) {
+      Map mentionedMap = super.encodeMentionedInfo(this.mentionedInfo);
+      map["mentionedInfo"] = mentionedMap;
     }
     return json.encode(map);
   }
