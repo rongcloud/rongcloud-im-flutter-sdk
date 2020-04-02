@@ -409,6 +409,11 @@ class _ConversationPageState extends State<ConversationPage>
         // sendUserInfo.portraitUri = "textSendUser.portraitUrl";
         // sendUserInfo.extra = "textSendUser.extra";
         // imgMsg.sendUserInfo = sendUserInfo;
+        // MentionedInfo mentionedInfo = new MentionedInfo();
+        // mentionedInfo.type = 2;
+        // mentionedInfo.userIdList = ["kj","oi","op"];
+        // mentionedInfo.mentionedContent = "pppppppp";
+        // imgMsg.mentionedInfo = mentionedInfo;
         Message msg = await RongcloudImPlugin.sendMessage(
             conversationType, targetId, imgMsg);
         _insertOrReplaceMessage(msg);

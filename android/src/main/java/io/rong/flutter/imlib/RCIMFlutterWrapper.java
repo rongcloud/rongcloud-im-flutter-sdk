@@ -8,6 +8,9 @@ import android.text.TextUtils;
 import android.util.Log;
 
 
+import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -35,6 +38,7 @@ import io.rong.imlib.MessageTag;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.ChatRoomInfo;
 import io.rong.imlib.model.Conversation;
+import io.rong.imlib.model.MentionedInfo;
 import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
 import io.rong.imlib.model.SearchConversationResult;
@@ -251,10 +255,9 @@ public class RCIMFlutterWrapper {
             getUnreadMentionedMessages(call.arguments, result);
         } else if (RCMethodList.MethodKeySendDirectionalMessage.equalsIgnoreCase(call.method)) {
             sendDirectionalMessage(call.arguments, result);
-        } else if (RCMethodList.MethodKeySaveMediaToPublicDir.equalsIgnoreCase(call.method)){
+        } else if (RCMethodList.MethodKeySaveMediaToPublicDir.equalsIgnoreCase(call.method)) {
             saveMediaToPublicDir(call.arguments);
-        }
-        else {
+        } else {
             result.notImplemented();
         }
 
@@ -712,7 +715,7 @@ public class RCIMFlutterWrapper {
             } else {
 
             }
-
+            setCommonInfo(contentStr, content);
             if (content == null) {
                 RCLog.e(LOG_TAG + " message content is nil");
                 return;
@@ -781,6 +784,61 @@ public class RCIMFlutterWrapper {
                     mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
                 }
             });
+        }
+    }
+
+    private void setCommonInfo(String contentStr, MessageContent content) {
+        try {
+            JSONObject contentObject = new JSONObject(contentStr);
+            if (contentObject.has("user")) {
+                Object userObject = contentObject.get("user");
+                if (userObject instanceof JSONObject) {
+                    JSONObject userJObject = (JSONObject) userObject;
+                    String id = "";
+                    String name = "";
+                    String portrait = "";
+                    if (userJObject.has("id")) {
+                        id = (String) userJObject.get("id");
+                    }
+                    if (userJObject.has("name")) {
+                        name = (String) userJObject.get("name");
+                    }
+                    if (userJObject.has("portrait")) {
+                        portrait = (String) userJObject.get("portrait");
+                    }
+                    UserInfo info = new UserInfo(id, name,
+                            Uri.parse(portrait));
+                    if (userJObject.has("extra")) {
+                        info.setExtra((String) userJObject.get("extra"));
+                    }
+                    content.setUserInfo(info);
+                }
+            }
+            if (contentObject.has("mentionedInfo")) {
+                Object mentionedObject = contentObject.get("mentionedInfo");
+                if (mentionedObject instanceof JSONObject) {
+                    JSONObject mentionedJObject = (JSONObject) mentionedObject;
+                    MentionedInfo info = new MentionedInfo();
+                    if (mentionedJObject.has("type")) {
+                        info.setType(MentionedInfo.MentionedType.valueOf((int) mentionedJObject.get("type")));
+                    }
+                    if (mentionedJObject.has("userIdList")) {
+                        JSONArray userIdArray = (JSONArray) mentionedJObject.get("userIdList");
+                        List<String> userIdList = new ArrayList<>();
+                        for (int i = 0; i < userIdArray.length(); i++) {
+                            String idStr = (String) userIdArray.get(i);
+                            userIdList.add(idStr);
+                        }
+                        info.setMentionedUserIdList(userIdList);
+                    }
+                    if (mentionedJObject.has("mentionedContent")) {
+                        info.setMentionedContent((String) mentionedJObject.get("mentionedContent"));
+                    }
+                    content.setMentionedInfo(info);
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
@@ -2521,12 +2579,12 @@ public class RCIMFlutterWrapper {
         return message;
     }
 
-    private void saveMediaToPublicDir(Object arg){
+    private void saveMediaToPublicDir(Object arg) {
         if (arg instanceof Map) {
             Map paramMap = (Map) arg;
             String filePath = (String) paramMap.get("filePath");
             String type = (String) paramMap.get("type");
-            StorageUtils.saveMediaToPublicDir(getMainContext(),new File(filePath),type);
+            StorageUtils.saveMediaToPublicDir(getMainContext(), new File(filePath), type);
         }
     }
 }
