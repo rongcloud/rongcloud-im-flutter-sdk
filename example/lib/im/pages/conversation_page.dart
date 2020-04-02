@@ -10,7 +10,7 @@ import 'item/bottom_input_bar.dart';
 import 'item/message_content_list.dart';
 import 'item/widget_util.dart';
 
-import '../util/user_info_datesource.dart';
+import '../util/user_info_datesource.dart' as example;
 import '../util/media_util.dart';
 import '../util/event_bus.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -51,7 +51,7 @@ class _ConversationPageState extends State<ConversationPage>
   ListView phrasesListView;
 
   MessageContentList messageContentList;
-  BaseInfo info;
+  example.BaseInfo info;
 
   bool multiSelect = false; //是否是多选模式
   List selectedMessageIds =
@@ -74,9 +74,9 @@ class _ConversationPageState extends State<ConversationPage>
     bottomToolBar = BottomToolBar(this);
 
     if (conversationType == RCConversationType.Private) {
-      this.info = UserInfoDataSource.getUserInfo(targetId);
+      this.info = example.UserInfoDataSource.getUserInfo(targetId);
     } else {
-      this.info = UserInfoDataSource.getGroupInfo(targetId);
+      this.info = example.UserInfoDataSource.getGroupInfo(targetId);
     }
 
     titleContent = '与 $targetId 的会话';
@@ -402,6 +402,13 @@ class _ConversationPageState extends State<ConversationPage>
         _insertOrReplaceMessage(msg);
       } else {
         ImageMessage imgMsg = ImageMessage.obtain(imgPath);
+        // ImageMessage 携带用户信息
+        // UserInfo sendUserInfo = new UserInfo();
+        // sendUserInfo.name = "textSendUser.name";
+        // sendUserInfo.userId = "textSendUser.userId";
+        // sendUserInfo.portraitUri = "textSendUser.portraitUrl";
+        // sendUserInfo.extra = "textSendUser.extra";
+        // imgMsg.sendUserInfo = sendUserInfo;
         Message msg = await RongcloudImPlugin.sendMessage(
             conversationType, targetId, imgMsg);
         _insertOrReplaceMessage(msg);
@@ -705,7 +712,6 @@ class _ConversationPageState extends State<ConversationPage>
   @override
   void didLongPressUserPortrait(String userId, Offset tapPos) {
     if (conversationType == RCConversationType.Group) {
-      BaseInfo targetInfo = UserInfoDataSource.getUserInfo(userId);
       String content = "@" + userId + " ";
       bottomInputBar.setTextContent(content);
       userIdList.add(userId);

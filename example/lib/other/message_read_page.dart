@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart' as prefix;
 
-import '../im/util/user_info_datesource.dart';
+import '../im/util/user_info_datesource.dart' as example;
 
 class MessageReadPage extends StatefulWidget {
   final prefix.Message message;
@@ -19,7 +19,7 @@ class _MessageReadPageState extends State<MessageReadPage> {
   _MessageReadPageState(this.message);
   
   List<Widget> widgetList = new List();
-  List<UserInfo> userList = new List();
+  List<example.UserInfo> userList = new List();
   @override
   void initState() {
     super.initState();
@@ -28,22 +28,22 @@ class _MessageReadPageState extends State<MessageReadPage> {
 
   _addFriends() {
     List users = _getRandomUserInfos();
-    for(UserInfo u in users) {
+    for(example.UserInfo u in users) {
       this.widgetList.add(getWidget(u));
     }
   }
 
-  List<UserInfo> _getRandomUserInfos() {
+  List<example.UserInfo> _getRandomUserInfos() {
     Map userIdList = message.readReceiptInfo.userIdList;
     if (userIdList != null) {
       for (String key in userIdList.keys) {
-      this.userList.add(UserInfoDataSource.getUserInfo(key));
+      this.userList.add(example.UserInfoDataSource.getUserInfo(key));
       }
     }
     return this.userList;
   }
 
-  Widget getWidget(UserInfo user) {
+  Widget getWidget(example.UserInfo user) {
     return Container(
             height: 50.0,
             color: Colors.white,

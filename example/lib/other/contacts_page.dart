@@ -4,7 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart' as prefix;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../im/util/user_info_datesource.dart';
+import '../im/util/user_info_datesource.dart' as example;
 import 'login_page.dart';
 
 class ContactsPage extends StatefulWidget {
@@ -16,7 +16,7 @@ class ContactsPage extends StatefulWidget {
 
 class _ContactsPageState extends State<ContactsPage> {
   List<Widget> widgetList = new List();
-  List<UserInfo> userList = new List();
+  List<example.UserInfo> userList = new List();
   @override
   void initState() {
     super.initState();
@@ -25,19 +25,19 @@ class _ContactsPageState extends State<ContactsPage> {
 
   _addFriends() {
     List users = _getRandomUserInfos();
-    for(UserInfo u in users) {
+    for(example.UserInfo u in users) {
       this.widgetList.add(getWidget(u));
     }
   }
 
-  List<UserInfo> _getRandomUserInfos() {
-    this.userList.add(UserInfoDataSource.getUserInfo("SealTalk"));
-    this.userList.add(UserInfoDataSource.getUserInfo("RongRTC"));
-    this.userList.add(UserInfoDataSource.getUserInfo("RongIM"));
+  List<example.UserInfo> _getRandomUserInfos() {
+    this.userList.add(example.UserInfoDataSource.getUserInfo("SealTalk"));
+    this.userList.add(example.UserInfoDataSource.getUserInfo("RongRTC"));
+    this.userList.add(example.UserInfoDataSource.getUserInfo("RongIM"));
     return this.userList;
   }
 
-  void _onTapUser(UserInfo user) {
+  void _onTapUser(example.UserInfo user) {
     Map arg = {"coversationType":prefix.RCConversationType.Private,"targetId":user.id};
     Navigator.pushNamed(context, "/conversation",arguments: arg);
   }
@@ -53,7 +53,7 @@ class _ContactsPageState extends State<ContactsPage> {
     Navigator.of(context).pushAndRemoveUntil(new MaterialPageRoute(builder: (context) => new LoginPage()), (route) => route == null);
   }
 
-  Widget getWidget(UserInfo user) {
+  Widget getWidget(example.UserInfo user) {
     return Container(
             height: 50.0,
             color: Colors.white,

@@ -4,7 +4,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart' as prefix;
 import 'message_item_factory.dart';
 import 'widget_util.dart';
 import '../../util/style.dart';
-import '../../util/user_info_datesource.dart';
+import '../../util/user_info_datesource.dart' as example;
 
 class ConversationItem extends StatefulWidget {
   prefix.Message message;
@@ -33,7 +33,7 @@ class _ConversationItemState extends State<ConversationItem> {
   prefix.Message message;
   ConversationItemDelegate delegate;
   bool showTime;
-  UserInfo user;
+  example.UserInfo user;
   Offset tapPos;
   bool multiSelect;
   bool isSeleceted = false;
@@ -45,7 +45,7 @@ class _ConversationItemState extends State<ConversationItem> {
     this.message = msg;
     this.delegate = delegate;
     this.showTime = showTime;
-    this.user = UserInfoDataSource.getUserInfo(msg.senderUserId);
+    this.user = example.UserInfoDataSource.getUserInfo(msg.senderUserId);
     this.multiSelect = multiSelect;
     this.selectedMessageIds = selectedMessageIds;
   }
