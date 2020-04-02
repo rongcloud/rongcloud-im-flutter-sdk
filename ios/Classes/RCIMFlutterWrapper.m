@@ -381,12 +381,6 @@
         content = [RCImageMessage messageWithImageURI:localPath];
         RCImageMessage *imgMsg = (RCImageMessage *)content;
         imgMsg.extra = extra;
-        if (sendUserInfo) {
-            imgMsg.senderUserInfo = sendUserInfo;
-        }
-        if (mentionedInfo) {
-            imgMsg.mentionedInfo = mentionedInfo;
-        }
     } else if ([objName isEqualToString:@"RC:HQVCMsg"]) {
         NSString *localPath = [msgDic valueForKey:@"localPath"];
         localPath = [self getCorrectLocalPath:localPath];
@@ -395,12 +389,6 @@
         content = [RCHQVoiceMessage messageWithPath:localPath duration:duration];
         RCHQVoiceMessage *hqVoiceMsg = (RCHQVoiceMessage *)content;
         hqVoiceMsg.extra = extra;
-        if (sendUserInfo) {
-            hqVoiceMsg.senderUserInfo = sendUserInfo;
-        }
-        if (mentionedInfo) {
-            hqVoiceMsg.mentionedInfo = mentionedInfo;
-        }
     } else if ([objName isEqualToString:@"RC:SightMsg"]) {
         NSString *localPath = [msgDic valueForKey:@"localPath"];
         localPath = [self getCorrectLocalPath:localPath];
@@ -411,12 +399,6 @@
         content = [RCSightMessage messageWithLocalPath:localPath thumbnail:thumbImg duration:duration];
         RCSightMessage *sightMsg = (RCSightMessage *)content;
         sightMsg.extra = extra;
-        if (sendUserInfo) {
-            sightMsg.senderUserInfo = sendUserInfo;
-        }
-        if (mentionedInfo) {
-            sightMsg.mentionedInfo = mentionedInfo;
-        }
     } else if ([objName isEqualToString:@"RC:FileMsg"]) {
         NSString *localPath = [msgDic valueForKey:@"localPath"];
         localPath = [self getCorrectLocalPath:localPath];
@@ -426,12 +408,6 @@
         content = [RCFileMessage messageWithFile:localPath];
         RCFileMessage *fileMsg = (RCFileMessage *)content;
         fileMsg.extra = extra;
-        if (sendUserInfo) {
-            fileMsg.senderUserInfo = sendUserInfo;
-        }
-        if (mentionedInfo) {
-            fileMsg.mentionedInfo = mentionedInfo;
-        }
     } else if ([objName isEqualToString:@"RC:GIFMsg"]) {
         NSString *localPath = [msgDic valueForKey:@"localPath"];
         localPath = [self getCorrectLocalPath:localPath];
@@ -455,6 +431,13 @@
     } else {
         NSLog(@"%s 非法的媒体消息类型",__func__);
         return;
+    }
+
+    if (sendUserInfo) {
+        content.senderUserInfo = sendUserInfo;
+    }
+    if (mentionedInfo) {
+        content.mentionedInfo = mentionedInfo;
     }
     
     if([content isKindOfClass:[RCSightMessage class]]) {
