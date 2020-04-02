@@ -78,8 +78,9 @@ class _ConversationListPageState extends State<ConversationListPage>
     });
 
     RongcloudImPlugin.onConnectionStatusChange = (int connectionStatus) {
-      if (RCConnectionStatus.Connected != connectionStatus &&
-          RCConnectionStatus.Connecting != connectionStatus) {
+      if (RCConnectionStatus.KickedByOtherClient == connectionStatus ||
+          RCConnectionStatus.TokenIncorrect == connectionStatus ||
+          RCConnectionStatus.UserBlocked == connectionStatus) {
         String toast = "连接状态变化 $connectionStatus, 请退出后重新登录";
         DialogUtil.showAlertDiaLog(context, toast,
             confirmButton: FlatButton(
