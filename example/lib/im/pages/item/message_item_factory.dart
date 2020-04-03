@@ -13,9 +13,14 @@ class MessageItemFactory extends StatelessWidget {
   const MessageItemFactory({Key key, this.message}) : super(key: key);
 
   ///文本消息 item
-  Widget textMessageItem() {
+  Widget textMessageItem(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     TextMessage msg = message.content;
     return Container(
+      constraints: BoxConstraints(
+        // 屏幕宽度减去头像宽度加上间距
+        maxWidth: screenWidth-140,
+      ),
       padding: EdgeInsets.all(8),
       child: Text(
         msg.content,
@@ -307,7 +312,7 @@ class MessageItemFactory extends StatelessWidget {
 
   Widget messageItem(BuildContext context) {
     if (message.content is TextMessage) {
-      return textMessageItem();
+      return textMessageItem(context);
     } else if (message.content is ImageMessage) {
       return imageMessageItem();
     } else if (message.content is VoiceMessage) {

@@ -257,27 +257,54 @@ class _ConversationItemState extends State<ConversationItem> {
       children: <Widget>[
         Expanded(
           child: Container(
-              padding: EdgeInsets.fromLTRB(15, 6, 15, 10),
-              alignment:
-                  message.messageDirection == prefix.RCMessageDirection.Send
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTapDown: (TapDownDetails details) {
-                  this.tapPos = details.globalPosition;
-                },
-                onTap: () {
-                  __onTapedMesssage();
-                },
-                onLongPress: () {
-                  __onLongPressMessage(this.tapPos);
-                },
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: MessageItemFactory(message: message),
-                ),
-              )),
+            padding: EdgeInsets.fromLTRB(15, 6, 15, 10),
+            alignment:
+                message.messageDirection == prefix.RCMessageDirection.Send
+                    ? Alignment.centerRight
+                    : Alignment.centerLeft,
+            child: Row(
+                mainAxisAlignment:
+                    message.messageDirection == prefix.RCMessageDirection.Send
+                        ? MainAxisAlignment.end
+                        : MainAxisAlignment.start,
+                children: <Widget>[
+                  // sentStatus = 20 为发送失败
+                  message.messageDirection == prefix.RCMessageDirection.Send &&
+                          message.sentStatus == 20
+                      ? Container(
+                          padding: EdgeInsets.fromLTRB(6, 6, 6, 6),
+                          child: GestureDetector(
+                              onTap: () {
+                                if (delegate != null) {
+                                  delegate.didTapReSendMessage(message);
+                                }
+                              },
+                              child: Image.asset(
+                                "assets/images/rc_ic_warning.png",
+                                width: 20,
+                                height: 20,
+                              )))
+                      : WidgetUtil.buildEmptyWidget(),
+                  Container(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTapDown: (TapDownDetails details) {
+                        this.tapPos = details.globalPosition;
+                      },
+                      onTap: () {
+                        __onTapedMesssage();
+                      },
+                      onLongPress: () {
+                        __onLongPressMessage(this.tapPos);
+                      },
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: MessageItemFactory(message: message),
+                      ),
+                    ),
+                  ),
+                ]),
+          ),
         )
       ],
     );
@@ -330,6 +357,8 @@ abstract class ConversationItemDelegate {
   void didSendMessageRequest(prefix.Message message);
   //点击消息已读人数
   void didTapMessageReadInfo(prefix.Message message);
+  //点击消息已读人数
+  void didTapReSendMessage(prefix.Message message);
 }
 
 // 多选模式下 cell 显示的 Icon

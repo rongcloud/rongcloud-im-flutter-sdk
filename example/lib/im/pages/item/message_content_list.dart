@@ -155,6 +155,11 @@ class _MessageContentListState extends State<MessageContentList>
   void didTapUserPortrait(String userId) {
     delegate.didTapUserPortrait(userId);
   }
+
+  @override
+  void didTapReSendMessage(Message message) {
+    delegate.didTapReSendMessage(message);
+  }
 }
 
 abstract class MessageContentListDelegate {
@@ -173,4 +178,6 @@ abstract class MessageContentListDelegate {
   void didTapMessageReadInfo(Message message);
 
   void didTapUserPortrait(String userId);
+
+  void didTapReSendMessage(Message message);
 }

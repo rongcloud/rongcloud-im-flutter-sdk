@@ -804,4 +804,21 @@ class _ConversationPageState extends State<ConversationPage>
   void willpullMoreHistoryMessage() {
     _pullMoreHistoryMessage();
   }
+
+  @override
+  void didTapReSendMessage(Message message) async {
+    RongcloudImPlugin.deleteMessageByIds([message.messageId], (int code) async {
+      // 清除数据
+      for (int i = 0; i < messageDataSource.length; i++) {
+        Message msg = messageDataSource[i];
+        if (msg.messageId == message.messageId) {
+          messageDataSource.removeAt(i);
+          break;
+        }
+      }
+      Message msg = await RongcloudImPlugin.sendMessage(
+          conversationType, targetId, message.content);
+      _insertOrReplaceMessage(msg);
+    });
+  }
 }
