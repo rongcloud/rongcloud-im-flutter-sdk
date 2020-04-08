@@ -395,6 +395,7 @@ class _SelectIconState extends State<SelectIcon> {
   Widget build(BuildContext context) {
     return Icon(
       isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+      size: 20,
     );
   }
 }
