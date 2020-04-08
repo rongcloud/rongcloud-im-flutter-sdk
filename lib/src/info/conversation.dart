@@ -1,4 +1,4 @@
-import 'message_content.dart';
+import '../message/message_content.dart';
 
 class Conversation {
   int conversationType;

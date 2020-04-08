@@ -4,13 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:rongcloud_im_plugin/src/util/type_util.dart';
 import '../rongcloud_im_plugin.dart';
 import 'common_define.dart';
-import 'conversation.dart';
-import 'message.dart';
-import 'message_factory.dart';
+import 'util/message_factory.dart';
 import 'method_key.dart';
-import 'message_content.dart';
-import 'connection_status_convert.dart';
-import 'recall_notification_message.dart';
+import 'info/connection_status_convert.dart';
 
 class RongcloudImPlugin {
   static final MethodChannel _channel =
