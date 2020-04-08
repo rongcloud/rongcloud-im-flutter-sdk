@@ -83,7 +83,7 @@ class _ConversationItemState extends State<ConversationItem> {
           height: RCLayout.MessageNotifiItemHeight,
           color: Color(RCColor.MessageTimeBgColor),
           child: Text(
-            '成功撤回一条消息',
+            RCString.ConRecallMessageSuccess,
             style: TextStyle(
                 color: Colors.white, fontSize: RCFont.MessageNotifiFont),
           ),
@@ -281,8 +281,8 @@ class _ConversationItemState extends State<ConversationItem> {
                               },
                               child: Image.asset(
                                 "assets/images/rc_ic_warning.png",
-                                width: 20,
-                                height: 20,
+                                width: RCLayout.MessageErrorHeight,
+                                height: RCLayout.MessageErrorHeight,
                               )))
                       : WidgetUtil.buildEmptyWidget(),
                   Container(

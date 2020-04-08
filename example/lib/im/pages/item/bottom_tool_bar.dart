@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rongcloud_im_plugin_example/im/util/style.dart';
 
 class BottomToolBar extends StatefulWidget {
   BottomToolBarDelegate delegate;
@@ -32,7 +33,7 @@ class _BottomToolBarState extends State<BottomToolBar> {
         children: <Widget>[
           IconButton(
             icon: Icon(Icons.delete),
-            iconSize: 32,
+            iconSize: RCLayout.BottomIconLayoutSize,
             onPressed: () {
               tapDelegate();
             },

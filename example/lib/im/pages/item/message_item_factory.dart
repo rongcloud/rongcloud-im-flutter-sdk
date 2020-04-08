@@ -298,8 +298,8 @@ class MessageItemFactory extends StatelessWidget {
                 ),
               ),
               Container(
-                width: 45,
-                height: 45,
+                width: RCLayout.RichMessageImageSize,
+                height: RCLayout.RichMessageImageSize,
                 child: msg.imageURL == null || msg.imageURL.isEmpty
                     ? Image.asset("assets/images/rich_content_msg_default.png")
                     : Image.network(msg.imageURL),

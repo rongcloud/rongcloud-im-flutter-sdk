@@ -125,10 +125,10 @@ class _ConversationListItemState extends State<ConversationListItem> {
       digest = "";
     }
     if (conversation.mentionedCount > 0) {
-      digest = "[有人@我] " + digest;
+      digest = RCString.ConHaveMentioned + digest;
     }
     if (conversation.draft != null && conversation.draft.isNotEmpty) {
-      digest = "[草稿] " + conversation.draft;
+      digest = RCString.ConDraft + conversation.draft;
     }
     return Expanded(
       child: Column(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../util/media_util.dart';
+import '../../util/style.dart';
 
 class BottomInputBar extends StatefulWidget {
   BottomInputBarDelegate delegate;
@@ -36,8 +37,8 @@ class _BottomInputBarState extends State<BottomInputBar> {
     this.textField = TextField(
       onSubmitted: _clickSendMessage,
       controller: textEditingController,
-      decoration:
-          InputDecoration(border: InputBorder.none, hintText: '随便说点什么吧'),
+      decoration: InputDecoration(
+          border: InputBorder.none, hintText: RCString.BottomInputTextHint),
       focusNode: focusNode,
       autofocus: true,
     );
@@ -159,7 +160,7 @@ class _BottomInputBarState extends State<BottomInputBar> {
         alignment: Alignment.center,
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
-          child: Text("按住 说话", textAlign: TextAlign.center),
+          child: Text(RCString.BottomTapSpeak, textAlign: TextAlign.center),
           onLongPress: () {
             _onVoiceGesLongPress();
           },
@@ -220,7 +221,7 @@ class _BottomInputBarState extends State<BottomInputBar> {
                         height: 22,
                         color: Color(0xffC8C8C8),
                         child: Text(
-                          '快捷回复',
+                          RCString.BottomCommonPhrases,
                           style: TextStyle(color: Colors.white, fontSize: 14),
                         ),
                       ),

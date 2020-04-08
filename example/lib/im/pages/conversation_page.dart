@@ -173,10 +173,10 @@ class _ConversationPageState extends State<ConversationPage>
         if (typingStatus.length > 0) {
           TypingStatus status = typingStatus[typingStatus.length - 1];
           if (status.typingContentType == TextMessage.objectName) {
-            titleContent = '对方正在输入...';
+            titleContent = RCString.ConTyping;
           } else if (status.typingContentType == VoiceMessage.objectName ||
               status.typingContentType == 'RC:VcMsg') {
-            titleContent = '对方正在讲话...';
+            titleContent = RCString.ConSpeaking;
           }
         } else {
           titleContent = '与 $targetId 的会话';
@@ -293,7 +293,7 @@ class _ConversationPageState extends State<ConversationPage>
   Widget _getExtentionWidget() {
     if (currentInputStatus == InputBarStatus.Extention) {
       return Container(
-          height: 180,
+          height: RCLayout.ExtentionLayoutWidth,
           child: GridView.count(
             physics: new NeverScrollableScrollPhysics(),
             crossAxisCount: 4,
@@ -301,7 +301,8 @@ class _ConversationPageState extends State<ConversationPage>
             children: extWidgetList,
           ));
     } else if (currentInputStatus == InputBarStatus.Phrases) {
-      return Container(height: 180, child: _buildPhrasesList());
+      return Container(
+          height: RCLayout.ExtentionLayoutWidth, child: _buildPhrasesList());
     } else {
       if (currentInputStatus == InputBarStatus.Voice) {
         bottomInputBar.refreshUI();
@@ -329,9 +330,9 @@ class _ConversationPageState extends State<ConversationPage>
                   alignment: Alignment.center,
                   child: Text(contentStr,
                       style: new TextStyle(
-                        fontSize: 14, //字体大���
+                        fontSize: RCFont.CommonPhrasesSize,
                       )),
-                  height: 36,
+                  height: RCLayout.CommonPhrasesHeight,
                 ));
           } else {
             return WidgetUtil.buildEmptyWidget();
@@ -388,8 +389,8 @@ class _ConversationPageState extends State<ConversationPage>
   }
 
   void _initExtentionWidgets() {
-    Widget imageWidget =
-        WidgetUtil.buildExtentionWidget(Icons.photo, "相册", () async {
+    Widget imageWidget = WidgetUtil.buildExtentionWidget(
+        Icons.photo, RCString.ExtPhoto, () async {
       String imgPath = await MediaUtil.instance.pickImage();
       if (imgPath == null) {
         return;
@@ -420,8 +421,8 @@ class _ConversationPageState extends State<ConversationPage>
       }
     });
 
-    Widget cameraWidget =
-        WidgetUtil.buildExtentionWidget(Icons.camera, "相机", () async {
+    Widget cameraWidget = WidgetUtil.buildExtentionWidget(
+        Icons.camera, RCString.ExtCamera, () async {
       String imgPath = await MediaUtil.instance.takePhoto();
       if (imgPath == null) {
         return;
@@ -436,15 +437,15 @@ class _ConversationPageState extends State<ConversationPage>
       _insertOrReplaceMessage(msg);
     });
 
-    Widget videoWidget =
-        WidgetUtil.buildExtentionWidget(Icons.video_call, "视频", () async {
+    Widget videoWidget = WidgetUtil.buildExtentionWidget(
+        Icons.video_call, RCString.ExtVideo, () async {
       print("push to video record page");
       Map map = {"coversationType": conversationType, "targetId": targetId};
       Navigator.pushNamed(context, "/video_record", arguments: map);
     });
 
-    Widget fileWidget =
-        WidgetUtil.buildExtentionWidget(Icons.folder, "文件", () async {
+    Widget fileWidget = WidgetUtil.buildExtentionWidget(
+        Icons.folder, RCString.ExtFolder, () async {
       List<File> files = await MediaUtil.instance.pickFiles();
       if (files != null && files.length > 0) {
         for (File file in files) {
@@ -551,7 +552,7 @@ class _ConversationPageState extends State<ConversationPage>
     if (multiSelect == true) {
       return <Widget>[
         FlatButton(
-          child: Text("取消"),
+          child: Text(RCString.ConCancel),
           textColor: Colors.white,
           onPressed: () {
             multiSelect = false;

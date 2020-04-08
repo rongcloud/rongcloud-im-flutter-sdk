@@ -35,6 +35,7 @@ class RCFont {
   //加号扩展栏
   static const double ExtIconSize = 40;
   static const double ExtTextFont = 13;
+  static const double CommonPhrasesSize = 14;
 }
 
 class RCLayout {
@@ -46,6 +47,8 @@ class RCLayout {
   //消息页面布局
   static const double MessageTimeItemWidth = 80;
   static const double MessageTimeItemHeight = 22;
+  static const double MessageErrorHeight = 20;
+  static const double RichMessageImageSize = 45;
 
   //小灰条消息宽高
   static const double MessageNotifiItemWidth = 140;
@@ -53,6 +56,11 @@ class RCLayout {
 
   //加号扩展栏
   static const double ExtIconLayoutSize = 50;
+  static const double ExtentionLayoutWidth = 180;
+  static const double CommonPhrasesHeight = 36;
+
+  //底部输入框
+  static const double BottomIconLayoutSize = 32;
 }
 
 //长按 menu 的 Action
@@ -81,4 +89,20 @@ class RCLongPressAction {
 
   static const String MutiSelectKey = "MutiSelectMessage";
   static const String MutiSelectValue = "多选";
+}
+
+class RCString {
+  static const String BottomInputTextHint = "随便说点什么吧";
+  static const String BottomTapSpeak = "按住 说话";
+  static const String BottomCommonPhrases = "快捷回复";
+  static const String ConRecallMessageSuccess = "成功撤回一条消息";
+  static const String ConHaveMentioned = "[有人@我] ";
+  static const String ConDraft = "[草稿] ";
+  static const String ConNoIdentify = "";
+  static const String ConTyping = "对方正在输入...";
+  static const String ConSpeaking = "对方正在讲话...";
+  static const String ExtPhoto = "相册";
+  static const String ExtCamera = "相机";
+  static const String ExtVideo = "视频";
+  static const String ExtFolder = "文件";
 }
