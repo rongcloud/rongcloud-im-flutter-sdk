@@ -105,4 +105,5 @@ class RCString {
   static const String ExtCamera = "相机";
   static const String ExtVideo = "视频";
   static const String ExtFolder = "文件";
+  static const String ConCancel = "取消";
 }
