@@ -215,7 +215,14 @@ class _ConversationItemState extends State<ConversationItem> {
 
   void __onTapedMesssage() {
     if (delegate != null) {
-      delegate.didTapMessageItem(message);
+      if (multiSelect == true) {
+        //多选模式下修改为didTapItem处理
+        delegate.didTapItem(message);
+        bool isSelected = selectedMessageIds.contains(message.messageId);
+        icon.updateUI(isSelected);
+      } else {
+        delegate.didTapMessageItem(message);
+      }
     } else {
       print("没有实现 ConversationItemDelegate");
     }
@@ -276,7 +283,15 @@ class _ConversationItemState extends State<ConversationItem> {
                           child: GestureDetector(
                               onTap: () {
                                 if (delegate != null) {
-                                  delegate.didTapReSendMessage(message);
+                                  if (multiSelect == true) {
+                                    //多选模式下修改为didTapItem处理
+                                    delegate.didTapItem(message);
+                                    bool isSelected = selectedMessageIds
+                                        .contains(message.messageId);
+                                    icon.updateUI(isSelected);
+                                  } else {
+                                    delegate.didTapReSendMessage(message);
+                                  }
                                 }
                               },
                               child: Image.asset(
