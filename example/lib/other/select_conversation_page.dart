@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:rongcloud_im_plugin_example/im/util/dialog_util.dart';
 import 'package:rongcloud_im_plugin_example/im/util/style.dart';
 import '../im/util/event_bus.dart';
 
@@ -42,7 +43,6 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
     List list =
         await RongcloudImPlugin.getConversationList(displayConversationType);
     if (list != null) {
-      // list.sort((a,b) => b.sentTime.compareTo(a.sentTime));
       conList = list;
     }
     _renfreshUI();
@@ -106,20 +106,27 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
         selectMessages.toString() +
         "转发的会话个数：" +
         selectConList.length.toString());
-    for (Message msg in selectMessages) {
-      for (Conversation con in selectConList) {
-        sendMessage(con.conversationType, con.targetId, msg.content);
-        // 延迟400秒，防止过渡频繁的发送消息导致发送失败的问题
-        sleep(Duration(milliseconds: 400));
-      }
-    }
-    Navigator.pop(context);
-    EventBus.instance.commit(EventKeys.ForwardMessageEnd, null);
+    // 这里不使用 loading，因为发消息时 sleep 会卡住动画
+    DialogUtil.showAlertDiaLog(context, "消息转发中，请稍后...",
+        confirmButton: FlatButton(onPressed: () {}, child: Text("")));
+    sendMessage();
   }
 
-  void sendMessage(
-      int conversationType, String targetId, MessageContent content) {
-    RongcloudImPlugin.sendMessage(conversationType, targetId, content);
+  void sendMessage() async {
+    Future.delayed(Duration(milliseconds: 400), () {
+      for (Message msg in selectMessages) {
+        for (Conversation con in selectConList) {
+          RongcloudImPlugin.sendMessage(
+              con.conversationType, con.targetId, msg.content);
+          // 延迟400秒，防止过渡频繁的发送消息导致发送失败的问题
+          sleep(Duration(milliseconds: 400));
+        }
+      }
+      selectConList.clear();
+      Navigator.pop(context);
+      Navigator.pop(context);
+      EventBus.instance.commit(EventKeys.ForwardMessageEnd, null);
+    });
   }
 
   @override
