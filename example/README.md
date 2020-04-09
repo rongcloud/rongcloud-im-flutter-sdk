@@ -31,3 +31,10 @@ android.useAndroidX=true
 android.enableJetifier=true
 ```
 
+> demo 为了考虑 CPU 架构兼容性问题，在 demo 的 `build.gradle` 中配置的 ndk 仅支持 `armeabi-v7a`
+
+```
+ndk {
+    abiFilters "armeabi-v7a"
+}
+```
