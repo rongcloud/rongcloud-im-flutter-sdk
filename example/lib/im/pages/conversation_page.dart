@@ -821,15 +821,17 @@ class _ConversationPageState extends State<ConversationPage>
 
     Map arguments = {"selectMessages": selectMsgs};
     DialogUtil.showBottomSheetDialog(context, {
-        "逐条转发": () {
-          arguments["forwardType"] = 0;
-          Navigator.pushNamed(context, "/select_conversation_page", arguments: arguments);
-        },
-        // "合并转发": () {
-        //   arguments["forwardType"] = 1;
-        //   Navigator.pushNamed(context, "/select_conversation_page", arguments: arguments);
-        // },
-      });
+      "逐条转发": () {
+        arguments["forwardType"] = 0;
+        Navigator.pushNamed(context, "/select_conversation_page",
+            arguments: arguments);
+      },
+      // "合并转发": () {
+      //   arguments["forwardType"] = 1;
+      //   Navigator.pushNamed(context, "/select_conversation_page", arguments: arguments);
+      // },
+      "取消": () {}
+    });
   }
 
   @override
