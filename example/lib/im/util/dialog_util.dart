@@ -24,4 +24,41 @@ class DialogUtil {
               ],
             ));
   }
+
+  static void showBottomSheetDialog(
+      BuildContext mContext, Map<String, Function()> tips) {
+    if (tips == null || tips.length <= 0) {
+      return;
+    }
+    showModalBottomSheet(
+      context: mContext,
+      builder: (context) => Container(
+        child: ListView.separated(
+            key: UniqueKey(),
+            controller: ScrollController(),
+            itemCount: tips.length,
+            itemBuilder: (BuildContext context, int index) {
+              return InkWell(
+                  child: Container(
+                      alignment: Alignment.center,
+                      height: 60,
+                      child: Text(tips.keys.toList()[index])),
+                  onTap: () {
+                    Function() clickEvent = tips.values.toList()[index];
+                    if (clickEvent != null) {
+                      Navigator.pop(mContext);
+                      clickEvent();
+                    }
+                  });
+            },
+            separatorBuilder: (BuildContext context, int index) {
+              return Container(
+                color: Color(0xffC8C8C8),
+                height: 0.5,
+              );
+            }),
+        height: (60 * tips.length * 1.0),
+      ),
+    );
+  }
 }

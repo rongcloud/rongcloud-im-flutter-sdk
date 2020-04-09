@@ -35,7 +35,14 @@ class _BottomToolBarState extends State<BottomToolBar> {
             icon: Icon(Icons.delete),
             iconSize: RCLayout.BottomIconLayoutSize,
             onPressed: () {
-              tapDelegate();
+              tapDelete();
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.forward),
+            iconSize: RCLayout.BottomIconLayoutSize,
+            onPressed: () {
+              tapForward();
             },
           ),
         ],
@@ -43,9 +50,17 @@ class _BottomToolBarState extends State<BottomToolBar> {
     );
   }
 
-  void tapDelegate() {
+  void tapDelete() {
     if (this.delegate != null) {
-      this.delegate.didTapDelegate();
+      this.delegate.didTapDelete();
+    } else {
+      print("没有实现 BottomToolBarDelegate");
+    }
+  }
+
+  void tapForward() {
+    if (this.delegate != null) {
+      this.delegate.didTapForward();
     } else {
       print("没有实现 BottomToolBarDelegate");
     }
@@ -53,5 +68,6 @@ class _BottomToolBarState extends State<BottomToolBar> {
 }
 
 abstract class BottomToolBarDelegate {
-  void didTapDelegate();
+  void didTapDelete();
+  void didTapForward();
 }

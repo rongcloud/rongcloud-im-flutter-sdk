@@ -15,6 +15,7 @@ import '../util/media_util.dart';
 import '../util/event_bus.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import '../util/dialog_util.dart';
 
 enum ConversationStatus {
   Normal, //正常
@@ -156,6 +157,14 @@ class _ConversationPageState extends State<ConversationPage>
       if (tId == this.targetId) {
         onGetHistoryMessages();
       }
+    });
+
+    EventBus.instance.addListener(EventKeys.ForwardMessageEnd, (arg) {
+      print("ForwardMessageEnd：" + this.targetId);
+      multiSelect = false;
+      selectedMessageIds.clear();
+      _refreshMessageContentListUI();
+      _refreshUI();
     });
 
     RongcloudImPlugin.onMessageSend =
@@ -791,14 +800,36 @@ class _ConversationPageState extends State<ConversationPage>
   }
 
   @override
-  void didTapDelegate() {
+  void didTapDelete() {
     List<int> messageIds = new List<int>.from(selectedMessageIds);
     multiSelect = false;
     RongcloudImPlugin.deleteMessageByIds(messageIds, (int code) {
       if (code == 0) {
         onGetHistoryMessages();
+        _refreshUI();
       }
     });
+  }
+
+  @override
+  void didTapForward() async {
+    List selectMsgs = new List();
+    for (int msgId in selectedMessageIds) {
+      Message forwardMsg = await RongcloudImPlugin.getMessage(msgId);
+      selectMsgs.add(forwardMsg);
+    }
+
+    Map arguments = {"selectMessages": selectMsgs};
+    DialogUtil.showBottomSheetDialog(context, {
+        "逐条转发": () {
+          arguments["forwardType"] = 0;
+          Navigator.pushNamed(context, "/select_conversation_page", arguments: arguments);
+        },
+        // "合并转发": () {
+        //   arguments["forwardType"] = 1;
+        //   Navigator.pushNamed(context, "/select_conversation_page", arguments: arguments);
+        // },
+      });
   }
 
   @override

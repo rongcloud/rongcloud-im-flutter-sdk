@@ -106,4 +106,5 @@ class RCString {
   static const String ExtVideo = "视频";
   static const String ExtFolder = "文件";
   static const String ConCancel = "取消";
+  static const String SelectConTitle = "选择会话";
 }
