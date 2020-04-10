@@ -8,8 +8,6 @@ import android.text.TextUtils;
 import android.util.Log;
 
 
-import com.google.gson.JsonObject;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,6 +30,7 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.rong.common.RLog;
 import io.rong.common.fwlog.FwLog;
+import io.rong.flutter.imlib.message.CombineMessage;
 import io.rong.imlib.AnnotationNotFoundException;
 import io.rong.imlib.IRongCallback;
 import io.rong.imlib.MessageTag;
@@ -400,6 +399,8 @@ public class RCIMFlutterWrapper {
             try {
                 // IMLib 默认检测到小视频 SDK 才会注册小视频消息，所以此处需要手动注册
                 RongIMClient.registerMessageType(SightMessage.class);
+                // 因为合并消息 定义和注册都写在 kit 里面
+                RongIMClient.registerMessageType(CombineMessage.class);
             } catch (AnnotationNotFoundException e) {
                 e.printStackTrace();
             }

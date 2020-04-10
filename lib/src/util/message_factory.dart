@@ -151,6 +151,9 @@ class MessageFactory extends Object {
     }else if(objectName == GifMessage.objectName){
       content = new GifMessage();
       content.decode(contentS);
+    }else if(objectName == CombineMessage.objectName){
+      content = new CombineMessage();
+      content.decode(contentS); 
     }
     return content;
   }

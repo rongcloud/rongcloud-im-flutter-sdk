@@ -311,6 +311,75 @@ class MessageItemFactory extends StatelessWidget {
     );
   }
 
+  // 合并消息 item
+  Widget combineMessageItem(BuildContext context) {
+    CombineMessage msg = message.content;
+    double screenWidth = MediaQuery.of(context).size.width;
+    List<String> summaryList = msg.summaryList;
+    String title = _getCombineMessageTitle(msg);
+    String summaryStr = "";
+    if (summaryList != null) {
+      for (int i = 0; i < summaryList.length && i < 4; i++) {
+        if (i == 0) {
+          summaryStr = summaryList[i];
+        } else {
+          summaryStr += "\n" + summaryList[i];
+        }
+      }
+    }
+    return Container(
+        width: screenWidth - 200,
+        child: Column(children: <Widget>[
+          Container(
+            margin: EdgeInsets.fromLTRB(10, 4, 0, 0),
+            alignment: Alignment.centerLeft,
+            child: Text(title,
+                textAlign: TextAlign.left,
+                style: TextStyle(fontSize: RCFont.MessageCombineTitleFont, color: Colors.black)),
+          ),
+          Container(
+            padding: EdgeInsets.fromLTRB(10,4,10,4),
+            alignment: Alignment.centerLeft,
+            child: Text(summaryStr,
+                textAlign: TextAlign.left,
+                style: TextStyle(fontSize: RCFont.MessageCombineContentFont, color: Color(RCColor.ConCombineMsgContentColor))),
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+            width: double.infinity,
+            height: 1.0,
+            color: Color(0xFFF3F3F3),
+          ),
+          Container(
+            padding: EdgeInsets.fromLTRB(10, 6, 0, 10),
+            alignment: Alignment.centerLeft,
+            child: Text(RCString.ChatRecord,
+                textAlign: TextAlign.left,
+                style: TextStyle(fontSize: RCFont.MessageCombineContentFont, color: Color(RCColor.ConCombineMsgContentColor))),
+          ),
+        ]));
+  }
+
+  String _getCombineMessageTitle(CombineMessage content) {
+    String title = "";
+    if (content.conversationType == RCConversationType.Group) {
+      title = RCString.GroupChatRecord;
+    } else {
+      List<String> nameList = content.nameList;
+      if (nameList == null) return title;
+      if (nameList.length == 1) {
+        title = "${nameList[0]}的${RCString.ChatRecord}";
+
+      } else if (nameList.length == 2) {
+        title = "${nameList[0]}的${RCString.ChatRecord} 和 ${nameList[1]}的${RCString.ChatRecord}";
+      }
+    }
+    if (title.isEmpty) {
+      title = RCString.ChatRecord;
+    }
+    return title;
+  }
+
   Widget messageItem(BuildContext context) {
     if (message.content is TextMessage) {
       return textMessageItem(context);
@@ -326,6 +395,8 @@ class MessageItemFactory extends StatelessWidget {
       return richContentMessageItem(context);
     } else if (message.content is GifMessage) {
       return gifMessageItem(context);
+    } else if (message.content is CombineMessage) {
+      return combineMessageItem(context);
     } else {
       return Text("无法识别消息 " + message.objectName);
     }

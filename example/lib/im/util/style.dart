@@ -1,6 +1,5 @@
-
 class RCColor {
-  static const GeneralBgColor = 0xffEFEFEF;//通用背景色
+  static const GeneralBgColor = 0xffEFEFEF; //通用背景色
 
   //会话列表相关颜色
   static const ConListTitleColor = 0xff000000;
@@ -11,7 +10,7 @@ class RCColor {
   static const ConListItemBgColor = 0xffffffff;
   static const ConListBorderColor = 0xff6C7B8B;
   static const ConListTopBgColor = 0xFFBBDEFB;
-
+  static const ConCombineMsgContentColor = 0xFF9E9E9E;
   //会话页面，消息相关颜色
   static const MessageSendBgColor = 0xffC8E9FD;
   static const MessageReceiveBgColor = 0xffffffff;
@@ -31,6 +30,8 @@ class RCFont {
   static const double MessageTimeFont = 12;
   static const double MessageNameFont = 14;
   static const double MessageNotifiFont = 15;
+  static const double MessageCombineTitleFont = 12;
+  static const double MessageCombineContentFont = 10;
 
   //加号扩展栏
   static const double ExtIconSize = 40;
@@ -40,9 +41,9 @@ class RCFont {
 
 class RCLayout {
   //会话列表页面布局
-  static const double ConListPortraitSize = 45;//会话列表头像大小
-  static const double ConListItemHeight = 70;//会话列表 item 高度
-  static const double ConListUnreadSize = 15;//会话列表未读数大小
+  static const double ConListPortraitSize = 45; //会话列表头像大小
+  static const double ConListItemHeight = 70; //会话列表 item 高度
+  static const double ConListUnreadSize = 15; //会话列表未读数大小
 
   //消息页面布局
   static const double MessageTimeItemWidth = 80;
@@ -107,4 +108,6 @@ class RCString {
   static const String ExtFolder = "文件";
   static const String ConCancel = "取消";
   static const String SelectConTitle = "选择会话";
+  static const String ChatRecord = "聊天记录";
+  static const String GroupChatRecord = "群聊的聊天记录";
 }
