@@ -11,6 +11,7 @@ class SightMessage extends MessageContent {
   String content;//缩略图内容
   int duration;//时长
   String extra;//额外数据
+  int size = 0;
 
   /// [localPath] 本地路径，Android 必须以 file:// 开头
   ///
@@ -47,7 +48,21 @@ class SightMessage extends MessageContent {
 
   @override
   String encode() {
-    Map map = {"localPath":this.localPath,"duration":this.duration,"extra":this.extra};
+    Map map = {"duration":this.duration,"extra":this.extra};
+    if (this.size > 0) {
+      map["size"] = this.size;
+    }
+    if (this.content != null) {
+      map["content"] = this.content;
+    }
+    if (this.localPath != null) {
+      map["localPath"] = this.localPath;
+    } else {
+      map["localPath"] = "";
+    }
+    if (this.remoteUrl != null) {
+      map["sightUrl"] = this.remoteUrl;
+    }
     if (this.sendUserInfo != null) {
       Map userMap = super.encodeUserInfo(this.sendUserInfo);
       map["user"] = userMap;

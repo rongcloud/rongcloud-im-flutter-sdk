@@ -23,7 +23,7 @@ class FileMessage extends MessageContent{
   void decode(String jsonStr) {
     Map map = json.decode(jsonStr);
     this.mName = map["name"];
-    this.mType = map["mType"];
+    this.mType = map["type"];
     this.mSize = map["size"];
     this.localPath = map["localPath"];
     this.extra = map["extra"];
@@ -36,8 +36,13 @@ class FileMessage extends MessageContent{
 
   @override
   String encode() {
-    Map map = {"localPath":this.localPath,"extra":this.extra,"mType":mType
+    Map map = {"extra":this.extra,"type":mType
     ,"name":mName,"size":mSize};
+    if (this.localPath != null) {
+      map["localPath"] = this.localPath;
+    } else {
+      map["localPath"] = "";
+    }
     if (mMediaUrl != null && mMediaUrl.length > 0) {
       map['fileUrl'] = mMediaUrl;
     }

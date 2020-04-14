@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'message_content.dart';
 import 'dart:convert' show json;
 
@@ -32,7 +34,18 @@ class ImageMessage extends MessageContent {
 
   @override
   String encode() {
-    Map map = {"localPath":this.localPath,"extra":this.extra};
+    Map map = {"extra":this.extra};
+    if (this.content != null) {
+      map["content"] = this.content;
+    }
+    if (this.localPath != null) {
+      map["localPath"] = this.localPath;
+    } else {
+      map["localPath"] = "";
+    }
+    if (this.imageUri != null) {
+      map["imageUri"] = this.imageUri;
+    }
     if (this.sendUserInfo != null) {
       Map userMap = super.encodeUserInfo(this.sendUserInfo);
       map["user"] = userMap;

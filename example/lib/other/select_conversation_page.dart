@@ -116,6 +116,9 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
     Future.delayed(Duration(milliseconds: 400), () {
       for (Message msg in selectMessages) {
         for (Conversation con in selectConList) {
+          // 转发时去掉消息原先携带的 sendUserInfo 和 mentionedInfo
+          msg.content.sendUserInfo = null;
+          msg.content.mentionedInfo = null;
           RongcloudImPlugin.sendMessage(
               con.conversationType, con.targetId, msg.content);
           // 延迟400秒，防止过渡频繁的发送消息导致发送失败的问题

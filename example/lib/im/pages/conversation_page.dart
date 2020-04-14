@@ -412,13 +412,14 @@ class _ConversationPageState extends State<ConversationPage>
         _insertOrReplaceMessage(msg);
       } else {
         ImageMessage imgMsg = ImageMessage.obtain(imgPath);
-        // ImageMessage 携带用户信息
+        // // ImageMessage 携带用户信息
         // UserInfo sendUserInfo = new UserInfo();
         // sendUserInfo.name = "textSendUser.name";
         // sendUserInfo.userId = "textSendUser.userId";
         // sendUserInfo.portraitUri = "textSendUser.portraitUrl";
         // sendUserInfo.extra = "textSendUser.extra";
         // imgMsg.sendUserInfo = sendUserInfo;
+        // // ImageMessage 携带 @ 信息
         // MentionedInfo mentionedInfo = new MentionedInfo();
         // mentionedInfo.type = 2;
         // mentionedInfo.userIdList = ["kj","oi","op"];

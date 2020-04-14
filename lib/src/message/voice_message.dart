@@ -39,7 +39,15 @@ class VoiceMessage extends MessageContent {
 
   @override
   String encode() {
-    Map map = {"localPath":this.localPath,"duration":this.duration,"extra":this.extra};
+    Map map = {"duration":this.duration,"extra":this.extra};
+    if (this.localPath != null) {
+      map["localPath"] = this.localPath;
+    } else {
+      map["localPath"] = "";
+    }
+    if (this.remoteUrl != null) {
+      map["remoteUrl"] = this.remoteUrl;
+    }
     if (this.sendUserInfo != null) {
       Map userMap = super.encodeUserInfo(this.sendUserInfo);
       map["user"] = userMap;
