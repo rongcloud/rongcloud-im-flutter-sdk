@@ -50,6 +50,7 @@ class _ConversationPageState extends State<ConversationPage>
   String titleContent;
   InputBarStatus currentInputStatus;
   ListView phrasesListView;
+  List emojiList = new List(); // emoji 数组
 
   MessageContentList messageContentList;
   example.BaseInfo info;
@@ -312,12 +313,42 @@ class _ConversationPageState extends State<ConversationPage>
     } else if (currentInputStatus == InputBarStatus.Phrases) {
       return Container(
           height: RCLayout.ExtentionLayoutWidth, child: _buildPhrasesList());
+    } else if (currentInputStatus == InputBarStatus.Emoji) {
+      return Container(
+          height: RCLayout.ExtentionLayoutWidth, child: _buildEmojiList());
     } else {
       if (currentInputStatus == InputBarStatus.Voice) {
         bottomInputBar.refreshUI();
       }
       return WidgetUtil.buildEmptyWidget();
     }
+  }
+
+  GridView _buildEmojiList() {
+    return GridView(
+      scrollDirection: Axis.vertical,
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: MediaQuery.of(context).size.width / 8,
+      ),
+      children: List.generate(
+        emojiList.length,
+        (index) {
+          return GestureDetector(
+            onTap: () {
+              bottomInputBar.setTextContent(emojiList[index]);
+            },
+            child: Center(
+              widthFactor: MediaQuery.of(context).size.width / 8,
+              heightFactor: MediaQuery.of(context).size.width / 8,
+              child: Text(
+                emojiList[index],
+                style: TextStyle(fontSize: 25)
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   ListView _buildPhrasesList() {
@@ -481,6 +512,8 @@ class _ConversationPageState extends State<ConversationPage>
     for (int i = 0; i < 10; i++) {
       phrasesList.add('快捷回复测试用例 $i');
     }
+
+    emojiList = Emoji.emojiList;
   }
 
   void _saveImage(String imagePath) async {

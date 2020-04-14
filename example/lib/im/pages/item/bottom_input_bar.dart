@@ -41,6 +41,8 @@ class _BottomInputBarState extends State<BottomInputBar> {
           border: InputBorder.none, hintText: RCString.BottomInputTextHint),
       focusNode: focusNode,
       autofocus: true,
+      maxLines: null,
+      keyboardType: TextInputType.text,
     );
   }
 
@@ -104,6 +106,18 @@ class _BottomInputBarState extends State<BottomInputBar> {
     InputBarStatus status = InputBarStatus.Normal;
     if (this.inputBarStatus != InputBarStatus.Voice) {
       status = InputBarStatus.Voice;
+    }
+    _notifyInputStatusChanged(status);
+  }
+
+  switchEmoji() {
+    print("switchEmoji");
+    InputBarStatus status = InputBarStatus.Normal;
+    if (this.inputBarStatus != InputBarStatus.Emoji) {
+      if (focusNode.hasFocus) {
+        focusNode.unfocus();
+      }
+      status = InputBarStatus.Emoji;
     }
     _notifyInputStatusChanged(status);
   }
@@ -172,7 +186,16 @@ class _BottomInputBarState extends State<BottomInputBar> {
     } else {
       widget = Container(
         padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-        child: this.textField,
+        child: new ConstrainedBox(
+          constraints: BoxConstraints(
+            // maxHeight: 200.0,
+          ),
+          child: new SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            reverse: true,
+            child: this.textField,
+          ),
+        ),
       );
     }
     return Container(
@@ -238,6 +261,13 @@ class _BottomInputBarState extends State<BottomInputBar> {
                   ),
                   Expanded(child: _getMainInputField()),
                   IconButton(
+                    icon: Icon(Icons.mood), // sentiment_ver
+                    iconSize: 32,
+                    onPressed: () {
+                      switchEmoji();
+                    },
+                  ),
+                  IconButton(
                     icon: Icon(Icons.add),
                     iconSize: 32,
                     onPressed: () {
@@ -255,6 +285,7 @@ enum InputBarStatus {
   Voice, //语音输入
   Extention, //扩展栏
   Phrases, //快捷回复
+  Emoji, // emoji输入
 }
 
 abstract class BottomInputBarDelegate {
