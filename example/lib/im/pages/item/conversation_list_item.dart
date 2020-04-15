@@ -124,12 +124,6 @@ class _ConversationListItemState extends State<ConversationListItem> {
     if (digest == null) {
       digest = "";
     }
-    if (conversation.mentionedCount > 0) {
-      digest = RCString.ConHaveMentioned + digest;
-    }
-    if (conversation.draft != null && conversation.draft.isNotEmpty) {
-      digest = RCString.ConDraft + conversation.draft;
-    }
     return Expanded(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -147,17 +141,51 @@ class _ConversationListItemState extends State<ConversationListItem> {
           SizedBox(
             height: 6,
           ),
-          Text(
-            digest,
-            style: TextStyle(
-                fontSize: RCFont.ConListDigestFont,
-                color: Color(RCColor.ConListDigestColor)),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          )
+          _buildDigest(digest)
         ],
       ),
     );
+  }
+
+  Widget _buildDigest(String digest) {
+    bool showError = false;
+    if (conversation.mentionedCount > 0) {
+      digest = RCString.ConHaveMentioned + digest;
+    } else if (conversation.draft != null && conversation.draft.isNotEmpty) {
+      digest = RCString.ConDraft + conversation.draft;
+    } else if (conversation.sentStatus == RCSentStatus.Failed) {
+      showError = true;
+    }
+    double screenWidth = MediaQuery.of(context).size.width;
+    if (showError) {
+      return Row(children: <Widget>[
+        // conversation.sentStatus == RCSentStatus.Failed ?
+        Icon(
+          Icons.error,
+          size: 15,
+          color: Colors.red,
+        ),
+        Container(
+            width: screenWidth - 170,
+            child: Text(
+              digest,
+              style: TextStyle(
+                  fontSize: RCFont.ConListDigestFont,
+                  color: Color(RCColor.ConListDigestColor)),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ))
+      ]);
+    } else {
+      return Text(
+        digest,
+        style: TextStyle(
+            fontSize: RCFont.ConListDigestFont,
+            color: Color(RCColor.ConListDigestColor)),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      );
+    }
   }
 
   Widget _buildUnreadCount(int count) {
