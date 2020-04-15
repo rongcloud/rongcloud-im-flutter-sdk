@@ -30,6 +30,8 @@ class ConnectionStatusConvert {
       return RCConnectionStatus.TokenIncorrect;
     }else if(originCode == 31011) {
       return RCConnectionStatus.UserBlocked;
+    }else if (originCode == 12) {
+      return RCConnectionStatus.DisConnected;
     }
     return originCode;
   }
@@ -39,6 +41,8 @@ class ConnectionStatusConvert {
       return RCConnectionStatus.Connected;
     }else if(originCode == 1) {
       return RCConnectionStatus.Connecting;
+    }else if(originCode == 2) {
+      return RCConnectionStatus.DisConnected;
     }else if(originCode == 3) {
       return RCConnectionStatus.KickedByOtherClient;
     }else if(originCode == -1) {
