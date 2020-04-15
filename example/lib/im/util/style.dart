@@ -107,4 +107,5 @@ class RCString {
   static const String ExtFolder = "文件";
   static const String ConCancel = "取消";
   static const String SelectConTitle = "选择会话";
+  static const String ForwardHint = "目前转发仅支持文本、语音、图片、Gif、视频、文件和图文消息，其他无法识别的消息类型暂不支持转发。";
 }

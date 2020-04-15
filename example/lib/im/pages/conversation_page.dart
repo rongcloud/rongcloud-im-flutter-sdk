@@ -812,12 +812,25 @@ class _ConversationPageState extends State<ConversationPage>
     });
   }
 
+  bool canForward(String objectName) {
+    List writeList = [TextMessage.objectName, VoiceMessage.objectName, ImageMessage.objectName, GifMessage.objectName, SightMessage.objectName, FileMessage.objectName, RichContentMessage.objectName, ];
+    if (writeList.contains(objectName)) {
+      return true;
+    }
+    return false;
+  }
+
   @override
   void didTapForward() async {
     List selectMsgs = new List();
     for (int msgId in selectedMessageIds) {
       Message forwardMsg = await RongcloudImPlugin.getMessage(msgId);
-      selectMsgs.add(forwardMsg);
+      if (canForward(forwardMsg.objectName)) {
+        selectMsgs.add(forwardMsg);
+      } else {
+        DialogUtil.showAlertDiaLog(context, RCString.ForwardHint);
+        return;
+      }
     }
 
     Map arguments = {"selectMessages": selectMsgs};
