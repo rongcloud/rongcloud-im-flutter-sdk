@@ -4,6 +4,7 @@ import 'dart:core';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'item/widget_util.dart';
 import 'item/conversation_list_item.dart';
@@ -11,6 +12,7 @@ import 'item/conversation_list_item.dart';
 import '../util/style.dart';
 import '../util/event_bus.dart';
 import '../util/dialog_util.dart';
+import '../../other/login_page.dart';
 
 class ConversationListPage extends StatefulWidget {
   @override
@@ -84,7 +86,16 @@ class _ConversationListPageState extends State<ConversationListPage>
         String toast = "连接状态变化 $connectionStatus, 请退出后重新登录";
         DialogUtil.showAlertDiaLog(context, toast,
             confirmButton: FlatButton(
-                onPressed: () => Navigator.pop(context), child: Text("重新登录")));
+                onPressed: () async {
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  prefs.remove("token");
+                  Navigator.of(context).pushAndRemoveUntil(
+                      new MaterialPageRoute(
+                          builder: (context) => new LoginPage()),
+                      (route) => route == null);
+                },
+                child: Text("重新登录")));
       } else if (RCConnectionStatus.Connected == connectionStatus) {
         updateConversationList();
       }
