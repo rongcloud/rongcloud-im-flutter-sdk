@@ -56,6 +56,8 @@ static NSString *RCMethodKeyRemoveNotificationQuietHours = @"removeNotificationQ
 static NSString *RCMethodKeyGetNotificationQuietHours = @"getNotificationQuietHours";
 static NSString *RCMethodKeyGetUnreadMentionedMessages = @"getUnreadMentionedMessages";
 static NSString *RCMethodKeySendDirectionalMessage = @"sendDirectionalMessage";
+static NSString *RCMethodKeyMessageBeginDestruct = @"messageBeginDestruct";
+static NSString *RCMethodKeyMessageStopDestruct = @"messageStopDestruct";
 
 // 聊天室状态存储
 static NSString *RCMethodKeySetChatRoomEntry = @"SetChatRoomEntry";
@@ -81,6 +83,7 @@ static NSString *RCMethodCallBackKeyReceiptResponse = @"ReceiptResponseCallBack"
 static NSString *RCMethodCallBackKeyTypingStatusChangedCallBack = @"TypingStatusChangedCallBack";
 static NSString *RCMethodCallBackKeyDownloadMediaMessageCallBack = @"DownloadMediaMessageCallBack";
 static NSString *RCMethodCallBackKeyRecallMessageCallBack = @"RecallMessageCallBack";
+static NSString *RCMethodCallBackKeyDestructMessageCallBack = @"DestructMessageCallBack";
 
 
 

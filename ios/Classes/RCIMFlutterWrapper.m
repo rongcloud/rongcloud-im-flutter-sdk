@@ -18,7 +18,7 @@
 - (RCMessageContent *)messageContentWithClass:(Class)messageClass fromData:(NSData *)jsonData;
 @end
 
-@interface RCIMFlutterWrapper ()<RCIMClientReceiveMessageDelegate,RCConnectionStatusChangeDelegate,RCTypingStatusDelegate>
+@interface RCIMFlutterWrapper ()<RCIMClientReceiveMessageDelegate,RCConnectionStatusChangeDelegate,RCTypingStatusDelegate, RCMessageDestructDelegate>
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 @property (nonatomic, strong) RCFlutterConfig *config;
 @end
@@ -162,7 +162,10 @@
         [self getUnreadMentionedMessages:call.arguments result:result];
     }else if([RCMethodKeySendDirectionalMessage isEqualToString:call.method]) {
         [self sendDirectionalMessage:call.arguments result:result];
-    }
+    }else if([RCMethodKeyMessageBeginDestruct isEqualToString:call.method]) {
+        [self messageBeginDestruct:call.arguments result:result];
+    }else if([RCMethodKeyMessageStopDestruct isEqualToString:call.method]) {
+        [self messageStopDestruct:call.arguments result:result];}
     else {
         result(FlutterMethodNotImplemented);
     }
@@ -186,6 +189,7 @@
         [[RCIMClient sharedRCIMClient] setReceiveMessageDelegate:self object:nil];
         [[RCIMClient sharedRCIMClient] setRCConnectionStatusChangeDelegate:self];
         [[RCIMClient sharedRCIMClient] setRCTypingStatusDelegate:self];
+        [[RCIMClient sharedRCIMClient] setRCMessageDestructDelegate:self];
     }else {
         NSLog(@"init 非法参数类型");
     }
@@ -373,7 +377,8 @@
         NSString *mentionedContent = [mentionedInfoDict valueForKey:@"mentionedContent"] ?: @"";
         mentionedInfo = [[RCMentionedInfo alloc] initWithMentionedType:type userIdList:userIdList mentionedContent:mentionedContent];
     }
-    
+    NSInteger burnDuration = [[msgDic valueForKey:@"burnDuration"] integerValue];
+    burnDuration = 10;
     if([objName isEqualToString:@"RC:ImgMsg"]) {
         NSString *localPath = [msgDic valueForKey:@"localPath"];
         localPath = [self getCorrectLocalPath:localPath];
@@ -438,6 +443,12 @@
     }
     if (mentionedInfo) {
         content.mentionedInfo = mentionedInfo;
+    }
+    
+    if (burnDuration > 0) {
+        content.destructDuration = burnDuration;
+    } else {
+        content.destructDuration = 0;
     }
     
     if([content isKindOfClass:[RCSightMessage class]]) {
@@ -1158,6 +1169,33 @@
     }
 }
 
+#pragma mark - 阅后即焚
+- (void)messageBeginDestruct:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"messageBeginDestruct";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        
+        NSDictionary *messageDic = param[@"message"];
+        RCMessage *message = [RCFlutterMessageFactory dic2Message:messageDic];
+        
+        [[RCIMClient sharedRCIMClient] messageBeginDestruct:message];
+    }
+}
+
+- (void)messageStopDestruct:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"downloadMediaMessage";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        
+        NSDictionary *messageDic = param[@"message"];
+        RCMessage *message = [RCFlutterMessageFactory dic2Message:messageDic];
+        
+        [[RCIMClient sharedRCIMClient] messageStopDestruct:message];;
+    }
+}
+
 #pragma mark - 聊天室状态存储 (使用前必须先联系商务开通)
 - (void)setChatRoomEntry:(id)arg result:(FlutterResult)result {
     NSString *LOG_TAG = @"setChatRoomEntry";
@@ -1576,6 +1614,15 @@
     };
     
     [self.channel invokeMethod:RCMethodCallBackKeyTypingStatusChangedCallBack arguments:statusDic];
+}
+
+#pragma mark - RCMessageDestructDelegate
+- (void)onMessageDestructing:(RCMessage *)message remainDuration:(long long)remainDuration {
+    NSString *LOG_TAG = @"onMessageDestructing";
+    [RCLog i:[NSString stringWithFormat:@"%@",LOG_TAG]];
+    NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+    NSDictionary *dic = @{@"message": jsonString, @"remainDuration": @(remainDuration)};
+    [self.channel invokeMethod:RCMethodCallBackKeyDestructMessageCallBack arguments:dic];
 }
 
 #pragma mark - util

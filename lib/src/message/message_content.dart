@@ -5,6 +5,8 @@ class MessageContent implements MessageCoding, MessageContentView {
   UserInfo sendUserInfo; 
   // 消息中的 @ 提醒信息
   MentionedInfo mentionedInfo; 
+  // 焚烧时间，默认是 0，0 代表该消息非阅后即焚消息。
+  int destructDuration = 0;
   @override
   void decode(String jsonStr) {
     // TODO: implement decode

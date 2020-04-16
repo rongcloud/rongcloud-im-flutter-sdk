@@ -135,6 +135,8 @@ class _ConversationPageState extends State<ConversationPage>
         _insertOrReplaceMessage(msg);
       }
       _sendReadReceipt();
+      // // 测试接收阅后即焚直接焚烧
+      // RongcloudImPlugin.messageBeginDestruct(msg);
     });
 
     EventBus.instance.addListener(EventKeys.ReceiveReadReceipt, (map) {
@@ -174,6 +176,10 @@ class _ConversationPageState extends State<ConversationPage>
       if (msg.targetId == this.targetId) {
         _insertOrReplaceMessage(msg);
       }
+    };
+
+    RongcloudImPlugin.onMessageDestructing = (Message message, int remainDuration) async {
+      print(message.toString() + remainDuration.toString());
     };
 
     RongcloudImPlugin.onTypingStatusChanged =
@@ -455,6 +461,8 @@ class _ConversationPageState extends State<ConversationPage>
         // mentionedInfo.userIdList = ["kj","oi","op"];
         // mentionedInfo.mentionedContent = "pppppppp";
         // imgMsg.mentionedInfo = mentionedInfo;
+        // // ImageMessage 测试阅后即焚携带时间
+        // imgMsg.destructDuration = 10;
         Message msg = await RongcloudImPlugin.sendMessage(
             conversationType, targetId, imgMsg);
         _insertOrReplaceMessage(msg);

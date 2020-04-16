@@ -32,6 +32,7 @@ class FileMessage extends MessageContent{
     super.decodeUserInfo(userMap);
     Map menthionedMap = map["mentionedInfo"];
     super.decodeMentionedInfo(menthionedMap);
+    // this.destructDuration = map["burnDuration"];
   }
 
   @override
@@ -49,6 +50,9 @@ class FileMessage extends MessageContent{
       Map mentionedMap = super.encodeMentionedInfo(this.mentionedInfo);
       map["mentionedInfo"] = mentionedMap;
     }
+    // if (this.destructDuration != null && this.destructDuration > 0) {
+    //   map["burnDuration"] = this.destructDuration; 
+    // }
     return json.encode(map);
   }
 

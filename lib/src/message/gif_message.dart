@@ -42,6 +42,7 @@ class GifMessage extends MessageContent {
     super.decodeUserInfo(userMap);
     Map menthionedMap = map["mentionedInfo"];
     super.decodeMentionedInfo(menthionedMap);
+    this.destructDuration = map["burnDuration"];
   }
 
   @override
@@ -69,6 +70,9 @@ class GifMessage extends MessageContent {
     }
     if(this.remoteUrl !=null && this.remoteUrl.isNotEmpty){
       map["remoteUrl"] = this.remoteUrl;
+    }
+    if (this.destructDuration != null && this.destructDuration > 0) {
+      map["burnDuration"] = this.destructDuration; 
     }
     return json.encode(map);
   }
