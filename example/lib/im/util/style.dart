@@ -110,6 +110,24 @@ class RCString {
   static const String SelectConTitle = "选择会话";
   static const String ChatRecord = "聊天记录";
   static const String GroupChatRecord = "群聊的聊天记录";
+
+  // 合并消息
+  static const String RCMessageContentImage = "[图片]";
+  static const String RCMessageContentVoice = "[语音]";
+  static const String RCMessageContentRichText = "[图文]";
+  static const String RCMessageContentLocation = "[位置]";
+  static const String RCMessageContentDraft = "[草稿]";
+  static const String RCMessageContentMentioned = "[有人@我]";
+  static const String RCMessageContentFile = "[文件]";
+  static const String RCMessageContentSight = "[小视频]";
+  static const String RCMessageContentBurn = "[阅后即焚]";
+  static const String RCMessageContentCombine = "[聊天记录]";
+  static const String RCMessageContentCard = "[个人名片]";
+  static const String RCMessageContentSticker = "[动态表情]";
+  static const String RCMessageContentRp = "[红包]";
+  static const String RCMessageContentVst = "[音视频通话]";
+  static const String RCCombineChatHistory = "聊天记录";
+  static const String RCCombineGroupChatHistory = "群聊的聊天记录";
 }
 
 class Emoji {

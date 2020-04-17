@@ -29,7 +29,7 @@ final routes = {
       MessageReadPage(message: arguments),
   '/file_preview': (context, {arguments}) =>
       FilePreviewPage(message: arguments),
-  '/webview': (context, {arguments}) => WebViewPage(url: arguments),
+  '/webview': (context, {arguments}) => WebViewPage(arguments: arguments),
   '/chat_debug': (context, {arguments}) => ChatDebugPage(arguments: arguments),
   '/chatroom_debug': (context, {arguments}) => ChatRoomDebugPage(),
   '/search_message': (context, {arguments}) => SearchMessagePage(arguments: arguments),

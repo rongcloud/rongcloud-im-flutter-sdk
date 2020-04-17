@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:rongcloud_im_plugin_example/im/util/combine_message_util.dart';
 import '../../util/file.dart';
 import '../../util/media_util.dart';
 import 'dart:convert';
@@ -314,9 +315,20 @@ class MessageItemFactory extends StatelessWidget {
   // 合并消息 item
   Widget combineMessageItem(BuildContext context) {
     CombineMessage msg = message.content;
+    if (msg.localPath != null && msg.localPath.isNotEmpty) {
+      String path = MediaUtil.instance.getCorrectedLocalPath(msg.localPath);
+      File file = File(path);
+      if (file != null && file.existsSync()) {
+      } else {
+        // HttpUtil.download(url, savePath, progressCallback)
+        CombineMessageUtils().downLoadHtml(msg.mMediaUrl);
+      }
+    } else {
+      CombineMessageUtils().downLoadHtml(msg.mMediaUrl);
+    }
     double screenWidth = MediaQuery.of(context).size.width;
     List<String> summaryList = msg.summaryList;
-    String title = _getCombineMessageTitle(msg);
+    String title = CombineMessageUtils().getTitle(msg);
     String summaryStr = "";
     if (summaryList != null) {
       for (int i = 0; i < summaryList.length && i < 4; i++) {
@@ -331,18 +343,22 @@ class MessageItemFactory extends StatelessWidget {
         width: screenWidth - 200,
         child: Column(children: <Widget>[
           Container(
-            margin: EdgeInsets.fromLTRB(10, 4, 0, 0),
+            margin: EdgeInsets.fromLTRB(10, 4, 10, 0),
             alignment: Alignment.centerLeft,
             child: Text(title,
                 textAlign: TextAlign.left,
-                style: TextStyle(fontSize: RCFont.MessageCombineTitleFont, color: Colors.black)),
+                style: TextStyle(
+                    fontSize: RCFont.MessageCombineTitleFont,
+                    color: Colors.black)),
           ),
           Container(
-            padding: EdgeInsets.fromLTRB(10,4,10,4),
+            padding: EdgeInsets.fromLTRB(10, 4, 10, 4),
             alignment: Alignment.centerLeft,
             child: Text(summaryStr,
                 textAlign: TextAlign.left,
-                style: TextStyle(fontSize: RCFont.MessageCombineContentFont, color: Color(RCColor.ConCombineMsgContentColor))),
+                style: TextStyle(
+                    fontSize: RCFont.MessageCombineContentFont,
+                    color: Color(RCColor.ConCombineMsgContentColor))),
           ),
           Container(
             margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
@@ -355,29 +371,11 @@ class MessageItemFactory extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: Text(RCString.ChatRecord,
                 textAlign: TextAlign.left,
-                style: TextStyle(fontSize: RCFont.MessageCombineContentFont, color: Color(RCColor.ConCombineMsgContentColor))),
+                style: TextStyle(
+                    fontSize: RCFont.MessageCombineContentFont,
+                    color: Color(RCColor.ConCombineMsgContentColor))),
           ),
         ]));
-  }
-
-  String _getCombineMessageTitle(CombineMessage content) {
-    String title = "";
-    if (content.conversationType == RCConversationType.Group) {
-      title = RCString.GroupChatRecord;
-    } else {
-      List<String> nameList = content.nameList;
-      if (nameList == null) return title;
-      if (nameList.length == 1) {
-        title = "${nameList[0]}的${RCString.ChatRecord}";
-
-      } else if (nameList.length == 2) {
-        title = "${nameList[0]}的${RCString.ChatRecord} 和 ${nameList[1]}的${RCString.ChatRecord}";
-      }
-    }
-    if (title.isEmpty) {
-      title = RCString.ChatRecord;
-    }
-    return title;
   }
 
   Widget messageItem(BuildContext context) {

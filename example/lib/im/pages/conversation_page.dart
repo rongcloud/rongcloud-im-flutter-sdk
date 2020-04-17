@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:rongcloud_im_plugin_example/im/util/combine_message_util.dart';
 import 'item/bottom_tool_bar.dart';
 import 'package:path/path.dart' as path;
 
@@ -680,7 +681,7 @@ class _ConversationPageState extends State<ConversationPage>
   }
 
   @override
-  void didTapMessageItem(Message message) {
+  void didTapMessageItem(Message message) async {
     print("didTapMessageItem " + message.objectName);
     if (message.content is VoiceMessage) {
       VoiceMessage msg = message.content;
@@ -701,7 +702,26 @@ class _ConversationPageState extends State<ConversationPage>
       Navigator.pushNamed(context, "/file_preview", arguments: message);
     } else if (message.content is RichContentMessage) {
       RichContentMessage msg = message.content;
-      Navigator.pushNamed(context, "/webview", arguments: msg.url);
+      Map param = {"url": msg.url};
+      Navigator.pushNamed(context, "/webview", arguments: param);
+    } else if (message.content is CombineMessage) {
+      CombineMessage msg = message.content;
+      String localPath = msg.localPath;
+      String mediaUrl = msg.mMediaUrl;
+      String url = "";
+      if (localPath != null && localPath.isNotEmpty) {
+        url = localPath;
+      } else if (mediaUrl != null && mediaUrl.isNotEmpty) {
+        localPath =
+            await CombineMessageUtils().getLocalPathFormUrl(mediaUrl);
+        if (File(localPath).existsSync()) {
+          url = localPath;
+        } else {
+          url = mediaUrl;
+        }
+      }
+      Map param = {"url": url, "title": CombineMessageUtils().getTitle(msg)};
+      Navigator.pushNamed(context, "/webview", arguments: param);
     }
   }
 
@@ -867,10 +887,11 @@ class _ConversationPageState extends State<ConversationPage>
         Navigator.pushNamed(context, "/select_conversation_page",
             arguments: arguments);
       },
-      // "合并转发": () {
-      //   arguments["forwardType"] = 1;
-      //   Navigator.pushNamed(context, "/select_conversation_page", arguments: arguments);
-      // },
+      "合并转发": () {
+        arguments["forwardType"] = 1;
+        Navigator.pushNamed(context, "/select_conversation_page",
+            arguments: arguments);
+      },
       "取消": () {}
     });
   }

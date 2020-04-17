@@ -30,7 +30,7 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.rong.common.RLog;
 import io.rong.common.fwlog.FwLog;
-import io.rong.flutter.imlib.message.CombineMessage;
+import io.rong.flutter.imlib.forward.CombineMessage;
 import io.rong.imlib.AnnotationNotFoundException;
 import io.rong.imlib.IRongCallback;
 import io.rong.imlib.MessageTag;
@@ -44,6 +44,7 @@ import io.rong.imlib.model.SearchConversationResult;
 import io.rong.imlib.model.UnknownMessage;
 import io.rong.imlib.model.UserInfo;
 import io.rong.imlib.typingmessage.TypingStatus;
+import io.rong.message.CommandMessage;
 import io.rong.message.FileMessage;
 import io.rong.message.GIFMessage;
 import io.rong.message.HQVoiceMessage;
@@ -713,6 +714,23 @@ public class RCIMFlutterWrapper {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+            } else if (objectName.equalsIgnoreCase("RC:CombineMsg")) {
+                try {
+                    JSONObject jsonObject = new JSONObject(contentStr);
+                    String localPath = (String) jsonObject.get("localPath");
+                    localPath = getCorrectLocalPath(localPath);
+                    Uri uri = Uri.parse(localPath);
+                    content = CombineMessage.obtain(uri);
+                    setInfoToCombineMessage(contentStr, content);
+                    Object o = jsonObject.get("extra");//设置 extra
+                    if (o instanceof String) {
+                        String extra = (String) o;
+                        ((CombineMessage) content).setExtra(extra);
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             } else {
 
             }
@@ -785,6 +803,50 @@ public class RCIMFlutterWrapper {
                     mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
                 }
             });
+        }
+    }
+
+    private void setInfoToCombineMessage(String contentStr, MessageContent content) {
+        try {
+            JSONObject contentObject = new JSONObject(contentStr);
+            if (contentObject.has("conversationType")) {
+                int conversationType = (int) contentObject.get("conversationType");
+                ((CombineMessage) content).setConversationType(Conversation.ConversationType.setValue(conversationType));
+            }
+            if (contentObject.has("nameList")) {
+                Object nameListObj = contentObject.get("nameList");
+                List<String> nameList = new ArrayList<>();
+                if (nameListObj instanceof JSONArray) {
+                    JSONArray nameArray = (JSONArray) nameListObj;
+                    for (int i = 0; i < nameArray.length(); i++) {
+                        String idStr = (String) nameArray.get(i);
+                        nameList.add(idStr);
+                    }
+                }
+                ((CombineMessage) content).setNameList(nameList);
+            }
+            if (contentObject.has("title")) {
+                Object titleObj = contentObject.get("title");
+                String title = "";
+                if (titleObj instanceof String) {
+                    title = (String) titleObj;
+                }
+                ((CombineMessage) content).setTitle(title);
+            }
+            if (contentObject.has("summaryList")) {
+                Object summaryListObj = contentObject.get("summaryList");
+                List<String> summaryList = new ArrayList<>();
+                if (summaryListObj instanceof JSONArray) {
+                    JSONArray summaryArray = (JSONArray) summaryListObj;
+                    for (int i = 0; i < summaryArray.length(); i++) {
+                        String summary = (String) summaryArray.get(i);
+                        summaryList.add(summary);
+                    }
+                }
+                ((CombineMessage) content).setSummaryList(summaryList);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
@@ -1901,7 +1963,7 @@ public class RCIMFlutterWrapper {
     private boolean isMediaMessage(String objName) {
         if (objName.equalsIgnoreCase("RC:ImgMsg") || objName.equalsIgnoreCase("RC:HQVCMsg")
                 || objName.equalsIgnoreCase("RC:SightMsg") || objName.equalsIgnoreCase("RC:FileMsg")
-                || objName.equalsIgnoreCase("RC:GIFMsg")) {
+                || objName.equalsIgnoreCase("RC:GIFMsg") || objName.equalsIgnoreCase("RC:CombineMsg")) {
             return true;
         }
         return false;

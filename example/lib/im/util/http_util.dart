@@ -2,7 +2,8 @@ import 'package:dio/dio.dart';
 
 class HttpUtil {
   static Dio dio = Dio();
-  static void get(String url, Function callback, {Map params, Function errorCallback}) async {
+  static void get(String url, Function callback,
+      {Map params, Function errorCallback}) async {
     if (params != null && params.isNotEmpty) {
       StringBuffer buffer = new StringBuffer("?");
       params.forEach((key, value) {
@@ -18,7 +19,7 @@ class HttpUtil {
       print(response);
       if (callback != null) {
         callback(response.data);
-        }
+      }
     } catch (e) {
       print(e.toString());
       if (errorCallback != null) {
@@ -27,19 +28,26 @@ class HttpUtil {
     }
   }
 
-  static void post(String url, Function callback, {Map params, Function errorCallback}) async {
+  static void post(String url, Function callback,
+      {Map params, Function errorCallback}) async {
     // try {
-      Response response;
-      response = await Dio().post(url, data: params);
-      print(response);
-      if (callback != null) {
-        callback(response.data);
-      }
+    Response response;
+    response = await Dio().post(url, data: params);
+    print(response);
+    if (callback != null) {
+      callback(response.data);
+    }
     // } catch (e) {
     //   print(e);
     //   if (errorCallback != null) {
     //     errorCallback(e);
     //   }
     // }
+  }
+
+  // 下载
+  static Future<Response> download(String url, String savePath,
+      Function(int count, int total) progressCallback) async {
+    return Dio().download(url, savePath, onReceiveProgress: progressCallback);
   }
 }

@@ -1,4 +1,4 @@
-package io.rong.flutter.imlib.message;
+package io.rong.flutter.imlib.forward;
 
 import android.net.Uri;
 import android.os.Parcel;

@@ -3,7 +3,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 class CombineMessage extends MessageContent {
   static const String objectName = "RC:CombineMsg";
-  String title;
+  String title = "";
   // 这两个参数用来拼装默认消息的标题
   // 区分合并消息是在群聊里还是单聊里
   int conversationType;
