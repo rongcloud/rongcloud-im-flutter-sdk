@@ -698,7 +698,7 @@ public class RCIMFlutterWrapper {
                 try {
                     JSONObject jsonObject = new JSONObject(contentStr);
                     String localPath = (String) jsonObject.get("localPath");
-                    String mType = (String) jsonObject.get("mType");
+                    String mType = (String) jsonObject.get("type");
                     localPath = getCorrectLocalPath(localPath);
                     Uri uri = Uri.parse(localPath);
                     content = FileMessage.obtain(uri);
