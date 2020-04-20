@@ -146,11 +146,12 @@ class _FilePreviewState extends State<FilePreviewPage> {
     }
   }
 
-  void _startDownload() {
-    PermissionHandler().requestPermissions([
-      PermissionGroup.storage,
-    ]);
-    RongcloudImPlugin.downloadMediaMessage(message);
+  void _startDownload() async {
+    if (await Permission.storage.status == PermissionStatus.granted) {
+      RongcloudImPlugin.downloadMediaMessage(message);
+    } else {
+      Permission.storage.request();
+    }
   }
 
   void _openFile() {

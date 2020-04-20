@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:image_picker/image_picker.dart';
@@ -30,13 +29,14 @@ class MediaUtil {
   }
 
   //请求权限：相册，相机，麦克风
-  void requestPermissions() {
-    PermissionHandler().requestPermissions([
-      PermissionGroup.photos,
-      PermissionGroup.camera,
-      PermissionGroup.microphone,
-      PermissionGroup.storage
-    ]);
+  void requestPermissions() async {
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.photos,
+      Permission.camera,
+      Permission.microphone,
+      Permission.storage
+    ].request();
+    print(statuses[Permission.location]);
   }
 
   //拍照，成功则返回照片的本地路径，注：Android 必须要加 file:// 头
