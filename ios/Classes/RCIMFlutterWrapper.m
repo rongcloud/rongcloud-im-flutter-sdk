@@ -378,7 +378,6 @@
         mentionedInfo = [[RCMentionedInfo alloc] initWithMentionedType:type userIdList:userIdList mentionedContent:mentionedContent];
     }
     NSInteger burnDuration = [[msgDic valueForKey:@"burnDuration"] integerValue];
-    burnDuration = 10;
     if([objName isEqualToString:@"RC:ImgMsg"]) {
         NSString *localPath = [msgDic valueForKey:@"localPath"];
         localPath = [self getCorrectLocalPath:localPath];

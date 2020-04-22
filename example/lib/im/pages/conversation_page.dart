@@ -177,7 +177,7 @@ class _ConversationPageState extends State<ConversationPage>
         (int messageId, int status, int code) async {
       Message msg = await RongcloudImPlugin.getMessage(messageId);
       if (msg.targetId == this.targetId) {
-        _insertOrReplaceMessage(msg,isNeedRefreshMsgList: false);
+        _insertOrReplaceMessage(msg, isNeedRefreshMsgList: false);
       }
     };
 
@@ -550,11 +550,7 @@ class _ConversationPageState extends State<ConversationPage>
     Widget secretChatWidget = WidgetUtil.buildExtentionWidget(
         Icons.security, RCString.ExtSecretChat, () async {
       print("did tap secret chat");
-      if (isSecretChat) {
-        isSecretChat = false;
-      } else {
-        isSecretChat = true;
-      }
+      isSecretChat = !isSecretChat;
       String contentStr = isSecretChat ? "打开阅后即焚" : "关闭阅后即焚";
       print(contentStr);
       DialogUtil.showAlertDiaLog(context, contentStr);
