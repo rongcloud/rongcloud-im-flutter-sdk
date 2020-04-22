@@ -31,6 +31,8 @@ dependencies:
   webview_flutter: ^0.3.19+9
   image_gallery_saver: ^1.2.2
   url_launcher: ^5.4.2
+  rxdart: ^0.24.0
+  flutter_cache_manager: ^1.2.0
 
 dev_dependencies:
   flutter_test:

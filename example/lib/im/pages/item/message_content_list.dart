@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:flutter/material.dart';
+import 'package:rongcloud_im_plugin_example/im/util/bloc/message_bloc.dart';
 
 import '../../util/time.dart';
 import 'conversation_item.dart';
@@ -21,7 +24,8 @@ class MessageContentList extends StatefulWidget {
 
   void updateData(
       List messageDataSource, bool multiSelect, List selectedMessageIds) {
-    this.state._refreshUI(messageDataSource, multiSelect, selectedMessageIds);
+    // this.state._refreshUI(messageDataSource, multiSelect, selectedMessageIds);
+    this.state.updateData(messageDataSource,multiSelect,selectedMessageIds);
   }
 
   @override
@@ -39,6 +43,8 @@ class _MessageContentListState extends State<MessageContentList>
   bool multiSelect;
   double mPosition = 0;
   List selectedMessageIds = new List();
+  MessageBloc _bloc;
+  // StreamController<List> streamController = new StreamController();
 
   _MessageContentListState(List messageDataSource, bool multiSelect,
       List selectedMessageIds, MessageContentListDelegate delegate) {
@@ -47,40 +53,73 @@ class _MessageContentListState extends State<MessageContentList>
     this.multiSelect = multiSelect;
     this.selectedMessageIds = selectedMessageIds;
     // this._scrollController = ScrollController();
+    // updateData(messageDataSource);
+  }
+
+  void updateData(List messageDataSource, bool multiSelect, List selectedMessageIds) {
+    // streamController.sink.add(messageDataSource);
+    _bloc.updateMessageList(messageDataSource);
+    this.messageDataSource = messageDataSource;
+    this.multiSelect = multiSelect;
+    this.selectedMessageIds = selectedMessageIds;
   }
 
   @override
   void initState() {
+    _bloc = new MessageBloc();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    // streamController.sink.close();
+    _bloc.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     this._scrollController = ScrollController(initialScrollOffset: mPosition);
     _addScroolListener();
-    return ListView.separated(
-        key: UniqueKey(),
-        shrinkWrap: true,
-        //因为消息超过一屏，ListView 很难滚动到最底部，所以要翻转显示，同时数据源也要逆序
-        reverse: true,
-        controller: _scrollController,
-        itemCount: messageDataSource.length,
-        itemBuilder: (BuildContext context, int index) {
-          if (messageDataSource.length != null &&
-              messageDataSource.length > 0) {
-            Message tempMessage = messageDataSource[index];
-            // bool isSelected = selectedMessageIds.contains(tempMessage.messageId);
-            return ConversationItem(this, tempMessage, _needShowTime(index),
-                this.multiSelect, selectedMessageIds);
-          } else {
+    return StreamBuilder<MessageInfoWrapState>(
+        stream: _bloc.outListData,
+        builder: (ctx, AsyncSnapshot<MessageInfoWrapState> snapshot) {
+          MessageInfoWrapState messageInfoWrapState = snapshot.data;
+          if (messageInfoWrapState == null) {
             return WidgetUtil.buildEmptyWidget();
           }
-        },
-        separatorBuilder: (BuildContext context, int index) {
-          return Container(
-            height: 10,
-            width: 1,
-          );
+          List messageDataSource = messageInfoWrapState.messageList;
+          if (messageDataSource == null) {
+            messageDataSource = List();
+          }
+          return ListView.separated(
+              key: UniqueKey(),
+              shrinkWrap: true,
+              //因为消息超过一屏，ListView 很难滚动到最底部，所以要翻转显示，同时数据源也要逆序
+              reverse: true,
+              controller: _scrollController,
+              itemCount: messageDataSource.length,
+              itemBuilder: (BuildContext context, int index) {
+                if (messageDataSource.length != null &&
+                    messageDataSource.length > 0) {
+                  Message tempMessage = messageDataSource[index];
+                  // bool isSelected = selectedMessageIds.contains(tempMessage.messageId);
+                  return ConversationItem(
+                      this,
+                      tempMessage,
+                      _needShowTime(index,messageDataSource),
+                      this.multiSelect,
+                      selectedMessageIds);
+                } else {
+                  return WidgetUtil.buildEmptyWidget();
+                }
+              },
+              separatorBuilder: (BuildContext context, int index) {
+                return Container(
+                  height: 10,
+                  width: 1,
+                );
+              });
         });
   }
 
@@ -95,7 +134,7 @@ class _MessageContentListState extends State<MessageContentList>
     });
   }
 
-  bool _needShowTime(int index) {
+  bool _needShowTime(int index,List messageDataSource) {
     bool needShow = false;
     //消息是逆序的
     if (index == messageDataSource.length - 1) {

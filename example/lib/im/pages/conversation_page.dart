@@ -820,7 +820,7 @@ class _ConversationPageState extends State<ConversationPage>
     Message message =
         await RongcloudImPlugin.sendMessage(conversationType, targetId, msg);
     userIdList.clear();
-    _insertOrReplaceMessage(message);
+    // _insertOrReplaceMessage(message);
   }
 
   @override
@@ -837,8 +837,10 @@ class _ConversationPageState extends State<ConversationPage>
   @override
   void inputStatusDidChange(InputBarStatus status) {
     currentInputStatus = status;
-    _refreshUI();
-    bottomInputBar.refreshUI();
+    Future.delayed(Duration(milliseconds: 1000), () {
+      bottomInputBar.refreshUI();
+          _refreshUI();
+    });
   }
 
   @override
