@@ -177,19 +177,19 @@ class _ConversationPageState extends State<ConversationPage>
         (int messageId, int status, int code) async {
       Message msg = await RongcloudImPlugin.getMessage(messageId);
       if (msg.targetId == this.targetId) {
-        _insertOrReplaceMessage(msg);
+        _insertOrReplaceMessage(msg,isNeedRefreshMsgList: false);
       }
     };
 
     RongcloudImPlugin.onMessageDestructing =
         (Message message, int remainDuration) async {
       EventBus.instance.commit(EventKeys.BurnMessage,
-          {"messageUId": message.messageUId, "remainDuration": remainDuration});
+          {"messageId": message.messageId, "remainDuration": remainDuration});
       print(message.toString() + remainDuration.toString());
-      burnMsgMap[message.messageUId] = remainDuration;
+      burnMsgMap[message.messageId] = remainDuration;
       if (remainDuration == 0) {
         onGetHistoryMessages();
-        burnMsgMap.remove(message.messageUId);
+        burnMsgMap.remove(message.messageId);
       }
     };
 
@@ -299,7 +299,8 @@ class _ConversationPageState extends State<ConversationPage>
     }
   }
 
-  void _insertOrReplaceMessage(Message message) {
+  void _insertOrReplaceMessage(Message message,
+      {bool isNeedRefreshMsgList = true}) {
     int index = -1;
     for (int i = 0; i < messageDataSource.length; i++) {
       Message msg = messageDataSource[i];
@@ -314,7 +315,11 @@ class _ConversationPageState extends State<ConversationPage>
     } else {
       messageDataSource.insert(0, message);
     }
-    _refreshMessageContentListUI();
+    if (isNeedRefreshMsgList) {
+      _refreshMessageContentListUI();
+    } else {
+      messageContentList.refreshItem(message);
+    }
   }
 
   Widget _getExtentionWidget() {

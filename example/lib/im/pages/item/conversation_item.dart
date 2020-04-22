@@ -12,6 +12,7 @@ class ConversationItem extends StatefulWidget {
   bool showTime;
   bool multiSelect = false;
   List selectedMessageIds;
+  _ConversationItemState state;
   ValueNotifier<int> time = ValueNotifier<int>(0);
 
   ConversationItem(
@@ -31,8 +32,13 @@ class ConversationItem extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return new _ConversationItemState(this.delegate, this.message,
+    return state = new _ConversationItemState(this.delegate, this.message,
         this.showTime, this.multiSelect, this.selectedMessageIds, this.time);
+  }
+
+  void refreshUI(prefix.Message message) {
+    this.message = message;
+    state._refreshUI(message);
   }
 }
 
@@ -70,6 +76,12 @@ class _ConversationItemState extends State<ConversationItem> {
     super.initState();
     bool isSelected = selectedMessageIds.contains(message.messageId);
     icon = SelectIcon(isSelected);
+  }
+
+  void _refreshUI(prefix.Message msg) {
+    // setState(() {
+    this.message = msg;
+    // });
   }
 
   @override
@@ -364,7 +376,12 @@ class _ConversationItemState extends State<ConversationItem> {
                             return Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: <Widget>[
-                                value > 0 ? Text(" $value", style: TextStyle(color: Colors.red),) : Text("")
+                                value > 0
+                                    ? Text(
+                                        " $value",
+                                        style: TextStyle(color: Colors.red),
+                                      )
+                                    : Text("")
                               ],
                             );
                           },

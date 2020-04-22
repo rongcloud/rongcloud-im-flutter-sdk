@@ -1,4 +1,3 @@
-
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin_example/im/util/bloc/message_bloc.dart';
@@ -32,6 +31,10 @@ class MessageContentList extends StatefulWidget {
       List messageDataSource, bool multiSelect, List selectedMessageIds) {
     // this.state._refreshUI(messageDataSource, multiSelect, selectedMessageIds);
     this.state.updateData(messageDataSource, multiSelect, selectedMessageIds);
+  }
+
+  void refreshItem(Message msg) {
+    this.state._refrshItem(msg);
   }
 
   @override
@@ -84,9 +87,9 @@ class _MessageContentListState extends State<MessageContentList>
     super.initState();
 
     EventBus.instance.addListener(EventKeys.BurnMessage, (map) {
-      String messageUId = map["messageUId"];
+      int messageId = map["messageId"];
       int remainDuration = map["remainDuration"];
-      ConversationItem item = conversationItems[messageUId];
+      ConversationItem item = conversationItems[messageId];
       item.time.value = remainDuration;
     });
   }
@@ -134,7 +137,7 @@ class _MessageContentListState extends State<MessageContentList>
                       this.multiSelect,
                       selectedMessageIds,
                       time);
-                  conversationItems[tempMessage.messageUId] = item;
+                  conversationItems[tempMessage.messageId] = item;
                   return item;
                 } else {
                   return WidgetUtil.buildEmptyWidget();
@@ -175,6 +178,11 @@ class _MessageContentListState extends State<MessageContentList>
       }
     }
     return needShow;
+  }
+
+  void _refrshItem(Message msg) {
+    ConversationItem item = conversationItems[msg.messageId];
+    item?.refreshUI(msg);
   }
 
   void _refreshUI(
