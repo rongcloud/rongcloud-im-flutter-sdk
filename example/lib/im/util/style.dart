@@ -110,6 +110,7 @@ class RCString {
   static const String SelectConTitle = "选择会话";
   static const String ChatRecord = "聊天记录";
   static const String GroupChatRecord = "群聊的聊天记录";
+  static const String ExtSecretChat = "阅后即焚";
 
   // 合并消息
   static const String RCMessageContentImage = "[图片]";
@@ -128,6 +129,11 @@ class RCString {
   static const String RCMessageContentVst = "[音视频通话]";
   static const String RCCombineChatHistory = "聊天记录";
   static const String RCCombineGroupChatHistory = "群聊的聊天记录";
+}
+
+class RCDuration {
+  static const int TextMessageBurnDuration = 10;
+  static const int MediaMessageBurnDuration = 30;
 }
 
 class Emoji {

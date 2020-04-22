@@ -61,6 +61,8 @@ class _ConversationPageState extends State<ConversationPage>
       new List(); //已经选择的所有消息Id，只有在 multiSelect 为 YES,才会有有效值
   List userIdList = new List();
   int recordTime = 0;
+  Map burnMsgMap = Map();
+  bool isSecretChat = false;
 
   _ConversationPageState({this.arguments});
   @override
@@ -69,7 +71,7 @@ class _ConversationPageState extends State<ConversationPage>
     _requestPermissions();
 
     messageContentList = MessageContentList(
-        messageDataSource, multiSelect, selectedMessageIds, this);
+        messageDataSource, multiSelect, selectedMessageIds, this, burnMsgMap);
     conversationType = arguments["coversationType"];
     targetId = arguments["targetId"];
     currentStatus = ConversationStatus.Normal;
@@ -179,8 +181,16 @@ class _ConversationPageState extends State<ConversationPage>
       }
     };
 
-    RongcloudImPlugin.onMessageDestructing = (Message message, int remainDuration) async {
+    RongcloudImPlugin.onMessageDestructing =
+        (Message message, int remainDuration) async {
+      EventBus.instance.commit(EventKeys.BurnMessage,
+          {"messageUId": message.messageUId, "remainDuration": remainDuration});
       print(message.toString() + remainDuration.toString());
+      burnMsgMap[message.messageUId] = remainDuration;
+      if (remainDuration == 0) {
+        onGetHistoryMessages();
+        burnMsgMap.remove(message.messageUId);
+      }
     };
 
     RongcloudImPlugin.onTypingStatusChanged =
@@ -347,10 +357,7 @@ class _ConversationPageState extends State<ConversationPage>
             child: Center(
               widthFactor: MediaQuery.of(context).size.width / 8,
               heightFactor: MediaQuery.of(context).size.width / 8,
-              child: Text(
-                emojiList[index],
-                style: TextStyle(fontSize: 25)
-              ),
+              child: Text(emojiList[index], style: TextStyle(fontSize: 25)),
             ),
           );
         },
@@ -397,6 +404,13 @@ class _ConversationPageState extends State<ConversationPage>
     currentInputStatus = InputBarStatus.Normal;
     TextMessage msg = new TextMessage();
     msg.content = contentStr;
+    if (conversationType == RCConversationType.Private) {
+      int duration = contentStr.length <= 20
+          ? RCDuration.TextMessageBurnDuration
+          : (RCDuration.TextMessageBurnDuration + (contentStr.length - 20) / 2);
+      msg.destructDuration = isSecretChat ? duration : 0;
+    }
+
     Message message =
         await RongcloudImPlugin.sendMessage(conversationType, targetId, msg);
     _insertOrReplaceMessage(message);
@@ -445,11 +459,19 @@ class _ConversationPageState extends State<ConversationPage>
       print("imagepath " + imgPath);
       if (imgPath.endsWith("gif")) {
         GifMessage gifMsg = GifMessage.obtain(imgPath);
+        if (conversationType == RCConversationType.Private) {
+          gifMsg.destructDuration =
+              isSecretChat ? RCDuration.MediaMessageBurnDuration : 0;
+        }
         Message msg = await RongcloudImPlugin.sendMessage(
             conversationType, targetId, gifMsg);
         _insertOrReplaceMessage(msg);
       } else {
         ImageMessage imgMsg = ImageMessage.obtain(imgPath);
+        if (conversationType == RCConversationType.Private) {
+          imgMsg.destructDuration =
+              isSecretChat ? RCDuration.MediaMessageBurnDuration : 0;
+        }
         // ImageMessage 携带用户信息
         // UserInfo sendUserInfo = new UserInfo();
         // sendUserInfo.name = "textSendUser.name";
@@ -481,6 +503,10 @@ class _ConversationPageState extends State<ConversationPage>
       // 保存不需要 file 开头的路径
       _saveImage(temp);
       ImageMessage imgMsg = ImageMessage.obtain(imgPath);
+      if (conversationType == RCConversationType.Private) {
+        imgMsg.destructDuration =
+            isSecretChat ? RCDuration.MediaMessageBurnDuration : 0;
+      }
       Message msg = await RongcloudImPlugin.sendMessage(
           conversationType, targetId, imgMsg);
       _insertOrReplaceMessage(msg);
@@ -489,7 +515,11 @@ class _ConversationPageState extends State<ConversationPage>
     Widget videoWidget = WidgetUtil.buildExtentionWidget(
         Icons.video_call, RCString.ExtVideo, () async {
       print("push to video record page");
-      Map map = {"coversationType": conversationType, "targetId": targetId};
+      Map map = {
+        "coversationType": conversationType,
+        "targetId": targetId,
+        "isSecretChat": isSecretChat
+      };
       Navigator.pushNamed(context, "/video_record", arguments: map);
     });
 
@@ -512,10 +542,24 @@ class _ConversationPageState extends State<ConversationPage>
       }
     });
 
+    Widget secretChatWidget = WidgetUtil.buildExtentionWidget(
+        Icons.security, RCString.ExtSecretChat, () async {
+      print("did tap secret chat");
+      if (isSecretChat) {
+        isSecretChat = false;
+      } else {
+        isSecretChat = true;
+      }
+      String contentStr = isSecretChat ? "打开阅后即焚" : "关闭阅后即焚";
+      print(contentStr);
+      DialogUtil.showAlertDiaLog(context, contentStr);
+    });
+
     extWidgetList.add(imageWidget);
     extWidgetList.add(cameraWidget);
     extWidgetList.add(videoWidget);
     extWidgetList.add(fileWidget);
+    extWidgetList.add(secretChatWidget);
 
     //初始化短语
     for (int i = 0; i < 10; i++) {
@@ -683,6 +727,7 @@ class _ConversationPageState extends State<ConversationPage>
   @override
   void didTapMessageItem(Message message) async {
     print("didTapMessageItem " + message.objectName);
+    RongcloudImPlugin.messageBeginDestruct(message);
     if (message.content is VoiceMessage) {
       VoiceMessage msg = message.content;
       if (msg.localPath != null &&
@@ -712,8 +757,7 @@ class _ConversationPageState extends State<ConversationPage>
       if (localPath != null && localPath.isNotEmpty) {
         url = localPath;
       } else if (mediaUrl != null && mediaUrl.isNotEmpty) {
-        localPath =
-            await CombineMessageUtils().getLocalPathFormUrl(mediaUrl);
+        localPath = await CombineMessageUtils().getLocalPathFormUrl(mediaUrl);
         if (File(localPath).existsSync()) {
           url = localPath;
         } else {
@@ -817,6 +861,13 @@ class _ConversationPageState extends State<ConversationPage>
       }
     }
 
+    if (conversationType == RCConversationType.Private) {
+      int duration = text.length <= 20
+          ? RCDuration.TextMessageBurnDuration
+          : (RCDuration.TextMessageBurnDuration + (text.length - 20) / 2);
+      msg.destructDuration = isSecretChat ? duration : 0;
+    }
+
     Message message =
         await RongcloudImPlugin.sendMessage(conversationType, targetId, msg);
     userIdList.clear();
@@ -826,6 +877,10 @@ class _ConversationPageState extends State<ConversationPage>
   @override
   void willSendVoice(String path, int duration) async {
     VoiceMessage msg = VoiceMessage.obtain(path, duration);
+    if (conversationType == RCConversationType.Private) {
+      msg.destructDuration =
+          isSecretChat ? RCDuration.TextMessageBurnDuration + duration : 0;
+    }
     Message message =
         await RongcloudImPlugin.sendMessage(conversationType, targetId, msg);
     _insertOrReplaceMessage(message);
@@ -837,10 +892,8 @@ class _ConversationPageState extends State<ConversationPage>
   @override
   void inputStatusDidChange(InputBarStatus status) {
     currentInputStatus = status;
-    Future.delayed(Duration(milliseconds: 1000), () {
-      bottomInputBar.refreshUI();
-          _refreshUI();
-    });
+    bottomInputBar.refreshUI();
+    _refreshUI();
   }
 
   @override

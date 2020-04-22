@@ -1,4 +1,3 @@
-import 'dart:async';
 
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +6,7 @@ import 'package:rongcloud_im_plugin_example/im/util/bloc/message_bloc.dart';
 import '../../util/time.dart';
 import 'conversation_item.dart';
 import 'widget_util.dart';
+import '../../util/event_bus.dart';
 
 class MessageContentList extends StatefulWidget {
   MessageContentListDelegate delegate;
@@ -14,24 +14,30 @@ class MessageContentList extends StatefulWidget {
   bool multiSelect;
   List selectedMessageIds = new List();
   _MessageContentListState state;
-  MessageContentList(List messageDataSource, bool multiSelect,
-      List selectedMessageIds, MessageContentListDelegate delegate) {
+  Map burnMsgMap = Map();
+  MessageContentList(
+      List messageDataSource,
+      bool multiSelect,
+      List selectedMessageIds,
+      MessageContentListDelegate delegate,
+      Map burnMsgMap) {
     this.delegate = delegate;
     this.messageDataSource = messageDataSource;
     this.multiSelect = multiSelect;
     this.selectedMessageIds = selectedMessageIds;
+    this.burnMsgMap = burnMsgMap;
   }
 
   void updateData(
       List messageDataSource, bool multiSelect, List selectedMessageIds) {
     // this.state._refreshUI(messageDataSource, multiSelect, selectedMessageIds);
-    this.state.updateData(messageDataSource,multiSelect,selectedMessageIds);
+    this.state.updateData(messageDataSource, multiSelect, selectedMessageIds);
   }
 
   @override
   State<StatefulWidget> createState() {
-    return state = _MessageContentListState(
-        messageDataSource, multiSelect, selectedMessageIds, delegate);
+    return state = _MessageContentListState(messageDataSource, multiSelect,
+        selectedMessageIds, delegate, burnMsgMap);
   }
 }
 
@@ -45,18 +51,26 @@ class _MessageContentListState extends State<MessageContentList>
   List selectedMessageIds = new List();
   MessageBloc _bloc;
   // StreamController<List> streamController = new StreamController();
+  Map conversationItems = Map();
+  Map burnMsgMap = Map();
 
-  _MessageContentListState(List messageDataSource, bool multiSelect,
-      List selectedMessageIds, MessageContentListDelegate delegate) {
+  _MessageContentListState(
+      List messageDataSource,
+      bool multiSelect,
+      List selectedMessageIds,
+      MessageContentListDelegate delegate,
+      Map burnMsgMap) {
     this.delegate = delegate;
     this.messageDataSource = messageDataSource;
     this.multiSelect = multiSelect;
     this.selectedMessageIds = selectedMessageIds;
+    this.burnMsgMap = burnMsgMap;
     // this._scrollController = ScrollController();
     // updateData(messageDataSource);
   }
 
-  void updateData(List messageDataSource, bool multiSelect, List selectedMessageIds) {
+  void updateData(
+      List messageDataSource, bool multiSelect, List selectedMessageIds) {
     // streamController.sink.add(messageDataSource);
     _bloc.updateMessageList(messageDataSource);
     this.messageDataSource = messageDataSource;
@@ -68,6 +82,13 @@ class _MessageContentListState extends State<MessageContentList>
   void initState() {
     _bloc = new MessageBloc();
     super.initState();
+
+    EventBus.instance.addListener(EventKeys.BurnMessage, (map) {
+      String messageUId = map["messageUId"];
+      int remainDuration = map["remainDuration"];
+      ConversationItem item = conversationItems[messageUId];
+      item.time.value = remainDuration;
+    });
   }
 
   @override
@@ -104,12 +125,16 @@ class _MessageContentListState extends State<MessageContentList>
                     messageDataSource.length > 0) {
                   Message tempMessage = messageDataSource[index];
                   // bool isSelected = selectedMessageIds.contains(tempMessage.messageId);
-                  return ConversationItem(
+                  ValueNotifier<int> time = ValueNotifier<int>(0);
+                  ConversationItem item = ConversationItem(
                       this,
                       tempMessage,
-                      _needShowTime(index,messageDataSource),
+                      _needShowTime(index, messageDataSource),
                       this.multiSelect,
-                      selectedMessageIds);
+                      selectedMessageIds,
+                      time);
+                  conversationItems[tempMessage.messageUId] = item;
+                  return item;
                 } else {
                   return WidgetUtil.buildEmptyWidget();
                 }
@@ -134,7 +159,7 @@ class _MessageContentListState extends State<MessageContentList>
     });
   }
 
-  bool _needShowTime(int index,List messageDataSource) {
+  bool _needShowTime(int index, List messageDataSource) {
     bool needShow = false;
     //消息是逆序的
     if (index == messageDataSource.length - 1) {

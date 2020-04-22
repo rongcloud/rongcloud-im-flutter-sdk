@@ -12,6 +12,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'record_top_item.dart';
 import 'record_bottom_item.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import '../../util/style.dart';
 
 class VideoRecordPage extends StatefulWidget {
   final Map arguments;
@@ -30,6 +31,7 @@ class _VideoRecordPageState extends State<VideoRecordPage>
   String targetId;
   int recodeTime = 0;
   Timer timer;
+  bool isSecretChat = false;
 
   CameraController cameraController;
   VideoPlayerController videoPlayerController;
@@ -44,6 +46,7 @@ class _VideoRecordPageState extends State<VideoRecordPage>
     super.initState();
     conversationType = arguments["coversationType"];
     targetId = arguments["targetId"];
+    isSecretChat = arguments["isSecretChat"];
     initCamera();
     topitem = TopRecordItem(this);
   }
@@ -265,6 +268,10 @@ class _VideoRecordPageState extends State<VideoRecordPage>
     if (videoPath != null) {
       print("onFinishEvent con $conversationType targetId $targetId");
       SightMessage sightMessage = SightMessage.obtain(videoPath, recodeTime);
+      if (conversationType == RCConversationType.Private) {
+        sightMessage.destructDuration =
+            isSecretChat ? RCDuration.MediaMessageBurnDuration + recodeTime : 0;
+      }
       RongcloudImPlugin.sendMessage(conversationType, targetId, sightMessage);
       _saveVideo(videoPath);
       onPop();

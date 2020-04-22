@@ -12,20 +12,27 @@ class ConversationItem extends StatefulWidget {
   bool showTime;
   bool multiSelect = false;
   List selectedMessageIds;
+  ValueNotifier<int> time = ValueNotifier<int>(0);
 
-  ConversationItem(ConversationItemDelegate delegate, prefix.Message msg,
-      bool showTime, bool multiSelect, List selectedMessageIds) {
+  ConversationItem(
+      ConversationItemDelegate delegate,
+      prefix.Message msg,
+      bool showTime,
+      bool multiSelect,
+      List selectedMessageIds,
+      ValueNotifier<int> time) {
     this.message = msg;
     this.delegate = delegate;
     this.showTime = showTime;
     this.multiSelect = multiSelect;
     this.selectedMessageIds = selectedMessageIds;
+    this.time = time;
   }
 
   @override
   State<StatefulWidget> createState() {
     return new _ConversationItemState(this.delegate, this.message,
-        this.showTime, this.multiSelect, this.selectedMessageIds);
+        this.showTime, this.multiSelect, this.selectedMessageIds, this.time);
   }
 }
 
@@ -40,14 +47,22 @@ class _ConversationItemState extends State<ConversationItem> {
   List selectedMessageIds;
   SelectIcon icon;
 
-  _ConversationItemState(ConversationItemDelegate delegate, prefix.Message msg,
-      bool showTime, bool multiSelect, List selectedMessageIds) {
+  ValueNotifier<int> time = ValueNotifier<int>(0);
+
+  _ConversationItemState(
+      ConversationItemDelegate delegate,
+      prefix.Message msg,
+      bool showTime,
+      bool multiSelect,
+      List selectedMessageIds,
+      ValueNotifier<int> time) {
     this.message = msg;
     this.delegate = delegate;
     this.showTime = showTime;
     this.user = example.UserInfoDataSource.getUserInfo(msg.senderUserId);
     this.multiSelect = multiSelect;
     this.selectedMessageIds = selectedMessageIds;
+    this.time = time;
   }
 
   @override
@@ -214,6 +229,8 @@ class _ConversationItemState extends State<ConversationItem> {
   }
 
   void __onTapedMesssage() {
+    prefix.RongcloudImPlugin.messageBeginDestruct(message);
+    // return;
     if (delegate != null) {
       if (multiSelect == true) {
         //多选模式下修改为didTapItem处理
@@ -318,6 +335,24 @@ class _ConversationItemState extends State<ConversationItem> {
                       ),
                     ),
                   ),
+                  message.messageDirection ==
+                              prefix.RCMessageDirection.Receive &&
+                          message.content != null &&
+                          message.content.destructDuration != null &&
+                          message.content.destructDuration > 0
+                      ? ValueListenableBuilder(
+                          builder:
+                              (BuildContext context, int value, Widget child) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                value > 0 ? Text(" $value", style: TextStyle(color: Colors.red),) : Text("")
+                              ],
+                            );
+                          },
+                          valueListenable: time,
+                        )
+                      : Text(""),
                 ]),
           ),
         )

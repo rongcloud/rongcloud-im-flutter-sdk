@@ -32,7 +32,7 @@ class SightMessage extends MessageContent {
     }
     Map map = json.decode(jsonStr.toString());
     this.mName = map["name"];
-    this.mSize = map["size"];
+    this.mSize = int.parse(map["size"] != null ? map["size"] : "0");
     this.localPath = map["localPath"];
     this.remoteUrl = map["sightUrl"];
     this.content = map["content"];
