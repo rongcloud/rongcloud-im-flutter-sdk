@@ -21,7 +21,7 @@ class MessageItemFactory extends StatelessWidget {
     return Container(
       constraints: BoxConstraints(
         // 屏幕宽度减去头像宽度加上间距
-        maxWidth: screenWidth - 140,
+        maxWidth: screenWidth - 150,
       ),
       padding: EdgeInsets.all(8),
       child: Text(
@@ -33,7 +33,7 @@ class MessageItemFactory extends StatelessWidget {
 
   ///图片消息 item
   ///优先读缩略图，否则读本地路径图，否则读网络图
-  Widget imageMessageItem() {
+  Widget imageMessageItem(BuildContext context) {
     ImageMessage msg = message.content;
 
     Widget widget;
@@ -74,7 +74,13 @@ class MessageItemFactory extends StatelessWidget {
               );
       }
     }
-    return widget;
+    
+    return Container(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width - 150,
+      ),
+      child: widget,
+    );
   }
 
   ///动图消息 item
@@ -399,7 +405,7 @@ class MessageItemFactory extends StatelessWidget {
     if (message.content is TextMessage) {
       return textMessageItem(context);
     } else if (message.content is ImageMessage) {
-      return imageMessageItem();
+      return imageMessageItem(context);
     } else if (message.content is VoiceMessage) {
       return voiceMessageItem();
     } else if (message.content is SightMessage) {
@@ -427,6 +433,7 @@ class MessageItemFactory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return Container(
       color: _getMessageWidgetBGColor(message.messageDirection),
       child: messageItem(context),

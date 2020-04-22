@@ -292,6 +292,24 @@ class _ConversationItemState extends State<ConversationItem> {
                         ? MainAxisAlignment.end
                         : MainAxisAlignment.start,
                 children: <Widget>[
+                  message.messageDirection ==
+                              prefix.RCMessageDirection.Send &&
+                          message.content != null &&
+                          message.content.destructDuration != null &&
+                          message.content.destructDuration > 0
+                      ? ValueListenableBuilder(
+                          builder:
+                              (BuildContext context, int value, Widget child) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                value > 0 ? Text("$value ", style: TextStyle(color: Colors.red),) : Text("")
+                              ],
+                            );
+                          },
+                          valueListenable: time,
+                        )
+                      : Text(""),
                   // sentStatus = 20 为发送失败
                   message.messageDirection == prefix.RCMessageDirection.Send &&
                           message.sentStatus == 20
