@@ -14,6 +14,8 @@
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
+		<key>NSAllowsArbitraryLoadsInWebContent</key>
+		<true/>
 	</dict>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>使用麦克风</string>

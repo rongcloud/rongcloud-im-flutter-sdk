@@ -728,6 +728,7 @@ class _ConversationPageState extends State<ConversationPage>
   @override
   void didTapMessageItem(Message message) async {
     print("didTapMessageItem " + message.objectName);
+    if (message.messageDirection == RCMessageDirection.Receive && message.content.destructDuration != null && message.content.destructDuration > 0)
     RongcloudImPlugin.messageBeginDestruct(message);
     if (message.content is VoiceMessage) {
       VoiceMessage msg = message.content;
@@ -748,7 +749,7 @@ class _ConversationPageState extends State<ConversationPage>
       Navigator.pushNamed(context, "/file_preview", arguments: message);
     } else if (message.content is RichContentMessage) {
       RichContentMessage msg = message.content;
-      Map param = {"url": msg.url};
+      Map param = {"url": msg.url, "title": msg.title};
       Navigator.pushNamed(context, "/webview", arguments: param);
     } else if (message.content is CombineMessage) {
       CombineMessage msg = message.content;

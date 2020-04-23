@@ -71,10 +71,9 @@ class _WebViewPageState extends State<WebViewPage> {
   }
 
   String _getCorrectLocalPath(String url) {
-    if (TargetPlatform.android == defaultTargetPlatform) {
-      if (!url.toLowerCase().startsWith("http") && !url.startsWith("file://")) {
-        return "file://$url";
-      }
+    // iOS Android  webView 加载本地路径的 html 文件需要在路径前面加 file://
+    if (!url.toLowerCase().startsWith("http") && !url.startsWith("file://")) {
+      return "file://$url";
     }
     return url;
   }

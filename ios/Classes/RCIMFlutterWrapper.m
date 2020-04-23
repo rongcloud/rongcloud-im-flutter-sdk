@@ -18,6 +18,43 @@
 - (RCMessageContent *)messageContentWithClass:(Class)messageClass fromData:(NSData *)jsonData;
 @end
 
+@interface RCCombineMessage : RCMediaMessageContent
+/*!
+ 转发的消息展示的缩略内容列表 (格式是发送者 ：缩略内容)
+ */
+@property (nonatomic, strong) NSArray *summaryList;
+
+/*!
+ 转发的全部消息的发送者名称列表 （单聊是经过排重的，群聊是群组名称）
+ */
+@property (nonatomic, strong) NSArray *nameList;
+
+/*!
+ 转发的消息会话类型 （目前仅支持单聊和群聊）
+ */
+@property (nonatomic, assign) RCConversationType conversationType;
+
+/*!
+ 转发的消息 消息的附加信息
+ */
+@property (nonatomic, copy) NSString *extra;
+
+/*!
+ 初始化 RCCombineMessage 消息
+
+ @param summaryList         转发的消息展示的缩略内容列表
+ @param nameList            转发的全部消息的发送者名称列表 （单聊是经过排重的，群聊是群组名称）
+ @param conversationType    转发的消息会话类型
+ @param content             转发的内容
+
+ @return                    消息对象
+ */
++ (instancetype)messageWithSummaryList:(NSArray *)summaryList
+                              nameList:(NSArray *)nameList
+                      conversationType:(RCConversationType)conversationType
+                               content:(NSString *)content;
+@end
+
 @interface RCIMFlutterWrapper ()<RCIMClientReceiveMessageDelegate,RCConnectionStatusChangeDelegate,RCTypingStatusDelegate, RCMessageDestructDelegate>
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 @property (nonatomic, strong) RCFlutterConfig *config;
@@ -426,12 +463,18 @@
         content = [RCGIFMessage messageWithGIFURI:localPath width:width height:height];
         RCGIFMessage *gifMsg = (RCGIFMessage *)content;
         gifMsg.extra = extra;
-        if (sendUserInfo) {
-            gifMsg.senderUserInfo = sendUserInfo;
-        }
-        if (mentionedInfo) {
-            gifMsg.mentionedInfo = mentionedInfo;
-        }
+    } else if ([objName isEqualToString:@"RC:CombineMsg"]) {
+        NSString *localPath = [msgDic valueForKey:@"localPath"];
+        localPath = [self getCorrectLocalPath:localPath];
+        NSString *extra = [msgDic valueForKey:@"extra"];
+        NSArray * nameList = [msgDic valueForKey:@"nameList"] ?: @[];
+        NSArray * summaryList = [msgDic valueForKey:@"summaryList"] ?: @[];
+        RCConversationType type = [param[@"conversationType"] integerValue];
+        
+        content = [RCCombineMessage messageWithSummaryList:summaryList nameList:nameList conversationType:type content:@""];
+        RCCombineMessage *combineMsg = (RCCombineMessage *)content;
+        combineMsg.localPath = localPath;
+        combineMsg.extra = extra;
     } else {
         NSLog(@"%s 非法的媒体消息类型",__func__);
         return;
@@ -1645,7 +1688,7 @@
 #pragma mark - private method
 
 - (BOOL)isMediaMessage:(NSString *)objName {
-    if([objName isEqualToString:@"RC:ImgMsg"] || [objName isEqualToString:@"RC:HQVCMsg"] || [objName isEqualToString:@"RC:SightMsg"] || [objName isEqualToString:@"RC:FileMsg"] || [objName isEqualToString:@"RC:GIFMsg"]) {
+    if([objName isEqualToString:@"RC:ImgMsg"] || [objName isEqualToString:@"RC:HQVCMsg"] || [objName isEqualToString:@"RC:SightMsg"] || [objName isEqualToString:@"RC:FileMsg"] || [objName isEqualToString:@"RC:GIFMsg"] || [objName isEqualToString:@"RC:CombineMsg"]) {
         return YES;
     }
     return NO;
