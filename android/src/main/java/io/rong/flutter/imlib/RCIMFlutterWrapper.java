@@ -257,6 +257,10 @@ public class RCIMFlutterWrapper {
             sendDirectionalMessage(call.arguments, result);
         } else if (RCMethodList.MethodKeySaveMediaToPublicDir.equalsIgnoreCase(call.method)) {
             saveMediaToPublicDir(call.arguments);
+        } else if (RCMethodList.MethodKeyMessageBeginDestruct.equalsIgnoreCase(call.method)) {
+            messageBeginDestruct(call.arguments);
+        } else if (RCMethodList.MethodKeyMessageStopDestruct.equalsIgnoreCase(call.method)) {
+            messageStopDestruct(call.arguments);
         } else {
             result.notImplemented();
         }
@@ -2611,6 +2615,74 @@ public class RCIMFlutterWrapper {
         }
     }
 
+    private void saveMediaToPublicDir(Object arg) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            String filePath = (String) paramMap.get("filePath");
+            String type = (String) paramMap.get("type");
+            StorageUtils.saveMediaToPublicDir(getMainContext(), new File(filePath), type);
+        }
+    }
+
+    // 开始焚烧消息（阅后即焚）
+    private void messageBeginDestruct(Object arg) {
+        if (arg instanceof Map) {
+            Map map = (Map) arg;
+            Map messageMap = (Map) map.get("message");
+            Message message = map2Message(messageMap);
+            if (message == null) {
+                return;
+            }
+            RongIMClient.getInstance().beginDestructMessage(message, new RongIMClient.DestructCountDownTimerListener() {
+                @Override
+                public void onTick(final long untilFinished, String messageUId) {
+                    int remainDuration = (int) untilFinished;
+                    RLog.d("messageBeginDestruct","onTick :"+untilFinished+" remainDuration:"+remainDuration);
+                    invokeMessageDestructCallBack(messageUId,remainDuration);
+                }
+
+                @Override
+                public void onStop(String messageUId) {
+//                    invokeMessageDestructCallBack(messageUId,0);
+                }
+            });
+        }
+    }
+
+    private void invokeMessageDestructCallBack(String messageUId,final int remainDuration){
+        RongIMClient.getInstance().getMessageByUid(messageUId, new RongIMClient.ResultCallback<Message>() {
+            @Override
+            public void onSuccess(Message message) {
+                Map resultMap = new HashMap();
+                String messageStr = MessageFactory.getInstance().message2String(message);
+                resultMap.put("remainDuration", remainDuration);
+                resultMap.put("message", messageStr);
+                mChannel.invokeMethod(RCMethodList.MethodCallBackDestructMessage, resultMap);
+            }
+
+            @Override
+            public void onError(RongIMClient.ErrorCode errorCode) {
+                Map resultMap = new HashMap();
+                resultMap.put("remainDuration", remainDuration);
+                resultMap.put("message", "");
+                mChannel.invokeMethod(RCMethodList.MethodCallBackDestructMessage, resultMap);
+            }
+        });
+    }
+
+    // 停止焚烧消息（阅后即焚）
+    private void messageStopDestruct(Object arg) {
+        if (arg instanceof Map) {
+            Map map = (Map) arg;
+            Map messageMap = (Map) map.get("message");
+            Message message = map2Message(messageMap);
+            if (message == null) {
+                return;
+            }
+            RongIMClient.getInstance().stopDestructMessage(message);
+        }
+    }
+
     private Message map2Message(Map messageMap) {
         String contentStr = null;
         Message message = new Message();
@@ -2640,14 +2712,5 @@ public class RCIMFlutterWrapper {
         }
         message.setContent(content);
         return message;
-    }
-
-    private void saveMediaToPublicDir(Object arg) {
-        if (arg instanceof Map) {
-            Map paramMap = (Map) arg;
-            String filePath = (String) paramMap.get("filePath");
-            String type = (String) paramMap.get("type");
-            StorageUtils.saveMediaToPublicDir(getMainContext(), new File(filePath), type);
-        }
     }
 }
