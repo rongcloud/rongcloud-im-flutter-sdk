@@ -281,7 +281,7 @@
         long long timestamp = [param[@"timestamp"] longLongValue];
         // 如果 remoteUrl 不为空，走 sendMessage
         if(![self isForwardMessage:contentStr objName:objName] && [self isMediaMessage:objName]) {
-//        if([self isMediaMessage:objName]) {
+            //        if([self isMediaMessage:objName]) {
             [self sendMediaMessage:arg result:result];
             return;
         }
@@ -433,7 +433,7 @@
         NSLog(@"%s 非法的媒体消息类型",__func__);
         return;
     }
-
+    
     if (sendUserInfo) {
         content.senderUserInfo = sendUserInfo;
     }
@@ -1486,7 +1486,7 @@
 }
 
 - (void)receiveMessageHasReadNotification:(NSNotification *)notification {
-
+    
     NSDictionary *dict = @{@"cType":[notification.userInfo objectForKey:@"cType"],
                            @"messageTime":[notification.userInfo objectForKey:@"messageTime"],
                            @"tId":[notification.userInfo objectForKey:@"tId"]
@@ -1582,7 +1582,7 @@
 
 #pragma mark - util
 - (void)updateIMConfig {
-//    [RCIM sharedRCIM].enablePersistentUserInfoCache = self.config.enablePersistentUserInfoCache;
+    //    [RCIM sharedRCIM].enablePersistentUserInfoCache = self.config.enablePersistentUserInfoCache;
 }
 
 - (RCMessageContent *)getVoiceMessage:(NSData *)data {
@@ -1617,22 +1617,23 @@
     NSData *data = [contentStr dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *msgDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
     NSString *localPath = [msgDic valueForKey:@"localPath"];
-    NSString *remoteUrl = @"";
+    //    NSString *remoteUrl = @"";
     if (!localPath || [localPath isKindOfClass:[NSNull class]]) {
         localPath = @"";
     }
-    if ([objName isEqualToString:@"RC:ImgMsg"]) {
-        remoteUrl = [msgDic valueForKey:@"imageUrl"];
-    } else if ([objName isEqualToString:@"RC:HQVCMsg"]) {
-        remoteUrl = [msgDic valueForKey:@"remoteUrl"];
-    } else if ([objName isEqualToString:@"RC:SightMsg"]) {
-        remoteUrl = [msgDic valueForKey:@"sightUrl"];
-    } else if ([objName isEqualToString:@"RC:FileMsg"]) {
-        remoteUrl = [msgDic valueForKey:@"fileUrl"];
-    } else if ([objName isEqualToString:@"RC:GIFMsg"]) {
-        remoteUrl = [msgDic valueForKey:@"remoteUrl"];
-    }
-    if (localPath.length == 0 && remoteUrl.length > 0) {
+    //    if ([objName isEqualToString:@"RC:ImgMsg"]) {
+    //        remoteUrl = [msgDic valueForKey:@"imageUri"];
+    //    } else if ([objName isEqualToString:@"RC:HQVCMsg"]) {
+    //        remoteUrl = [msgDic valueForKey:@"remoteUrl"];
+    //    } else if ([objName isEqualToString:@"RC:SightMsg"]) {
+    //        remoteUrl = [msgDic valueForKey:@"sightUrl"];
+    //    } else if ([objName isEqualToString:@"RC:FileMsg"]) {
+    //        remoteUrl = [msgDic valueForKey:@"fileUrl"];
+    //    } else if ([objName isEqualToString:@"RC:GIFMsg"]) {
+    //        remoteUrl = [msgDic valueForKey:@"remoteUrl"];
+    //    }
+    //    if (localPath.length == 0 && remoteUrl.length > 0) {
+    if (localPath.length == 0) {
         return YES;
     }
     return NO;
