@@ -49,6 +49,7 @@ import io.rong.message.FileMessage;
 import io.rong.message.GIFMessage;
 import io.rong.message.HQVoiceMessage;
 import io.rong.message.ImageMessage;
+import io.rong.message.MediaMessageContent;
 import io.rong.message.MessageHandler;
 import io.rong.message.ReadReceiptMessage;
 import io.rong.message.RecallNotificationMessage;
@@ -534,7 +535,8 @@ public class RCIMFlutterWrapper {
         if (arg instanceof Map) {
             Map map = (Map) arg;
             String objectName = (String) map.get("objectName");
-            if (isMediaMessage(objectName)) {
+            String contentStr = (String) map.get("content");
+            if (isMediaMessage(objectName) && !isLocalPathEmpty(contentStr)) {
                 sendMediaMessage(arg, result);
                 return;
             }
@@ -543,7 +545,6 @@ public class RCIMFlutterWrapper {
             Integer t = (Integer) map.get("conversationType");
             Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
             String targetId = (String) map.get("targetId");
-            String contentStr = (String) map.get("content");
             String pushContent = (String) map.get("pushContent");
             if (pushContent.length() <= 0) {
                 pushContent = null;
@@ -597,7 +598,11 @@ public class RCIMFlutterWrapper {
                     mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
                 }
             });
-
+            if (isMediaMessage(objectName)) {
+                content.setMentionedInfo(null);
+                content.setUserInfo(null);
+                message.setContent(content);
+            }
             String messageS = MessageFactory.getInstance().message2String(message);
             Map msgMap = new HashMap();
             msgMap.put("message", messageS);
@@ -1895,6 +1900,20 @@ public class RCIMFlutterWrapper {
                 mChannel.invokeMethod(RCMethodList.MethodCallBackKeyConnectionStatusChange, map);
             }
         });
+    }
+
+    private boolean isLocalPathEmpty(String contentStr) {
+        JSONObject jsonObject = null;
+        String localPath = "";
+        try {
+            jsonObject = new JSONObject(contentStr);
+            localPath = jsonObject.getString("localPath");
+        } catch (JSONException e) {
+        }
+        if (TextUtils.isEmpty(localPath)) {
+            return true;
+        }
+        return false;
     }
 
     private boolean isMediaMessage(String objName) {
