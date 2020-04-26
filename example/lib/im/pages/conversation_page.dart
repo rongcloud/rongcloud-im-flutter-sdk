@@ -177,7 +177,7 @@ class _ConversationPageState extends State<ConversationPage>
         (int messageId, int status, int code) async {
       Message msg = await RongcloudImPlugin.getMessage(messageId);
       if (msg.targetId == this.targetId) {
-        _insertOrReplaceMessage(msg, isNeedRefreshMsgList: false);
+        _insertOrReplaceMessage(msg);
       }
     };
 
@@ -189,7 +189,17 @@ class _ConversationPageState extends State<ConversationPage>
       burnMsgMap[message.messageId] = remainDuration;
       if (remainDuration == 0) {
         onGetHistoryMessages();
+        int index = -1;
+        for (var i = 0; i < messageDataSource.length; i++) {
+          Message msg = messageDataSource[i];
+          if (msg.messageId == message.messageId) {
+            index = i;
+            break;
+          }
+        }
+        messageDataSource.removeAt(index);
         burnMsgMap.remove(message.messageId);
+        _refreshMessageContentListUI();
       }
     };
 
@@ -299,8 +309,7 @@ class _ConversationPageState extends State<ConversationPage>
     }
   }
 
-  void _insertOrReplaceMessage(Message message,
-      {bool isNeedRefreshMsgList = true}) {
+  void _insertOrReplaceMessage(Message message) {
     int index = -1;
     for (int i = 0; i < messageDataSource.length; i++) {
       Message msg = messageDataSource[i];
@@ -312,14 +321,12 @@ class _ConversationPageState extends State<ConversationPage>
     //如果数据源中相同 id 消息，那么更新对应消息，否则插入消息
     if (index >= 0) {
       messageDataSource[index] = message;
+      messageContentList.refreshItem(message);
     } else {
       messageDataSource.insert(0, message);
-    }
-    if (isNeedRefreshMsgList) {
       _refreshMessageContentListUI();
-    } else {
-      messageContentList.refreshItem(message);
     }
+
   }
 
   Widget _getExtentionWidget() {
@@ -864,16 +871,19 @@ class _ConversationPageState extends State<ConversationPage>
     }
 
     if (conversationType == RCConversationType.Private) {
-      int duration = text.length <= 20
-          ? RCDuration.TextMessageBurnDuration
-          : (RCDuration.TextMessageBurnDuration + (text.length - 20) / 2);
+      int duration = RCDuration.TextMessageBurnDuration;
+      if (text.length > 20) {
+        int textLength = text.length - 20;
+        int tempDuration = (textLength / 2).ceil();
+         duration += tempDuration;
+      }
       msg.destructDuration = isSecretChat ? duration : 0;
     }
 
     Message message =
         await RongcloudImPlugin.sendMessage(conversationType, targetId, msg);
     userIdList.clear();
-    // _insertOrReplaceMessage(message);
+    _insertOrReplaceMessage(message);
   }
 
   @override

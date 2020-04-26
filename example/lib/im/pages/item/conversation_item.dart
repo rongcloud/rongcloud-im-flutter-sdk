@@ -54,6 +54,7 @@ class _ConversationItemState extends State<ConversationItem> {
   SelectIcon icon;
 
   ValueNotifier<int> time = ValueNotifier<int>(0);
+  bool needShowMessage = true;
 
   _ConversationItemState(
       ConversationItemDelegate delegate,
@@ -69,6 +70,7 @@ class _ConversationItemState extends State<ConversationItem> {
     this.multiSelect = multiSelect;
     this.selectedMessageIds = selectedMessageIds;
     this.time = time;
+    needShowMessage = !(msg.messageDirection == prefix.RCMessageDirection.Receive && msg.content.destructDuration != null && msg.content.destructDuration > 0 && time.value == msg.content.destructDuration);
   }
 
   @override
@@ -250,6 +252,11 @@ class _ConversationItemState extends State<ConversationItem> {
         bool isSelected = selectedMessageIds.contains(message.messageId);
         icon.updateUI(isSelected);
       } else {
+        if (!needShowMessage) {
+          needShowMessage = true;
+          setState(() {
+          });
+        }
         delegate.didTapMessageItem(message);
       }
     } else {
@@ -361,7 +368,7 @@ class _ConversationItemState extends State<ConversationItem> {
                       },
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: MessageItemFactory(message: message),
+                        child: MessageItemFactory(message: message, needShow: needShowMessage),
                       ),
                     ),
                   ),
