@@ -2639,11 +2639,12 @@ public class RCIMFlutterWrapper {
             final String LOG_TAG = "forwardMessageByStep";
             Map messageMap = (Map) map.get("message");
             Message message = map2Message(messageMap);
-//            message.setMessageId(0);
             MessageContent messageContent = message.getContent();
+            String targetId = (String) map.get("targetId");
+            int conversationType = (int) map.get("conversationType");
             //有些消息携带了用户信息，转发的消息必须把用户信息去掉
             messageContent.setUserInfo(null);
-            Message forwardMessage = Message.obtain(message.getTargetId(), message.getConversationType(), messageContent);
+            Message forwardMessage = Message.obtain(targetId, Conversation.ConversationType.setValue(conversationType), messageContent);
 
             RongIMClient.getInstance().sendMessage(forwardMessage, "", "", new IRongCallback.ISendMessageCallback() {
                 @Override

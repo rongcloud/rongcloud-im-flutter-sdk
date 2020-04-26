@@ -100,8 +100,14 @@ class RongcloudImPlugin {
   ///
   /// SDK内置的消息类型，如果您将[pushContent]和[pushData]置为空或者为null，会使用默认的推送格式进行远程推送。
   /// 自定义类型的消息，需要您自己设置pushContent和pushData来定义推送内容，否则将不会进行远程推送。
-  static Future<Message> sendMessageCarriesPush(int conversationType, String targetId, MessageContent content, String pushContent, String pushData) async {
-    return sendMessageWithCallBack(conversationType, targetId, content, pushContent, pushData, null);
+  static Future<Message> sendMessageCarriesPush(
+      int conversationType,
+      String targetId,
+      MessageContent content,
+      String pushContent,
+      String pushData) async {
+    return sendMessageWithCallBack(
+        conversationType, targetId, content, pushContent, pushData, null);
   }
 
   ///发送消息
@@ -119,13 +125,20 @@ class RongcloudImPlugin {
   ///
   /// SDK内置的消息类型，如果您将[pushContent]和[pushData]置为空或者为null，会使用默认的推送格式进行远程推送。
   /// 自定义类型的消息，需要您自己设置pushContent和pushData来定义推送内容，否则将不会进行远程推送。
-  /// 
-  /// 
+  ///
+  ///
   /// 发送消息之后有两种查看结果的方式：1、发送消息的 callback 2、onMessageSend；推荐使用 callback 的方式
   /// 如果未实现此方法的 callback，则会通过 onMessageSend 返回发送消息的结果
-  static Future<Message> sendMessageWithCallBack(int conversationType, String targetId, MessageContent content, String pushContent, String pushData, Function(int messageId, int status, int code) finished) async {
-    if(conversationType == null || targetId == null || content == null) {
-      print("send message fail: conversationType or targetId or content is null");
+  static Future<Message> sendMessageWithCallBack(
+      int conversationType,
+      String targetId,
+      MessageContent content,
+      String pushContent,
+      String pushData,
+      Function(int messageId, int status, int code) finished) async {
+    if (conversationType == null || targetId == null || content == null) {
+      print(
+          "send message fail: conversationType or targetId or content is null");
       return null;
     }
     if (pushContent == null) {
@@ -152,7 +165,7 @@ class RongcloudImPlugin {
     };
 
     if (finished != null) {
-      sendMessageCallbacks[timestamp] = finished; 
+      sendMessageCallbacks[timestamp] = finished;
     }
 
     Map resultMap = await _channel.invokeMethod(RCMethodKey.SendMessage, map);
@@ -1329,14 +1342,16 @@ class RongcloudImPlugin {
   static void _addNativeMethodCallHandler() {
     _channel.setMethodCallHandler((MethodCall call) {
       switch (call.method) {
-        case RCMethodCallBackKey.SendMessage: {
+        case RCMethodCallBackKey.SendMessage:
+          {
             Map argMap = call.arguments;
             int msgId = argMap["messageId"];
             int status = argMap["status"];
             int code = argMap["code"];
             int timestamp = argMap["timestamp"];
             if (timestamp != null && timestamp > 0) {
-              Function(int messageId, int status, int code) finished = sendMessageCallbacks[timestamp]; 
+              Function(int messageId, int status, int code) finished =
+                  sendMessageCallbacks[timestamp];
               if (finished != null) {
                 finished(msgId, status, code);
                 sendMessageCallbacks.remove(timestamp);
@@ -1347,8 +1362,8 @@ class RongcloudImPlugin {
               }
             } else {
               if (onMessageSend != null) {
-                  onMessageSend(msgId, status, code);
-                }
+                onMessageSend(msgId, status, code);
+              }
             }
           }
           break;
@@ -1662,9 +1677,14 @@ class RongcloudImPlugin {
     await _channel.invokeMethod(RCMethodKey.SaveMediaToPublicDir, paramMap);
   }
 
-  static void forwardMessageByStep(Message message) async{
+  static void forwardMessageByStep(
+      int conversationType, String targetId, Message message) async {
     Map msgMap = MessageFactory.instance.message2Map(message);
-    Map map = {"message": msgMap};
+    Map map = {
+      "message": msgMap,
+      "conversationType": conversationType,
+      "targetId": targetId
+    };
     await _channel.invokeMethod(RCMethodKey.ForwardMessageByStep, map);
   }
 }

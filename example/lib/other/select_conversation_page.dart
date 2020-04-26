@@ -121,7 +121,7 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
           msg.content.sendUserInfo = null;
           msg.content.mentionedInfo = null;
           if (TargetPlatform.android == defaultTargetPlatform) {
-            RongcloudImPlugin.forwardMessageByStep(msg);
+            RongcloudImPlugin.forwardMessageByStep(con.conversationType,con.targetId,msg);
           } else {
             RongcloudImPlugin.sendMessage(
                 con.conversationType, con.targetId, msg.content);
