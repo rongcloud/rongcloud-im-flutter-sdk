@@ -209,7 +209,7 @@ public class RCMessageHandler {
 
     }
 
-    static public void encodeSightMessage(Message message) {
+    public static void encodeSightMessage(Message message) {
         String TAG = "encodeSightMessage";
         SightMessage model = (SightMessage) message.getContent();
         Uri uri = obtainMediaFileSavedUri();
@@ -245,6 +245,9 @@ public class RCMessageHandler {
             }
         }
         try {
+            if (model.getLocalPath() == null){
+                return;
+            }
             String videoPath = model.getLocalPath().toString().substring(5);
             RLog.d(TAG, "beforeEncodeMessage Thumbnail not save yet! " + videoPath);
             Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(videoPath, MINI_KIND);
