@@ -163,6 +163,7 @@ class _ConversationPageState extends State<ConversationPage>
       print("ForwardMessageEnd：" + this.targetId);
       multiSelect = false;
       selectedMessageIds.clear();
+      // onGetHistoryMessages();
       _refreshMessageContentListUI();
       _refreshUI();
     });

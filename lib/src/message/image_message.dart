@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'message_content.dart';
 import 'dart:convert' show json;
 
@@ -10,6 +8,7 @@ class ImageMessage extends MessageContent {
   String extra;
   String content;
   String imageUri;
+  String mThumUri;
 
 
   /// [localPath] 本地路径，Android 必须以 file:// 开头
@@ -25,6 +24,7 @@ class ImageMessage extends MessageContent {
     this.localPath = map["localPath"];
     this.content = map["content"];
     this.imageUri = map["imageUri"];
+    this.mThumUri = map["thumUri"];
     this.extra = map["extra"];
     Map userMap = map["user"];
     super.decodeUserInfo(userMap);
@@ -45,6 +45,9 @@ class ImageMessage extends MessageContent {
     }
     if (this.imageUri != null) {
       map["imageUri"] = this.imageUri;
+    }
+    if (this.mThumUri != null) {
+      map["thumUri"] = this.mThumUri;
     }
     if (this.sendUserInfo != null) {
       Map userMap = super.encodeUserInfo(this.sendUserInfo);

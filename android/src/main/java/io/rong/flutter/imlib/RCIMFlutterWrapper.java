@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -34,6 +35,7 @@ import io.rong.common.RLog;
 import io.rong.common.fwlog.FwLog;
 import io.rong.imlib.AnnotationNotFoundException;
 import io.rong.imlib.IRongCallback;
+import io.rong.imlib.ISendMediaMessageCallback;
 import io.rong.imlib.MessageTag;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.ChatRoomInfo;
@@ -49,6 +51,7 @@ import io.rong.message.FileMessage;
 import io.rong.message.GIFMessage;
 import io.rong.message.HQVoiceMessage;
 import io.rong.message.ImageMessage;
+import io.rong.message.LocationMessage;
 import io.rong.message.MediaMessageContent;
 import io.rong.message.MessageHandler;
 import io.rong.message.ReadReceiptMessage;
@@ -258,6 +261,8 @@ public class RCIMFlutterWrapper {
             sendDirectionalMessage(call.arguments, result);
         } else if (RCMethodList.MethodKeySaveMediaToPublicDir.equalsIgnoreCase(call.method)) {
             saveMediaToPublicDir(call.arguments);
+        } else if (RCMethodList.MethodKeyForwardMessageByStep.equalsIgnoreCase(call.method)) {
+            forwardMessageByStep(call.arguments);
         } else {
             result.notImplemented();
         }
@@ -536,7 +541,7 @@ public class RCIMFlutterWrapper {
             Map map = (Map) arg;
             String objectName = (String) map.get("objectName");
             String contentStr = (String) map.get("content");
-            if (isMediaMessage(objectName) && !isLocalPathEmpty(contentStr)) {
+            if (isMediaMessage(objectName)) {
                 sendMediaMessage(arg, result);
                 return;
             }
@@ -576,7 +581,14 @@ public class RCIMFlutterWrapper {
                 result.success(null);
                 return;
             }
-
+//            Message message = new Message();
+//            if (isMediaMessage(objectName)) {
+//                message.setObjectName(objectName);
+//                message.setConversationType(type);
+//                message.setTargetId(targetId);
+//                message.setContent(content);
+//                forwardMessage(message);
+//            } else {
             Message message = RongIMClient.getInstance().sendMessage(type, targetId, content, pushContent, pushData, new RongIMClient.SendMessageCallback() {
                 @Override
                 public void onError(Integer messageId, RongIMClient.ErrorCode errorCode) {
@@ -598,16 +610,69 @@ public class RCIMFlutterWrapper {
                     mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
                 }
             });
-            if (isMediaMessage(objectName)) {
-                content.setMentionedInfo(null);
-                content.setUserInfo(null);
-                message.setContent(content);
-            }
+//            }
+//            if (isMediaMessage(objectName)) {
+//                content.setMentionedInfo(null);
+//                content.setUserInfo(null);
+//                message.setContent(content);
+//            }
             String messageS = MessageFactory.getInstance().message2String(message);
             Map msgMap = new HashMap();
             msgMap.put("message", messageS);
             msgMap.put("status", 10);
             result.success(msgMap);
+        }
+    }
+
+    private void forwardMessage(Message message) {
+        MessageContent messageContent = message.getContent();
+        if (messageContent instanceof ImageMessage) {
+            ImageMessage imageMessage = (ImageMessage) messageContent;
+            if (imageMessage.getRemoteUri() != null && !imageMessage.getRemoteUri().toString().startsWith("file")) {
+                RongIMClient.getInstance().sendMessage(message, null, null, (IRongCallback.ISendMediaMessageCallback) new IRongCallback.ISendMediaMessageCallback() {
+                    @Override
+                    public void onAttached(Message message) {
+                        Log.e("onAttached", MessageFactory.getInstance().message2String(message) + "**");
+                    }
+
+                    @Override
+                    public void onProgress(Message message, int i) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Message message) {
+                        Log.e("onSuccess", MessageFactory.getInstance().message2String(message) + "**");
+                    }
+
+                    @Override
+                    public void onError(Message message, RongIMClient.ErrorCode errorCode) {
+                        Log.e("onError", MessageFactory.getInstance().message2String(message) + "**" + errorCode.toString());
+                    }
+
+                    @Override
+                    public void onCanceled(Message message) {
+
+                    }
+                });
+            } else {
+                RongIMClient.getInstance().sendImageMessage(message, null, null, (RongIMClient.SendImageMessageCallback) null);
+            }
+        } else if (messageContent instanceof LocationMessage) {
+            RongIMClient.getInstance().sendLocationMessage(message, null, null, null);
+        }
+//        else if (messageContent instanceof ReferenceMessage) {
+//            RongIMClient.getInstance().sendMessage(message, null, null, (IRongCallback.ISendMessageCallback) null);
+//        }
+        else if (messageContent instanceof MediaMessageContent) {
+            MediaMessageContent mediaMessageContent = (MediaMessageContent) messageContent;
+            if (mediaMessageContent.getMediaUrl() != null) {
+                RongIMClient.getInstance().sendMessage(message, null, null, (IRongCallback.ISendMediaMessageCallback) null);
+            } else {
+                RongIMClient.getInstance().sendMediaMessage(message, null, null, (IRongCallback.ISendMediaMessageCallback) null);
+            }
+        } else {
+            RongIMClient.getInstance().sendMessage(message, null, null, (IRongCallback.ISendMessageCallback) null);
         }
     }
 
@@ -2567,6 +2632,46 @@ public class RCIMFlutterWrapper {
         }
     }
 
+    private void forwardMessageByStep(Object arg) {
+        final String TAG = "forwardMessageByStep";
+        if (arg instanceof Map) {
+            Map map = (Map) arg;
+            final String LOG_TAG = "forwardMessageByStep";
+            Map messageMap = (Map) map.get("message");
+            Message message = map2Message(messageMap);
+            message.setMessageId(0);
+            if (message == null) {
+                return;
+            }
+            RongIMClient.getInstance().sendMessage(message, "", "", new IRongCallback.ISendMessageCallback() {
+                @Override
+                public void onAttached(Message message) {
+
+                }
+
+                @Override
+                public void onSuccess(Message message) {
+                    RCLog.i(LOG_TAG + " success");
+                    Map resultMap = new HashMap();
+                    resultMap.put("messageId", message.getMessageId());
+                    resultMap.put("status", 30);
+                    resultMap.put("code", 0);
+                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
+                }
+
+                @Override
+                public void onError(Message message, RongIMClient.ErrorCode errorCode) {
+                    RCLog.e(LOG_TAG + " content is nil");
+                    Map resultMap = new HashMap();
+                    resultMap.put("messageId", message.getMessageId());
+                    resultMap.put("status", 20);
+                    resultMap.put("code", errorCode.getValue());
+                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
+                }
+            });
+        }
+    }
+
     private Message map2Message(Map messageMap) {
         String contentStr = null;
         Message message = new Message();
@@ -2590,9 +2695,27 @@ public class RCIMFlutterWrapper {
         byte[] bytes = contentStr.getBytes();
         MessageContent content = null;
         content = newMessageContent((String) messageMap.get("objectName"), bytes);
+
         if (content == null) {
             RCLog.e("Map2Message:  message content is nil");
             return null;
+        }
+        // 主动赋予值 thumUri 防止在 flutter 互相传递时丢失
+        String objectName = (String) messageMap.get("objectName");
+        if (objectName.equalsIgnoreCase("RC:ImgMsg") || objectName.equalsIgnoreCase("RC:SightMsg")) {
+            try {
+                JSONObject jsonObject = new JSONObject(contentStr);
+                if (jsonObject.has("thumUri")) {
+                    String thumUriStr = (String) jsonObject.get("thumUri");
+                    if (content instanceof ImageMessage) {
+                        ((ImageMessage) content).setThumUri(Uri.parse(thumUriStr));
+                    } else if (content instanceof SightMessage) {
+                        ((SightMessage) content).setThumbUri(Uri.parse(thumUriStr));
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
         message.setContent(content);
         return message;

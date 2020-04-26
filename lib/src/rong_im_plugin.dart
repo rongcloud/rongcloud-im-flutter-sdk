@@ -1661,4 +1661,10 @@ class RongcloudImPlugin {
     Map paramMap = {"filePath": filePath, "type": type};
     await _channel.invokeMethod(RCMethodKey.SaveMediaToPublicDir, paramMap);
   }
+
+  static void forwardMessageByStep(Message message) async{
+    Map msgMap = MessageFactory.instance.message2Map(message);
+    Map map = {"message": msgMap};
+    await _channel.invokeMethod(RCMethodKey.ForwardMessageByStep, map);
+  }
 }
