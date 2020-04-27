@@ -1,18 +1,14 @@
 package io.rong.flutter.imlib;
 
 
-import android.text.TextUtils;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.rong.common.RLog;
 import io.rong.imlib.model.ChatRoomInfo;
 import io.rong.imlib.model.ChatRoomMemberInfo;
 import io.rong.imlib.model.Conversation;
@@ -87,7 +83,7 @@ public class MessageFactory {
 
         byte[] data = null;
         if (content instanceof ImageMessage) {
-            // 处理 thumeUri 丢失的问题
+            // 处理 thumbUri 丢失的问题
             data = RCMessageHandler.encodeImageContent((ImageMessage) content);
         } else if (content instanceof SightMessage) {
             data = RCMessageHandler.encodeSightContent((SightMessage) content);

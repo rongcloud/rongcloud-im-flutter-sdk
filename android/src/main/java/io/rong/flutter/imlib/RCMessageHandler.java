@@ -47,7 +47,7 @@ public class RCMessageHandler {
     private final static String VIDEO_THUMBNAIL_PATH = "/video/thumbnail/";
 
     //ImageMessageHandler encodeMessage 方法的副本
-    static public void encodeImageMessage(Message message) {
+    public static void encodeImageMessage(Message message) {
         Context context = RCIMFlutterWrapper.getInstance().getMainContext();
         File file = context.getFilesDir();
         String path = file.getAbsolutePath();
@@ -245,7 +245,7 @@ public class RCMessageHandler {
             }
         }
         try {
-            if (model.getLocalPath() == null){
+            if (model.getLocalPath() == null) {
                 return;
             }
             String videoPath = model.getLocalPath().toString().substring(5);
@@ -312,7 +312,7 @@ public class RCMessageHandler {
         }
     }
 
-    // 转发消息的时候需要携带 thumUri 要不无法生成缩略图
+    // 转发消息的时候需要携带 thumbUri 要不无法生成缩略图
     public static byte[] encodeImageContent(ImageMessage imageMessage) {
         JSONObject jsonObj = new JSONObject();
 
@@ -328,7 +328,7 @@ public class RCMessageHandler {
             }
 
             if (imageMessage.getThumUri() != null) {
-                jsonObj.put("thumUri", imageMessage.getThumUri().toString());
+                jsonObj.put("thumbUri", imageMessage.getThumUri().toString());
             }
 
             if (imageMessage.getLocalUri() != null) {
@@ -372,8 +372,8 @@ public class RCMessageHandler {
             if (sightMessage.getMediaUrl() != null) {
                 jsonObj.put("sightUrl", sightMessage.getMediaUrl().toString());
             }
-            if (sightMessage.getThumbUri()!=null){
-                jsonObj.put("thumUri", sightMessage.getThumbUri().toString());
+            if (sightMessage.getThumbUri() != null) {
+                jsonObj.put("thumbUri", sightMessage.getThumbUri().toString());
             }
             jsonObj.put("duration", sightMessage.getDuration());
             if (!TextUtils.isEmpty(sightMessage.getExtra()))

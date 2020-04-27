@@ -8,7 +8,7 @@ class ImageMessage extends MessageContent {
   String extra;
   String content;
   String imageUri;
-  String mThumUri;
+  String mThumbUri;//缩略图地址
 
 
   /// [localPath] 本地路径，Android 必须以 file:// 开头
@@ -24,7 +24,7 @@ class ImageMessage extends MessageContent {
     this.localPath = map["localPath"];
     this.content = map["content"];
     this.imageUri = map["imageUri"];
-    this.mThumUri = map["thumUri"];
+    this.mThumbUri = map["thumbUri"];
     this.extra = map["extra"];
     Map userMap = map["user"];
     super.decodeUserInfo(userMap);
@@ -46,8 +46,8 @@ class ImageMessage extends MessageContent {
     if (this.imageUri != null) {
       map["imageUri"] = this.imageUri;
     }
-    if (this.mThumUri != null) {
-      map["thumUri"] = this.mThumUri;
+    if (this.mThumbUri != null) {
+      map["thumbUri"] = this.mThumbUri;
     }
     if (this.sendUserInfo != null) {
       Map userMap = super.encodeUserInfo(this.sendUserInfo);

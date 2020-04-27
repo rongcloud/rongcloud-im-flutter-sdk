@@ -12,7 +12,7 @@ class SightMessage extends MessageContent {
   int duration;//时长
   String extra;//额外数据
   int size = 0;
-  String mThumbUri;
+  String mThumbUri;//缩略图地址
 
   /// [localPath] 本地路径，Android 必须以 file:// 开头
   ///
@@ -34,7 +34,7 @@ class SightMessage extends MessageContent {
     this.localPath = map["localPath"];
     this.remoteUrl = map["sightUrl"];
     this.content = map["content"];
-    this.mThumbUri = map["thumUri"];
+    this.mThumbUri = map["thumbUri"];
     var d = map["duration"];
     if(d is String) {
       this.duration = int.parse(d);
@@ -66,7 +66,7 @@ class SightMessage extends MessageContent {
       map["sightUrl"] = this.remoteUrl;
     }
     if (this.mThumbUri != null) {
-      map["thumUri"] = this.mThumbUri;
+      map["thumbUri"] = this.mThumbUri;
     }
     if (this.sendUserInfo != null) {
       Map userMap = super.encodeUserInfo(this.sendUserInfo);
