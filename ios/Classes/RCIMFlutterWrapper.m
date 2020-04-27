@@ -18,7 +18,44 @@
 - (RCMessageContent *)messageContentWithClass:(Class)messageClass fromData:(NSData *)jsonData;
 @end
 
-@interface RCIMFlutterWrapper ()<RCIMClientReceiveMessageDelegate,RCConnectionStatusChangeDelegate,RCTypingStatusDelegate>
+@interface RCCombineMessage : RCMediaMessageContent
+/*!
+ 转发的消息展示的缩略内容列表 (格式是发送者 ：缩略内容)
+ */
+@property (nonatomic, strong) NSArray *summaryList;
+
+/*!
+ 转发的全部消息的发送者名称列表 （单聊是经过排重的，群聊是群组名称）
+ */
+@property (nonatomic, strong) NSArray *nameList;
+
+/*!
+ 转发的消息会话类型 （目前仅支持单聊和群聊）
+ */
+@property (nonatomic, assign) RCConversationType conversationType;
+
+/*!
+ 转发的消息 消息的附加信息
+ */
+@property (nonatomic, copy) NSString *extra;
+
+/*!
+ 初始化 RCCombineMessage 消息
+
+ @param summaryList         转发的消息展示的缩略内容列表
+ @param nameList            转发的全部消息的发送者名称列表 （单聊是经过排重的，群聊是群组名称）
+ @param conversationType    转发的消息会话类型
+ @param content             转发的内容
+
+ @return                    消息对象
+ */
++ (instancetype)messageWithSummaryList:(NSArray *)summaryList
+                              nameList:(NSArray *)nameList
+                      conversationType:(RCConversationType)conversationType
+                               content:(NSString *)content;
+@end
+
+@interface RCIMFlutterWrapper ()<RCIMClientReceiveMessageDelegate,RCConnectionStatusChangeDelegate,RCTypingStatusDelegate, RCMessageDestructDelegate>
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 @property (nonatomic, strong) RCFlutterConfig *config;
 @end
@@ -162,7 +199,10 @@
         [self getUnreadMentionedMessages:call.arguments result:result];
     }else if([RCMethodKeySendDirectionalMessage isEqualToString:call.method]) {
         [self sendDirectionalMessage:call.arguments result:result];
-    }
+    }else if([RCMethodKeyMessageBeginDestruct isEqualToString:call.method]) {
+        [self messageBeginDestruct:call.arguments result:result];
+    }else if([RCMethodKeyMessageStopDestruct isEqualToString:call.method]) {
+        [self messageStopDestruct:call.arguments result:result];}
     else {
         result(FlutterMethodNotImplemented);
     }
@@ -186,6 +226,7 @@
         [[RCIMClient sharedRCIMClient] setReceiveMessageDelegate:self object:nil];
         [[RCIMClient sharedRCIMClient] setRCConnectionStatusChangeDelegate:self];
         [[RCIMClient sharedRCIMClient] setRCTypingStatusDelegate:self];
+        [[RCIMClient sharedRCIMClient] setRCMessageDestructDelegate:self];
     }else {
         NSLog(@"init 非法参数类型");
     }
@@ -382,6 +423,7 @@
     }
     localPath = [self getCorrectLocalPath:localPath];
     
+    NSInteger burnDuration = [[msgDic valueForKey:@"burnDuration"] integerValue];
     if([objName isEqualToString:@"RC:ImgMsg"]) {
         NSString *extra = [msgDic valueForKey:@"extra"];
         content = [RCImageMessage messageWithImageURI:localPath];
@@ -423,12 +465,18 @@
         content = [RCGIFMessage messageWithGIFURI:localPath width:width height:height];
         RCGIFMessage *gifMsg = (RCGIFMessage *)content;
         gifMsg.extra = extra;
-        if (sendUserInfo) {
-            gifMsg.senderUserInfo = sendUserInfo;
-        }
-        if (mentionedInfo) {
-            gifMsg.mentionedInfo = mentionedInfo;
-        }
+    } else if ([objName isEqualToString:@"RC:CombineMsg"]) {
+        NSString *localPath = [msgDic valueForKey:@"localPath"];
+        localPath = [self getCorrectLocalPath:localPath];
+        NSString *extra = [msgDic valueForKey:@"extra"];
+        NSArray * nameList = [msgDic valueForKey:@"nameList"] ?: @[];
+        NSArray * summaryList = [msgDic valueForKey:@"summaryList"] ?: @[];
+        RCConversationType type = [param[@"conversationType"] integerValue];
+        
+        content = [RCCombineMessage messageWithSummaryList:summaryList nameList:nameList conversationType:type content:@""];
+        RCCombineMessage *combineMsg = (RCCombineMessage *)content;
+        combineMsg.localPath = localPath;
+        combineMsg.extra = extra;
     } else {
         NSLog(@"%s 非法的媒体消息类型",__func__);
         return;
@@ -439,6 +487,12 @@
     }
     if (mentionedInfo) {
         content.mentionedInfo = mentionedInfo;
+    }
+    
+    if (burnDuration > 0) {
+        content.destructDuration = burnDuration;
+    } else {
+        content.destructDuration = 0;
     }
     
     if([content isKindOfClass:[RCSightMessage class]]) {
@@ -1160,6 +1214,33 @@
     }
 }
 
+#pragma mark - 阅后即焚
+- (void)messageBeginDestruct:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"messageBeginDestruct";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        
+        NSDictionary *messageDic = param[@"message"];
+        RCMessage *message = [RCFlutterMessageFactory dic2Message:messageDic];
+        
+        [[RCIMClient sharedRCIMClient] messageBeginDestruct:message];
+    }
+}
+
+- (void)messageStopDestruct:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"downloadMediaMessage";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        
+        NSDictionary *messageDic = param[@"message"];
+        RCMessage *message = [RCFlutterMessageFactory dic2Message:messageDic];
+        
+        [[RCIMClient sharedRCIMClient] messageStopDestruct:message];;
+    }
+}
+
 #pragma mark - 聊天室状态存储 (使用前必须先联系商务开通)
 - (void)setChatRoomEntry:(id)arg result:(FlutterResult)result {
     NSString *LOG_TAG = @"setChatRoomEntry";
@@ -1580,6 +1661,15 @@
     [self.channel invokeMethod:RCMethodCallBackKeyTypingStatusChangedCallBack arguments:statusDic];
 }
 
+#pragma mark - RCMessageDestructDelegate
+- (void)onMessageDestructing:(RCMessage *)message remainDuration:(long long)remainDuration {
+    NSString *LOG_TAG = @"onMessageDestructing";
+    [RCLog i:[NSString stringWithFormat:@"%@",LOG_TAG]];
+    NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+    NSDictionary *dic = @{@"message": jsonString, @"remainDuration": @(remainDuration)};
+    [self.channel invokeMethod:RCMethodCallBackKeyDestructMessageCallBack arguments:dic];
+}
+
 #pragma mark - util
 - (void)updateIMConfig {
     //    [RCIM sharedRCIM].enablePersistentUserInfoCache = self.config.enablePersistentUserInfoCache;
@@ -1601,7 +1691,7 @@
 #pragma mark - private method
 
 - (BOOL)isMediaMessage:(NSString *)objName {
-    if([objName isEqualToString:@"RC:ImgMsg"] || [objName isEqualToString:@"RC:HQVCMsg"] || [objName isEqualToString:@"RC:SightMsg"] || [objName isEqualToString:@"RC:FileMsg"] || [objName isEqualToString:@"RC:GIFMsg"]) {
+    if([objName isEqualToString:@"RC:ImgMsg"] || [objName isEqualToString:@"RC:HQVCMsg"] || [objName isEqualToString:@"RC:SightMsg"] || [objName isEqualToString:@"RC:FileMsg"] || [objName isEqualToString:@"RC:GIFMsg"] || [objName isEqualToString:@"RC:CombineMsg"]) {
         return YES;
     }
     return NO;

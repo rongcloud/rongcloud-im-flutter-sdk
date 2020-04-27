@@ -10,15 +10,24 @@ import 'router.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
+  
   @override
   _MyAppState createState() => _MyAppState();
+
+  static BuildContext getContext(){
+    return _MyAppState.getContext();
+  }
 }
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   AppLifecycleState currentState = AppLifecycleState.resumed;
   DateTime notificationQuietEndTime;
   DateTime notificationQuietStartTime;
+  static BuildContext appContext;
 
+  static BuildContext getContext(){
+    return appContext;
+  }
   @override
   void initState() {
     super.initState();
@@ -159,6 +168,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    appContext = context;
     return MaterialApp(
       onGenerateRoute: onGenerateRoute,
       theme: ThemeData(primaryColor: Colors.blue),

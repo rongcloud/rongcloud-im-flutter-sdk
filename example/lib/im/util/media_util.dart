@@ -29,13 +29,14 @@ class MediaUtil {
   }
 
   //请求权限：相册，相机，麦克风
-  void requestPermissions() {
-    PermissionHandler().requestPermissions([
-      PermissionGroup.photos,
-      PermissionGroup.camera,
-      PermissionGroup.microphone,
-      PermissionGroup.storage
-    ]);
+  void requestPermissions() async {
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.photos,
+      Permission.camera,
+      Permission.microphone,
+      Permission.storage
+    ].request();
+    print(statuses[Permission.location]);
   }
 
   //拍照，成功则返回照片的本地路径，注：Android 必须要加 file:// 头

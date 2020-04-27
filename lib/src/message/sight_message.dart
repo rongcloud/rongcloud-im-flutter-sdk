@@ -13,6 +13,8 @@ class SightMessage extends MessageContent {
   String extra;//额外数据
   int size = 0;
   String mThumbUri;//缩略图地址
+  String mName = "";
+  int mSize;
 
   /// [localPath] 本地路径，Android 必须以 file:// 开头
   ///
@@ -31,6 +33,13 @@ class SightMessage extends MessageContent {
       return;
     }
     Map map = json.decode(jsonStr.toString());
+    this.mName = map["name"];
+    var size = map["size"] != null ? map["size"] : 0;
+    if(size is String) {
+      this.mSize = int.parse(size);
+    } else {
+      this.mSize = size;
+    }
     this.localPath = map["localPath"];
     this.remoteUrl = map["sightUrl"];
     this.content = map["content"];
@@ -46,6 +55,7 @@ class SightMessage extends MessageContent {
     super.decodeUserInfo(userMap);
     Map menthionedMap = map["mentionedInfo"];
     super.decodeMentionedInfo(menthionedMap);
+    this.destructDuration = map["burnDuration"];
   }
 
   @override
@@ -75,6 +85,9 @@ class SightMessage extends MessageContent {
     if (this.mentionedInfo != null) {
       Map mentionedMap = super.encodeMentionedInfo(this.mentionedInfo);
       map["mentionedInfo"] = mentionedMap;
+    }
+    if (this.destructDuration != null && this.destructDuration > 0) {
+      map["burnDuration"] = this.destructDuration; 
     }
     return json.encode(map);
   }

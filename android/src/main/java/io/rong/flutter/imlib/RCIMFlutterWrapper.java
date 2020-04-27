@@ -8,9 +8,6 @@ import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 
-
-import com.google.gson.JsonObject;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,6 +30,7 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.rong.common.RLog;
 import io.rong.common.fwlog.FwLog;
+import io.rong.flutter.imlib.forward.CombineMessage;
 import io.rong.imlib.AnnotationNotFoundException;
 import io.rong.imlib.IRongCallback;
 import io.rong.imlib.ISendMediaMessageCallback;
@@ -47,6 +45,7 @@ import io.rong.imlib.model.SearchConversationResult;
 import io.rong.imlib.model.UnknownMessage;
 import io.rong.imlib.model.UserInfo;
 import io.rong.imlib.typingmessage.TypingStatus;
+import io.rong.message.CommandMessage;
 import io.rong.message.FileMessage;
 import io.rong.message.GIFMessage;
 import io.rong.message.HQVoiceMessage;
@@ -58,7 +57,6 @@ import io.rong.message.ReadReceiptMessage;
 import io.rong.message.RecallNotificationMessage;
 import io.rong.message.SightMessage;
 import io.rong.message.VoiceMessage;
-
 
 public class RCIMFlutterWrapper {
 
@@ -90,7 +88,8 @@ public class RCIMFlutterWrapper {
             }
 
             @Override
-            public void onMessageReceiptRequest(final Conversation.ConversationType conversationType, final String targetId, final String messageUId) {
+            public void onMessageReceiptRequest(final Conversation.ConversationType conversationType,
+                    final String targetId, final String messageUId) {
                 mMainHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -107,7 +106,8 @@ public class RCIMFlutterWrapper {
             }
 
             @Override
-            public void onMessageReceiptResponse(final Conversation.ConversationType conversationType, final String targetId, final String messageUId, final HashMap<String, Long> readerList) {
+            public void onMessageReceiptResponse(final Conversation.ConversationType conversationType,
+                    final String targetId, final String messageUId, final HashMap<String, Long> readerList) {
                 mMainHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -200,7 +200,7 @@ public class RCIMFlutterWrapper {
         } else if (RCMethodList.MethodKeySetConversationToTop.equalsIgnoreCase(call.method)) {
             setConversationToTop(call.arguments, result);
         } else if (RCMethodList.MethodKeyGetTopConversationList.equalsIgnoreCase(call.method)) {
-//            getTopConversationList(call.arguments,result);
+            // getTopConversationList(call.arguments,result);
         } else if (RCMethodList.MethodKeyDeleteMessages.equalsIgnoreCase(call.method)) {
             deleteMessages(call.arguments, result);
         } else if (RCMethodList.MethodKeyDeleteMessageByIds.equalsIgnoreCase(call.method)) {
@@ -263,6 +263,10 @@ public class RCIMFlutterWrapper {
             saveMediaToPublicDir(call.arguments);
         } else if (RCMethodList.MethodKeyForwardMessageByStep.equalsIgnoreCase(call.method)) {
             forwardMessageByStep(call.arguments);
+        } else if (RCMethodList.MethodKeyMessageBeginDestruct.equalsIgnoreCase(call.method)) {
+            messageBeginDestruct(call.arguments);
+        } else if (RCMethodList.MethodKeyMessageStopDestruct.equalsIgnoreCase(call.method)) {
+            messageStopDestruct(call.arguments);
         } else {
             result.notImplemented();
         }
@@ -277,7 +281,7 @@ public class RCIMFlutterWrapper {
         return appkey;
     }
 
-    //可通过该接口向Flutter传递数据
+    // 可通过该接口向Flutter传递数据
     public void sendDataToFlutter(final Map map) {
         String LOG_TAG = "sendDataToFlutter";
         RCLog.i(LOG_TAG + " start param:" + map.toString());
@@ -298,42 +302,43 @@ public class RCIMFlutterWrapper {
             Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
             String targetId = (String) map.get("targetId");
             Number timestamp = (Number) map.get("timestamp");
-            RongIMClient.getInstance().sendReadReceiptMessage(type, targetId, timestamp.longValue(), new IRongCallback.ISendMediaMessageCallback() {
-                @Override
-                public void onProgress(Message message, int i) {
+            RongIMClient.getInstance().sendReadReceiptMessage(type, targetId, timestamp.longValue(),
+                    new IRongCallback.ISendMediaMessageCallback() {
+                        @Override
+                        public void onProgress(Message message, int i) {
 
-                }
+                        }
 
-                @Override
-                public void onCanceled(Message message) {
+                        @Override
+                        public void onCanceled(Message message) {
 
-                }
+                        }
 
-                @Override
-                public void onAttached(Message message) {
+                        @Override
+                        public void onAttached(Message message) {
 
-                }
+                        }
 
-                @Override
-                public void onSuccess(Message message) {
-                    Map msgMap = new HashMap();
-                    msgMap.put("code", 0);
-                    result.success(msgMap);
-                }
+                        @Override
+                        public void onSuccess(Message message) {
+                            Map msgMap = new HashMap();
+                            msgMap.put("code", 0);
+                            result.success(msgMap);
+                        }
 
-                @Override
-                public void onError(Message message, RongIMClient.ErrorCode errorCode) {
-                    Map msgMap = new HashMap();
-                    msgMap.put("code", errorCode.getValue());
-                    result.success(msgMap);
-                }
-            });
+                        @Override
+                        public void onError(Message message, RongIMClient.ErrorCode errorCode) {
+                            Map msgMap = new HashMap();
+                            msgMap.put("code", errorCode.getValue());
+                            result.success(msgMap);
+                        }
+                    });
         } else {
 
         }
     }
 
-    //发起群组消息回执请求
+    // 发起群组消息回执请求
     private void sendReadReceiptRequest(Object arg, final Result result) {
         if (arg instanceof Map) {
             Map map = (Map) arg;
@@ -376,25 +381,26 @@ public class RCIMFlutterWrapper {
                     }
                 }
             }
-            RongIMClient.getInstance().sendReadReceiptResponse(Conversation.ConversationType.setValue(conversationType), targetId, messageList, new RongIMClient.OperationCallback() {
-                @Override
-                public void onSuccess() {
-                    Map resultMap = new HashMap();
-                    resultMap.put("code", 0);
-                    result.success(resultMap);
-                }
+            RongIMClient.getInstance().sendReadReceiptResponse(Conversation.ConversationType.setValue(conversationType),
+                    targetId, messageList, new RongIMClient.OperationCallback() {
+                        @Override
+                        public void onSuccess() {
+                            Map resultMap = new HashMap();
+                            resultMap.put("code", 0);
+                            result.success(resultMap);
+                        }
 
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    Map resultMap = new HashMap();
-                    resultMap.put("code", errorCode.getValue());
-                    result.success(resultMap);
-                }
-            });
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            Map resultMap = new HashMap();
+                            resultMap.put("code", errorCode.getValue());
+                            result.success(resultMap);
+                        }
+                    });
         }
     }
 
-    //private method
+    // private method
     private void initRCIM(Object arg) {
         String LOG_TAG = "init";
         RCLog.i(LOG_TAG + " start param:" + arg.toString());
@@ -406,6 +412,8 @@ public class RCIMFlutterWrapper {
             try {
                 // IMLib 默认检测到小视频 SDK 才会注册小视频消息，所以此处需要手动注册
                 RongIMClient.registerMessageType(SightMessage.class);
+                // 因为合并消息 定义和注册都写在 kit 里面
+                RongIMClient.registerMessageType(CombineMessage.class);
             } catch (AnnotationNotFoundException e) {
                 e.printStackTrace();
             }
@@ -513,16 +521,16 @@ public class RCIMFlutterWrapper {
     }
 
     private void refreshUserInfo(Object arg) {
-//        if(arg instanceof Map) {
-//            Map map = (Map)arg;
-//            String userId = (String) map.get("userId");
-//            String name = (String)map.get("name");
-//            String portraitUri = (String) map.get("portraitUrl");
-//            UserInfo userInfo = new UserInfo(userId,name, Uri.parse(portraitUri));
-//            RongIMClient.getInstance().refreshUserInfoCache(userInfo);
-//        }else {
-//
-//        }
+        // if(arg instanceof Map) {
+        // Map map = (Map)arg;
+        // String userId = (String) map.get("userId");
+        // String name = (String)map.get("name");
+        // String portraitUri = (String) map.get("portraitUrl");
+        // UserInfo userInfo = new UserInfo(userId,name, Uri.parse(portraitUri));
+        // RongIMClient.getInstance().refreshUserInfoCache(userInfo);
+        // }else {
+        //
+        // }
     }
 
     /// 未实现此方法 imlib 层没有此方法
@@ -570,7 +578,7 @@ public class RCIMFlutterWrapper {
                     Uri uri = Uri.parse(localPath);
                     content = VoiceMessage.obtain(uri, duration);
                 } catch (JSONException e) {
-                    //do nothing
+                    // do nothing
                 }
             } else {
                 content = newMessageContent(objectName, bytes);
@@ -581,27 +589,28 @@ public class RCIMFlutterWrapper {
                 result.success(null);
                 return;
             }
-            Message message = RongIMClient.getInstance().sendMessage(type, targetId, content, pushContent, pushData, new RongIMClient.SendMessageCallback() {
-                @Override
-                public void onError(Integer messageId, RongIMClient.ErrorCode errorCode) {
-                    RCLog.e(LOG_TAG + " content is nil");
-                    Map resultMap = new HashMap();
-                    resultMap.put("messageId", messageId);
-                    resultMap.put("status", 20);
-                    resultMap.put("code", errorCode.getValue());
-                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
-                }
+            Message message = RongIMClient.getInstance().sendMessage(type, targetId, content, pushContent, pushData,
+                    new RongIMClient.SendMessageCallback() {
+                        @Override
+                        public void onError(Integer messageId, RongIMClient.ErrorCode errorCode) {
+                            RCLog.e(LOG_TAG + " content is nil");
+                            Map resultMap = new HashMap();
+                            resultMap.put("messageId", messageId);
+                            resultMap.put("status", 20);
+                            resultMap.put("code", errorCode.getValue());
+                            mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
+                        }
 
-                @Override
-                public void onSuccess(Integer messageId) {
-                    RCLog.i(LOG_TAG + " success");
-                    Map resultMap = new HashMap();
-                    resultMap.put("messageId", messageId);
-                    resultMap.put("status", 30);
-                    resultMap.put("code", 0);
-                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
-                }
-            });
+                        @Override
+                        public void onSuccess(Integer messageId) {
+                            RCLog.i(LOG_TAG + " success");
+                            Map resultMap = new HashMap();
+                            resultMap.put("messageId", messageId);
+                            resultMap.put("status", 30);
+                            resultMap.put("code", 0);
+                            mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
+                        }
+                    });
             String messageS = MessageFactory.getInstance().message2String(message);
             Map msgMap = new HashMap();
             msgMap.put("message", messageS);
@@ -638,7 +647,7 @@ public class RCIMFlutterWrapper {
                     Uri uri = Uri.parse(localPath);
                     content = ImageMessage.obtain(uri, uri, true);
 
-                    Object o = jsonObject.get("extra");//设置 extra
+                    Object o = jsonObject.get("extra");// 设置 extra
                     if (o instanceof String) {
                         String extra = (String) o;
                         ((ImageMessage) content).setExtra(extra);
@@ -654,7 +663,7 @@ public class RCIMFlutterWrapper {
                     Uri uri = Uri.parse(localPath);
                     content = GIFMessage.obtain(uri);
 
-                    Object o = jsonObject.get("extra");//设置 extra
+                    Object o = jsonObject.get("extra");// 设置 extra
                     if (o instanceof String) {
                         String extra = (String) o;
                         ((GIFMessage) content).setExtra(extra);
@@ -672,7 +681,7 @@ public class RCIMFlutterWrapper {
                     int duration = (Integer) jsonObject.get("duration");
                     content = HQVoiceMessage.obtain(uri, duration);
 
-                    Object o = jsonObject.get("extra");//设置 extra
+                    Object o = jsonObject.get("extra");// 设置 extra
                     if (o instanceof String) {
                         String extra = (String) o;
                         ((HQVoiceMessage) content).setExtra(extra);
@@ -688,7 +697,7 @@ public class RCIMFlutterWrapper {
                     Uri uri = Uri.parse(localPath);
                     int duration = (Integer) jsonObject.get("duration");
                     content = SightMessage.obtain(uri, duration);
-                    Object o = jsonObject.get("extra");//设置 extra
+                    Object o = jsonObject.get("extra");// 设置 extra
                     if (o instanceof String) {
                         String extra = (String) o;
                         ((SightMessage) content).setExtra(extra);
@@ -707,10 +716,27 @@ public class RCIMFlutterWrapper {
                     Uri uri = Uri.parse(localPath);
                     content = FileMessage.obtain(uri);
                     ((FileMessage) content).setType(mType);
-                    Object o = jsonObject.get("extra");//设置 extra
+                    Object o = jsonObject.get("extra");// 设置 extra
                     if (o instanceof String) {
                         String extra = (String) o;
                         ((FileMessage) content).setExtra(extra);
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else if (objectName.equalsIgnoreCase("RC:CombineMsg")) {
+                try {
+                    JSONObject jsonObject = new JSONObject(contentStr);
+                    String localPath = (String) jsonObject.get("localPath");
+                    localPath = getCorrectLocalPath(localPath);
+                    Uri uri = Uri.parse(localPath);
+                    content = CombineMessage.obtain(uri);
+                    setInfoToCombineMessage(contentStr, content);
+                    Object o = jsonObject.get("extra");// 设置 extra
+                    if (o instanceof String) {
+                        String extra = (String) o;
+                        ((CombineMessage) content).setExtra(extra);
                     }
 
                 } catch (JSONException e) {
@@ -740,54 +766,100 @@ public class RCIMFlutterWrapper {
             }
 
             Message message = Message.obtain(targetId, type, content);
-            RongIMClient.getInstance().sendMediaMessage(message, pushContent, pushData, new IRongCallback.ISendMediaMessageCallback() {
-                @Override
-                public void onProgress(Message message, int i) {
-                    Map map = new HashMap();
-                    map.put("messageId", message.getMessageId());
-                    map.put("progress", i);
-                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeyUploadMediaProgress, map);
-                }
+            RongIMClient.getInstance().sendMediaMessage(message, pushContent, pushData,
+                    new IRongCallback.ISendMediaMessageCallback() {
+                        @Override
+                        public void onProgress(Message message, int i) {
+                            Map map = new HashMap();
+                            map.put("messageId", message.getMessageId());
+                            map.put("progress", i);
+                            mChannel.invokeMethod(RCMethodList.MethodCallBackKeyUploadMediaProgress, map);
+                        }
 
-                @Override
-                public void onCanceled(Message message) {
+                        @Override
+                        public void onCanceled(Message message) {
 
-                }
+                        }
 
-                @Override
-                public void onAttached(Message message) {
-                    String messageS = MessageFactory.getInstance().message2String(message);
-                    Map msgMap = new HashMap();
-                    msgMap.put("message", messageS);
-                    msgMap.put("status", 10);
-                    result.success(msgMap);
-                }
+                        @Override
+                        public void onAttached(Message message) {
+                            String messageS = MessageFactory.getInstance().message2String(message);
+                            Map msgMap = new HashMap();
+                            msgMap.put("message", messageS);
+                            msgMap.put("status", 10);
+                            result.success(msgMap);
+                        }
 
-                @Override
-                public void onSuccess(Message message) {
-                    if (message == null) {
-                        RCLog.e(LOG_TAG + " message is nil");
-                        result.success(null);
-                        return;
+                        @Override
+                        public void onSuccess(Message message) {
+                            if (message == null) {
+                                RCLog.e(LOG_TAG + " message is nil");
+                                result.success(null);
+                                return;
+                            }
+                            RCLog.i(LOG_TAG + " success");
+                            Map resultMap = new HashMap();
+                            resultMap.put("messageId", message.getMessageId());
+                            resultMap.put("status", 30);
+                            resultMap.put("code", 0);
+                            mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
+                        }
+
+                        @Override
+                        public void onError(Message message, RongIMClient.ErrorCode errorCode) {
+                            RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
+                            Map resultMap = new HashMap();
+                            resultMap.put("messageId", message.getMessageId());
+                            resultMap.put("status", 20);
+                            resultMap.put("code", errorCode.getValue());
+                            mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
+                        }
+                    });
+        }
+    }
+
+    private void setInfoToCombineMessage(String contentStr, MessageContent content) {
+        try {
+            JSONObject contentObject = new JSONObject(contentStr);
+            if (contentObject.has("conversationType")) {
+                int conversationType = (int) contentObject.get("conversationType");
+                ((CombineMessage) content)
+                        .setConversationType(Conversation.ConversationType.setValue(conversationType));
+            }
+            if (contentObject.has("nameList")) {
+                Object nameListObj = contentObject.get("nameList");
+                List<String> nameList = new ArrayList<>();
+                if (nameListObj instanceof JSONArray) {
+                    JSONArray nameArray = (JSONArray) nameListObj;
+                    for (int i = 0; i < nameArray.length(); i++) {
+                        String idStr = (String) nameArray.get(i);
+                        nameList.add(idStr);
                     }
-                    RCLog.i(LOG_TAG + " success");
-                    Map resultMap = new HashMap();
-                    resultMap.put("messageId", message.getMessageId());
-                    resultMap.put("status", 30);
-                    resultMap.put("code", 0);
-                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
                 }
-
-                @Override
-                public void onError(Message message, RongIMClient.ErrorCode errorCode) {
-                    RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
-                    Map resultMap = new HashMap();
-                    resultMap.put("messageId", message.getMessageId());
-                    resultMap.put("status", 20);
-                    resultMap.put("code", errorCode.getValue());
-                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
+                ((CombineMessage) content).setNameList(nameList);
+            }
+            if (contentObject.has("title")) {
+                Object titleObj = contentObject.get("title");
+                String title = "";
+                if (titleObj instanceof String) {
+                    title = (String) titleObj;
                 }
-            });
+                ((CombineMessage) content).setTitle(title);
+            }
+            if (contentObject.has("summaryList")) {
+                Object summaryListObj = contentObject.get("summaryList");
+                List<String> summaryList = new ArrayList<>();
+                if (summaryListObj instanceof JSONArray) {
+                    JSONArray summaryArray = (JSONArray) summaryListObj;
+                    for (int i = 0; i < summaryArray.length(); i++) {
+                        String summary = (String) summaryArray.get(i);
+                        summaryList.add(summary);
+                    }
+                }
+                ((CombineMessage) content).setSummaryList(summaryList);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
@@ -810,8 +882,7 @@ public class RCIMFlutterWrapper {
                     if (userJObject.has("portrait")) {
                         portrait = (String) userJObject.get("portrait");
                     }
-                    UserInfo info = new UserInfo(id, name,
-                            Uri.parse(portrait));
+                    UserInfo info = new UserInfo(id, name, Uri.parse(portrait));
                     if (userJObject.has("extra")) {
                         info.setExtra((String) userJObject.get("extra"));
                     }
@@ -913,29 +984,30 @@ public class RCIMFlutterWrapper {
             String targetId = (String) map.get("targetId");
             final Integer messageId = (Integer) map.get("messageId");
             Integer count = (Integer) map.get("count");
-            RongIMClient.getInstance().getHistoryMessages(type, targetId, messageId, count, new RongIMClient.ResultCallback<List<Message>>() {
-                @Override
-                public void onSuccess(List<Message> messages) {
-                    RCLog.i(LOG_TAG + " success ");
-                    if (messages == null) {
-                        result.success(null);
-                        return;
-                    }
-                    List list = new ArrayList();
-                    for (Message msg : messages) {
-                        String messageS = MessageFactory.getInstance().message2String(msg);
-                        list.add(messageS);
-                    }
-                    result.success(list);
+            RongIMClient.getInstance().getHistoryMessages(type, targetId, messageId, count,
+                    new RongIMClient.ResultCallback<List<Message>>() {
+                        @Override
+                        public void onSuccess(List<Message> messages) {
+                            RCLog.i(LOG_TAG + " success ");
+                            if (messages == null) {
+                                result.success(null);
+                                return;
+                            }
+                            List list = new ArrayList();
+                            for (Message msg : messages) {
+                                String messageS = MessageFactory.getInstance().message2String(msg);
+                                list.add(messageS);
+                            }
+                            result.success(list);
 
-                }
+                        }
 
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
-                    result.success(null);
-                }
-            });
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
+                            result.success(null);
+                        }
+                    });
         }
     }
 
@@ -950,28 +1022,29 @@ public class RCIMFlutterWrapper {
             Number sendTime = (Number) map.get("sentTime");
             Integer beforeCount = (Integer) map.get("beforeCount");
             Integer afterCount = (Integer) map.get("afterCount");
-            RongIMClient.getInstance().getHistoryMessages(type, targetId, sendTime.longValue(), beforeCount.intValue(), afterCount.intValue(), new RongIMClient.ResultCallback<List<Message>>() {
-                @Override
-                public void onSuccess(List<Message> messages) {
-                    RCLog.i(LOG_TAG + " success ");
-                    if (messages == null) {
-                        result.success(null);
-                        return;
-                    }
-                    List list = new ArrayList();
-                    for (Message msg : messages) {
-                        String messageS = MessageFactory.getInstance().message2String(msg);
-                        list.add(messageS);
-                    }
-                    result.success(list);
-                }
+            RongIMClient.getInstance().getHistoryMessages(type, targetId, sendTime.longValue(), beforeCount.intValue(),
+                    afterCount.intValue(), new RongIMClient.ResultCallback<List<Message>>() {
+                        @Override
+                        public void onSuccess(List<Message> messages) {
+                            RCLog.i(LOG_TAG + " success ");
+                            if (messages == null) {
+                                result.success(null);
+                                return;
+                            }
+                            List list = new ArrayList();
+                            for (Message msg : messages) {
+                                String messageS = MessageFactory.getInstance().message2String(msg);
+                                list.add(messageS);
+                            }
+                            result.success(list);
+                        }
 
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
-                    result.success(null);
-                }
-            });
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
+                            result.success(null);
+                        }
+                    });
         }
     }
 
@@ -1122,24 +1195,25 @@ public class RCIMFlutterWrapper {
             if (order.intValue() == 2) {
                 memberOrder = ChatRoomInfo.ChatRoomMemberOrder.RC_CHAT_ROOM_MEMBER_DESC;
             }
-            RongIMClient.getInstance().getChatRoomInfo(targetId, memberCount.intValue(), memberOrder, new RongIMClient.ResultCallback<ChatRoomInfo>() {
-                @Override
-                public void onSuccess(ChatRoomInfo chatRoomInfo) {
-                    RCLog.i(LOG_TAG + " success");
-                    if (chatRoomInfo == null) {
-                        result.success(null);
-                        return;
-                    }
-                    Map resultMap = MessageFactory.getInstance().chatRoom2Map(chatRoomInfo);
-                    result.success(resultMap);
-                }
+            RongIMClient.getInstance().getChatRoomInfo(targetId, memberCount.intValue(), memberOrder,
+                    new RongIMClient.ResultCallback<ChatRoomInfo>() {
+                        @Override
+                        public void onSuccess(ChatRoomInfo chatRoomInfo) {
+                            RCLog.i(LOG_TAG + " success");
+                            if (chatRoomInfo == null) {
+                                result.success(null);
+                                return;
+                            }
+                            Map resultMap = MessageFactory.getInstance().chatRoom2Map(chatRoomInfo);
+                            result.success(resultMap);
+                        }
 
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
-                    result.success(null);
-                }
-            });
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
+                            result.success(null);
+                        }
+                    });
         }
     }
 
@@ -1151,23 +1225,23 @@ public class RCIMFlutterWrapper {
             Integer t = (Integer) map.get("conversationType");
             Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
             String targetId = (String) map.get("targetId");
-            RongIMClient.getInstance().clearMessagesUnreadStatus(type, targetId, new RongIMClient.ResultCallback<Boolean>() {
-                @Override
-                public void onSuccess(Boolean aBoolean) {
-                    RCLog.i(LOG_TAG + " success");
-                    result.success(true);
-                }
+            RongIMClient.getInstance().clearMessagesUnreadStatus(type, targetId,
+                    new RongIMClient.ResultCallback<Boolean>() {
+                        @Override
+                        public void onSuccess(Boolean aBoolean) {
+                            RCLog.i(LOG_TAG + " success");
+                            result.success(true);
+                        }
 
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
-                    result.success(false);
-                }
-            });
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
+                            result.success(false);
+                        }
+                    });
 
         }
     }
-
 
     private void getUnreadCountConversationTypeList(Object arg, final Result result) {
         final String LOG_TAG = "getUnreadCountConversationTypeList";
@@ -1301,25 +1375,26 @@ public class RCIMFlutterWrapper {
                 result.success(msgMap);
                 return;
             }
-            RongIMClient.getInstance().insertOutgoingMessage(type, targetId, sendStatus, content, sendTime.longValue(), new RongIMClient.ResultCallback<Message>() {
-                @Override
-                public void onSuccess(Message message) {
-                    RCLog.i(LOG_TAG + " success");
-                    String messageS = MessageFactory.getInstance().message2String(message);
-                    Map msgMap = new HashMap();
-                    msgMap.put("message", messageS);
-                    msgMap.put("code", 0);
-                    result.success(msgMap);
-                }
+            RongIMClient.getInstance().insertOutgoingMessage(type, targetId, sendStatus, content, sendTime.longValue(),
+                    new RongIMClient.ResultCallback<Message>() {
+                        @Override
+                        public void onSuccess(Message message) {
+                            RCLog.i(LOG_TAG + " success");
+                            String messageS = MessageFactory.getInstance().message2String(message);
+                            Map msgMap = new HashMap();
+                            msgMap.put("message", messageS);
+                            msgMap.put("code", 0);
+                            result.success(msgMap);
+                        }
 
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
-                    Map msgMap = new HashMap();
-                    msgMap.put("code", errorCode.getValue());
-                    result.success(msgMap);
-                }
-            });
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
+                            Map msgMap = new HashMap();
+                            msgMap.put("code", errorCode.getValue());
+                            result.success(msgMap);
+                        }
+                    });
 
         }
     }
@@ -1365,25 +1440,26 @@ public class RCIMFlutterWrapper {
                 return;
             }
 
-            RongIMClient.getInstance().insertIncomingMessage(type, targetId, senderUserId, receivedStatus, content, sendTime.longValue(), new RongIMClient.ResultCallback<Message>() {
-                @Override
-                public void onSuccess(Message message) {
-                    RCLog.i(LOG_TAG + " success");
-                    String messageS = MessageFactory.getInstance().message2String(message);
-                    Map msgMap = new HashMap();
-                    msgMap.put("message", messageS);
-                    msgMap.put("code", 0);
-                    result.success(msgMap);
-                }
+            RongIMClient.getInstance().insertIncomingMessage(type, targetId, senderUserId, receivedStatus, content,
+                    sendTime.longValue(), new RongIMClient.ResultCallback<Message>() {
+                        @Override
+                        public void onSuccess(Message message) {
+                            RCLog.i(LOG_TAG + " success");
+                            String messageS = MessageFactory.getInstance().message2String(message);
+                            Map msgMap = new HashMap();
+                            msgMap.put("message", messageS);
+                            msgMap.put("code", 0);
+                            result.success(msgMap);
+                        }
 
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
-                    Map msgMap = new HashMap();
-                    msgMap.put("code", errorCode.getValue());
-                    result.success(msgMap);
-                }
-            });
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
+                            Map msgMap = new HashMap();
+                            msgMap.put("code", errorCode.getValue());
+                            result.success(msgMap);
+                        }
+                    });
         }
     }
 
@@ -1398,36 +1474,37 @@ public class RCIMFlutterWrapper {
             Number recordTime = (Number) map.get("recordTime");
             Integer count = (Integer) map.get("count");
 
-            RongIMClient.getInstance().getRemoteHistoryMessages(type, targetId, recordTime.longValue(), count, new RongIMClient.ResultCallback<List<Message>>() {
-                @Override
-                public void onSuccess(List<Message> messages) {
-                    RCLog.i(LOG_TAG + " success");
-                    if (messages == null) {
-                        Map callBackMap = new HashMap();
-                        callBackMap.put("code", 0);
-                        callBackMap.put("messages", new ArrayList());
-                        result.success(callBackMap);
-                        return;
-                    }
-                    List list = new ArrayList();
-                    for (Message msg : messages) {
-                        String messageS = MessageFactory.getInstance().message2String(msg);
-                        list.add(messageS);
-                    }
-                    Map callBackMap = new HashMap();
-                    callBackMap.put("code", 0);
-                    callBackMap.put("messages", list);
-                    result.success(callBackMap);
-                }
+            RongIMClient.getInstance().getRemoteHistoryMessages(type, targetId, recordTime.longValue(), count,
+                    new RongIMClient.ResultCallback<List<Message>>() {
+                        @Override
+                        public void onSuccess(List<Message> messages) {
+                            RCLog.i(LOG_TAG + " success");
+                            if (messages == null) {
+                                Map callBackMap = new HashMap();
+                                callBackMap.put("code", 0);
+                                callBackMap.put("messages", new ArrayList());
+                                result.success(callBackMap);
+                                return;
+                            }
+                            List list = new ArrayList();
+                            for (Message msg : messages) {
+                                String messageS = MessageFactory.getInstance().message2String(msg);
+                                list.add(messageS);
+                            }
+                            Map callBackMap = new HashMap();
+                            callBackMap.put("code", 0);
+                            callBackMap.put("messages", list);
+                            result.success(callBackMap);
+                        }
 
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
-                    Map callBackMap = new HashMap();
-                    callBackMap.put("code", errorCode.getValue());
-                    result.success(callBackMap);
-                }
-            });
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
+                            Map callBackMap = new HashMap();
+                            callBackMap.put("code", errorCode.getValue());
+                            result.success(callBackMap);
+                        }
+                    });
         }
     }
 
@@ -1442,26 +1519,29 @@ public class RCIMFlutterWrapper {
             boolean isBlocked = (boolean) map.get("isBlocked");
             int blockValue = isBlocked ? 0 : 1;
 
-            Conversation.ConversationNotificationStatus status = Conversation.ConversationNotificationStatus.setValue(blockValue);
+            Conversation.ConversationNotificationStatus status = Conversation.ConversationNotificationStatus
+                    .setValue(blockValue);
 
-            RongIMClient.getInstance().setConversationNotificationStatus(type, targetId, status, new RongIMClient.ResultCallback<Conversation.ConversationNotificationStatus>() {
-                @Override
-                public void onSuccess(Conversation.ConversationNotificationStatus conversationNotificationStatus) {
-                    RCLog.i(LOG_TAG + " success");
-                    Map msgMap = new HashMap();
-                    msgMap.put("status", conversationNotificationStatus.getValue());
-                    msgMap.put("code", 0);
-                    result.success(msgMap);
-                }
+            RongIMClient.getInstance().setConversationNotificationStatus(type, targetId, status,
+                    new RongIMClient.ResultCallback<Conversation.ConversationNotificationStatus>() {
+                        @Override
+                        public void onSuccess(
+                                Conversation.ConversationNotificationStatus conversationNotificationStatus) {
+                            RCLog.i(LOG_TAG + " success");
+                            Map msgMap = new HashMap();
+                            msgMap.put("status", conversationNotificationStatus.getValue());
+                            msgMap.put("code", 0);
+                            result.success(msgMap);
+                        }
 
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
-                    Map msgMap = new HashMap();
-                    msgMap.put("code", errorCode.getValue());
-                    result.success(msgMap);
-                }
-            });
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
+                            Map msgMap = new HashMap();
+                            msgMap.put("code", errorCode.getValue());
+                            result.success(msgMap);
+                        }
+                    });
         }
 
     }
@@ -1475,24 +1555,26 @@ public class RCIMFlutterWrapper {
             Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
             String targetId = (String) map.get("targetId");
 
-            RongIMClient.getInstance().getConversationNotificationStatus(type, targetId, new RongIMClient.ResultCallback<Conversation.ConversationNotificationStatus>() {
-                @Override
-                public void onSuccess(Conversation.ConversationNotificationStatus conversationNotificationStatus) {
-                    RCLog.i(LOG_TAG + " success");
-                    Map msgMap = new HashMap();
-                    msgMap.put("status", conversationNotificationStatus.getValue());
-                    msgMap.put("code", 0);
-                    result.success(msgMap);
-                }
+            RongIMClient.getInstance().getConversationNotificationStatus(type, targetId,
+                    new RongIMClient.ResultCallback<Conversation.ConversationNotificationStatus>() {
+                        @Override
+                        public void onSuccess(
+                                Conversation.ConversationNotificationStatus conversationNotificationStatus) {
+                            RCLog.i(LOG_TAG + " success");
+                            Map msgMap = new HashMap();
+                            msgMap.put("status", conversationNotificationStatus.getValue());
+                            msgMap.put("code", 0);
+                            result.success(msgMap);
+                        }
 
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
-                    Map msgMap = new HashMap();
-                    msgMap.put("code", errorCode.getValue());
-                    result.success(msgMap);
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
+                            Map msgMap = new HashMap();
+                            msgMap.put("code", errorCode.getValue());
+                            result.success(msgMap);
 
-                }
-            });
+                        }
+                    });
         }
     }
 
@@ -1510,34 +1592,35 @@ public class RCIMFlutterWrapper {
                 types[i] = type;
             }
 
-            RongIMClient.getInstance().getBlockedConversationList(new RongIMClient.ResultCallback<List<Conversation>>() {
-                @Override
-                public void onSuccess(List<Conversation> conversations) {
-                    RCLog.i(LOG_TAG + " success");
-                    if (conversations == null) {
-                        result.success(null);
-                        return;
-                    }
-                    List l = new ArrayList();
-                    for (Conversation con : conversations) {
-                        String conStr = MessageFactory.getInstance().conversation2String(con);
-                        l.add(conStr);
-                    }
+            RongIMClient.getInstance()
+                    .getBlockedConversationList(new RongIMClient.ResultCallback<List<Conversation>>() {
+                        @Override
+                        public void onSuccess(List<Conversation> conversations) {
+                            RCLog.i(LOG_TAG + " success");
+                            if (conversations == null) {
+                                result.success(null);
+                                return;
+                            }
+                            List l = new ArrayList();
+                            for (Conversation con : conversations) {
+                                String conStr = MessageFactory.getInstance().conversation2String(con);
+                                l.add(conStr);
+                            }
 
-                    Map resultMap = new HashMap();
-                    resultMap.put("conversationList", l);
-                    resultMap.put("code", 0);
-                    result.success(resultMap);
-                }
+                            Map resultMap = new HashMap();
+                            resultMap.put("conversationList", l);
+                            resultMap.put("code", 0);
+                            result.success(resultMap);
+                        }
 
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
-                    Map resultMap = new HashMap();
-                    resultMap.put("code", errorCode.getValue());
-                    result.success(resultMap);
-                }
-            });
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
+                            Map resultMap = new HashMap();
+                            resultMap.put("code", errorCode.getValue());
+                            result.success(resultMap);
+                        }
+                    });
         }
     }
 
@@ -1551,24 +1634,25 @@ public class RCIMFlutterWrapper {
             String targetId = (String) map.get("targetId");
             boolean isTop = (boolean) map.get("isTop");
 
-            RongIMClient.getInstance().setConversationToTop(type, targetId, isTop, new RongIMClient.ResultCallback<Boolean>() {
-                @Override
-                public void onSuccess(Boolean aBoolean) {
-                    RCLog.i(LOG_TAG + " success");
-                    Map msgMap = new HashMap();
-                    msgMap.put("status", aBoolean);
-                    msgMap.put("code", 0);
-                    result.success(msgMap);
-                }
+            RongIMClient.getInstance().setConversationToTop(type, targetId, isTop,
+                    new RongIMClient.ResultCallback<Boolean>() {
+                        @Override
+                        public void onSuccess(Boolean aBoolean) {
+                            RCLog.i(LOG_TAG + " success");
+                            Map msgMap = new HashMap();
+                            msgMap.put("status", aBoolean);
+                            msgMap.put("code", 0);
+                            result.success(msgMap);
+                        }
 
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
-                    Map msgMap = new HashMap();
-                    msgMap.put("code", errorCode.getValue());
-                    result.success(msgMap);
-                }
-            });
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
+                            Map msgMap = new HashMap();
+                            msgMap.put("code", errorCode.getValue());
+                            result.success(msgMap);
+                        }
+                    });
         }
     }
 
@@ -1625,47 +1709,50 @@ public class RCIMFlutterWrapper {
         }
     }
 
-//    private void getTopConversationList(Object arg, final Result result)  {
-//        if (arg instanceof Map) {
-//            Map map = (Map) arg;
-//            List conversationTypeList = (List)map.get("conversationTypeList");
-//
-//            Conversation.ConversationType[] types = new Conversation.ConversationType[conversationTypeList.size()];
-//            for (int i=0;i<conversationTypeList.size();i++) {
-//                Integer t = (Integer)conversationTypeList.get(i);
-//                Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
-//                types[i] = type;
-//            }
-//
-//            RongIMClient.getInstance().getBlockedConversationList(new RongIMClient.ResultCallback<List<Conversation>>() {
-//                @Override
-//                public void onSuccess(List<Conversation> conversations) {
-//
-//                    if(conversations == null) {
-//                        result.success(null);
-//                        return ;
-//                    }
-//                    List l = new ArrayList();
-//                    for(Conversation con : conversations) {
-//                        String conStr = MessageFactory.getInstance().conversation2String(con);
-//                        l.add(conStr);
-//                    }
-//
-//                    Map resultMap =  new HashMap();
-//                    resultMap.put("conversationList",l);
-//                    resultMap.put("code",0);
-//                    result.success(resultMap);
-//                }
-//
-//                @Override
-//                public void onError(RongIMClient.ErrorCode errorCode) {
-//                    Map resultMap =  new HashMap();
-//                    resultMap.put("code",errorCode.getValue());
-//                    result.success(resultMap);
-//                }
-//            });
-//        }
-//    }
+    // private void getTopConversationList(Object arg, final Result result) {
+    // if (arg instanceof Map) {
+    // Map map = (Map) arg;
+    // List conversationTypeList = (List)map.get("conversationTypeList");
+    //
+    // Conversation.ConversationType[] types = new
+    // Conversation.ConversationType[conversationTypeList.size()];
+    // for (int i=0;i<conversationTypeList.size();i++) {
+    // Integer t = (Integer)conversationTypeList.get(i);
+    // Conversation.ConversationType type =
+    // Conversation.ConversationType.setValue(t.intValue());
+    // types[i] = type;
+    // }
+    //
+    // RongIMClient.getInstance().getBlockedConversationList(new
+    // RongIMClient.ResultCallback<List<Conversation>>() {
+    // @Override
+    // public void onSuccess(List<Conversation> conversations) {
+    //
+    // if(conversations == null) {
+    // result.success(null);
+    // return ;
+    // }
+    // List l = new ArrayList();
+    // for(Conversation con : conversations) {
+    // String conStr = MessageFactory.getInstance().conversation2String(con);
+    // l.add(conStr);
+    // }
+    //
+    // Map resultMap = new HashMap();
+    // resultMap.put("conversationList",l);
+    // resultMap.put("code",0);
+    // result.success(resultMap);
+    // }
+    //
+    // @Override
+    // public void onError(RongIMClient.ErrorCode errorCode) {
+    // Map resultMap = new HashMap();
+    // resultMap.put("code",errorCode.getValue());
+    // result.success(resultMap);
+    // }
+    // });
+    // }
+    // }
 
     private void removeConversation(Object arg, final Result result) {
         final String LOG_TAG = "removeConversation";
@@ -1741,26 +1828,27 @@ public class RCIMFlutterWrapper {
         if (arg instanceof Map) {
             Map map = (Map) arg;
             String userId = (String) map.get("userId");
-            RongIMClient.getInstance().getBlacklistStatus(userId, new RongIMClient.ResultCallback<RongIMClient.BlacklistStatus>() {
-                @Override
-                public void onSuccess(RongIMClient.BlacklistStatus blacklistStatus) {
-                    RCLog.i(LOG_TAG + " success");
-                    int status = blacklistStatus.getValue();
-                    Map resultMap = new HashMap();
-                    resultMap.put("status", status);
-                    resultMap.put("code", 0);
-                    result.success(resultMap);
-                }
+            RongIMClient.getInstance().getBlacklistStatus(userId,
+                    new RongIMClient.ResultCallback<RongIMClient.BlacklistStatus>() {
+                        @Override
+                        public void onSuccess(RongIMClient.BlacklistStatus blacklistStatus) {
+                            RCLog.i(LOG_TAG + " success");
+                            int status = blacklistStatus.getValue();
+                            Map resultMap = new HashMap();
+                            resultMap.put("status", status);
+                            resultMap.put("code", 0);
+                            result.success(resultMap);
+                        }
 
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
-                    Map resultMap = new HashMap();
-                    resultMap.put("status", 1);
-                    resultMap.put("code", errorCode.getValue());
-                    result.success(resultMap);
-                }
-            });
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
+                            Map resultMap = new HashMap();
+                            resultMap.put("status", 1);
+                            resultMap.put("code", errorCode.getValue());
+                            result.success(resultMap);
+                        }
+                    });
         }
     }
 
@@ -1793,8 +1881,7 @@ public class RCIMFlutterWrapper {
         });
     }
 
-
-    //util
+    // util
     private void fetchAllMessageMapper() {
 
         RongIMClient client = RongIMClient.getInstance();
@@ -1813,16 +1900,16 @@ public class RCIMFlutterWrapper {
         }
     }
 
-    //util method
+    // util method
     public void updateIMConfig() {
-        //后续 RCFlutterConfig 如果有什么参数，可以在此同步给 RongIM
+        // 后续 RCFlutterConfig 如果有什么参数，可以在此同步给 RongIM
     }
-
 
     private void setReceiveMessageListener() {
         RongIMClient.setOnReceiveMessageListener(new RongIMClient.OnReceiveMessageWrapperListener() {
             @Override
-            public boolean onReceived(final Message message, final int left, final boolean hasPackage, final boolean offline) {
+            public boolean onReceived(final Message message, final int left, final boolean hasPackage,
+                    final boolean offline) {
                 mMainHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -1844,7 +1931,8 @@ public class RCIMFlutterWrapper {
     private void setOnRecallMessageListener() {
         RongIMClient.getInstance().setOnRecallMessageListener(new RongIMClient.OnRecallMessageListener() {
             @Override
-            public boolean onMessageRecalled(final Message message, final RecallNotificationMessage recallNotificationMessage) {
+            public boolean onMessageRecalled(final Message message,
+                    final RecallNotificationMessage recallNotificationMessage) {
                 mMainHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -1862,12 +1950,13 @@ public class RCIMFlutterWrapper {
     }
 
     /*
-       输入状态的监听
+     * 输入状态的监听
      */
     private void setTypingStatusListener() {
         RongIMClient.setTypingStatusListener(new RongIMClient.TypingStatusListener() {
             @Override
-            public void onTypingStatusChanged(final Conversation.ConversationType conversationType, final String targetId, final Collection<TypingStatus> collection) {
+            public void onTypingStatusChanged(final Conversation.ConversationType conversationType,
+                    final String targetId, final Collection<TypingStatus> collection) {
                 mMainHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -1877,7 +1966,8 @@ public class RCIMFlutterWrapper {
                         List statusList = new ArrayList();
                         Iterator iterator = collection.iterator();
                         while (iterator.hasNext()) {
-                            String statusStr = MessageFactory.getInstance().typingStatus2String((TypingStatus) iterator.next());
+                            String statusStr = MessageFactory.getInstance()
+                                    .typingStatus2String((TypingStatus) iterator.next());
                             statusList.add(statusStr);
                         }
                         resultMap.put("typingStatus", statusList);
@@ -1918,7 +2008,7 @@ public class RCIMFlutterWrapper {
     private boolean isMediaMessage(String objName) {
         if (objName.equalsIgnoreCase("RC:ImgMsg") || objName.equalsIgnoreCase("RC:HQVCMsg")
                 || objName.equalsIgnoreCase("RC:SightMsg") || objName.equalsIgnoreCase("RC:FileMsg")
-                || objName.equalsIgnoreCase("RC:GIFMsg")) {
+                || objName.equalsIgnoreCase("RC:GIFMsg") || objName.equalsIgnoreCase("RC:CombineMsg")) {
             return true;
         }
         return false;
@@ -1938,7 +2028,8 @@ public class RCIMFlutterWrapper {
             if (tag != null) {
                 String objName = tag.value();
                 Constructor<? extends MessageContent> constructor = msgType.getDeclaredConstructor(byte[].class);
-                Constructor<? extends MessageHandler> handlerConstructor = tag.messageHandler().getConstructor(Context.class);
+                Constructor<? extends MessageHandler> handlerConstructor = tag.messageHandler()
+                        .getConstructor(Context.class);
                 MessageHandler messageHandler = handlerConstructor.newInstance(mContext);
                 messageContentConstructorMap.put(objName, constructor);
             }
@@ -1973,7 +2064,7 @@ public class RCIMFlutterWrapper {
     // 为 localPath 拼 file 前缀
     private String getCorrectLocalPath(String localPath) {
         String path = localPath;
-        if (!localPath.startsWith("file")) {//如果没有以 file 开头，为其增加 file 前缀
+        if (!localPath.startsWith("file")) {// 如果没有以 file 开头，为其增加 file 前缀
             path = "file://" + localPath;
         }
         RCLog.i("sendMediaMessage localPath:" + localPath);
@@ -1993,10 +2084,12 @@ public class RCIMFlutterWrapper {
             String contentStr = null;
             Message message = new Message();
             if (messageMap != null) {
-                message.setConversationType(Conversation.ConversationType.setValue((int) messageMap.get("conversationType")));
+                message.setConversationType(
+                        Conversation.ConversationType.setValue((int) messageMap.get("conversationType")));
                 message.setTargetId((String) messageMap.get("targetId"));
                 message.setMessageId((int) messageMap.get("messageId"));
-                message.setMessageDirection(Message.MessageDirection.setValue((int) messageMap.get("messageDirection")));
+                message.setMessageDirection(
+                        Message.MessageDirection.setValue((int) messageMap.get("messageDirection")));
                 message.setSenderUserId((String) messageMap.get("senderUserId"));
                 message.setReceivedStatus(new Message.ReceivedStatus((int) messageMap.get("receivedStatus")));
                 message.setSentStatus(Message.SentStatus.setValue((int) messageMap.get("sentStatus")));
@@ -2017,25 +2110,27 @@ public class RCIMFlutterWrapper {
                 return;
             }
             message.setContent(content);
-            RongIMClient.getInstance().recallMessage(message, pushContent, new RongIMClient.ResultCallback<RecallNotificationMessage>() {
-                @Override
-                public void onSuccess(RecallNotificationMessage recallNotificationMessage) {
-                    RLog.d(TAG, "recallMessage success ");
-                    Map resultMap = new HashMap();
-                    resultMap.put("recallNotificationMessage", MessageFactory.getInstance().messageContent2String(recallNotificationMessage));
-                    resultMap.put("errorCode", 0);
-                    result.success(resultMap);
-                }
+            RongIMClient.getInstance().recallMessage(message, pushContent,
+                    new RongIMClient.ResultCallback<RecallNotificationMessage>() {
+                        @Override
+                        public void onSuccess(RecallNotificationMessage recallNotificationMessage) {
+                            RLog.d(TAG, "recallMessage success ");
+                            Map resultMap = new HashMap();
+                            resultMap.put("recallNotificationMessage",
+                                    MessageFactory.getInstance().messageContent2String(recallNotificationMessage));
+                            resultMap.put("errorCode", 0);
+                            result.success(resultMap);
+                        }
 
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    RLog.d(TAG, "recallMessage errorCode = " + errorCode.getValue());
-                    Map resultMap = new HashMap();
-                    resultMap.put("recallNotificationMessage", "");
-                    resultMap.put("errorCode", errorCode.getValue());
-                    result.success(resultMap);
-                }
-            });
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            RLog.d(TAG, "recallMessage errorCode = " + errorCode.getValue());
+                            Map resultMap = new HashMap();
+                            resultMap.put("recallNotificationMessage", "");
+                            resultMap.put("errorCode", errorCode.getValue());
+                            result.success(resultMap);
+                        }
+                    });
         }
     }
 
@@ -2045,17 +2140,18 @@ public class RCIMFlutterWrapper {
             Map paramMap = (Map) arg;
             int conversationType = (int) paramMap.get("conversationType");
             String targetId = (String) paramMap.get("targetId");
-            RongIMClient.getInstance().getTextMessageDraft(Conversation.ConversationType.setValue(conversationType), targetId, new RongIMClient.ResultCallback<String>() {
-                @Override
-                public void onSuccess(String s) {
-                    result.success(s);
-                }
+            RongIMClient.getInstance().getTextMessageDraft(Conversation.ConversationType.setValue(conversationType),
+                    targetId, new RongIMClient.ResultCallback<String>() {
+                        @Override
+                        public void onSuccess(String s) {
+                            result.success(s);
+                        }
 
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    result.error(String.valueOf(errorCode.getValue()), errorCode.getMessage(), "");
-                }
-            });
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            result.error(String.valueOf(errorCode.getValue()), errorCode.getMessage(), "");
+                        }
+                    });
 
         }
     }
@@ -2067,17 +2163,18 @@ public class RCIMFlutterWrapper {
             int conversationType = (int) paramMap.get("conversationType");
             String targetId = (String) paramMap.get("targetId");
             String textContent = (String) paramMap.get("content");
-            RongIMClient.getInstance().saveTextMessageDraft(Conversation.ConversationType.setValue(conversationType), targetId, textContent, new RongIMClient.ResultCallback<Boolean>() {
-                @Override
-                public void onSuccess(Boolean aBoolean) {
-                    result.success(aBoolean);
-                }
+            RongIMClient.getInstance().saveTextMessageDraft(Conversation.ConversationType.setValue(conversationType),
+                    targetId, textContent, new RongIMClient.ResultCallback<Boolean>() {
+                        @Override
+                        public void onSuccess(Boolean aBoolean) {
+                            result.success(aBoolean);
+                        }
 
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    result.error(String.valueOf(errorCode.getValue()), errorCode.getMessage(), "");
-                }
-            });
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            result.error(String.valueOf(errorCode.getValue()), errorCode.getMessage(), "");
+                        }
+                    });
         }
     }
 
@@ -2089,17 +2186,18 @@ public class RCIMFlutterWrapper {
             String targetId = (String) paramMap.get("targetId");
             long recordTime = (long) paramMap.get("recordTime");
             boolean clearRemote = (boolean) paramMap.get("clearRemote");
-            RongIMClient.getInstance().cleanHistoryMessages(Conversation.ConversationType.setValue(conversationType), targetId, recordTime, clearRemote, new RongIMClient.OperationCallback() {
-                @Override
-                public void onSuccess() {
-                    result.success(0);
-                }
+            RongIMClient.getInstance().cleanHistoryMessages(Conversation.ConversationType.setValue(conversationType),
+                    targetId, recordTime, clearRemote, new RongIMClient.OperationCallback() {
+                        @Override
+                        public void onSuccess() {
+                            result.success(0);
+                        }
 
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    result.success(errorCode.getValue());
-                }
-            });
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            result.success(errorCode.getValue());
+                        }
+                    });
         }
     }
 
@@ -2110,17 +2208,19 @@ public class RCIMFlutterWrapper {
             int conversationType = (int) paramMap.get("conversationType");
             String targetId = (String) paramMap.get("targetId");
             long timestamp = (long) paramMap.get("timestamp");
-            RongIMClient.getInstance().syncConversationReadStatus(Conversation.ConversationType.setValue(conversationType), targetId, timestamp, new RongIMClient.OperationCallback() {
-                @Override
-                public void onSuccess() {
-                    result.success(0);
-                }
+            RongIMClient.getInstance().syncConversationReadStatus(
+                    Conversation.ConversationType.setValue(conversationType), targetId, timestamp,
+                    new RongIMClient.OperationCallback() {
+                        @Override
+                        public void onSuccess() {
+                            result.success(0);
+                        }
 
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    result.success(errorCode.getValue());
-                }
-            });
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            result.success(errorCode.getValue());
+                        }
+                    });
         }
     }
 
@@ -2141,31 +2241,33 @@ public class RCIMFlutterWrapper {
                 }
                 String[] objectNamesArr = new String[objectNames.size()];
                 objectNames.toArray(objectNamesArr);
-                RongIMClient.getInstance().searchConversations(keyword, typeArry, objectNamesArr, new RongIMClient.ResultCallback<List<SearchConversationResult>>() {
-                    @Override
-                    public void onSuccess(List<SearchConversationResult> searchConversationResults) {
-                        Map resultMap = new HashMap();
-                        List<String> searchConversationResultStr = new ArrayList<>();
-                        for (SearchConversationResult searchConversationResult : searchConversationResults) {
-                            searchConversationResultStr.add(MessageFactory.getInstance().SearchConversationResult2String(searchConversationResult));
-                        }
-                        resultMap.put("code", 0);
-                        resultMap.put("SearchConversationResult", searchConversationResultStr);
-                        result.success(resultMap);
-                    }
+                RongIMClient.getInstance().searchConversations(keyword, typeArry, objectNamesArr,
+                        new RongIMClient.ResultCallback<List<SearchConversationResult>>() {
+                            @Override
+                            public void onSuccess(List<SearchConversationResult> searchConversationResults) {
+                                Map resultMap = new HashMap();
+                                List<String> searchConversationResultStr = new ArrayList<>();
+                                for (SearchConversationResult searchConversationResult : searchConversationResults) {
+                                    searchConversationResultStr.add(MessageFactory.getInstance()
+                                            .SearchConversationResult2String(searchConversationResult));
+                                }
+                                resultMap.put("code", 0);
+                                resultMap.put("SearchConversationResult", searchConversationResultStr);
+                                result.success(resultMap);
+                            }
 
-                    @Override
-                    public void onError(RongIMClient.ErrorCode errorCode) {
-                        Map resultMap = new HashMap();
-                        resultMap.put("code", errorCode.getValue());
-                        result.success(resultMap);
-                    }
-                });
+                            @Override
+                            public void onError(RongIMClient.ErrorCode errorCode) {
+                                Map resultMap = new HashMap();
+                                resultMap.put("code", errorCode.getValue());
+                                result.success(resultMap);
+                            }
+                        });
             }
         }
     }
 
-    //根据会话,搜索本地历史消息
+    // 根据会话,搜索本地历史消息
     private void searchMessages(Object arg, final Result result) {
         if (arg instanceof Map) {
             Map paramMap = (Map) arg;
@@ -2174,33 +2276,34 @@ public class RCIMFlutterWrapper {
             String keyword = (String) paramMap.get("keyword");
             int count = (int) paramMap.get("count");
             long beginTime = Long.valueOf(paramMap.get("beginTime").toString());
-            RongIMClient.getInstance().searchMessages(Conversation.ConversationType.setValue(conversationType), targetId, keyword, count, beginTime, new RongIMClient.ResultCallback<List<Message>>() {
-                @Override
-                public void onSuccess(List<Message> messages) {
-                    Map callBackMap = new HashMap();
-                    if (messages == null) {
-                        callBackMap.put("code", 0);
-                        callBackMap.put("messages", new ArrayList());
-                        result.success(callBackMap);
-                        return;
-                    }
-                    List list = new ArrayList();
-                    for (Message msg : messages) {
-                        String messageS = MessageFactory.getInstance().message2String(msg);
-                        list.add(messageS);
-                    }
-                    callBackMap.put("code", 0);
-                    callBackMap.put("messages", list);
-                    result.success(callBackMap);
-                }
+            RongIMClient.getInstance().searchMessages(Conversation.ConversationType.setValue(conversationType),
+                    targetId, keyword, count, beginTime, new RongIMClient.ResultCallback<List<Message>>() {
+                        @Override
+                        public void onSuccess(List<Message> messages) {
+                            Map callBackMap = new HashMap();
+                            if (messages == null) {
+                                callBackMap.put("code", 0);
+                                callBackMap.put("messages", new ArrayList());
+                                result.success(callBackMap);
+                                return;
+                            }
+                            List list = new ArrayList();
+                            for (Message msg : messages) {
+                                String messageS = MessageFactory.getInstance().message2String(msg);
+                                list.add(messageS);
+                            }
+                            callBackMap.put("code", 0);
+                            callBackMap.put("messages", list);
+                            result.success(callBackMap);
+                        }
 
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    Map callBackMap = new HashMap();
-                    callBackMap.put("code", errorCode.getValue());
-                    result.success(callBackMap);
-                }
-            });
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            Map callBackMap = new HashMap();
+                            callBackMap.put("code", errorCode.getValue());
+                            result.success(callBackMap);
+                        }
+                    });
         }
     }
 
@@ -2211,7 +2314,8 @@ public class RCIMFlutterWrapper {
             int conversationType = (int) paramMap.get("conversationType");
             String targetId = (String) paramMap.get("targetId");
             String typingContentType = (String) paramMap.get("typingContentType");
-            RongIMClient.getInstance().sendTypingStatus(Conversation.ConversationType.setValue(conversationType), targetId, typingContentType);
+            RongIMClient.getInstance().sendTypingStatus(Conversation.ConversationType.setValue(conversationType),
+                    targetId, typingContentType);
         }
     }
 
@@ -2264,7 +2368,7 @@ public class RCIMFlutterWrapper {
         }
     }
 
-    //设置聊天室自定义属性
+    // 设置聊天室自定义属性
     private void setChatRoomEntry(Object arg, final Result result) {
         if (arg instanceof Map) {
             Map paramMap = (Map) arg;
@@ -2274,17 +2378,18 @@ public class RCIMFlutterWrapper {
             boolean sendNotification = (boolean) paramMap.get("sendNotification");
             boolean autoDelete = (boolean) paramMap.get("autoDelete");
             String notificationExtra = (String) paramMap.get("notificationExtra");
-            RongIMClient.getInstance().setChatRoomEntry(chatRoomId, key, value, sendNotification, autoDelete, notificationExtra, new RongIMClient.OperationCallback() {
-                @Override
-                public void onSuccess() {
-                    result.success(0);
-                }
+            RongIMClient.getInstance().setChatRoomEntry(chatRoomId, key, value, sendNotification, autoDelete,
+                    notificationExtra, new RongIMClient.OperationCallback() {
+                        @Override
+                        public void onSuccess() {
+                            result.success(0);
+                        }
 
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    result.success(errorCode.getValue());
-                }
-            });
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            result.success(errorCode.getValue());
+                        }
+                    });
         }
     }
 
@@ -2297,17 +2402,18 @@ public class RCIMFlutterWrapper {
             boolean sendNotification = (boolean) paramMap.get("sendNotification");
             boolean autoDelete = (boolean) paramMap.get("autoDelete");
             String notificationExtra = (String) paramMap.get("notificationExtra");
-            RongIMClient.getInstance().forceSetChatRoomEntry(chatRoomId, key, value, sendNotification, autoDelete, notificationExtra, new RongIMClient.OperationCallback() {
-                @Override
-                public void onSuccess() {
-                    result.success(0);
-                }
+            RongIMClient.getInstance().forceSetChatRoomEntry(chatRoomId, key, value, sendNotification, autoDelete,
+                    notificationExtra, new RongIMClient.OperationCallback() {
+                        @Override
+                        public void onSuccess() {
+                            result.success(0);
+                        }
 
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    result.success(errorCode.getValue());
-                }
-            });
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            result.success(errorCode.getValue());
+                        }
+                    });
         }
     }
 
@@ -2316,34 +2422,35 @@ public class RCIMFlutterWrapper {
             Map paramMap = (Map) arg;
             String chatRoomId = (String) paramMap.get("chatRoomId");
             String key = (String) paramMap.get("key");
-            RongIMClient.getInstance().getChatRoomEntry(chatRoomId, key, new RongIMClient.ResultCallback<Map<String, String>>() {
-                @Override
-                public void onSuccess(final Map<String, String> stringStringMap) {
-                    mMainHandler.post(new Runnable() {
+            RongIMClient.getInstance().getChatRoomEntry(chatRoomId, key,
+                    new RongIMClient.ResultCallback<Map<String, String>>() {
                         @Override
-                        public void run() {
-                            HashMap resultMap = new HashMap();
-                            resultMap.put("code", 0);
-                            resultMap.put("entry", stringStringMap);
-                            result.success(resultMap);
+                        public void onSuccess(final Map<String, String> stringStringMap) {
+                            mMainHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    HashMap resultMap = new HashMap();
+                                    resultMap.put("code", 0);
+                                    resultMap.put("entry", stringStringMap);
+                                    result.success(resultMap);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onError(final RongIMClient.ErrorCode errorCode) {
+                            mMainHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    HashMap resultMap = new HashMap();
+                                    resultMap.put("code", errorCode.getValue());
+                                    resultMap.put("entry", new HashMap<String, String>());
+                                    result.success(resultMap);
+                                }
+                            });
+
                         }
                     });
-                }
-
-                @Override
-                public void onError(final RongIMClient.ErrorCode errorCode) {
-                    mMainHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            HashMap resultMap = new HashMap();
-                            resultMap.put("code", errorCode.getValue());
-                            resultMap.put("entry", new HashMap<String, String>());
-                            result.success(resultMap);
-                        }
-                    });
-
-                }
-            });
         }
     }
 
@@ -2351,34 +2458,35 @@ public class RCIMFlutterWrapper {
         if (arg instanceof Map) {
             Map paramMap = (Map) arg;
             String chatRoomId = (String) paramMap.get("chatRoomId");
-            RongIMClient.getInstance().getAllChatRoomEntries(chatRoomId, new RongIMClient.ResultCallback<Map<String, String>>() {
-                @Override
-                public void onSuccess(final Map<String, String> stringStringMap) {
-                    mMainHandler.post(new Runnable() {
+            RongIMClient.getInstance().getAllChatRoomEntries(chatRoomId,
+                    new RongIMClient.ResultCallback<Map<String, String>>() {
                         @Override
-                        public void run() {
-                            HashMap resultMap = new HashMap();
-                            resultMap.put("code", 0);
-                            resultMap.put("entry", stringStringMap);
-                            result.success(resultMap);
+                        public void onSuccess(final Map<String, String> stringStringMap) {
+                            mMainHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    HashMap resultMap = new HashMap();
+                                    resultMap.put("code", 0);
+                                    resultMap.put("entry", stringStringMap);
+                                    result.success(resultMap);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onError(final RongIMClient.ErrorCode errorCode) {
+                            mMainHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    HashMap resultMap = new HashMap();
+                                    resultMap.put("code", errorCode.getValue());
+                                    resultMap.put("entry", new HashMap<String, String>());
+                                    result.success(resultMap);
+                                }
+                            });
+
                         }
                     });
-                }
-
-                @Override
-                public void onError(final RongIMClient.ErrorCode errorCode) {
-                    mMainHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            HashMap resultMap = new HashMap();
-                            resultMap.put("code", errorCode.getValue());
-                            resultMap.put("entry", new HashMap<String, String>());
-                            result.success(resultMap);
-                        }
-                    });
-
-                }
-            });
         }
     }
 
@@ -2389,17 +2497,18 @@ public class RCIMFlutterWrapper {
             String key = (String) paramMap.get("key");
             boolean sendNotification = (boolean) paramMap.get("sendNotification");
             String notificationExtra = (String) paramMap.get("notificationExtra");
-            RongIMClient.getInstance().removeChatRoomEntry(chatRoomId, key, sendNotification, notificationExtra, new RongIMClient.OperationCallback() {
-                @Override
-                public void onSuccess() {
-                    result.success(0);
-                }
+            RongIMClient.getInstance().removeChatRoomEntry(chatRoomId, key, sendNotification, notificationExtra,
+                    new RongIMClient.OperationCallback() {
+                        @Override
+                        public void onSuccess() {
+                            result.success(0);
+                        }
 
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    result.success(errorCode.getValue());
-                }
-            });
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            result.success(errorCode.getValue());
+                        }
+                    });
         }
     }
 
@@ -2410,37 +2519,39 @@ public class RCIMFlutterWrapper {
             String key = (String) paramMap.get("key");
             boolean sendNotification = (boolean) paramMap.get("sendNotification");
             String notificationExtra = (String) paramMap.get("notificationExtra");
-            RongIMClient.getInstance().forceRemoveChatRoomEntry(chatRoomId, key, sendNotification, notificationExtra, new RongIMClient.OperationCallback() {
-                @Override
-                public void onSuccess() {
-                    result.success(0);
-                }
+            RongIMClient.getInstance().forceRemoveChatRoomEntry(chatRoomId, key, sendNotification, notificationExtra,
+                    new RongIMClient.OperationCallback() {
+                        @Override
+                        public void onSuccess() {
+                            result.success(0);
+                        }
 
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    result.success(errorCode.getValue());
-                }
-            });
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            result.success(errorCode.getValue());
+                        }
+                    });
         }
     }
 
-    //设置消息通知免打扰时间
+    // 设置消息通知免打扰时间
     private void setNotificationQuietHours(Object arg, final Result result) {
         if (arg instanceof Map) {
             Map paramMap = (Map) arg;
             String startTime = (String) paramMap.get("startTime");
             int spanMins = (int) paramMap.get("spanMins");
-            RongIMClient.getInstance().setNotificationQuietHours(startTime, spanMins, new RongIMClient.OperationCallback() {
-                @Override
-                public void onSuccess() {
-                    result.success(0);
-                }
+            RongIMClient.getInstance().setNotificationQuietHours(startTime, spanMins,
+                    new RongIMClient.OperationCallback() {
+                        @Override
+                        public void onSuccess() {
+                            result.success(0);
+                        }
 
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    result.success(errorCode.getValue());
-                }
-            });
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            result.success(errorCode.getValue());
+                        }
+                    });
         }
     }
 
@@ -2484,31 +2595,33 @@ public class RCIMFlutterWrapper {
             Map paramMap = (Map) arg;
             int conversationType = (int) paramMap.get("conversationType");
             String targetId = (String) paramMap.get("targetId");
-            RongIMClient.getInstance().getUnreadMentionedMessages(Conversation.ConversationType.setValue(conversationType), targetId, new RongIMClient.ResultCallback<List<Message>>() {
-                @Override
-                public void onSuccess(List<Message> messages) {
-                    Map callBackMap = new HashMap();
-                    if (messages == null) {
-                        callBackMap.put("messages", new ArrayList());
-                        result.success(callBackMap);
-                        return;
-                    }
-                    List list = new ArrayList();
-                    for (Message msg : messages) {
-                        String messageS = MessageFactory.getInstance().message2String(msg);
-                        list.add(messageS);
-                    }
-                    callBackMap.put("messages", list);
-                    result.success(callBackMap);
-                }
+            RongIMClient.getInstance().getUnreadMentionedMessages(
+                    Conversation.ConversationType.setValue(conversationType), targetId,
+                    new RongIMClient.ResultCallback<List<Message>>() {
+                        @Override
+                        public void onSuccess(List<Message> messages) {
+                            Map callBackMap = new HashMap();
+                            if (messages == null) {
+                                callBackMap.put("messages", new ArrayList());
+                                result.success(callBackMap);
+                                return;
+                            }
+                            List list = new ArrayList();
+                            for (Message msg : messages) {
+                                String messageS = MessageFactory.getInstance().message2String(msg);
+                                list.add(messageS);
+                            }
+                            callBackMap.put("messages", list);
+                            result.success(callBackMap);
+                        }
 
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    Map callBackMap = new HashMap();
-                    callBackMap.put("messages", new ArrayList());
-                    result.success(callBackMap);
-                }
-            });
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            Map callBackMap = new HashMap();
+                            callBackMap.put("messages", new ArrayList());
+                            result.success(callBackMap);
+                        }
+                    });
         }
     }
 
@@ -2535,34 +2648,36 @@ public class RCIMFlutterWrapper {
             }
             String[] userIdArr = new String[userIdList.size()];
             userIdList.toArray(userIdArr);
-            RongIMClient.getInstance().sendDirectionalMessage(Conversation.ConversationType.setValue(conversationType), targetId, messageContent, userIdArr, pushContent, pushData, new IRongCallback.ISendMessageCallback() {
-                @Override
-                public void onAttached(Message message) {
-                    String messageS = MessageFactory.getInstance().message2String(message);
-                    Map msgMap = new HashMap();
-                    msgMap.put("message", messageS);
-                    msgMap.put("status", 10);
-                    result.success(msgMap);
-                }
+            RongIMClient.getInstance().sendDirectionalMessage(Conversation.ConversationType.setValue(conversationType),
+                    targetId, messageContent, userIdArr, pushContent, pushData,
+                    new IRongCallback.ISendMessageCallback() {
+                        @Override
+                        public void onAttached(Message message) {
+                            String messageS = MessageFactory.getInstance().message2String(message);
+                            Map msgMap = new HashMap();
+                            msgMap.put("message", messageS);
+                            msgMap.put("status", 10);
+                            result.success(msgMap);
+                        }
 
-                @Override
-                public void onSuccess(Message message) {
-                    Map resultMap = new HashMap();
-                    resultMap.put("messageId", message.getMessageId());
-                    resultMap.put("status", 30);
-                    resultMap.put("code", 0);
-                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
-                }
+                        @Override
+                        public void onSuccess(Message message) {
+                            Map resultMap = new HashMap();
+                            resultMap.put("messageId", message.getMessageId());
+                            resultMap.put("status", 30);
+                            resultMap.put("code", 0);
+                            mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
+                        }
 
-                @Override
-                public void onError(Message message, RongIMClient.ErrorCode errorCode) {
-                    Map resultMap = new HashMap();
-                    resultMap.put("messageId", message.getMessageId());
-                    resultMap.put("status", 20);
-                    resultMap.put("code", errorCode.getValue());
-                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
-                }
-            });
+                        @Override
+                        public void onError(Message message, RongIMClient.ErrorCode errorCode) {
+                            Map resultMap = new HashMap();
+                            resultMap.put("messageId", message.getMessageId());
+                            resultMap.put("status", 20);
+                            resultMap.put("code", errorCode.getValue());
+                            mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
+                        }
+                    });
         }
     }
 
@@ -2575,9 +2690,10 @@ public class RCIMFlutterWrapper {
             MessageContent messageContent = message.getContent();
             String targetId = (String) map.get("targetId");
             int conversationType = (int) map.get("conversationType");
-            //有些消息携带了用户信息，转发的消息必须把用户信息去掉
+            // 有些消息携带了用户信息，转发的消息必须把用户信息去掉
             messageContent.setUserInfo(null);
-            Message forwardMessage = Message.obtain(targetId, Conversation.ConversationType.setValue(conversationType), messageContent);
+            Message forwardMessage = Message.obtain(targetId, Conversation.ConversationType.setValue(conversationType),
+                    messageContent);
 
             RongIMClient.getInstance().sendMessage(forwardMessage, "", "", new IRongCallback.ISendMessageCallback() {
                 @Override
@@ -2608,11 +2724,71 @@ public class RCIMFlutterWrapper {
         }
     }
 
+    // 开始焚烧消息（阅后即焚）
+    private void messageBeginDestruct(Object arg) {
+        if (arg instanceof Map) {
+            Map map = (Map) arg;
+            Map messageMap = (Map) map.get("message");
+            Message message = map2Message(messageMap);
+            if (message == null) {
+                return;
+            }
+            RongIMClient.getInstance().beginDestructMessage(message, new RongIMClient.DestructCountDownTimerListener() {
+                @Override
+                public void onTick(final long untilFinished, String messageUId) {
+                    int remainDuration = (int) untilFinished;
+                    RLog.d("messageBeginDestruct","onTick :"+untilFinished+" remainDuration:"+remainDuration);
+                    invokeMessageDestructCallBack(messageUId,remainDuration);
+                }
+
+                @Override
+                public void onStop(String messageUId) {
+//                    invokeMessageDestructCallBack(messageUId,0);
+                }
+            });
+        }
+    }
+
+    private void invokeMessageDestructCallBack(String messageUId,final int remainDuration){
+        RongIMClient.getInstance().getMessageByUid(messageUId, new RongIMClient.ResultCallback<Message>() {
+            @Override
+            public void onSuccess(Message message) {
+                Map resultMap = new HashMap();
+                String messageStr = MessageFactory.getInstance().message2String(message);
+                resultMap.put("remainDuration", remainDuration);
+                resultMap.put("message", messageStr);
+                mChannel.invokeMethod(RCMethodList.MethodCallBackDestructMessage, resultMap);
+            }
+
+            @Override
+            public void onError(RongIMClient.ErrorCode errorCode) {
+                Map resultMap = new HashMap();
+                resultMap.put("remainDuration", remainDuration);
+                resultMap.put("message", "");
+                mChannel.invokeMethod(RCMethodList.MethodCallBackDestructMessage, resultMap);
+            }
+        });
+    }
+
+    // 停止焚烧消息（阅后即焚）
+    private void messageStopDestruct(Object arg) {
+        if (arg instanceof Map) {
+            Map map = (Map) arg;
+            Map messageMap = (Map) map.get("message");
+            Message message = map2Message(messageMap);
+            if (message == null) {
+                return;
+            }
+            RongIMClient.getInstance().stopDestructMessage(message);
+        }
+    }
+
     private Message map2Message(Map messageMap) {
         String contentStr = null;
         Message message = new Message();
         if (messageMap != null) {
-            message.setConversationType(Conversation.ConversationType.setValue((int) messageMap.get("conversationType")));
+            message.setConversationType(
+                    Conversation.ConversationType.setValue((int) messageMap.get("conversationType")));
             message.setTargetId((String) messageMap.get("targetId"));
             message.setMessageId((int) messageMap.get("messageId"));
             message.setMessageDirection(Message.MessageDirection.setValue((int) messageMap.get("messageDirection")));

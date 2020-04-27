@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import '../util/file_suffix.dart';
 
 class FileUtil {
@@ -60,5 +62,14 @@ class FileUtil {
       }
     }
     return false;
+  }
+
+  static Future<File> writeStringToFile(
+      String filePath, String fileName, String content) async {
+    Directory file = Directory(filePath);
+    if (!file.existsSync()) {
+      file.create();
+    }
+    return File("$filePath/$fileName").writeAsString(content);
   }
 }

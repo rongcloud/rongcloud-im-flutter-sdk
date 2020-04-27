@@ -1064,6 +1064,20 @@ class RongcloudImPlugin {
     return messageList;
   }
 
+  /// 开始焚烧消息
+  static void messageBeginDestruct(Message message) async {
+    Map messageMap = MessageFactory.instance.message2Map(message);
+    Map map = {"message": messageMap};
+    await _channel.invokeMethod(RCMethodKey.MessageBeginDestruct, map);
+  }
+
+  /// 停止焚烧消息（目前仅支持单聊）
+  static void messageStopDestruct(Message message) async {
+    Map messageMap = MessageFactory.instance.message2Map(message);
+    Map map = {"message": messageMap};
+    await _channel.invokeMethod(RCMethodKey.MessageStopDestruct, map);
+  }
+
   /// 设置聊天室自定义属性
   ///
   /// [chatroomId] 聊天室 Id
@@ -1337,6 +1351,9 @@ class RongcloudImPlugin {
   //撤回消息监听
   static Function(Message msg) onRecallMessageReceived;
 
+  //消息正在焚烧
+  static Function(Message msg, int remainDuration) onMessageDestructing;
+
   ///响应原生的事件
   ///
   static void _addNativeMethodCallHandler() {
@@ -1495,6 +1512,16 @@ class RongcloudImPlugin {
             onRecallMessageReceived(message);
           }
           break;
+        case RCMethodCallBackKey.DestructMessage:
+        if (onMessageDestructing != null) {
+          Map map = call.arguments;
+          String messageString = map["message"];
+          int remainDuration = map["remainDuration"];
+          Message message =
+              MessageFactory.instance.string2Message(messageString);
+          onMessageDestructing(message, remainDuration);
+        }
+        break;
       }
       return;
     });

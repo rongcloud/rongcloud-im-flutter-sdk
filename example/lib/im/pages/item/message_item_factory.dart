@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:rongcloud_im_plugin_example/im/util/combine_message_util.dart';
+import 'package:rongcloud_im_plugin_example/im/widget/cachImage/cached_image_widget.dart';
 import '../../util/file.dart';
 import '../../util/media_util.dart';
 import 'dart:convert';
@@ -10,7 +12,9 @@ import '../../util/style.dart';
 
 class MessageItemFactory extends StatelessWidget {
   final Message message;
-  const MessageItemFactory({Key key, this.message}) : super(key: key);
+  final bool needShow;
+  const MessageItemFactory({Key key, this.message, this.needShow = true})
+      : super(key: key);
 
   ///文本消息 item
   Widget textMessageItem(BuildContext context) {
@@ -19,11 +23,11 @@ class MessageItemFactory extends StatelessWidget {
     return Container(
       constraints: BoxConstraints(
         // 屏幕宽度减去头像宽度加上间距
-        maxWidth: screenWidth - 140,
+        maxWidth: screenWidth - 150,
       ),
       padding: EdgeInsets.all(8),
       child: Text(
-        msg.content,
+        needShow ? msg.content : "点击查看",
         style: TextStyle(fontSize: RCFont.MessageTextFont),
       ),
     );
@@ -31,45 +35,107 @@ class MessageItemFactory extends StatelessWidget {
 
   ///图片消息 item
   ///优先读缩略图，否则读本地路径图，否则读网络图
-  Widget imageMessageItem() {
+  Widget imageMessageItem(BuildContext context) {
     ImageMessage msg = message.content;
 
     Widget widget;
-    if (msg.content != null && msg.content.length > 0) {
-      Uint8List bytes = base64.decode(msg.content);
-      widget = Image.memory(bytes);
-      if (msg.localPath == null) {
-        RongcloudImPlugin.downloadMediaMessage(message);
-      }
-    } else {
-      if (msg.localPath != null) {
-        String path = MediaUtil.instance.getCorrectedLocalPath(msg.localPath);
-        File file = File(path);
-        if (file != null && file.existsSync()) {
-          widget = Image.file(file);
-        } else {
+    if (needShow) {
+      if (msg.content != null && msg.content.length > 0) {
+        Uint8List bytes = base64.decode(msg.content);
+        widget = Image.memory(bytes);
+        if (msg.localPath == null) {
           RongcloudImPlugin.downloadMediaMessage(message);
-          widget = Image.network(msg.imageUri);
         }
       } else {
-        RongcloudImPlugin.downloadMediaMessage(message);
-        widget = Image.network(msg.imageUri);
+        if (msg.localPath != null) {
+          String path = MediaUtil.instance.getCorrectedLocalPath(msg.localPath);
+          File file = File(path);
+          if (file != null && file.existsSync()) {
+            widget = Image.file(file);
+          } else {
+            RongcloudImPlugin.downloadMediaMessage(message);
+            // widget = Image.network(msg.imageUri);
+            widget = CachedNetworkImage(
+              progressIndicatorBuilder: (context, url, progress) =>
+                  CircularProgressIndicator(
+                value: progress.progress,
+              ),
+              imageUrl: msg.imageUri,
+            );
+          }
+        } else {
+          RongcloudImPlugin.downloadMediaMessage(message);
+          // widget = Image.network(msg.imageUri);
+          widget = CachedNetworkImage(
+            progressIndicatorBuilder: (context, url, progress) =>
+                CircularProgressIndicator(
+              value: progress.progress,
+            ),
+            imageUrl: msg.imageUri,
+          );
+        }
       }
+    } else {
+      widget = Stack(
+        children: <Widget>[
+          Image.asset(
+            message.messageDirection == RCMessageDirection.Send
+                ? "assets/images/burnPicture.png"
+                : "assets/images/burnPictureForm.png",
+            width: 120,
+            height: 126,
+          ),
+          Container(
+            child: Text(
+              "点击查看",
+            ),
+            height: 126,
+            width: 120,
+            alignment: Alignment.bottomCenter,
+          )
+        ],
+      );
     }
-    return widget;
+
+    return Container(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width - 150,
+      ),
+      child: widget,
+    );
   }
 
   ///动图消息 item
   Widget gifMessageItem(BuildContext context) {
     GifMessage msg = message.content;
     Widget widget;
-    if (msg.localPath != null) {
-      String path = MediaUtil.instance.getCorrectedLocalPath(msg.localPath);
-      File file = File(path);
-      if (file != null && file.existsSync()) {
-        widget = Image.file(file);
-      } else {
-        // 没有 localPath 时下载该媒体消息，更新 localPath
+    if (needShow) {
+      if (msg.localPath != null) {
+        String path = MediaUtil.instance.getCorrectedLocalPath(msg.localPath);
+        File file = File(path);
+        if (file != null && file.existsSync()) {
+          widget = Image.file(file);
+        } else {
+          // 没有 localPath 时下载该媒体消息，更新 localPath
+          RongcloudImPlugin.downloadMediaMessage(message);
+          widget = Image.network(
+            msg.remoteUrl,
+            fit: BoxFit.cover,
+            loadingBuilder: (BuildContext context, Widget child,
+                ImageChunkEvent loadingProgress) {
+              if (loadingProgress == null) return child;
+              return Center(
+                child: CircularProgressIndicator(
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes
+                      : null,
+                ),
+              );
+            },
+          );
+        }
+      } else if (msg.remoteUrl != null) {
         RongcloudImPlugin.downloadMediaMessage(message);
         widget = Image.network(
           msg.remoteUrl,
@@ -87,39 +153,41 @@ class MessageItemFactory extends StatelessWidget {
             );
           },
         );
+      } else {
+        print("GifMessage localPath && remoteUrl is null");
       }
-    } else if (msg.remoteUrl != null) {
-      RongcloudImPlugin.downloadMediaMessage(message);
-      widget = Image.network(
-        msg.remoteUrl,
-        fit: BoxFit.cover,
-        loadingBuilder: (BuildContext context, Widget child,
-            ImageChunkEvent loadingProgress) {
-          if (loadingProgress == null) return child;
-          return Center(
-            child: CircularProgressIndicator(
-              value: loadingProgress.expectedTotalBytes != null
-                  ? loadingProgress.cumulativeBytesLoaded /
-                      loadingProgress.expectedTotalBytes
-                  : null,
-            ),
-          );
-        },
-      );
-    } else {
-      print("GifMessage localPath && remoteUrl is null");
-    }
 
-    double screenWidth = MediaQuery.of(context).size.width;
-    if (msg.width != null &&
-        msg.height != null &&
-        msg.width > 0 &&
-        msg.height > 0 &&
-        msg.width > screenWidth / 3) {
-      return Container(
-        width: msg.width.toDouble() / 3,
-        height: msg.height.toDouble() / 3,
-        child: widget,
+      double screenWidth = MediaQuery.of(context).size.width;
+      if (msg.width != null &&
+          msg.height != null &&
+          msg.width > 0 &&
+          msg.height > 0 &&
+          msg.width > screenWidth / 3) {
+        return Container(
+          width: msg.width.toDouble() / 3,
+          height: msg.height.toDouble() / 3,
+          child: widget,
+        );
+      }
+    } else {
+      widget = Stack(
+        children: <Widget>[
+          Image.asset(
+            message.messageDirection == RCMessageDirection.Send
+                ? "assets/images/burnPicture.png"
+                : "assets/images/burnPictureForm.png",
+            width: 120,
+            height: 126,
+          ),
+          Container(
+            child: Text(
+              "点击查看",
+            ),
+            height: 126,
+            width: 120,
+            alignment: Alignment.bottomCenter,
+          )
+        ],
       );
     }
     return widget;
@@ -170,59 +238,82 @@ class MessageItemFactory extends StatelessWidget {
   //小视频消息 item
   Widget sightMessageItem() {
     SightMessage msg = message.content;
-    Widget previewW = Container(); //缩略图
-    if (msg.content != null && msg.content.length > 0) {
-      Uint8List bytes = base64.decode(msg.content);
-      previewW = Image.memory(
-        bytes,
-        fit: BoxFit.fill,
+
+    if (needShow) {
+      Widget previewW = Container(); //缩略图
+      if (msg.content != null && msg.content.length > 0) {
+        Uint8List bytes = base64.decode(msg.content);
+        previewW = Image.memory(
+          bytes,
+          fit: BoxFit.fill,
+        );
+      }
+      Widget bgWidget = Container(
+        width: 100,
+        height: 150,
+        child: previewW,
       );
-    }
-    Widget bgWidget = Container(
-      width: 100,
-      height: 150,
-      child: previewW,
-    );
-    Widget continerW = Container(
+      Widget continerW = Container(
+          width: 100,
+          height: 150,
+          child: Container(
+            width: 50,
+            height: 50,
+            alignment: Alignment.center,
+            child: Image.asset(
+              "assets/images/sight_message_icon.png",
+              width: 50,
+              height: 50,
+            ),
+          ));
+      Widget timeW = Container(
         width: 100,
         height: 150,
         child: Container(
           width: 50,
-          height: 50,
-          alignment: Alignment.center,
-          child: Image.asset(
-            "assets/images/sight_message_icon.png",
-            width: 50,
-            height: 50,
+          height: 20,
+          alignment: Alignment.bottomLeft,
+          child: Row(
+            children: <Widget>[
+              SizedBox(
+                width: 5,
+              ),
+              Text(
+                "${msg.duration}'s",
+                style: TextStyle(color: Colors.white),
+              ),
+            ],
           ),
-        ));
-    Widget timeW = Container(
-      width: 100,
-      height: 150,
-      child: Container(
-        width: 50,
-        height: 20,
-        alignment: Alignment.bottomLeft,
-        child: Row(
-          children: <Widget>[
-            SizedBox(
-              width: 5,
-            ),
-            Text(
-              "${msg.duration}'s",
-              style: TextStyle(color: Colors.white),
-            ),
-          ],
         ),
-      ),
-    );
-    return Stack(
-      children: <Widget>[
-        bgWidget,
-        continerW,
-        timeW,
-      ],
-    );
+      );
+      return Stack(
+        children: <Widget>[
+          bgWidget,
+          continerW,
+          timeW,
+        ],
+      );
+    } else {
+      return Stack(
+        children: <Widget>[
+          Image.asset(
+            message.messageDirection == RCMessageDirection.Send
+                ? "assets/images/burnPicture.png"
+                : "assets/images/burnPictureForm.png",
+            width: 120,
+            height: 126,
+          ),
+          Container(
+            child: Text(
+              "点击播放",
+            ),
+            height: 126,
+            width: 120,
+            alignment: Alignment.bottomCenter,
+          )
+        ],
+      );
+    }
   }
 
   Widget fileMessageItem(BuildContext context) {
@@ -311,11 +402,77 @@ class MessageItemFactory extends StatelessWidget {
     );
   }
 
+  // 合并消息 item
+  Widget combineMessageItem(BuildContext context) {
+    CombineMessage msg = message.content;
+    if (msg.localPath != null && msg.localPath.isNotEmpty) {
+      String path = MediaUtil.instance.getCorrectedLocalPath(msg.localPath);
+      File file = File(path);
+      if (file != null && file.existsSync()) {
+      } else {
+        // HttpUtil.download(url, savePath, progressCallback)
+        CombineMessageUtils().downLoadHtml(msg.mMediaUrl);
+      }
+    } else {
+      CombineMessageUtils().downLoadHtml(msg.mMediaUrl);
+    }
+    double screenWidth = MediaQuery.of(context).size.width;
+    List<String> summaryList = msg.summaryList;
+    String title = CombineMessageUtils().getTitle(msg);
+    String summaryStr = "";
+    if (summaryList != null) {
+      for (int i = 0; i < summaryList.length && i < 4; i++) {
+        if (i == 0) {
+          summaryStr = summaryList[i];
+        } else {
+          summaryStr += "\n" + summaryList[i];
+        }
+      }
+    }
+    return Container(
+        width: screenWidth - 200,
+        child: Column(children: <Widget>[
+          Container(
+            margin: EdgeInsets.fromLTRB(10, 4, 10, 0),
+            alignment: Alignment.centerLeft,
+            child: Text(title,
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                    fontSize: RCFont.MessageCombineTitleFont,
+                    color: Colors.black)),
+          ),
+          Container(
+            padding: EdgeInsets.fromLTRB(10, 4, 10, 4),
+            alignment: Alignment.centerLeft,
+            child: Text(summaryStr,
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                    fontSize: RCFont.MessageCombineContentFont,
+                    color: Color(RCColor.ConCombineMsgContentColor))),
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+            width: double.infinity,
+            height: 1.0,
+            color: Color(0xFFF3F3F3),
+          ),
+          Container(
+            padding: EdgeInsets.fromLTRB(10, 6, 0, 10),
+            alignment: Alignment.centerLeft,
+            child: Text(RCString.ChatRecord,
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                    fontSize: RCFont.MessageCombineContentFont,
+                    color: Color(RCColor.ConCombineMsgContentColor))),
+          ),
+        ]));
+  }
+
   Widget messageItem(BuildContext context) {
     if (message.content is TextMessage) {
       return textMessageItem(context);
     } else if (message.content is ImageMessage) {
-      return imageMessageItem();
+      return imageMessageItem(context);
     } else if (message.content is VoiceMessage) {
       return voiceMessageItem();
     } else if (message.content is SightMessage) {
@@ -326,6 +483,8 @@ class MessageItemFactory extends StatelessWidget {
       return richContentMessageItem(context);
     } else if (message.content is GifMessage) {
       return gifMessageItem(context);
+    } else if (message.content is CombineMessage) {
+      return combineMessageItem(context);
     } else {
       return Text("无法识别消息 " + message.objectName);
     }
@@ -341,6 +500,7 @@ class MessageItemFactory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return Container(
       color: _getMessageWidgetBGColor(message.messageDirection),
       child: messageItem(context),

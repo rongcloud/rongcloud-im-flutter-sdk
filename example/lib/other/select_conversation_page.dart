@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:rongcloud_im_plugin_example/im/util/combine_message_util.dart';
 import 'package:rongcloud_im_plugin_example/im/util/dialog_util.dart';
 import 'package:rongcloud_im_plugin_example/im/util/style.dart';
 import '../im/util/event_bus.dart';
@@ -22,7 +23,7 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
   final Map arguments;
   _SelectConversationPageState(this.arguments);
 
-  List selectMessages;
+  List<Message> selectMessages;
   int forwardType; // 0:逐条转发，1:合并转发
   List conList = new List();
   List<int> displayConversationType = [
@@ -35,7 +36,7 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
   @override
   void initState() {
     super.initState();
-    selectMessages = arguments["selectMessages"];
+    selectMessages = List<Message>.from(arguments["selectMessages"]);
     forwardType = arguments["forwardType"];
     updateConversationList();
   }
@@ -99,7 +100,21 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
       sendMessageOneByOne();
     } else {
       // 合并转发
+      sendMessageByCombine();
     }
+  }
+
+  void sendMessageByCombine() async {
+    CombineMessage combineMessage =
+        await CombineMessageUtils().combineMessage(selectMessages);
+    List<Message> messageList = List<Message>();
+    Message message = Message();
+    message.content = combineMessage;
+    messageList.add(message);
+    // 这里不使用 loading，因为发消息时 sleep 会卡住动画
+    DialogUtil.showAlertDiaLog(context, "消息转发中，请稍后...",
+        confirmButton: FlatButton(onPressed: () {}, child: Text("")));
+    sendMessage(messageList);
   }
 
   void sendMessageOneByOne() {
@@ -110,10 +125,10 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
     // 这里不使用 loading，因为发消息时 sleep 会卡住动画
     DialogUtil.showAlertDiaLog(context, "消息转发中，请稍后...",
         confirmButton: FlatButton(onPressed: () {}, child: Text("")));
-    sendMessage();
+    sendMessage(selectMessages);
   }
 
-  void sendMessage() async {
+  void sendMessage(List<Message> selectMessages) async {
     Future.delayed(Duration(milliseconds: 400), () {
       for (Message msg in selectMessages) {
         for (Conversation con in selectConList) {

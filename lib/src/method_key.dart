@@ -55,6 +55,8 @@ class RCMethodKey {
   static const String SendDirectionalMessage = 'sendDirectionalMessage';
   static const String SaveMediaToPublicDir = 'saveMediaToPublicDir';
   static const String ForwardMessageByStep = 'forwardMessageByStep';
+  static const String MessageBeginDestruct = 'messageBeginDestruct';
+  static const String MessageStopDestruct = 'messageStopDestruct';
 
 
   // 聊天室状态存储
@@ -83,4 +85,5 @@ class RCMethodCallBackKey {
   static const String TypingStatusChanged = 'TypingStatusChangedCallBack';
   static const String DownloadMediaMessage = 'DownloadMediaMessageCallBack';
   static const String RecallMessage = 'RecallMessageCallBack';
+  static const String DestructMessage = 'DestructMessageCallBack';
 }

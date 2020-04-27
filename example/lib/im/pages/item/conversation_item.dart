@@ -12,20 +12,33 @@ class ConversationItem extends StatefulWidget {
   bool showTime;
   bool multiSelect = false;
   List selectedMessageIds;
+  _ConversationItemState state;
+  ValueNotifier<int> time = ValueNotifier<int>(0);
 
-  ConversationItem(ConversationItemDelegate delegate, prefix.Message msg,
-      bool showTime, bool multiSelect, List selectedMessageIds) {
+  ConversationItem(
+      ConversationItemDelegate delegate,
+      prefix.Message msg,
+      bool showTime,
+      bool multiSelect,
+      List selectedMessageIds,
+      ValueNotifier<int> time) {
     this.message = msg;
     this.delegate = delegate;
     this.showTime = showTime;
     this.multiSelect = multiSelect;
     this.selectedMessageIds = selectedMessageIds;
+    this.time = time;
   }
 
   @override
   State<StatefulWidget> createState() {
-    return new _ConversationItemState(this.delegate, this.message,
-        this.showTime, this.multiSelect, this.selectedMessageIds);
+    return state = new _ConversationItemState(this.delegate, this.message,
+        this.showTime, this.multiSelect, this.selectedMessageIds, this.time);
+  }
+
+  void refreshUI(prefix.Message message) {
+    this.message = message;
+    state._refreshUI(message);
   }
 }
 
@@ -40,14 +53,24 @@ class _ConversationItemState extends State<ConversationItem> {
   List selectedMessageIds;
   SelectIcon icon;
 
-  _ConversationItemState(ConversationItemDelegate delegate, prefix.Message msg,
-      bool showTime, bool multiSelect, List selectedMessageIds) {
+  ValueNotifier<int> time = ValueNotifier<int>(0);
+  bool needShowMessage = true;
+
+  _ConversationItemState(
+      ConversationItemDelegate delegate,
+      prefix.Message msg,
+      bool showTime,
+      bool multiSelect,
+      List selectedMessageIds,
+      ValueNotifier<int> time) {
     this.message = msg;
     this.delegate = delegate;
     this.showTime = showTime;
     this.user = example.UserInfoDataSource.getUserInfo(msg.senderUserId);
     this.multiSelect = multiSelect;
     this.selectedMessageIds = selectedMessageIds;
+    this.time = time;
+    needShowMessage = !(msg.messageDirection == prefix.RCMessageDirection.Receive && msg.content.destructDuration != null && msg.content.destructDuration > 0 && time.value == msg.content.destructDuration);
   }
 
   @override
@@ -55,6 +78,12 @@ class _ConversationItemState extends State<ConversationItem> {
     super.initState();
     bool isSelected = selectedMessageIds.contains(message.messageId);
     icon = SelectIcon(isSelected);
+  }
+
+  void _refreshUI(prefix.Message msg) {
+    // setState(() {
+    this.message = msg;
+    // });
   }
 
   @override
@@ -214,6 +243,8 @@ class _ConversationItemState extends State<ConversationItem> {
   }
 
   void __onTapedMesssage() {
+    prefix.RongcloudImPlugin.messageBeginDestruct(message);
+    // return;
     if (delegate != null) {
       if (multiSelect == true) {
         //多选模式下修改为didTapItem处理
@@ -221,6 +252,11 @@ class _ConversationItemState extends State<ConversationItem> {
         bool isSelected = selectedMessageIds.contains(message.messageId);
         icon.updateUI(isSelected);
       } else {
+        if (!needShowMessage) {
+          needShowMessage = true;
+          setState(() {
+          });
+        }
         delegate.didTapMessageItem(message);
       }
     } else {
@@ -275,6 +311,24 @@ class _ConversationItemState extends State<ConversationItem> {
                         ? MainAxisAlignment.end
                         : MainAxisAlignment.start,
                 children: <Widget>[
+                  message.messageDirection ==
+                              prefix.RCMessageDirection.Send &&
+                          message.content != null &&
+                          message.content.destructDuration != null &&
+                          message.content.destructDuration > 0
+                      ? ValueListenableBuilder(
+                          builder:
+                              (BuildContext context, int value, Widget child) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                value > 0 ? Text("$value ", style: TextStyle(color: Colors.red),) : Text("")
+                              ],
+                            );
+                          },
+                          valueListenable: time,
+                        )
+                      : Text(""),
                   // sentStatus = 20 为发送失败
                   message.messageDirection == prefix.RCMessageDirection.Send &&
                           message.sentStatus == 20
@@ -314,10 +368,33 @@ class _ConversationItemState extends State<ConversationItem> {
                       },
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: MessageItemFactory(message: message),
+                        child: MessageItemFactory(message: message, needShow: needShowMessage),
                       ),
                     ),
                   ),
+                  message.messageDirection ==
+                              prefix.RCMessageDirection.Receive &&
+                          message.content != null &&
+                          message.content.destructDuration != null &&
+                          message.content.destructDuration > 0
+                      ? ValueListenableBuilder(
+                          builder:
+                              (BuildContext context, int value, Widget child) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                value > 0
+                                    ? Text(
+                                        " $value",
+                                        style: TextStyle(color: Colors.red),
+                                      )
+                                    : Text("")
+                              ],
+                            );
+                          },
+                          valueListenable: time,
+                        )
+                      : Text(""),
                 ]),
           ),
         )

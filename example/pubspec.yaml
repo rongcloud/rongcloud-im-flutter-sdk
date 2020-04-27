@@ -18,7 +18,7 @@ dependencies:
   open_file: ^3.0.1
   flutter_audio_recorder: ^0.5.5
   path_provider: ^1.2.0
-  permission_handler: ^4.0.0
+  permission_handler: ^5.0.0+hotfix.3
   flutter_sound: ^1.4.2
   flutter_local_notifications: ^0.8.1
   camera: ^0.5.5+1
@@ -26,9 +26,13 @@ dependencies:
   percent_indicator: ^2.1.1+1
   fluttertoast: ^3.1.3
   dio: ^3.0.9
-  shared_preferences: ^0.5.6+2
-  flutter_webview_plugin: ^0.3.10+1
+  shared_preferences: ^0.5.6+3
+  flutter_webview_plugin: ^0.3.11
+  webview_flutter: ^0.3.19+9
   image_gallery_saver: ^1.2.2
+  url_launcher: ^5.4.2
+  rxdart: ^0.24.0
+  flutter_cache_manager: ^1.2.0
 
 dev_dependencies:
   flutter_test:
@@ -50,6 +54,7 @@ flutter:
   assets:
     - assets/RCFlutterConf.json
     - assets/images/
+    - assets/combine.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:

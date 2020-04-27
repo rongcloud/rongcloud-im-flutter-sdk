@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:rongcloud_im_plugin_example/im/util/combine_message_util.dart';
 import 'item/bottom_tool_bar.dart';
 import 'package:path/path.dart' as path;
 
@@ -50,6 +51,7 @@ class _ConversationPageState extends State<ConversationPage>
   String titleContent;
   InputBarStatus currentInputStatus;
   ListView phrasesListView;
+  List emojiList = new List(); // emoji 数组
 
   MessageContentList messageContentList;
   example.BaseInfo info;
@@ -59,6 +61,8 @@ class _ConversationPageState extends State<ConversationPage>
       new List(); //已经选择的所有消息Id，只有在 multiSelect 为 YES,才会有有效值
   List userIdList = new List();
   int recordTime = 0;
+  Map burnMsgMap = Map();
+  bool isSecretChat = false;
 
   _ConversationPageState({this.arguments});
   @override
@@ -67,7 +71,7 @@ class _ConversationPageState extends State<ConversationPage>
     _requestPermissions();
 
     messageContentList = MessageContentList(
-        messageDataSource, multiSelect, selectedMessageIds, this);
+        messageDataSource, multiSelect, selectedMessageIds, this, burnMsgMap);
     conversationType = arguments["coversationType"];
     targetId = arguments["targetId"];
     currentStatus = ConversationStatus.Normal;
@@ -134,6 +138,8 @@ class _ConversationPageState extends State<ConversationPage>
         _insertOrReplaceMessage(msg);
       }
       _sendReadReceipt();
+      // // 测试接收阅后即焚直接焚烧
+      // RongcloudImPlugin.messageBeginDestruct(msg);
     });
 
     EventBus.instance.addListener(EventKeys.ReceiveReadReceipt, (map) {
@@ -173,6 +179,28 @@ class _ConversationPageState extends State<ConversationPage>
       Message msg = await RongcloudImPlugin.getMessage(messageId);
       if (msg.targetId == this.targetId) {
         _insertOrReplaceMessage(msg);
+      }
+    };
+
+    RongcloudImPlugin.onMessageDestructing =
+        (Message message, int remainDuration) async {
+      EventBus.instance.commit(EventKeys.BurnMessage,
+          {"messageId": message.messageId, "remainDuration": remainDuration});
+      print(message.toString() + remainDuration.toString());
+      burnMsgMap[message.messageId] = remainDuration;
+      if (remainDuration == 0) {
+        onGetHistoryMessages();
+        int index = -1;
+        for (var i = 0; i < messageDataSource.length; i++) {
+          Message msg = messageDataSource[i];
+          if (msg.messageId == message.messageId) {
+            index = i;
+            break;
+          }
+        }
+        messageDataSource.removeAt(index);
+        burnMsgMap.remove(message.messageId);
+        _refreshMessageContentListUI();
       }
     };
 
@@ -294,10 +322,12 @@ class _ConversationPageState extends State<ConversationPage>
     //如果数据源中相同 id 消息，那么更新对应消息，否则插入消息
     if (index >= 0) {
       messageDataSource[index] = message;
+      messageContentList.refreshItem(message);
     } else {
       messageDataSource.insert(0, message);
+      _refreshMessageContentListUI();
     }
-    _refreshMessageContentListUI();
+
   }
 
   Widget _getExtentionWidget() {
@@ -313,12 +343,39 @@ class _ConversationPageState extends State<ConversationPage>
     } else if (currentInputStatus == InputBarStatus.Phrases) {
       return Container(
           height: RCLayout.ExtentionLayoutWidth, child: _buildPhrasesList());
+    } else if (currentInputStatus == InputBarStatus.Emoji) {
+      return Container(
+          height: RCLayout.ExtentionLayoutWidth, child: _buildEmojiList());
     } else {
       if (currentInputStatus == InputBarStatus.Voice) {
         bottomInputBar.refreshUI();
       }
       return WidgetUtil.buildEmptyWidget();
     }
+  }
+
+  GridView _buildEmojiList() {
+    return GridView(
+      scrollDirection: Axis.vertical,
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: MediaQuery.of(context).size.width / 8,
+      ),
+      children: List.generate(
+        emojiList.length,
+        (index) {
+          return GestureDetector(
+            onTap: () {
+              bottomInputBar.setTextContent(emojiList[index]);
+            },
+            child: Center(
+              widthFactor: MediaQuery.of(context).size.width / 8,
+              heightFactor: MediaQuery.of(context).size.width / 8,
+              child: Text(emojiList[index], style: TextStyle(fontSize: 25)),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   ListView _buildPhrasesList() {
@@ -360,6 +417,13 @@ class _ConversationPageState extends State<ConversationPage>
     currentInputStatus = InputBarStatus.Normal;
     TextMessage msg = new TextMessage();
     msg.content = contentStr;
+    if (conversationType == RCConversationType.Private) {
+      int duration = contentStr.length <= 20
+          ? RCDuration.TextMessageBurnDuration
+          : (RCDuration.TextMessageBurnDuration + (contentStr.length - 20) / 2);
+      msg.destructDuration = isSecretChat ? duration : 0;
+    }
+
     Message message =
         await RongcloudImPlugin.sendMessage(conversationType, targetId, msg);
     _insertOrReplaceMessage(message);
@@ -408,12 +472,19 @@ class _ConversationPageState extends State<ConversationPage>
       print("imagepath " + imgPath);
       if (imgPath.endsWith("gif")) {
         GifMessage gifMsg = GifMessage.obtain(imgPath);
+        if (conversationType == RCConversationType.Private) {
+          gifMsg.destructDuration =
+              isSecretChat ? RCDuration.MediaMessageBurnDuration : 0;
+        }
         Message msg = await RongcloudImPlugin.sendMessage(
             conversationType, targetId, gifMsg);
         _insertOrReplaceMessage(msg);
       } else {
         ImageMessage imgMsg = ImageMessage.obtain(imgPath);
-        // // ImageMessage 携带用户信息
+        if (conversationType == RCConversationType.Private) {
+          imgMsg.destructDuration =
+              isSecretChat ? RCDuration.MediaMessageBurnDuration : 0;
+        }
         // UserInfo sendUserInfo = new UserInfo();
         // sendUserInfo.name = "textSendUser.name";
         // sendUserInfo.userId = "textSendUser.userId";
@@ -426,6 +497,8 @@ class _ConversationPageState extends State<ConversationPage>
         // mentionedInfo.userIdList = ["kj","oi","op"];
         // mentionedInfo.mentionedContent = "pppppppp";
         // imgMsg.mentionedInfo = mentionedInfo;
+        // // ImageMessage 测试阅后即焚携带时间
+        // imgMsg.destructDuration = 10;
         Message msg = await RongcloudImPlugin.sendMessage(
             conversationType, targetId, imgMsg);
         _insertOrReplaceMessage(msg);
@@ -443,6 +516,10 @@ class _ConversationPageState extends State<ConversationPage>
       // 保存不需要 file 开头的路径
       _saveImage(temp);
       ImageMessage imgMsg = ImageMessage.obtain(imgPath);
+      if (conversationType == RCConversationType.Private) {
+        imgMsg.destructDuration =
+            isSecretChat ? RCDuration.MediaMessageBurnDuration : 0;
+      }
       Message msg = await RongcloudImPlugin.sendMessage(
           conversationType, targetId, imgMsg);
       _insertOrReplaceMessage(msg);
@@ -451,7 +528,11 @@ class _ConversationPageState extends State<ConversationPage>
     Widget videoWidget = WidgetUtil.buildExtentionWidget(
         Icons.video_call, RCString.ExtVideo, () async {
       print("push to video record page");
-      Map map = {"coversationType": conversationType, "targetId": targetId};
+      Map map = {
+        "coversationType": conversationType,
+        "targetId": targetId,
+        "isSecretChat": isSecretChat
+      };
       Navigator.pushNamed(context, "/video_record", arguments: map);
     });
 
@@ -474,15 +555,27 @@ class _ConversationPageState extends State<ConversationPage>
       }
     });
 
+    Widget secretChatWidget = WidgetUtil.buildExtentionWidget(
+        Icons.security, RCString.ExtSecretChat, () async {
+      print("did tap secret chat");
+      isSecretChat = !isSecretChat;
+      String contentStr = isSecretChat ? "打开阅后即焚" : "关闭阅后即焚";
+      print(contentStr);
+      DialogUtil.showAlertDiaLog(context, contentStr);
+    });
+
     extWidgetList.add(imageWidget);
     extWidgetList.add(cameraWidget);
     extWidgetList.add(videoWidget);
     extWidgetList.add(fileWidget);
+    extWidgetList.add(secretChatWidget);
 
     //初始化短语
     for (int i = 0; i < 10; i++) {
       phrasesList.add('快捷回复测试用例 $i');
     }
+
+    emojiList = Emoji.emojiList;
   }
 
   void _saveImage(String imagePath) async {
@@ -641,8 +734,10 @@ class _ConversationPageState extends State<ConversationPage>
   }
 
   @override
-  void didTapMessageItem(Message message) {
+  void didTapMessageItem(Message message) async {
     print("didTapMessageItem " + message.objectName);
+    if (message.messageDirection == RCMessageDirection.Receive && message.content.destructDuration != null && message.content.destructDuration > 0)
+    RongcloudImPlugin.messageBeginDestruct(message);
     if (message.content is VoiceMessage) {
       VoiceMessage msg = message.content;
       if (msg.localPath != null &&
@@ -662,7 +757,25 @@ class _ConversationPageState extends State<ConversationPage>
       Navigator.pushNamed(context, "/file_preview", arguments: message);
     } else if (message.content is RichContentMessage) {
       RichContentMessage msg = message.content;
-      Navigator.pushNamed(context, "/webview", arguments: msg.url);
+      Map param = {"url": msg.url, "title": msg.title};
+      Navigator.pushNamed(context, "/webview", arguments: param);
+    } else if (message.content is CombineMessage) {
+      CombineMessage msg = message.content;
+      String localPath = msg.localPath;
+      String mediaUrl = msg.mMediaUrl;
+      String url = "";
+      if (localPath != null && localPath.isNotEmpty) {
+        url = localPath;
+      } else if (mediaUrl != null && mediaUrl.isNotEmpty) {
+        localPath = await CombineMessageUtils().getLocalPathFormUrl(mediaUrl);
+        if (File(localPath).existsSync()) {
+          url = localPath;
+        } else {
+          url = mediaUrl;
+        }
+      }
+      Map param = {"url": url, "title": CombineMessageUtils().getTitle(msg)};
+      Navigator.pushNamed(context, "/webview", arguments: param);
     }
   }
 
@@ -758,6 +871,16 @@ class _ConversationPageState extends State<ConversationPage>
       }
     }
 
+    if (conversationType == RCConversationType.Private) {
+      int duration = RCDuration.TextMessageBurnDuration;
+      if (text.length > 20) {
+        int textLength = text.length - 20;
+        int tempDuration = (textLength / 2).ceil();
+         duration += tempDuration;
+      }
+      msg.destructDuration = isSecretChat ? duration : 0;
+    }
+
     Message message =
         await RongcloudImPlugin.sendMessage(conversationType, targetId, msg);
     userIdList.clear();
@@ -767,6 +890,10 @@ class _ConversationPageState extends State<ConversationPage>
   @override
   void willSendVoice(String path, int duration) async {
     VoiceMessage msg = VoiceMessage.obtain(path, duration);
+    if (conversationType == RCConversationType.Private) {
+      msg.destructDuration =
+          isSecretChat ? RCDuration.TextMessageBurnDuration + duration : 0;
+    }
     Message message =
         await RongcloudImPlugin.sendMessage(conversationType, targetId, msg);
     _insertOrReplaceMessage(message);
@@ -778,8 +905,8 @@ class _ConversationPageState extends State<ConversationPage>
   @override
   void inputStatusDidChange(InputBarStatus status) {
     currentInputStatus = status;
-    _refreshUI();
     bottomInputBar.refreshUI();
+    _refreshUI();
   }
 
   @override
@@ -841,10 +968,11 @@ class _ConversationPageState extends State<ConversationPage>
         Navigator.pushNamed(context, "/select_conversation_page",
             arguments: arguments);
       },
-      // "合并转发": () {
-      //   arguments["forwardType"] = 1;
-      //   Navigator.pushNamed(context, "/select_conversation_page", arguments: arguments);
-      // },
+      "合并转发": () {
+        arguments["forwardType"] = 1;
+        Navigator.pushNamed(context, "/select_conversation_page",
+            arguments: arguments);
+      },
       "取消": () {}
     });
   }

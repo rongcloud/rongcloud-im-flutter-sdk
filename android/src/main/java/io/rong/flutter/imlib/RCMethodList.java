@@ -56,6 +56,8 @@ public class RCMethodList {
     static String MethodKeySendDirectionalMessage = "sendDirectionalMessage";
     static String MethodKeySaveMediaToPublicDir = "saveMediaToPublicDir";
     static String MethodKeyForwardMessageByStep = "forwardMessageByStep";
+    static String MethodKeyMessageBeginDestruct = "messageBeginDestruct";
+    static String MethodKeyMessageStopDestruct = "messageStopDestruct";
 
     //聊天室存储
     static String MethodKeySetChatRoomEntry = "SetChatRoomEntry";
@@ -83,5 +85,6 @@ public class RCMethodList {
     static String MethodCallBackKeyTypingStatus ="TypingStatusChangedCallBack";
     static String MethodCallBackKeyDownloadMediaMessage = "DownloadMediaMessageCallBack";
     static String MethodCallBackRecallMessage = "RecallMessageCallBack";
+    static String MethodCallBackDestructMessage = "DestructMessageCallBack";
 
 }
