@@ -33,14 +33,28 @@ class VoiceMessage extends MessageContent {
     this.extra = map["extra"];
     Map userMap = map["user"];
     super.decodeUserInfo(userMap);
+    Map menthionedMap = map["mentionedInfo"];
+    super.decodeMentionedInfo(menthionedMap);
   }
 
   @override
   String encode() {
-    Map map = {"localPath":this.localPath,"duration":this.duration,"extra":this.extra};
+    Map map = {"duration":this.duration,"extra":this.extra};
+    if (this.localPath != null) {
+      map["localPath"] = this.localPath;
+    } else {
+      map["localPath"] = "";
+    }
+    if (this.remoteUrl != null) {
+      map["remoteUrl"] = this.remoteUrl;
+    }
     if (this.sendUserInfo != null) {
       Map userMap = super.encodeUserInfo(this.sendUserInfo);
       map["user"] = userMap;
+    }
+    if (this.mentionedInfo != null) {
+      Map mentionedMap = super.encodeMentionedInfo(this.mentionedInfo);
+      map["mentionedInfo"] = mentionedMap;
     }
     return json.encode(map);
   }

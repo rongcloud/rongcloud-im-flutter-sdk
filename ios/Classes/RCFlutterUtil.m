@@ -9,6 +9,8 @@
 #import <AVFoundation/AVAsset.h>
 #import <AVFoundation/AVAssetImageGenerator.h>
 #import <AVFoundation/AVTime.h>
+#import <objc/runtime.h>
+#import <RongIMLib/RongIMLib.h>
 
 @implementation RCFlutterUtil
 
@@ -30,5 +32,16 @@
     UIImage *shotImage = [[UIImage alloc] initWithCGImage:image];
     CGImageRelease(image);
     return shotImage;
+}
+
++ (UIImage *)getThumbnailImage:(NSString *)thumbnailBase64String {
+    NSData *imageData = nil;
+    if (class_getInstanceMethod([NSData class], @selector(initWithBase64EncodedString:options:))) {
+        imageData = [[NSData alloc] initWithBase64EncodedString:thumbnailBase64String options:NSDataBase64DecodingIgnoreUnknownCharacters];
+    } else {
+        imageData = [RCUtilities dataWithBase64EncodedString:thumbnailBase64String];
+    }
+    UIImage *thumbnailImage = [UIImage imageWithData:imageData];
+    return thumbnailImage;
 }
 @end

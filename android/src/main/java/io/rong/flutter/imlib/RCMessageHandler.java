@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Base64;
 
 import java.io.BufferedOutputStream;
@@ -12,6 +13,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 
 import io.rong.common.FileUtils;
@@ -26,6 +28,10 @@ import io.rong.message.utils.BitmapUtil;
 import static android.provider.MediaStore.Video.Thumbnails.MINI_KIND;
 
 import android.media.ThumbnailUtils;
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class RCMessageHandler {
 
@@ -41,7 +47,7 @@ public class RCMessageHandler {
     private final static String VIDEO_THUMBNAIL_PATH = "/video/thumbnail/";
 
     //ImageMessageHandler encodeMessage 方法的副本
-    static public void encodeImageMessage(Message message) {
+    public static void encodeImageMessage(Message message) {
         Context context = RCIMFlutterWrapper.getInstance().getMainContext();
         File file = context.getFilesDir();
         String path = file.getAbsolutePath();
@@ -203,7 +209,7 @@ public class RCMessageHandler {
 
     }
 
-    static public void encodeSightMessage(Message message) {
+    public static void encodeSightMessage(Message message) {
         String TAG = "encodeSightMessage";
         SightMessage model = (SightMessage) message.getContent();
         Uri uri = obtainMediaFileSavedUri();
@@ -239,6 +245,9 @@ public class RCMessageHandler {
             }
         }
         try {
+            if (model.getLocalPath() == null) {
+                return;
+            }
             String videoPath = model.getLocalPath().toString().substring(5);
             RLog.d(TAG, "beforeEncodeMessage Thumbnail not save yet! " + videoPath);
             Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(videoPath, MINI_KIND);
@@ -301,6 +310,87 @@ public class RCMessageHandler {
 
 
         }
+    }
+
+    // 转发消息的时候需要携带 thumbUri 要不无法生成缩略图
+    public static byte[] encodeImageContent(ImageMessage imageMessage) {
+        JSONObject jsonObj = new JSONObject();
+
+        try {
+            if (!TextUtils.isEmpty(imageMessage.getBase64())) {
+                jsonObj.put("content", imageMessage.getBase64());
+            } else {
+                RLog.d("ImageMessage", "缩略图为空，请检查构造图片消息的地址");
+            }
+
+            if (imageMessage.getMediaUrl() != null) {
+                jsonObj.put("imageUri", imageMessage.getMediaUrl().toString());
+            }
+
+            if (imageMessage.getThumUri() != null) {
+                jsonObj.put("thumbUri", imageMessage.getThumUri().toString());
+            }
+
+            if (imageMessage.getLocalUri() != null) {
+                jsonObj.put("localPath", imageMessage.getLocalUri().toString());
+            }
+
+            if (imageMessage.isUpLoadExp()) {
+                jsonObj.put("exp", true);
+            }
+            jsonObj.put("isFull", imageMessage.isFull());
+            if (!TextUtils.isEmpty(imageMessage.getExtra()))
+                jsonObj.put("extra", imageMessage.getExtra());
+            if (imageMessage.getJSONUserInfo() != null)
+                jsonObj.putOpt("user", imageMessage.getJSONUserInfo());
+            jsonObj.put("isBurnAfterRead", imageMessage.isDestruct());
+            jsonObj.put("burnDuration", imageMessage.getDestructTime());
+        } catch (JSONException e) {
+            RLog.e("JSONException", e.getMessage());
+        }
+        return jsonObj.toString().getBytes();
+    }
+
+    public static byte[] encodeSightContent(SightMessage sightMessage) {
+        JSONObject jsonObj = new JSONObject();
+
+        try {
+            if (!TextUtils.isEmpty(sightMessage.getBase64())) {
+                jsonObj.put("content", sightMessage.getBase64());
+            } else {
+                Log.d("SightMessage", "base64 is null");
+            }
+            if (!TextUtils.isEmpty(sightMessage.getName())) {
+                jsonObj.put("name", sightMessage.getName());
+            }
+
+            jsonObj.put("size", sightMessage.getSize());
+
+            if (sightMessage.getLocalPath() != null) {
+                jsonObj.put("localPath", sightMessage.getLocalPath().toString());
+            }
+            if (sightMessage.getMediaUrl() != null) {
+                jsonObj.put("sightUrl", sightMessage.getMediaUrl().toString());
+            }
+            if (sightMessage.getThumbUri() != null) {
+                jsonObj.put("thumbUri", sightMessage.getThumbUri().toString());
+            }
+            jsonObj.put("duration", sightMessage.getDuration());
+            if (!TextUtils.isEmpty(sightMessage.getExtra()))
+                jsonObj.put("extra", sightMessage.getExtra());
+
+            if (sightMessage.getJSONUserInfo() != null)
+                jsonObj.putOpt("user", sightMessage.getJSONUserInfo());
+            jsonObj.put("isBurnAfterRead", sightMessage.isDestruct());
+            jsonObj.put("burnDuration", sightMessage.getDestructTime());
+        } catch (JSONException e) {
+            Log.e("JSONException", e.getMessage());
+        }
+        try {
+            return jsonObj.toString().getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+        }
+        return null;
     }
 
     static private String shortMD5(String... args) {

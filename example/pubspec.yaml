@@ -18,7 +18,7 @@ dependencies:
   open_file: ^3.0.1
   flutter_audio_recorder: ^0.5.5
   path_provider: ^1.2.0
-  permission_handler: '^3.2.0'
+  permission_handler: ^4.0.0
   flutter_sound: ^1.4.2
   flutter_local_notifications: ^0.8.1
   camera: ^0.5.5+1

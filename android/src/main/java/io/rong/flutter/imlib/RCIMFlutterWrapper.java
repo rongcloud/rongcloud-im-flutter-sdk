@@ -4,10 +4,14 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 
 
+import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -31,10 +35,12 @@ import io.rong.common.RLog;
 import io.rong.common.fwlog.FwLog;
 import io.rong.imlib.AnnotationNotFoundException;
 import io.rong.imlib.IRongCallback;
+import io.rong.imlib.ISendMediaMessageCallback;
 import io.rong.imlib.MessageTag;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.ChatRoomInfo;
 import io.rong.imlib.model.Conversation;
+import io.rong.imlib.model.MentionedInfo;
 import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
 import io.rong.imlib.model.SearchConversationResult;
@@ -45,6 +51,8 @@ import io.rong.message.FileMessage;
 import io.rong.message.GIFMessage;
 import io.rong.message.HQVoiceMessage;
 import io.rong.message.ImageMessage;
+import io.rong.message.LocationMessage;
+import io.rong.message.MediaMessageContent;
 import io.rong.message.MessageHandler;
 import io.rong.message.ReadReceiptMessage;
 import io.rong.message.RecallNotificationMessage;
@@ -251,10 +259,11 @@ public class RCIMFlutterWrapper {
             getUnreadMentionedMessages(call.arguments, result);
         } else if (RCMethodList.MethodKeySendDirectionalMessage.equalsIgnoreCase(call.method)) {
             sendDirectionalMessage(call.arguments, result);
-        } else if (RCMethodList.MethodKeySaveMediaToPublicDir.equalsIgnoreCase(call.method)){
+        } else if (RCMethodList.MethodKeySaveMediaToPublicDir.equalsIgnoreCase(call.method)) {
             saveMediaToPublicDir(call.arguments);
-        }
-        else {
+        } else if (RCMethodList.MethodKeyForwardMessageByStep.equalsIgnoreCase(call.method)) {
+            forwardMessageByStep(call.arguments);
+        } else {
             result.notImplemented();
         }
 
@@ -531,6 +540,7 @@ public class RCIMFlutterWrapper {
         if (arg instanceof Map) {
             Map map = (Map) arg;
             String objectName = (String) map.get("objectName");
+            String contentStr = (String) map.get("content");
             if (isMediaMessage(objectName)) {
                 sendMediaMessage(arg, result);
                 return;
@@ -540,7 +550,6 @@ public class RCIMFlutterWrapper {
             Integer t = (Integer) map.get("conversationType");
             Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
             String targetId = (String) map.get("targetId");
-            String contentStr = (String) map.get("content");
             String pushContent = (String) map.get("pushContent");
             if (pushContent.length() <= 0) {
                 pushContent = null;
@@ -572,7 +581,6 @@ public class RCIMFlutterWrapper {
                 result.success(null);
                 return;
             }
-
             Message message = RongIMClient.getInstance().sendMessage(type, targetId, content, pushContent, pushData, new RongIMClient.SendMessageCallback() {
                 @Override
                 public void onError(Integer messageId, RongIMClient.ErrorCode errorCode) {
@@ -594,7 +602,6 @@ public class RCIMFlutterWrapper {
                     mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
                 }
             });
-
             String messageS = MessageFactory.getInstance().message2String(message);
             Map msgMap = new HashMap();
             msgMap.put("message", messageS);
@@ -695,7 +702,7 @@ public class RCIMFlutterWrapper {
                 try {
                     JSONObject jsonObject = new JSONObject(contentStr);
                     String localPath = (String) jsonObject.get("localPath");
-                    String mType = (String) jsonObject.get("mType");
+                    String mType = (String) jsonObject.get("type");
                     localPath = getCorrectLocalPath(localPath);
                     Uri uri = Uri.parse(localPath);
                     content = FileMessage.obtain(uri);
@@ -712,7 +719,7 @@ public class RCIMFlutterWrapper {
             } else {
 
             }
-
+            setCommonInfo(contentStr, content);
             if (content == null) {
                 RCLog.e(LOG_TAG + " message content is nil");
                 return;
@@ -781,6 +788,61 @@ public class RCIMFlutterWrapper {
                     mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
                 }
             });
+        }
+    }
+
+    private void setCommonInfo(String contentStr, MessageContent content) {
+        try {
+            JSONObject contentObject = new JSONObject(contentStr);
+            if (contentObject.has("user")) {
+                Object userObject = contentObject.get("user");
+                if (userObject instanceof JSONObject) {
+                    JSONObject userJObject = (JSONObject) userObject;
+                    String id = "";
+                    String name = "";
+                    String portrait = "";
+                    if (userJObject.has("id")) {
+                        id = (String) userJObject.get("id");
+                    }
+                    if (userJObject.has("name")) {
+                        name = (String) userJObject.get("name");
+                    }
+                    if (userJObject.has("portrait")) {
+                        portrait = (String) userJObject.get("portrait");
+                    }
+                    UserInfo info = new UserInfo(id, name,
+                            Uri.parse(portrait));
+                    if (userJObject.has("extra")) {
+                        info.setExtra((String) userJObject.get("extra"));
+                    }
+                    content.setUserInfo(info);
+                }
+            }
+            if (contentObject.has("mentionedInfo")) {
+                Object mentionedObject = contentObject.get("mentionedInfo");
+                if (mentionedObject instanceof JSONObject) {
+                    JSONObject mentionedJObject = (JSONObject) mentionedObject;
+                    MentionedInfo info = new MentionedInfo();
+                    if (mentionedJObject.has("type")) {
+                        info.setType(MentionedInfo.MentionedType.valueOf((int) mentionedJObject.get("type")));
+                    }
+                    if (mentionedJObject.has("userIdList")) {
+                        JSONArray userIdArray = (JSONArray) mentionedJObject.get("userIdList");
+                        List<String> userIdList = new ArrayList<>();
+                        for (int i = 0; i < userIdArray.length(); i++) {
+                            String idStr = (String) userIdArray.get(i);
+                            userIdList.add(idStr);
+                        }
+                        info.setMentionedUserIdList(userIdList);
+                    }
+                    if (mentionedJObject.has("mentionedContent")) {
+                        info.setMentionedContent((String) mentionedJObject.get("mentionedContent"));
+                    }
+                    content.setMentionedInfo(info);
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
@@ -1839,6 +1901,20 @@ public class RCIMFlutterWrapper {
         });
     }
 
+    private boolean isLocalPathEmpty(String contentStr) {
+        JSONObject jsonObject = null;
+        String localPath = "";
+        try {
+            jsonObject = new JSONObject(contentStr);
+            localPath = jsonObject.getString("localPath");
+        } catch (JSONException e) {
+        }
+        if (TextUtils.isEmpty(localPath)) {
+            return true;
+        }
+        return false;
+    }
+
     private boolean isMediaMessage(String objName) {
         if (objName.equalsIgnoreCase("RC:ImgMsg") || objName.equalsIgnoreCase("RC:HQVCMsg")
                 || objName.equalsIgnoreCase("RC:SightMsg") || objName.equalsIgnoreCase("RC:FileMsg")
@@ -2490,6 +2566,48 @@ public class RCIMFlutterWrapper {
         }
     }
 
+    private void forwardMessageByStep(Object arg) {
+        final String TAG = "forwardMessageByStep";
+        if (arg instanceof Map) {
+            Map map = (Map) arg;
+            Map messageMap = (Map) map.get("message");
+            Message message = map2Message(messageMap);
+            MessageContent messageContent = message.getContent();
+            String targetId = (String) map.get("targetId");
+            int conversationType = (int) map.get("conversationType");
+            //有些消息携带了用户信息，转发的消息必须把用户信息去掉
+            messageContent.setUserInfo(null);
+            Message forwardMessage = Message.obtain(targetId, Conversation.ConversationType.setValue(conversationType), messageContent);
+
+            RongIMClient.getInstance().sendMessage(forwardMessage, "", "", new IRongCallback.ISendMessageCallback() {
+                @Override
+                public void onAttached(Message message) {
+
+                }
+
+                @Override
+                public void onSuccess(Message message) {
+                    RCLog.i(TAG + " success");
+                    Map resultMap = new HashMap();
+                    resultMap.put("messageId", message.getMessageId());
+                    resultMap.put("status", 30);
+                    resultMap.put("code", 0);
+                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
+                }
+
+                @Override
+                public void onError(Message message, RongIMClient.ErrorCode errorCode) {
+                    RCLog.e(TAG + " content is nil");
+                    Map resultMap = new HashMap();
+                    resultMap.put("messageId", message.getMessageId());
+                    resultMap.put("status", 20);
+                    resultMap.put("code", errorCode.getValue());
+                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
+                }
+            });
+        }
+    }
+
     private Message map2Message(Map messageMap) {
         String contentStr = null;
         Message message = new Message();
@@ -2513,20 +2631,38 @@ public class RCIMFlutterWrapper {
         byte[] bytes = contentStr.getBytes();
         MessageContent content = null;
         content = newMessageContent((String) messageMap.get("objectName"), bytes);
+
         if (content == null) {
             RCLog.e("Map2Message:  message content is nil");
             return null;
+        }
+        // 主动赋予值 thumUri 防止在 flutter 互相传递时丢失
+        String objectName = (String) messageMap.get("objectName");
+        if (objectName.equalsIgnoreCase("RC:ImgMsg") || objectName.equalsIgnoreCase("RC:SightMsg")) {
+            try {
+                JSONObject jsonObject = new JSONObject(contentStr);
+                if (jsonObject.has("thumbUri")) {
+                    String thumbUriStr = (String) jsonObject.get("thumbUri");
+                    if (content instanceof ImageMessage) {
+                        ((ImageMessage) content).setThumUri(Uri.parse(thumbUriStr));
+                    } else if (content instanceof SightMessage) {
+                        ((SightMessage) content).setThumbUri(Uri.parse(thumbUriStr));
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
         message.setContent(content);
         return message;
     }
 
-    private void saveMediaToPublicDir(Object arg){
+    private void saveMediaToPublicDir(Object arg) {
         if (arg instanceof Map) {
             Map paramMap = (Map) arg;
             String filePath = (String) paramMap.get("filePath");
             String type = (String) paramMap.get("type");
-            StorageUtils.saveMediaToPublicDir(getMainContext(),new File(filePath),type);
+            StorageUtils.saveMediaToPublicDir(getMainContext(), new File(filePath), type);
         }
     }
 }

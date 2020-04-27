@@ -1,4 +1,4 @@
-import 'message_content.dart';
+import '../message/message_content.dart';
 
 class Message extends Object {
   int conversationType;//会话类型 参见 RCConversationType

@@ -66,6 +66,7 @@ class RCConnectionStatus {
   static const int NetworkUnavailable = 3;//网络不可用
   static const int TokenIncorrect = 4;//token 非法，此时无法连接 im，需重新获取 token
   static const int UserBlocked = 5;//用户被封禁
+  static const int DisConnected = 6;//用户主动断开
 }
 
 ///错误码

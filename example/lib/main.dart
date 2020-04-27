@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart' as prefix;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:rongcloud_im_plugin_example/other/home_page.dart';
+import 'other/home_page.dart';
 
 import 'im/util/event_bus.dart';
-import 'package:rongcloud_im_plugin_example/user_data.dart';
+import 'user_data.dart';
 import 'router.dart';
 
 void main() => runApp(MyApp());

@@ -1,4 +1,4 @@
-import 'common_define.dart';
+import '../common_define.dart';
 
 class MessageContent implements MessageCoding, MessageContentView {
   // 消息内容中携带的发送者的用户信息

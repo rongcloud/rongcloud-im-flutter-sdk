@@ -1,18 +1,14 @@
 package io.rong.flutter.imlib;
 
 
-import android.text.TextUtils;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.rong.common.RLog;
 import io.rong.imlib.model.ChatRoomInfo;
 import io.rong.imlib.model.ChatRoomMemberInfo;
 import io.rong.imlib.model.Conversation;
@@ -57,9 +53,9 @@ public class MessageFactory {
         ReadReceiptInfo readInfo = message.getReadReceiptInfo();
         if (readInfo != null) {
             HashMap readReceiptMap = new HashMap();
-            readReceiptMap.put("isReceiptRequestMessage",readInfo.isReadReceiptMessage());
-            readReceiptMap.put("hasRespond",readInfo.hasRespond());
-            readReceiptMap.put("userIdList",readInfo.getRespondUserIdList());
+            readReceiptMap.put("isReceiptRequestMessage", readInfo.isReadReceiptMessage());
+            readReceiptMap.put("hasRespond", readInfo.hasRespond());
+            readReceiptMap.put("userIdList", readInfo.getRespondUserIdList());
             map.put("readReceiptInfo", readReceiptMap);
         }
         map.put("sentTime", message.getSentTime());
@@ -75,7 +71,7 @@ public class MessageFactory {
             RCMessageHandler.encodeImageMessage(message);
         } else if (message.getContent() instanceof SightMessage) {
             RCMessageHandler.encodeSightMessage(message);
-        } else if (message.getContent() instanceof GIFMessage){
+        } else if (message.getContent() instanceof GIFMessage) {
             RCMessageHandler.encodeGifMessage(message);
         }
         // 判断 TextMessage 内容不能为 null
@@ -84,7 +80,17 @@ public class MessageFactory {
                 ((TextMessage) content).setContent("");
             }
         }
-        byte[] data = content.encode();
+
+        byte[] data = null;
+        if (content instanceof ImageMessage) {
+            // 处理 thumbUri 丢失的问题
+            data = RCMessageHandler.encodeImageContent((ImageMessage) content);
+        } else if (content instanceof SightMessage) {
+            data = RCMessageHandler.encodeSightContent((SightMessage) content);
+        } else {
+            data = content.encode();
+        }
+
         if (data != null && data.length > 0) {
             String jsonS = new String(data);
             map.put("content", jsonS);

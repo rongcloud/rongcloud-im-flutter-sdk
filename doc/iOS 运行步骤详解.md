@@ -53,7 +53,7 @@ flutter run -d 8088549C-F46A-4BA5-81C8-A33EDB680EBE
 `audio_recorder` does not specify a Swift version and none of the targets (`Runner`) integrating it have the `SWIFT_VERSION` attribute set. Please contact the author or set the `SWIFT_VERSION` attribute in at least one of the targets that integrate this pod.
 
 1 Podfile 上添加 `use_frameworks!` 参数
- 
+
 2 Xcode 打开，选择 TARGETS -> Runnder -> Build Settings -> Levels 右边加号 -> Add User-Defined Setting -> 添加字段 `SWIFT_VERSION`，写上 Swift 版本，如 4.0
 
 详细可以参考 `example/ios` 目录的工程配置和 Podfile 文件

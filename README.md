@@ -4,9 +4,9 @@
 
 [Flutter 官网](https://flutter.dev/)
 
-[融云 iOS 文档集成](https://www.rongcloud.cn/docs/ios.html)
+[融云 iOS 文档集成](https://docs.rongcloud.cn/im/imkit/ios/quick-start/import/)
 
-[融云 Android 文档集成](https://www.rongcloud.cn/docs/android.html)
+[融云 Android 文档集成](https://docs.rongcloud.cn/im/imkit/android/quick-start/creatapp/)
 
 源码地址 [Github](https://github.com/rongcloud/rongcloud-im-flutter-sdk)，任何问题可以通过 Github Issues 提问
 
@@ -23,12 +23,12 @@
 
 在项目的 `pubspec.yaml` 中写如下依赖
 
-```
+```dart
 dependencies:
   flutter:
     sdk: flutter
 
-  rongcloud_im_plugin: ^1.1.0
+  rongcloud_im_plugin: ^1.1.1
 ```
 
 然后在项目路径执行 `flutter packages get` 来下载 Flutter Plugin
@@ -40,13 +40,13 @@ dependencies:
 
 ## 1.初始化 SDK
 
-```
+```dart
 RongcloudImPlugin.init(RongAppKey);
 ```
 
 ## 2.连接 IM
 
-```
+```dart
 int rc = await RongcloudImPlugin.connect(RongIMToken);
 print('connect result');
 print(rc);
@@ -56,7 +56,7 @@ print(rc);
 
 ## 断开 IM 连接
 
-```
+```dart
 //needPush 断开连接之后是否需要远程推送
 RongcloudImPlugin.disconnect(bool needPush)
 ```
@@ -65,17 +65,17 @@ RongcloudImPlugin.disconnect(bool needPush)
 
 发送文本消息
 
-```
+```dart
 onSendMessage() async{
       TextMessage txtMessage = new TextMessage();
-      txtMessage.content = "这条消息来自 flutter";
+      txtMessage.content = "这条消息来自 Flutter";
       Message msg = await RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, txtMessage);
       print("send message start senderUserId = "+msg.senderUserId);
   }
 ```
 发送图片消息
 
-```
+```dart
 onSendImageMessage() async {
     ImageMessage imgMessage = new ImageMessage();
     imgMessage.localPath = "image/local/path.jpg";
@@ -85,13 +85,38 @@ onSendImageMessage() async {
 
 ```
 
+发送 Gif 消息
+
+```dart
+onSendGifMessage() async {
+    GIFMessage gifMessage = GifMessage.obtain("gif/local/path.jpg");
+    Message msg = await RongcloudImPlugin.sendMessage(RCConversationType.Private, privateUserId, gifMessage);
+    print("send gif message start senderUserId = "+msg.senderUserId);
+  }
+
+```
+
 发送小视频消息
 
-详细参见[小视频消息文档](doc/小视频.md)
+详细参见[小视频消息文档](https://github.com/rongcloud/rongcloud-im-flutter-sdk/blob/master/doc/%E5%B0%8F%E8%A7%86%E9%A2%91.md)
+
+发送文件消息
+
+```dart
+onSendFileMessage() async {
+    // localPath 为文件本地路径,注意 Android 必须以 file:// 开头
+    FileMessage fileMessage = FileMessage.obtain(localPaht);
+    // 文件后缀如 "png" "txt"
+    fileMessage.mType = "XXX";
+    Message msg = await RongcloudImPlugin.sendMessage(
+              conversationType, targetId, fileMessage);
+  }
+
+```
 
 发送结果回调
 
-```
+```dart
 //消息发送结果回调
     RongcloudImPlugin.onMessageSend = (int messageId,int status,int code) {
       print("send message messsageId:"+messageId.toString()+" status:"+status.toString()+" code:"+code.toString());
@@ -100,7 +125,7 @@ onSendImageMessage() async {
 
 媒体消息媒体文件上传进度
 
-```
+```dart
 //媒体消息（图片/语音消息）上传媒体进度的回调
     RongcloudImPlugin.onUploadMediaProgress = (int messageId,int progress) {
       print("upload media messsageId:"+messageId.toString()+" progress:"+progress.toString());
@@ -109,9 +134,22 @@ onSendImageMessage() async {
 
 ## 接收消息
 
-```
+> **注：以下两个接收消息的回调只能实现一个，否则会出现重复收到消息的情况**
+
+如果离线消息量不大，可以使用下面这个回调；
+
+```dart
 //消息接收回调
     RongcloudImPlugin.onMessageReceived = (Message msg,int left) {
+      print("receive message messsageId:"+msg.messageId.toString()+" left:"+left.toString());
+    };
+```
+
+下面这个回调是 SDK 分批拉取离线消息，当离线消息量巨大的时候，建议当 left == 0 且 hasPackage == false 时刷新会话列表：
+
+```dart
+//消息接收回调
+    RongcloudImPlugin.onMessageReceivedWrapper = (Message msg, int left, bool hasPackage, bool offline) {
       print("receive message messsageId:"+msg.messageId.toString()+" left:"+left.toString());
     };
 ```
@@ -120,7 +158,7 @@ onSendImageMessage() async {
 
 获取本地历史消息
 
-```
+```dart
 onGetHistoryMessages() async {
     List msgs = await RongcloudImPlugin.getHistoryMessage(RCConversationType.Private, privateUserId, 0, 10);
     print("get history message");
@@ -132,7 +170,7 @@ onGetHistoryMessages() async {
 
 获取远端历史消息
 
-```
+```dart
 RongcloudImPlugin.getRemoteHistoryMessages(1, "1001", 0, 20,(List<Message> msgList,int code) {
       if(code == 0) {
         for(Message msg in msgList) {
@@ -146,7 +184,7 @@ RongcloudImPlugin.getRemoteHistoryMessages(1, "1001", 0, 20,(List<Message> msgLi
 
 插入发出的消息
 
-```
+```dart
 RongcloudImPlugin.insertOutgoingMessage(RCConversationType.Private, "1001", 10, msgT, 0, (msg,code){
       print("insertOutgoingMessage " + msg.content.encode() + " code " + code.toString());
 
@@ -155,7 +193,7 @@ RongcloudImPlugin.insertOutgoingMessage(RCConversationType.Private, "1001", 10, 
 
 插入收到的消息
 
-```
+```dart
 RongcloudImPlugin.insertIncomingMessage(RCConversationType.Private, "1002", "1002", 1, msgT , 0, (msg,code){
       print("insertIncomingMessage " + msg.content.encode() + " code " + code.toString());
     });
@@ -163,7 +201,7 @@ RongcloudImPlugin.insertIncomingMessage(RCConversationType.Private, "1002", "100
 
 删除特定会话消息
 
-```
+```dart
 RongcloudImPlugin.deleteMessages(RCConversationType.Private, "2002", (int code) {
 
 });
@@ -171,7 +209,7 @@ RongcloudImPlugin.deleteMessages(RCConversationType.Private, "2002", (int code) 
 
 批量删除消息
 
-```
+```dart
 List<int> mids =  new List();
 mids.add(1);
 RongcloudImPlugin.deleteMessageByIds(mids, (int code) {
@@ -183,7 +221,7 @@ RongcloudImPlugin.deleteMessageByIds(mids, (int code) {
 
 获取特定会话的未读数
 
-```
+```dart
 RongcloudImPlugin.getUnreadCount(RCConversationType.Private, "targetId", (int count,int code) {
       if( 0 == code) {
         print("未读数为"+count.toString());
@@ -193,7 +231,7 @@ RongcloudImPlugin.getUnreadCount(RCConversationType.Private, "targetId", (int co
 
 获取特定会话类型的未读数
 
-```
+```dart
 RongcloudImPlugin.getUnreadCountConversationTypeList([RCConversationType.Private,RCConversationType.Group], true, (int count, int code) {
       if( 0 == code) {
         print("未读数为"+count.toString());
@@ -203,7 +241,7 @@ RongcloudImPlugin.getUnreadCountConversationTypeList([RCConversationType.Private
 
 获取所有未读数
 
-```
+```dart
 RongcloudImPlugin.getTotalUnreadCount((int count, int code) {
       if( 0 == code) {
         print("未读数为"+count.toString());
@@ -215,7 +253,7 @@ RongcloudImPlugin.getTotalUnreadCount((int count, int code) {
 
 获取会话列表
 
-```
+```dart
 onGetConversationList() async {
     List conversationList = await RongcloudImPlugin.getConversationList([RCConversationType.Private,RCConversationType.Group,RCConversationType.System]);
 
@@ -227,7 +265,7 @@ onGetConversationList() async {
 
 删除指定会话
 
-```
+```dart
 RongcloudImPlugin.removeConversation(RCConversationType.Private, "1001", (success) {
       if(success) {
         print("删除会话成功");
@@ -239,7 +277,7 @@ RongcloudImPlugin.removeConversation(RCConversationType.Private, "1001", (succes
 
 把用户加入黑名单
 
-```
+```dart
 RongcloudImPlugin.addToBlackList(blackUserId, (int code) {
       print("_addBlackList:" + blackUserId + " code:" + code.toString());
     });
@@ -247,7 +285,7 @@ RongcloudImPlugin.addToBlackList(blackUserId, (int code) {
 
 把用户移除黑名单
 
-```
+```dart
 RongcloudImPlugin.removeFromBlackList(blackUserId, (int code) {
       print("_removeBalckList:" + blackUserId + " code:" + code.toString());
     });
@@ -255,7 +293,7 @@ RongcloudImPlugin.removeFromBlackList(blackUserId, (int code) {
 
 查询特定用户的黑名单状态
 
-```
+```dart
 RongcloudImPlugin.getBlackListStatus(blackUserId,
         (int blackStatus, int code) {
       if (0 == code) {
@@ -272,7 +310,7 @@ RongcloudImPlugin.getBlackListStatus(blackUserId,
 
 查询已经设置的黑名单列表
 
-```
+```dart
 RongcloudImPlugin.getBlackList((List/*<String>*/ userIdList, int code) {
       print("_getBlackList:" + userIdList.toString() + " code:" + code.toString());
       userIdList.forEach((userId) {
@@ -283,7 +321,7 @@ RongcloudImPlugin.getBlackList((List/*<String>*/ userIdList, int code) {
 
 ## 加入聊天室
 
-```
+```dart
 onJoinChatRoom() {
     RongcloudImPlugin.joinChatRoom("testchatroomId", 10);
   }
@@ -291,7 +329,7 @@ onJoinChatRoom() {
 
 加入聊天室回调
 
-```
+```dart
 //加入聊天室结果回调
     RongcloudImPlugin.onJoinChatRoom = (String targetId,int status) {
       print("join chatroom:"+targetId+" status:"+status.toString());
@@ -300,7 +338,7 @@ onJoinChatRoom() {
 
 ## 退出聊天室
 
-```
+```dart
 onQuitChatRoom() {
     RongcloudImPlugin.quitChatRoom("testchatroomId");
   }
@@ -308,7 +346,7 @@ onQuitChatRoom() {
 
 退出聊天室回调
 
-```
+```dart
 //退出聊天室结果回调
     RongcloudImPlugin.onQuitChatRoom = (String targetId,int status) {
       print("quit chatroom:"+targetId+" status:"+status.toString());
@@ -317,7 +355,7 @@ onQuitChatRoom() {
 
 ## 获取聊天室信息
 
-```
+```dart
 onGetChatRoomInfo() async {
     ChatRoomInfo chatRoomInfo = await RongcloudImPlugin.getChatRoomInfo("testchatroomId", 10, RCChatRoomMemberOrder.Desc);
     print("onGetChatRoomInfo targetId ="+chatRoomInfo.targetId);
@@ -328,14 +366,14 @@ onGetChatRoomInfo() async {
 
 iOS 端传递数据:
 
-``` 
+```objective-c
 [[RCIMFlutterWrapper sharedWrapper] sendDataToFlutter:@{@"key":@"ios"}];
 
 ```
 
 Android 端传递数据:
 
-```
+```java
 Map map = new HashMap();
 map.put("key","android");
 RCIMFlutterWrapper.getInstance().sendDataToFlutter(map);
@@ -343,7 +381,7 @@ RCIMFlutterWrapper.getInstance().sendDataToFlutter(map);
 
 Flutter 端接收数据:
 
-```
+```dart
 RongcloudImPlugin.onDataReceived = (Map map) {
   print("object onDataReceived " + map.toString());
 };
@@ -353,7 +391,7 @@ RongcloudImPlugin.onDataReceived = (Map map) {
 
 发送已读回执:
 
-```
+```dart
 RongcloudImPlugin.sendReadReceiptMessage(conversationType, targetId, timestamp, (int code){
   if (code == 0) {
     print('sendReadReceiptMessageSuccess');
@@ -371,6 +409,131 @@ RongcloudImPlugin.onReceiveReadReceipt = (Map map) {
 };
 ```
 
+
+## 群组已读回执
+
+[如何实现群组已读回执](https://github.com/rongcloud/rongcloud-im-flutter-sdk/blob/master/doc/%E7%BE%A4%E7%BB%84%E5%B7%B2%E8%AF%BB%E5%9B%9E%E6%89%A7.md)
+
+
+## 消息撤回
+### 撤回消息调用如下接口会返回 RecallNotificationMessage 类型的消息体，需要把原有消息的内容替换，刷新 ui 显示为此类型消息的展示
+```dart
+void _recallMessage(Message message) async {
+    RecallNotificationMessage recallNotifiMessage =
+        await RongcloudImPlugin.recallMessage(message, "");
+    if (recallNotifiMessage != null) {
+      message.content = recallNotifiMessage;
+      _insertOrReplaceMessage(message);
+    } else {
+      showShortToast("撤回失败");
+    }
+  }
+```
+## 草稿
+
+
+## 输入状态监听
+
+
+## 聊天室属性自定义
+
+详细参见[聊天室存储相关接口](https://github.com/rongcloud/rongcloud-im-flutter-sdk/blob/master/doc/%E8%81%8A%E5%A4%A9%E5%AE%A4%E5%B1%9E%E6%80%A7%E8%87%AA%E5%AE%9A%E4%B9%89.md)
+
+## 多端阅读消息数同步
+
+详细参见[多端阅读消息数同步](https://github.com/rongcloud/rongcloud-im-flutter-sdk/blob/master/doc/%E5%90%8C%E6%AD%A5%E4%BC%9A%E8%AF%9D%E5%B7%B2%E8%AF%BB%E7%8A%B6%E6%80%81.md)
+
+## 消息搜索
+### 1.搜索关键词相关的会话信息
+```dart
+static void searchConversations(
+      String keyword,
+      List conversationTypes,
+      List objectNames,
+      Function(int code, List searchConversationResult) finished)
+```
+### 2.在根据搜索会话返回的信息，针对某个会话搜索相应会话的消息
+```dart
+static void searchMessages(
+      int conversationType,
+      String targetId,
+      String keyword,
+      int count,
+      int beginTime,
+      Function(List/*<Message>*/ msgList, int code) finished) 
+```
+
+## 全局消息提醒
+
+全局屏蔽某个时间段的消息提醒
+
+```dart
+void _setNotificationQuietHours() {
+    RongcloudImPlugin.setNotificationQuietHours("09:00:00", 600,
+        (int code) {
+      String toast = "设置全局屏蔽某个时间段的消息提醒:\n" +
+          (code == 0 ? "设置成功" : "设置失败, code:" + code.toString());
+      print(toast);
+    });
+  }
+```
+
+查询已设置的全局时间段消息提醒屏蔽
+
+```dart
+  void _getNotificationQuietHours() {
+    RongcloudImPlugin.getNotificationQuietHours(
+        (int code, String startTime, int spansMin) {
+      String toast = "查询已设置的全局时间段消息提醒屏蔽\n: startTime:" +
+          startTime +
+          " spansMin:" +
+          spansMin.toString() +
+          (code == 0 ? "" : "\n设置失败, code:" + code.toString());
+      print(toast);
+    });
+  }
+```
+
+删除已设置的全局时间段消息提醒屏蔽
+
+```dart
+  void _removeNotificationQuietHours() {
+    RongcloudImPlugin.removeNotificationQuietHours((int code) {
+      String toast = "删除已设置的全局时间段消息提醒屏蔽:\n" +
+          (code == 0 ? "删除成功" : "删除失败, code:" + code.toString());
+      print(toast);
+    });
+  }
+```
+
+
+## 获取会话中@提醒自己的消息
+
+```dart
+getUnreadMentionedMessages(int conversationType, String targetId) {
+  Future<List> messages = RongcloudImPlugin.getUnreadMentionedMessages(conversationType, targetId);
+  print("get unread mentioned messages = " + messages.toString());
+}
+```
+
+
+## 发送群定向消息
+
+1. 此方法用于在群组和讨论组中发送消息给其中的部分用户，其它用户不会收到这条消息。
+2. 此方法目前仅支持群组和讨论组。
+3. 群定向消息不存储到云端，通过“单群聊消息云存储”服务无法获取到定向消息。
+
+```dart
+onSendDirectionalMessage() async {
+    TextMessage txtMessage = new TextMessage();
+    txtMessage.content = "这条消息来自 Flutter 的群定向消息";
+    Message message = await RongcloudImPlugin.sendDirectionalMessage(
+        RCConversationType.Group, targetId, ['UserId1', 'UserId2'], txtMessage);
+    print("send directional message start senderUserId = " + msg.senderUserId);
+  }
+```
+
+
 更多接口请[参考](https://github.com/rongcloud/rongcloud-im-flutter-sdk)
 
-[常见问题](./doc)
+[常见问题](https://github.com/rongcloud/rongcloud-im-flutter-sdk/tree/master/doc)

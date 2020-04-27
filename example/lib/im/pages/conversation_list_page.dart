@@ -4,12 +4,15 @@ import 'dart:core';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'item/widget_util.dart';
 import 'item/conversation_list_item.dart';
 
 import '../util/style.dart';
 import '../util/event_bus.dart';
+import '../util/dialog_util.dart';
+import '../../other/login_page.dart';
 
 class ConversationListPage extends StatefulWidget {
   @override
@@ -77,7 +80,23 @@ class _ConversationListPageState extends State<ConversationListPage>
     });
 
     RongcloudImPlugin.onConnectionStatusChange = (int connectionStatus) {
-      if (RCConnectionStatus.Connected == connectionStatus) {
+      if (RCConnectionStatus.KickedByOtherClient == connectionStatus ||
+          RCConnectionStatus.TokenIncorrect == connectionStatus ||
+          RCConnectionStatus.UserBlocked == connectionStatus) {
+        String toast = "连接状态变化 $connectionStatus, 请退出后重新登录";
+        DialogUtil.showAlertDiaLog(context, toast,
+            confirmButton: FlatButton(
+                onPressed: () async {
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  prefs.remove("token");
+                  Navigator.of(context).pushAndRemoveUntil(
+                      new MaterialPageRoute(
+                          builder: (context) => new LoginPage()),
+                      (route) => route == null);
+                },
+                child: Text("重新登录")));
+      } else if (RCConnectionStatus.Connected == connectionStatus) {
         updateConversationList();
       }
     };
@@ -92,10 +111,12 @@ class _ConversationListPageState extends State<ConversationListPage>
     RongcloudImPlugin.removeConversation(
         conversation.conversationType, conversation.targetId, (bool success) {
       if (success) {
-        RongcloudImPlugin.deleteMessages(
-            conversation.conversationType, conversation.targetId, (int code) {
-          updateConversationList();
-        });
+        updateConversationList();
+        // // 如果需要删除会话中的消息调用下面的接口
+        // RongcloudImPlugin.deleteMessages(
+        //     conversation.conversationType, conversation.targetId, (int code) {
+        //   updateConversationList();
+        // });
       }
     });
   }

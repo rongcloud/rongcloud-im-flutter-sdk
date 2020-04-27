@@ -1,19 +1,8 @@
 import 'dart:core';
 import 'dart:convert' show json;
 
-import '../rongcloud_im_plugin.dart';
-import 'message.dart';
-import 'conversation.dart';
-import 'chatroom_info.dart';
-
-import 'message_content.dart';
-import 'text_message.dart';
-import 'image_message.dart';
-import 'voice_message.dart';
-import 'sight_message.dart';
-
-import 'util/type_util.dart';
-import 'recall_notification_message.dart';
+import '../../rongcloud_im_plugin.dart';
+import '../util/type_util.dart';
 
 class MessageFactory extends Object {
   factory MessageFactory() =>_getInstance();

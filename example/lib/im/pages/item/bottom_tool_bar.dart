@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rongcloud_im_plugin_example/im/util/style.dart';
 
 class BottomToolBar extends StatefulWidget {
   BottomToolBarDelegate delegate;
@@ -32,9 +33,16 @@ class _BottomToolBarState extends State<BottomToolBar> {
         children: <Widget>[
           IconButton(
             icon: Icon(Icons.delete),
-            iconSize: 32,
+            iconSize: RCLayout.BottomIconLayoutSize,
             onPressed: () {
-              tapDelegate();
+              tapDelete();
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.forward),
+            iconSize: RCLayout.BottomIconLayoutSize,
+            onPressed: () {
+              tapForward();
             },
           ),
         ],
@@ -42,9 +50,17 @@ class _BottomToolBarState extends State<BottomToolBar> {
     );
   }
 
-  void tapDelegate() {
+  void tapDelete() {
     if (this.delegate != null) {
-      this.delegate.didTapDelegate();
+      this.delegate.didTapDelete();
+    } else {
+      print("没有实现 BottomToolBarDelegate");
+    }
+  }
+
+  void tapForward() {
+    if (this.delegate != null) {
+      this.delegate.didTapForward();
     } else {
       print("没有实现 BottomToolBarDelegate");
     }
@@ -52,5 +68,6 @@ class _BottomToolBarState extends State<BottomToolBar> {
 }
 
 abstract class BottomToolBarDelegate {
-  void didTapDelegate();
+  void didTapDelete();
+  void didTapForward();
 }

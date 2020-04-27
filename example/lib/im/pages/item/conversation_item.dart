@@ -4,7 +4,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart' as prefix;
 import 'message_item_factory.dart';
 import 'widget_util.dart';
 import '../../util/style.dart';
-import '../../util/user_info_datesource.dart';
+import '../../util/user_info_datesource.dart' as example;
 
 class ConversationItem extends StatefulWidget {
   prefix.Message message;
@@ -33,7 +33,7 @@ class _ConversationItemState extends State<ConversationItem> {
   prefix.Message message;
   ConversationItemDelegate delegate;
   bool showTime;
-  UserInfo user;
+  example.UserInfo user;
   Offset tapPos;
   bool multiSelect;
   bool isSeleceted = false;
@@ -45,7 +45,7 @@ class _ConversationItemState extends State<ConversationItem> {
     this.message = msg;
     this.delegate = delegate;
     this.showTime = showTime;
-    this.user = UserInfoDataSource.getUserInfo(msg.senderUserId);
+    this.user = example.UserInfoDataSource.getUserInfo(msg.senderUserId);
     this.multiSelect = multiSelect;
     this.selectedMessageIds = selectedMessageIds;
   }
@@ -83,7 +83,7 @@ class _ConversationItemState extends State<ConversationItem> {
           height: RCLayout.MessageNotifiItemHeight,
           color: Color(RCColor.MessageTimeBgColor),
           child: Text(
-            '成功撤回一条消息',
+            RCString.ConRecallMessageSuccess,
             style: TextStyle(
                 color: Colors.white, fontSize: RCFont.MessageNotifiFont),
           ),
@@ -215,7 +215,14 @@ class _ConversationItemState extends State<ConversationItem> {
 
   void __onTapedMesssage() {
     if (delegate != null) {
-      delegate.didTapMessageItem(message);
+      if (multiSelect == true) {
+        //多选模式下修改为didTapItem处理
+        delegate.didTapItem(message);
+        bool isSelected = selectedMessageIds.contains(message.messageId);
+        icon.updateUI(isSelected);
+      } else {
+        delegate.didTapMessageItem(message);
+      }
     } else {
       print("没有实现 ConversationItemDelegate");
     }
@@ -257,27 +264,62 @@ class _ConversationItemState extends State<ConversationItem> {
       children: <Widget>[
         Expanded(
           child: Container(
-              padding: EdgeInsets.fromLTRB(15, 6, 15, 10),
-              alignment:
-                  message.messageDirection == prefix.RCMessageDirection.Send
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTapDown: (TapDownDetails details) {
-                  this.tapPos = details.globalPosition;
-                },
-                onTap: () {
-                  __onTapedMesssage();
-                },
-                onLongPress: () {
-                  __onLongPressMessage(this.tapPos);
-                },
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: MessageItemFactory(message: message),
-                ),
-              )),
+            padding: EdgeInsets.fromLTRB(15, 6, 15, 10),
+            alignment:
+                message.messageDirection == prefix.RCMessageDirection.Send
+                    ? Alignment.centerRight
+                    : Alignment.centerLeft,
+            child: Row(
+                mainAxisAlignment:
+                    message.messageDirection == prefix.RCMessageDirection.Send
+                        ? MainAxisAlignment.end
+                        : MainAxisAlignment.start,
+                children: <Widget>[
+                  // sentStatus = 20 为发送失败
+                  message.messageDirection == prefix.RCMessageDirection.Send &&
+                          message.sentStatus == 20
+                      ? Container(
+                          padding: EdgeInsets.fromLTRB(6, 6, 6, 6),
+                          child: GestureDetector(
+                              onTap: () {
+                                if (delegate != null) {
+                                  if (multiSelect == true) {
+                                    //多选模式下修改为didTapItem处理
+                                    delegate.didTapItem(message);
+                                    bool isSelected = selectedMessageIds
+                                        .contains(message.messageId);
+                                    icon.updateUI(isSelected);
+                                  } else {
+                                    delegate.didTapReSendMessage(message);
+                                  }
+                                }
+                              },
+                              child: Image.asset(
+                                "assets/images/rc_ic_warning.png",
+                                width: RCLayout.MessageErrorHeight,
+                                height: RCLayout.MessageErrorHeight,
+                              )))
+                      : WidgetUtil.buildEmptyWidget(),
+                  Container(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTapDown: (TapDownDetails details) {
+                        this.tapPos = details.globalPosition;
+                      },
+                      onTap: () {
+                        __onTapedMesssage();
+                      },
+                      onLongPress: () {
+                        __onLongPressMessage(this.tapPos);
+                      },
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: MessageItemFactory(message: message),
+                      ),
+                    ),
+                  ),
+                ]),
+          ),
         )
       ],
     );
@@ -330,6 +372,8 @@ abstract class ConversationItemDelegate {
   void didSendMessageRequest(prefix.Message message);
   //点击消息已读人数
   void didTapMessageReadInfo(prefix.Message message);
+  //点击消息已读人数
+  void didTapReSendMessage(prefix.Message message);
 }
 
 // 多选模式下 cell 显示的 Icon
@@ -366,6 +410,7 @@ class _SelectIconState extends State<SelectIcon> {
   Widget build(BuildContext context) {
     return Icon(
       isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+      size: 20,
     );
   }
 }

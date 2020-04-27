@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:rongcloud_im_plugin_example/im/util/file.dart';
+import '../../util/file.dart';
 import '../../util/media_util.dart';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -13,9 +13,14 @@ class MessageItemFactory extends StatelessWidget {
   const MessageItemFactory({Key key, this.message}) : super(key: key);
 
   ///文本消息 item
-  Widget textMessageItem() {
+  Widget textMessageItem(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     TextMessage msg = message.content;
     return Container(
+      constraints: BoxConstraints(
+        // 屏幕宽度减去头像宽度加上间距
+        maxWidth: screenWidth - 140,
+      ),
       padding: EdgeInsets.all(8),
       child: Text(
         msg.content,
@@ -33,6 +38,9 @@ class MessageItemFactory extends StatelessWidget {
     if (msg.content != null && msg.content.length > 0) {
       Uint8List bytes = base64.decode(msg.content);
       widget = Image.memory(bytes);
+      if (msg.localPath == null) {
+        RongcloudImPlugin.downloadMediaMessage(message);
+      }
     } else {
       if (msg.localPath != null) {
         String path = MediaUtil.instance.getCorrectedLocalPath(msg.localPath);
@@ -217,11 +225,12 @@ class MessageItemFactory extends StatelessWidget {
     );
   }
 
-  Widget fileMessageItem() {
+  Widget fileMessageItem(BuildContext context) {
     FileMessage fileMessage = message.content;
+    double screenWidth = MediaQuery.of(context).size.width;
     return Container(
-        height: 80,
-        width: 240,
+        height: (screenWidth - 140) / 3,
+        width: screenWidth - 140,
         child:
             Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
           Container(
@@ -234,7 +243,7 @@ class MessageItemFactory extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
               Container(
-                width: 160,
+                width: screenWidth - 220,
                 child: Text(
                   fileMessage.mName,
                   textWidthBasis: TextWidthBasis.parent,
@@ -247,7 +256,7 @@ class MessageItemFactory extends StatelessWidget {
               ),
               Container(
                   margin: EdgeInsets.only(top: 8),
-                  width: 160,
+                  width: screenWidth - 220,
                   child: Text(
                     FileUtil.formatFileSize(fileMessage.mSize),
                     style:
@@ -259,11 +268,11 @@ class MessageItemFactory extends StatelessWidget {
   }
 
   ///图文消息 item
-  Widget richContentMessageItem() {
+  Widget richContentMessageItem(BuildContext context) {
     RichContentMessage msg = message.content;
-
+    double screenWidth = MediaQuery.of(context).size.width;
     return Container(
-      width: 240,
+      width: screenWidth - 140,
       child: Column(children: <Widget>[
         Container(
           padding: EdgeInsets.all(10),
@@ -280,7 +289,7 @@ class MessageItemFactory extends StatelessWidget {
             children: <Widget>[
               Container(
                 padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
-                width: 180,
+                width: screenWidth - 200,
                 child: Text(
                   msg.digest,
                   style: new TextStyle(color: Colors.black, fontSize: 13),
@@ -289,8 +298,8 @@ class MessageItemFactory extends StatelessWidget {
                 ),
               ),
               Container(
-                width: 45,
-                height: 45,
+                width: RCLayout.RichMessageImageSize,
+                height: RCLayout.RichMessageImageSize,
                 child: msg.imageURL == null || msg.imageURL.isEmpty
                     ? Image.asset("assets/images/rich_content_msg_default.png")
                     : Image.network(msg.imageURL),
@@ -304,7 +313,7 @@ class MessageItemFactory extends StatelessWidget {
 
   Widget messageItem(BuildContext context) {
     if (message.content is TextMessage) {
-      return textMessageItem();
+      return textMessageItem(context);
     } else if (message.content is ImageMessage) {
       return imageMessageItem();
     } else if (message.content is VoiceMessage) {
@@ -312,9 +321,9 @@ class MessageItemFactory extends StatelessWidget {
     } else if (message.content is SightMessage) {
       return sightMessageItem();
     } else if (message.content is FileMessage) {
-      return fileMessageItem();
+      return fileMessageItem(context);
     } else if (message.content is RichContentMessage) {
-      return richContentMessageItem();
+      return richContentMessageItem(context);
     } else if (message.content is GifMessage) {
       return gifMessageItem(context);
     } else {

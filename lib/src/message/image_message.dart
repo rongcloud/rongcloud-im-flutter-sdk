@@ -8,6 +8,7 @@ class ImageMessage extends MessageContent {
   String extra;
   String content;
   String imageUri;
+  String mThumbUri;//缩略图地址
 
 
   /// [localPath] 本地路径，Android 必须以 file:// 开头
@@ -23,17 +24,38 @@ class ImageMessage extends MessageContent {
     this.localPath = map["localPath"];
     this.content = map["content"];
     this.imageUri = map["imageUri"];
+    this.mThumbUri = map["thumbUri"];
     this.extra = map["extra"];
     Map userMap = map["user"];
     super.decodeUserInfo(userMap);
+    Map menthionedMap = map["mentionedInfo"];
+    super.decodeMentionedInfo(menthionedMap);
   }
 
   @override
   String encode() {
-    Map map = {"localPath":this.localPath,"extra":this.extra};
+    Map map = {"extra":this.extra};
+    if (this.content != null) {
+      map["content"] = this.content;
+    }
+    if (this.localPath != null) {
+      map["localPath"] = this.localPath;
+    } else {
+      map["localPath"] = "";
+    }
+    if (this.imageUri != null) {
+      map["imageUri"] = this.imageUri;
+    }
+    if (this.mThumbUri != null) {
+      map["thumbUri"] = this.mThumbUri;
+    }
     if (this.sendUserInfo != null) {
       Map userMap = super.encodeUserInfo(this.sendUserInfo);
       map["user"] = userMap;
+    }
+    if (this.mentionedInfo != null) {
+      Map mentionedMap = super.encodeMentionedInfo(this.mentionedInfo);
+      map["mentionedInfo"] = mentionedMap;
     }
     return json.encode(map);
   }

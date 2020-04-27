@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:rongcloud_im_plugin_example/im/pages/file_preview_page.dart';
-import 'package:rongcloud_im_plugin_example/other/search_message_page.dart';
+import 'im/pages/file_preview_page.dart';
+import 'other/search_message_page.dart';
 
 import 'im/pages/conversation_page.dart';
 import 'im/pages/image_preview_page.dart';
@@ -13,6 +13,7 @@ import 'other/debug_page.dart';
 import 'other/message_read_page.dart';
 import 'other/chat_debug_page.dart';
 import 'other/chatroom_debug_page.dart';
+import 'other/select_conversation_page.dart';
 
 final routes = {
   '/': (context) => HomePage(),
@@ -32,6 +33,7 @@ final routes = {
   '/chat_debug': (context, {arguments}) => ChatDebugPage(arguments: arguments),
   '/chatroom_debug': (context, {arguments}) => ChatRoomDebugPage(),
   '/search_message': (context, {arguments}) => SearchMessagePage(arguments: arguments),
+  '/select_conversation_page': (context, {arguments}) => SelectConversationPage(arguments: arguments),
 };
 
 var onGenerateRoute = (RouteSettings settings) {

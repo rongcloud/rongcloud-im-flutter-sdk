@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:rongcloud_im_plugin_example/im/pages/item/bottom_tool_bar.dart';
+import 'item/bottom_tool_bar.dart';
 import 'package:path/path.dart' as path;
 
 import '../util/style.dart';
@@ -10,11 +10,12 @@ import 'item/bottom_input_bar.dart';
 import 'item/message_content_list.dart';
 import 'item/widget_util.dart';
 
-import '../util/user_info_datesource.dart';
+import '../util/user_info_datesource.dart' as example;
 import '../util/media_util.dart';
 import '../util/event_bus.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import '../util/dialog_util.dart';
 
 enum ConversationStatus {
   Normal, //正常
@@ -51,12 +52,13 @@ class _ConversationPageState extends State<ConversationPage>
   ListView phrasesListView;
 
   MessageContentList messageContentList;
-  BaseInfo info;
+  example.BaseInfo info;
 
   bool multiSelect = false; //是否是多选模式
   List selectedMessageIds =
       new List(); //已经选择的所有消息Id，只有在 multiSelect 为 YES,才会有有效值
   List userIdList = new List();
+  int recordTime = 0;
 
   _ConversationPageState({this.arguments});
   @override
@@ -73,9 +75,9 @@ class _ConversationPageState extends State<ConversationPage>
     bottomToolBar = BottomToolBar(this);
 
     if (conversationType == RCConversationType.Private) {
-      this.info = UserInfoDataSource.getUserInfo(targetId);
+      this.info = example.UserInfoDataSource.getUserInfo(targetId);
     } else {
-      this.info = UserInfoDataSource.getGroupInfo(targetId);
+      this.info = example.UserInfoDataSource.getGroupInfo(targetId);
     }
 
     titleContent = '与 $targetId 的会话';
@@ -109,6 +111,14 @@ class _ConversationPageState extends State<ConversationPage>
 
   void _pullMoreHistoryMessage() async {
     //todo 加载更多历史消息
+
+    int messageId = -1;
+    Message tempMessage = messageDataSource.last;
+    if (tempMessage != null && tempMessage.messageId > 0) {
+      messageId = tempMessage.messageId;
+      recordTime = tempMessage.sentTime;
+    }
+    onLoadMoreHistoryMessages(messageId);
   }
 
   ///请求相应的权限，只会在此一次触发
@@ -128,7 +138,7 @@ class _ConversationPageState extends State<ConversationPage>
 
     EventBus.instance.addListener(EventKeys.ReceiveReadReceipt, (map) {
       String tId = map["tId"];
-      if (tId == this.targetId){
+      if (tId == this.targetId) {
         onGetHistoryMessages();
       }
     });
@@ -149,6 +159,15 @@ class _ConversationPageState extends State<ConversationPage>
       }
     });
 
+    EventBus.instance.addListener(EventKeys.ForwardMessageEnd, (arg) {
+      print("ForwardMessageEnd：" + this.targetId);
+      multiSelect = false;
+      selectedMessageIds.clear();
+      // onGetHistoryMessages();
+      _refreshMessageContentListUI();
+      _refreshUI();
+    });
+
     RongcloudImPlugin.onMessageSend =
         (int messageId, int status, int code) async {
       Message msg = await RongcloudImPlugin.getMessage(messageId);
@@ -164,10 +183,10 @@ class _ConversationPageState extends State<ConversationPage>
         if (typingStatus.length > 0) {
           TypingStatus status = typingStatus[typingStatus.length - 1];
           if (status.typingContentType == TextMessage.objectName) {
-            titleContent = '对方正在输入...';
+            titleContent = RCString.ConTyping;
           } else if (status.typingContentType == VoiceMessage.objectName ||
               status.typingContentType == 'RC:VcMsg') {
-            titleContent = '对方正在讲话...';
+            titleContent = RCString.ConSpeaking;
           }
         } else {
           titleContent = '与 $targetId 的会话';
@@ -181,6 +200,14 @@ class _ConversationPageState extends State<ConversationPage>
         if (message.targetId == this.targetId) {
           _insertOrReplaceMessage(message);
         }
+      }
+    };
+
+    RongcloudImPlugin.onDownloadMediaMessageResponse =
+        (int code, int progress, int messageId, Message message) async {
+      // 下载媒体消息后更新对应的消息
+      if (code == 0) {
+        _replaceMeidaMessage(message);
       }
     };
   }
@@ -198,6 +225,39 @@ class _ConversationPageState extends State<ConversationPage>
     _refreshMessageContentListUI();
   }
 
+  onLoadMoreHistoryMessages(int messageId) async {
+    print("get more history message");
+
+    List msgs = await RongcloudImPlugin.getHistoryMessage(
+        conversationType, targetId, messageId, 20);
+    if (msgs != null) {
+      msgs.sort((a, b) => b.sentTime.compareTo(a.sentTime));
+      messageDataSource += msgs;
+      if (msgs.length < 20) {
+        Message tempMessage = messageDataSource.last;
+        recordTime = tempMessage.sentTime;
+        onLoadRemoteHistoryMessages();
+      }
+    }
+    _refreshMessageContentListUI();
+  }
+
+  onLoadRemoteHistoryMessages() async {
+    print("get Remote history message");
+
+    RongcloudImPlugin.getRemoteHistoryMessages(
+        conversationType, targetId, recordTime, 20,
+        (List/*<Message>*/ msgList, int code) {
+      if (code == 0 && msgList != null) {
+        msgList.sort((a, b) => b.sentTime.compareTo(a.sentTime));
+        messageDataSource += msgList;
+        if (msgList.length == 20) {
+          _refreshMessageContentListUI();
+        }
+      }
+    });
+  }
+
   onGetTextMessageDraft() async {
     textDraft =
         await RongcloudImPlugin.getTextMessageDraft(conversationType, targetId);
@@ -205,6 +265,21 @@ class _ConversationPageState extends State<ConversationPage>
       bottomInputBar.setTextContent(textDraft);
     }
     // _refreshUI();
+  }
+
+  void _replaceMeidaMessage(Message message) {
+    for (int i = 0; i < messageDataSource.length; i++) {
+      Message msg = messageDataSource[i];
+      if (msg.messageId == message.messageId) {
+        MessageContent messageContent = msg.content;
+        if (messageContent is ImageMessage ||
+            messageContent is SightMessage ||
+            messageContent is GifMessage) {
+          messageDataSource[i] = message;
+        }
+      }
+      break;
+    }
   }
 
   void _insertOrReplaceMessage(Message message) {
@@ -228,7 +303,7 @@ class _ConversationPageState extends State<ConversationPage>
   Widget _getExtentionWidget() {
     if (currentInputStatus == InputBarStatus.Extention) {
       return Container(
-          height: 180,
+          height: RCLayout.ExtentionLayoutWidth,
           child: GridView.count(
             physics: new NeverScrollableScrollPhysics(),
             crossAxisCount: 4,
@@ -236,7 +311,8 @@ class _ConversationPageState extends State<ConversationPage>
             children: extWidgetList,
           ));
     } else if (currentInputStatus == InputBarStatus.Phrases) {
-      return Container(height: 180, child: _buildPhrasesList());
+      return Container(
+          height: RCLayout.ExtentionLayoutWidth, child: _buildPhrasesList());
     } else {
       if (currentInputStatus == InputBarStatus.Voice) {
         bottomInputBar.refreshUI();
@@ -264,9 +340,9 @@ class _ConversationPageState extends State<ConversationPage>
                   alignment: Alignment.center,
                   child: Text(contentStr,
                       style: new TextStyle(
-                        fontSize: 14, //字体大���
+                        fontSize: RCFont.CommonPhrasesSize,
                       )),
-                  height: 36,
+                  height: RCLayout.CommonPhrasesHeight,
                 ));
           } else {
             return WidgetUtil.buildEmptyWidget();
@@ -323,8 +399,8 @@ class _ConversationPageState extends State<ConversationPage>
   }
 
   void _initExtentionWidgets() {
-    Widget imageWidget =
-        WidgetUtil.buildExtentionWidget(Icons.photo, "相册", () async {
+    Widget imageWidget = WidgetUtil.buildExtentionWidget(
+        Icons.photo, RCString.ExtPhoto, () async {
       String imgPath = await MediaUtil.instance.pickImage();
       if (imgPath == null) {
         return;
@@ -333,18 +409,31 @@ class _ConversationPageState extends State<ConversationPage>
       if (imgPath.endsWith("gif")) {
         GifMessage gifMsg = GifMessage.obtain(imgPath);
         Message msg = await RongcloudImPlugin.sendMessage(
-          conversationType, targetId, gifMsg);
+            conversationType, targetId, gifMsg);
         _insertOrReplaceMessage(msg);
       } else {
         ImageMessage imgMsg = ImageMessage.obtain(imgPath);
+        // // ImageMessage 携带用户信息
+        // UserInfo sendUserInfo = new UserInfo();
+        // sendUserInfo.name = "textSendUser.name";
+        // sendUserInfo.userId = "textSendUser.userId";
+        // sendUserInfo.portraitUri = "textSendUser.portraitUrl";
+        // sendUserInfo.extra = "textSendUser.extra";
+        // imgMsg.sendUserInfo = sendUserInfo;
+        // // ImageMessage 携带 @ 信息
+        // MentionedInfo mentionedInfo = new MentionedInfo();
+        // mentionedInfo.type = 2;
+        // mentionedInfo.userIdList = ["kj","oi","op"];
+        // mentionedInfo.mentionedContent = "pppppppp";
+        // imgMsg.mentionedInfo = mentionedInfo;
         Message msg = await RongcloudImPlugin.sendMessage(
-          conversationType, targetId, imgMsg);
+            conversationType, targetId, imgMsg);
         _insertOrReplaceMessage(msg);
       }
     });
 
-    Widget cameraWidget =
-        WidgetUtil.buildExtentionWidget(Icons.camera, "相机", () async {
+    Widget cameraWidget = WidgetUtil.buildExtentionWidget(
+        Icons.camera, RCString.ExtCamera, () async {
       String imgPath = await MediaUtil.instance.takePhoto();
       if (imgPath == null) {
         return;
@@ -359,15 +448,15 @@ class _ConversationPageState extends State<ConversationPage>
       _insertOrReplaceMessage(msg);
     });
 
-    Widget videoWidget =
-        WidgetUtil.buildExtentionWidget(Icons.video_call, "视频", () async {
+    Widget videoWidget = WidgetUtil.buildExtentionWidget(
+        Icons.video_call, RCString.ExtVideo, () async {
       print("push to video record page");
       Map map = {"coversationType": conversationType, "targetId": targetId};
       Navigator.pushNamed(context, "/video_record", arguments: map);
     });
 
-    Widget fileWidget =
-        WidgetUtil.buildExtentionWidget(Icons.folder, "文件", () async {
+    Widget fileWidget = WidgetUtil.buildExtentionWidget(
+        Icons.folder, RCString.ExtFolder, () async {
       List<File> files = await MediaUtil.instance.pickFiles();
       if (files != null && files.length > 0) {
         for (File file in files) {
@@ -474,7 +563,7 @@ class _ConversationPageState extends State<ConversationPage>
     if (multiSelect == true) {
       return <Widget>[
         FlatButton(
-          child: Text("取消"),
+          child: Text(RCString.ConCancel),
           textColor: Colors.white,
           onPressed: () {
             multiSelect = false;
@@ -556,14 +645,16 @@ class _ConversationPageState extends State<ConversationPage>
     print("didTapMessageItem " + message.objectName);
     if (message.content is VoiceMessage) {
       VoiceMessage msg = message.content;
-      if (msg.localPath != null && msg.localPath.isNotEmpty && File(msg.localPath).existsSync()) {
+      if (msg.localPath != null &&
+          msg.localPath.isNotEmpty &&
+          File(msg.localPath).existsSync()) {
         MediaUtil.instance.startPlayAudio(msg.localPath);
       } else {
         MediaUtil.instance.startPlayAudio(msg.remoteUrl);
         RongcloudImPlugin.downloadMediaMessage(message);
       }
-      
-    } else if (message.content is ImageMessage || message.content is GifMessage) {
+    } else if (message.content is ImageMessage ||
+        message.content is GifMessage) {
       Navigator.pushNamed(context, "/image_preview", arguments: message);
     } else if (message.content is SightMessage) {
       Navigator.pushNamed(context, "/video_play", arguments: message);
@@ -638,8 +729,7 @@ class _ConversationPageState extends State<ConversationPage>
   @override
   void didLongPressUserPortrait(String userId, Offset tapPos) {
     if (conversationType == RCConversationType.Group) {
-      BaseInfo targetInfo = UserInfoDataSource.getUserInfo(userId);
-      String content = "@" + userId + " " + targetInfo.name + " ";
+      String content = "@" + userId + " ";
       bottomInputBar.setTextContent(content);
       userIdList.add(userId);
     }
@@ -652,7 +742,7 @@ class _ConversationPageState extends State<ConversationPage>
     msg.content = text;
 
     if (conversationType == RCConversationType.Group) {
-      // 群组发送消息携带用户信息
+      // 群组发送消息携带@信息
       List<String> tapUserIdList = List();
       for (String userId in this.userIdList) {
         if (text.contains(userId) && (!tapUserIdList.contains(userId))) {
@@ -712,18 +802,72 @@ class _ConversationPageState extends State<ConversationPage>
   }
 
   @override
-  void didTapDelegate() {
+  void didTapDelete() {
     List<int> messageIds = new List<int>.from(selectedMessageIds);
     multiSelect = false;
     RongcloudImPlugin.deleteMessageByIds(messageIds, (int code) {
       if (code == 0) {
         onGetHistoryMessages();
+        _refreshUI();
       }
+    });
+  }
+
+  bool canForward(String objectName) {
+    List writeList = [TextMessage.objectName, VoiceMessage.objectName, ImageMessage.objectName, GifMessage.objectName, SightMessage.objectName, FileMessage.objectName, RichContentMessage.objectName, ];
+    if (writeList.contains(objectName)) {
+      return true;
+    }
+    return false;
+  }
+
+  @override
+  void didTapForward() async {
+    List selectMsgs = new List();
+    for (int msgId in selectedMessageIds) {
+      Message forwardMsg = await RongcloudImPlugin.getMessage(msgId);
+      if (canForward(forwardMsg.objectName)) {
+        selectMsgs.add(forwardMsg);
+      } else {
+        DialogUtil.showAlertDiaLog(context, RCString.ForwardHint);
+        return;
+      }
+    }
+
+    Map arguments = {"selectMessages": selectMsgs};
+    DialogUtil.showBottomSheetDialog(context, {
+      "逐条转发": () {
+        arguments["forwardType"] = 0;
+        Navigator.pushNamed(context, "/select_conversation_page",
+            arguments: arguments);
+      },
+      // "合并转发": () {
+      //   arguments["forwardType"] = 1;
+      //   Navigator.pushNamed(context, "/select_conversation_page", arguments: arguments);
+      // },
+      "取消": () {}
     });
   }
 
   @override
   void willpullMoreHistoryMessage() {
     _pullMoreHistoryMessage();
+  }
+
+  @override
+  void didTapReSendMessage(Message message) async {
+    RongcloudImPlugin.deleteMessageByIds([message.messageId], (int code) async {
+      // 清除数据
+      for (int i = 0; i < messageDataSource.length; i++) {
+        Message msg = messageDataSource[i];
+        if (msg.messageId == message.messageId) {
+          messageDataSource.removeAt(i);
+          break;
+        }
+      }
+      Message msg = await RongcloudImPlugin.sendMessage(
+          conversationType, targetId, message.content);
+      _insertOrReplaceMessage(msg);
+    });
   }
 }

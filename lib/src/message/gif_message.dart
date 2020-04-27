@@ -40,6 +40,8 @@ class GifMessage extends MessageContent {
     this.gifDataSize = map["gifDataSize"];
     Map userMap = map["user"];
     super.decodeUserInfo(userMap);
+    Map menthionedMap = map["mentionedInfo"];
+    super.decodeMentionedInfo(menthionedMap);
   }
 
   @override
@@ -60,6 +62,10 @@ class GifMessage extends MessageContent {
     if (this.sendUserInfo != null) {
       Map userMap = super.encodeUserInfo(this.sendUserInfo);
       map["user"] = userMap;
+    }
+    if (this.mentionedInfo != null) {
+      Map mentionedMap = super.encodeMentionedInfo(this.mentionedInfo);
+      map["mentionedInfo"] = mentionedMap;
     }
     if(this.remoteUrl !=null && this.remoteUrl.isNotEmpty){
       map["remoteUrl"] = this.remoteUrl;

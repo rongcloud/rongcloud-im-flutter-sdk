@@ -1,4 +1,4 @@
-import 'package:rongcloud_im_plugin_example/im/util/file_suffix.dart';
+import '../util/file_suffix.dart';
 
 class FileUtil {
   static int kilobyte = 1024;

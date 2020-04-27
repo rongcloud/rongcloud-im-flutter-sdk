@@ -47,4 +47,5 @@ class EventKeys {
   static const String ReceiveReceiptResponse = "ReceiveReceiptResponse";
   static const String LongPressUserPortrait = "LongPressUserPortrait";
   static const String UpdateNotificationQuietStatus = "UpdateNotificationQuietStatus";
+  static const String ForwardMessageEnd = "ForwardMessageEnd";
 }

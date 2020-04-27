@@ -54,6 +54,7 @@ class RCMethodKey {
   static const String GetUnreadMentionedMessages = 'getUnreadMentionedMessages';
   static const String SendDirectionalMessage = 'sendDirectionalMessage';
   static const String SaveMediaToPublicDir = 'saveMediaToPublicDir';
+  static const String ForwardMessageByStep = 'forwardMessageByStep';
 
 
   // 聊天室状态存储
