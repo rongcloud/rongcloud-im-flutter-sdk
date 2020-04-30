@@ -191,8 +191,8 @@ class RongcloudImPlugin {
   ///
   ///[pushData] 接收方离线时需要在远程推送中携带的非显示数据
   ///
-  /// 此方法用于在群组和讨论组中发送消息给其中的部分用户，其它用户不会收到这条消息。
-  /// 目前仅支持群组和讨论组。
+  /// 此方法用于在群组中发送消息给其中的部分用户，其它用户不会收到这条消息。
+  /// 目前仅支持群组。
   static Future<Message> sendDirectionalMessage(int conversationType,
       String targetId, List userIdList, MessageContent content,
       {String pushContent, String pushData}) async {
