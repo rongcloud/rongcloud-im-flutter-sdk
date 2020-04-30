@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:connectivity/connectivity.dart';
 
 class HttpUtil {
   static Dio dio = Dio();
@@ -30,19 +31,25 @@ class HttpUtil {
 
   static void post(String url, Function callback,
       {Map params, Function errorCallback}) async {
-    // try {
-    Response response;
-    response = await Dio().post(url, data: params);
-    print(response);
-    if (callback != null) {
-      callback(response.data);
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      Map body = {"code": -1};
+      callback(body);
+    } else {
+// try {
+      Response response;
+      response = await Dio().post(url, data: params);
+      print(response);
+      if (callback != null) {
+        callback(response.data);
+      }
+      // } catch (e) {
+      //   print(e);
+      //   if (errorCallback != null) {
+      //     errorCallback(e);
+      //   }
+      // }
     }
-    // } catch (e) {
-    //   print(e);
-    //   if (errorCallback != null) {
-    //     errorCallback(e);
-    //   }
-    // }
   }
 
   // 下载

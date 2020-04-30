@@ -47,6 +47,8 @@ class _LoginPageState extends State<LoginPage> {
           String token = result["token"];
           _saveUserInfo(id, token);
           Navigator.of(context).pushAndRemoveUntil(new MaterialPageRoute(builder: (context) => new HomePage()), (route) => route == null);
+        } else if (errorCode == -1) {
+          Fluttertoast.showToast(msg: "网络未连接，请连接网络重试");
         } else {
           Fluttertoast.showToast(msg: "服务器登录失败，errorCode： $errorCode");
         }
