@@ -66,11 +66,30 @@ class _ConversationItemState extends State<ConversationItem> {
     this.message = msg;
     this.delegate = delegate;
     this.showTime = showTime;
-    this.user = example.UserInfoDataSource.getUserInfo(msg.senderUserId);
+    // this.user = example.UserInfoDataSource.getUserInfo(msg.senderUserId);
     this.multiSelect = multiSelect;
     this.selectedMessageIds = selectedMessageIds;
     this.time = time;
-    needShowMessage = !(msg.messageDirection == prefix.RCMessageDirection.Receive && msg.content.destructDuration != null && msg.content.destructDuration > 0 && time.value == msg.content.destructDuration);
+    setInfo(message.senderUserId);
+    needShowMessage =
+        !(msg.messageDirection == prefix.RCMessageDirection.Receive &&
+            msg.content != null && msg.content.destructDuration!= null &&
+            msg.content.destructDuration > 0 &&
+            time.value == msg.content.destructDuration);
+  }
+
+  void setInfo(String targetId) {
+    example.UserInfo userInfo =
+        example.UserInfoDataSource.cachedUserMap[targetId];
+    if (userInfo != null) {
+      this.user = userInfo;
+    } else {
+      example.UserInfoDataSource.getUserInfo(targetId).then((onValue) {
+        setState(() {
+          this.user = onValue;
+        });
+      });
+    }
   }
 
   @override
@@ -151,7 +170,10 @@ class _ConversationItemState extends State<ConversationItem> {
                   Container(
                     alignment: Alignment.centerRight,
                     padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
-                    child: Text(this.user.id,
+                    child: Text(
+                        (this.user == null || this.user.id == null
+                            ? ""
+                            : this.user.id),
                         style: TextStyle(
                             fontSize: RCFont.MessageNameFont,
                             color: Color(RCColor.MessageNameBgColor))),
@@ -178,7 +200,7 @@ class _ConversationItemState extends State<ConversationItem> {
               onTap: () {
                 __onTapedUserPortrait();
               },
-              child: WidgetUtil.buildUserPortrait(this.user.portraitUrl),
+              child: WidgetUtil.buildUserPortrait(this.user?.portraitUrl),
             ),
           ],
         ),
@@ -196,7 +218,7 @@ class _ConversationItemState extends State<ConversationItem> {
               onLongPress: () {
                 __onLongPressUserPortrait(this.tapPos);
               },
-              child: WidgetUtil.buildUserPortrait(this.user.portraitUrl),
+              child: WidgetUtil.buildUserPortrait(this.user?.portraitUrl),
             ),
             Expanded(
               child: Column(
@@ -205,7 +227,9 @@ class _ConversationItemState extends State<ConversationItem> {
                     alignment: Alignment.centerLeft,
                     padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
                     child: Text(
-                      this.user.id,
+                      (this.user == null || this.user.id == null
+                          ? ""
+                          : this.user.id),
                       style:
                           TextStyle(color: Color(RCColor.MessageNameBgColor)),
                     ),
@@ -254,8 +278,7 @@ class _ConversationItemState extends State<ConversationItem> {
       } else {
         if (!needShowMessage) {
           needShowMessage = true;
-          setState(() {
-          });
+          setState(() {});
         }
         delegate.didTapMessageItem(message);
       }
@@ -311,8 +334,7 @@ class _ConversationItemState extends State<ConversationItem> {
                         ? MainAxisAlignment.end
                         : MainAxisAlignment.start,
                 children: <Widget>[
-                  message.messageDirection ==
-                              prefix.RCMessageDirection.Send &&
+                  message.messageDirection == prefix.RCMessageDirection.Send &&
                           message.content != null &&
                           message.content.destructDuration != null &&
                           message.content.destructDuration > 0
@@ -322,7 +344,12 @@ class _ConversationItemState extends State<ConversationItem> {
                             return Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: <Widget>[
-                                value > 0 ? Text("$value ", style: TextStyle(color: Colors.red),) : Text("")
+                                value > 0
+                                    ? Text(
+                                        "$value ",
+                                        style: TextStyle(color: Colors.red),
+                                      )
+                                    : Text("")
                               ],
                             );
                           },
@@ -368,7 +395,8 @@ class _ConversationItemState extends State<ConversationItem> {
                       },
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: MessageItemFactory(message: message, needShow: needShowMessage),
+                        child: MessageItemFactory(
+                            message: message, needShow: needShowMessage),
                       ),
                     ),
                   ),

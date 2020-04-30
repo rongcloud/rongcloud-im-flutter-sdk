@@ -23,23 +23,36 @@ class _ContactsPageState extends State<ContactsPage> {
     _addFriends();
   }
 
-  _addFriends() {
-    List users = _getRandomUserInfos();
-    for(example.UserInfo u in users) {
-      this.widgetList.add(getWidget(u));
-    }
+  void _addFriends() {
+    // List users = await _getRandomUserInfos();
+    _getRandomUserInfos().then((users) {
+      for (example.UserInfo u in users) {
+        this.widgetList.add(getWidget(u));
+        _refreshUI();
+      }
+    });
   }
 
-  List<example.UserInfo> _getRandomUserInfos() {
-    this.userList.add(example.UserInfoDataSource.getUserInfo("SealTalk"));
-    this.userList.add(example.UserInfoDataSource.getUserInfo("RongRTC"));
-    this.userList.add(example.UserInfoDataSource.getUserInfo("RongIM"));
+  void _refreshUI() {
+    setState(() {});
+  }
+
+  Future<List<example.UserInfo>> _getRandomUserInfos() async {
+    this.userList.add(await example.UserInfoDataSource.getUserInfo(
+        "SealTalk"));
+    this.userList.add(await example.UserInfoDataSource.getUserInfo(
+        "RongRTC"));
+    this.userList.add(await example.UserInfoDataSource.getUserInfo(
+        "RongIM"));
     return this.userList;
   }
 
   void _onTapUser(example.UserInfo user) {
-    Map arg = {"coversationType":prefix.RCConversationType.Private,"targetId":user.id};
-    Navigator.pushNamed(context, "/conversation",arguments: arg);
+    Map arg = {
+      "coversationType": prefix.RCConversationType.Private,
+      "targetId": user.id
+    };
+    Navigator.pushNamed(context, "/conversation", arguments: arg);
   }
 
   void _pushToDebug() {
@@ -50,32 +63,34 @@ class _ContactsPageState extends State<ContactsPage> {
     prefix.RongcloudImPlugin.disconnect(false);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove("token");
-    Navigator.of(context).pushAndRemoveUntil(new MaterialPageRoute(builder: (context) => new LoginPage()), (route) => route == null);
+    Navigator.of(context).pushAndRemoveUntil(
+        new MaterialPageRoute(builder: (context) => new LoginPage()),
+        (route) => route == null);
   }
 
   Widget getWidget(example.UserInfo user) {
     return Container(
-            height: 50.0,
-            color: Colors.white,
-            child:InkWell(
-              onTap: () {
-                _onTapUser(user);
-              },
-              child: new ListTile(
-                title: new Text(user.id),
-                leading: Container(
-                    width: 36,
-                    height: 36,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(5),
-                      child: CachedNetworkImage(
-                        fit: BoxFit.fill,
-                        imageUrl: user.portraitUrl,
-                      ),
-                    ),
-                  ),
-                ),
+      height: 50.0,
+      color: Colors.white,
+      child: InkWell(
+        onTap: () {
+          _onTapUser(user);
+        },
+        child: new ListTile(
+          title: new Text(user.id),
+          leading: Container(
+            width: 36,
+            height: 36,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(5),
+              child: CachedNetworkImage(
+                fit: BoxFit.fill,
+                imageUrl: user.portraitUrl,
               ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -100,9 +115,12 @@ class _ContactsPageState extends State<ContactsPage> {
           ),
         ],
       ),
-      body: new ListView(
-        children: this.widgetList,
-      ),
+      body: ListView.builder(
+      itemCount: widgetList.length,
+      itemBuilder: (BuildContext context, int index) {
+        return widgetList[index];
+      },
+    ),
     );
   }
 }

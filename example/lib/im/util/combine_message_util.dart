@@ -87,10 +87,10 @@ class CombineMessageUtils {
     CombineMessage combine = CombineMessage.obtain(uri);
     combine.conversationType = conversationType;
     if (RCConversationType.Group != conversationType) {
-      combine.nameList = getNameList(messageList);
+      combine.nameList = await getNameList(messageList);
     }
     combine.title = getTitle(combine);
-    combine.summaryList = getSummaryList(messageList);
+    combine.summaryList = await getSummaryList(messageList);
     return combine;
   }
 
@@ -310,7 +310,7 @@ class CombineMessageUtils {
 
   Future<String> setUserInfo(String str, Message msg) async {
     String portrait =
-        UserInfoDataSource.getUserInfo(msg.senderUserId).portraitUrl;
+        (await UserInfoDataSource.getUserInfo(msg.senderUserId)).portraitUrl;
     if (portrait == null || portrait == portraitUri) {
       print("getUserPortrait is same uri:$uri");
       portrait = "";
@@ -323,7 +323,7 @@ class CombineMessageUtils {
         .replaceAll(MSG_PORTRAIT, portrait)
         .replaceAll(MSG_SHOW_USER, showUser)
         .replaceAll(MSG_USER_NAMEM,
-            UserInfoDataSource.getUserInfo(msg.senderUserId).name)
+            (await UserInfoDataSource.getUserInfo(msg.senderUserId)).name)
         .replaceAll(MSG_SEND_TIME, getSendTime(msg));
   }
 
@@ -409,11 +409,11 @@ class CombineMessageUtils {
     return getHtmlFromType(TAG_BASE_BOTTOM);
   }
 
-  List<String> getNameList(List<Message> messages) {
+  Future<List<String>> getNameList(List<Message> messages) async{
     List<String> names = List<String>();
     for (Message msg in messages) {
       if (names.length == 2) return names;
-      String name = UserInfoDataSource.getUserInfo(msg.senderUserId).name;
+      String name = (await UserInfoDataSource.getUserInfo(msg.senderUserId)).name;
       if (name != null && !names.contains(name)) {
         names.add(name);
       }
@@ -441,7 +441,7 @@ class CombineMessageUtils {
     return title;
   }
 
-  List<String> getSummaryList(List<Message> messages) {
+  Future<List<String>> getSummaryList(List<Message> messages) async{
     List<String> summaryList = List<String>();
     int conversationType = messages[0].conversationType;
     for (int i = 0; i < messages.length && i < SUMMARY_MAX_SIZE; i++) {
@@ -450,7 +450,7 @@ class CombineMessageUtils {
       // UserInfo userInfo = RongUserInfoManager.getInstance().getUserInfo(message.getSenderUserId());
       String userName = "";
       if (RCConversationType.Group == conversationType) {
-        userName = UserInfoDataSource.getUserInfo(message.senderUserId).name;
+        userName = (await UserInfoDataSource.getUserInfo(message.senderUserId)).name;
       }
 
       String text;

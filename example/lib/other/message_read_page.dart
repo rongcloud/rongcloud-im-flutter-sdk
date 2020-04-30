@@ -26,18 +26,18 @@ class _MessageReadPageState extends State<MessageReadPage> {
     _addFriends();
   }
 
-  _addFriends() {
-    List users = _getRandomUserInfos();
+  _addFriends() async{
+    List users = await _getRandomUserInfos();
     for(example.UserInfo u in users) {
       this.widgetList.add(getWidget(u));
     }
   }
 
-  List<example.UserInfo> _getRandomUserInfos() {
+  Future<List<example.UserInfo>> _getRandomUserInfos() async{
     Map userIdList = message.readReceiptInfo.userIdList;
     if (userIdList != null) {
       for (String key in userIdList.keys) {
-      this.userList.add(example.UserInfoDataSource.getUserInfo(key));
+      this.userList.add(await example.UserInfoDataSource.getUserInfo(key));
       }
     }
     return this.userList;

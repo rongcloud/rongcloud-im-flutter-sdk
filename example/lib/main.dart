@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart' as prefix;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:rongcloud_im_plugin_example/im/util/db_manager.dart';
+import 'im/util/user_info_datesource.dart';
 import 'other/home_page.dart';
 
 import 'im/util/event_bus.dart';
@@ -35,6 +37,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     //1.初始化 im SDK
     prefix.RongcloudImPlugin.init(RongAppKey);
 
+    // _initUserInfoCache();
+
     WidgetsBinding.instance.addObserver(this);
 
     EventBus.instance.addListener(EventKeys.UpdateNotificationQuietStatus,
@@ -58,14 +62,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             " offline:" +
             off);
       } else {
-        print("object onMessageReceivedWrapper objName:" +
-            msg.objectName +
-            "content is null left:" +
-            left.toString() +
-            " hasPackage:" +
-            hasP +
-            " offline:" +
-            off);
+        print("object onMessageReceivedWrapper objName: ${msg.objectName} content is null left:${left.toString()} hasPackage:$hasP offline:$off");
       }
       if (currentState == AppLifecycleState.paused &&
           !checkNoficationQuietStatus()) {

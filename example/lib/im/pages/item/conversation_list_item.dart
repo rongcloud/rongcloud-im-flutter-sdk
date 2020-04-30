@@ -5,7 +5,7 @@ import 'widget_util.dart';
 
 import '../../util/style.dart';
 import '../../util/time.dart';
-import '../../util/user_info_datesource.dart';
+import '../../util/user_info_datesource.dart' as example;
 
 class ConversationListItem extends StatefulWidget {
   final Conversation conversation;
@@ -22,18 +22,14 @@ class ConversationListItem extends StatefulWidget {
 class _ConversationListItemState extends State<ConversationListItem> {
   Conversation conversation;
   ConversationListItemDelegate delegate;
-  BaseInfo info;
+  example.BaseInfo info;
   Offset tapPos;
 
   _ConversationListItemState(
       ConversationListItemDelegate delegate, Conversation con) {
     this.delegate = delegate;
     this.conversation = con;
-    if (con.conversationType == RCConversationType.Private) {
-      this.info = UserInfoDataSource.getUserInfo(con.targetId);
-    } else {
-      this.info = UserInfoDataSource.getGroupInfo(con.targetId);
-    }
+    setInfo();
   }
 
   void _onTaped() {
@@ -61,7 +57,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
             SizedBox(
               width: 8,
             ),
-            WidgetUtil.buildUserPortrait(this.info.portraitUrl),
+            WidgetUtil.buildUserPortrait(this.info?.portraitUrl),
           ],
         ),
         Positioned(
@@ -114,7 +110,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
     String title = (conversation.conversationType == RCConversationType.Private
             ? "单聊："
             : "群聊：") +
-        this.info.id;
+        (this.info == null || this.info.id == null ? "" : this.info.id);
     String digest = "";
     if (conversation.latestMessageContent != null) {
       digest = conversation.latestMessageContent.conversationDigest();
@@ -204,6 +200,40 @@ class _ConversationListItemState extends State<ConversationListItem> {
             style: TextStyle(
                 fontSize: RCFont.ConListUnreadFont,
                 color: Color(RCColor.ConListUnreadTextColor))));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void setInfo() {
+    String targetId = conversation.targetId;
+    example.UserInfo userInfo =
+        example.UserInfoDataSource.cachedUserMap[targetId];
+    example.GroupInfo groupInfo =
+        example.UserInfoDataSource.cachedGroupMap[targetId];
+    if (conversation.conversationType == RCConversationType.Private) {
+      if (userInfo != null) {
+        this.info = userInfo;
+      } else {
+        example.UserInfoDataSource.getUserInfo(targetId).then((onValue) {
+          setState(() {
+            this.info = onValue;
+          });
+        });
+      }
+    } else {
+      if (groupInfo != null) {
+        this.info = groupInfo;
+      } else {
+        example.UserInfoDataSource.getGroupInfo(targetId).then((onValue) {
+          setState(() {
+            this.info = onValue;
+          });
+        });
+      }
+    }
   }
 
   @override

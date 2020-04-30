@@ -78,11 +78,12 @@ class _ConversationPageState extends State<ConversationPage>
     bottomInputBar = BottomInputBar(this);
     bottomToolBar = BottomToolBar(this);
 
-    if (conversationType == RCConversationType.Private) {
-      this.info = example.UserInfoDataSource.getUserInfo(targetId);
-    } else {
-      this.info = example.UserInfoDataSource.getGroupInfo(targetId);
-    }
+    setInfo();
+    // if (conversationType == RCConversationType.Private) {
+    //   setInfo(targetId);
+    // } else {
+    //   this.info = example.UserInfoDataSource.getGroupInfo(targetId);
+    // }
 
     titleContent = '与 $targetId 的会话';
 
@@ -94,6 +95,34 @@ class _ConversationPageState extends State<ConversationPage>
     _initExtentionWidgets();
     //获取草稿内容
     onGetTextMessageDraft();
+  }
+
+  void setInfo() {
+    example.UserInfo userInfo =
+        example.UserInfoDataSource.cachedUserMap[targetId];
+    example.GroupInfo groupInfo =
+        example.UserInfoDataSource.cachedGroupMap[targetId];
+    if (conversationType == RCConversationType.Private) {
+      if (userInfo != null) {
+        this.info = userInfo;
+      } else {
+        example.UserInfoDataSource.getUserInfo(targetId).then((onValue) {
+          setState(() {
+            this.info = onValue;
+          });
+        });
+      }
+    } else {
+      if (groupInfo != null) {
+        this.info = groupInfo;
+      } else {
+        example.UserInfoDataSource.getGroupInfo(targetId).then((onValue) {
+          setState(() {
+            this.info = onValue;
+          });
+        });
+      }
+    }
   }
 
   @override
@@ -327,7 +356,6 @@ class _ConversationPageState extends State<ConversationPage>
       messageDataSource.insert(0, message);
       _refreshMessageContentListUI();
     }
-
   }
 
   Widget _getExtentionWidget() {
@@ -736,8 +764,10 @@ class _ConversationPageState extends State<ConversationPage>
   @override
   void didTapMessageItem(Message message) async {
     print("didTapMessageItem " + message.objectName);
-    if (message.messageDirection == RCMessageDirection.Receive && message.content.destructDuration != null && message.content.destructDuration > 0)
-    RongcloudImPlugin.messageBeginDestruct(message);
+    if (message.messageDirection == RCMessageDirection.Receive &&
+        message.content.destructDuration != null &&
+        message.content.destructDuration > 0)
+      RongcloudImPlugin.messageBeginDestruct(message);
     if (message.content is VoiceMessage) {
       VoiceMessage msg = message.content;
       if (msg.localPath != null &&
@@ -876,7 +906,7 @@ class _ConversationPageState extends State<ConversationPage>
       if (text.length > 20) {
         int textLength = text.length - 20;
         int tempDuration = (textLength / 2).ceil();
-         duration += tempDuration;
+        duration += tempDuration;
       }
       msg.destructDuration = isSecretChat ? duration : 0;
     }
@@ -941,7 +971,15 @@ class _ConversationPageState extends State<ConversationPage>
   }
 
   bool canForward(String objectName) {
-    List writeList = [TextMessage.objectName, VoiceMessage.objectName, ImageMessage.objectName, GifMessage.objectName, SightMessage.objectName, FileMessage.objectName, RichContentMessage.objectName, ];
+    List writeList = [
+      TextMessage.objectName,
+      VoiceMessage.objectName,
+      ImageMessage.objectName,
+      GifMessage.objectName,
+      SightMessage.objectName,
+      FileMessage.objectName,
+      RichContentMessage.objectName,
+    ];
     if (writeList.contains(objectName)) {
       return true;
     }

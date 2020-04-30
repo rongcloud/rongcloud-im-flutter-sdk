@@ -45,22 +45,26 @@ class WidgetUtil {
 
   /// 用户头像
   static Widget buildUserPortrait(String path) {
-    Widget protraitWidget =
-        Image.asset("assets/images/default_portrait.png", fit: BoxFit.fill);
-    if (path.startsWith("http")) {
-      protraitWidget = CachedNetworkImage(
-        fit: BoxFit.fill,
-        imageUrl: path,
-      );
+    Widget protraitWidget;
+    if (path == null || path.isEmpty) {
+      protraitWidget = Image.asset("assets/images/default_portrait.png", fit: BoxFit.fill);
     } else {
-      File file = File(path);
-      if (file.existsSync()) {
-        protraitWidget = Image.file(
-          file,
+      if (path.startsWith("http")) {
+        protraitWidget = CachedNetworkImage(
           fit: BoxFit.fill,
+          imageUrl: path,
         );
+      } else {
+        File file = File(path);
+        if (file.existsSync()) {
+          protraitWidget = Image.file(
+            file,
+            fit: BoxFit.fill,
+          );
+        }
       }
     }
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: Container(

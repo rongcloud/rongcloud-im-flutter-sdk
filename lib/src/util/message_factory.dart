@@ -83,7 +83,7 @@ class MessageFactory extends Object {
     if(content != null) {
       message.content = content;
     }else {
-      print(message.objectName+":该消息不能被解析!消息内容被保存在 Message.originContentMap 中");
+      print("${message.objectName}:该消息不能被解析!消息内容被保存在 Message.originContentMap 中");
       Map map = json.decode(contenStr.toString());
       message.originContentMap = map;
     }
