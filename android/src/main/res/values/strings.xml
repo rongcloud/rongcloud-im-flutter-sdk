@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">IMDemo</string>
+    <!--设置输入状态监听 -->
+    <bool name="rc_typing_status">true</bool>
+</resources>
