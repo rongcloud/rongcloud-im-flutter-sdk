@@ -1254,6 +1254,194 @@ class RongIMClient {
     }
   }
 
+  ///撤回消息
+  ///
+  ///
+  /// 当接收方离线并允许远程推送时，会收到远程推送。
+  /// 远程推送中包含两部分内容，一是[pushContent]，用于显示；二是[pushData]，用于携带不显示的数据。
+  ///
+  /// SDK内置的消息类型，如果您将[pushContent]和[pushData]置为空或者为null，会使用默认的推送格式进行远程推送。
+  /// 自定义类型的消息，需要您自己设置pushContent和pushData来定义推送内容，否则将不会进行远程推送。
+  static Future<RecallNotificationMessage> recallMessage(
+      Message message, String pushContent) async {
+    if (message == null) {
+      print(
+          "send message fail: conversationType or targetId or content is null");
+      return null;
+    }
+    if (pushContent == null) {
+      pushContent = "";
+    }
+    Map msgMap = MessageFactory.instance.message2Map(message);
+    Map map = {"message": msgMap, "pushContent": pushContent};
+    Map resultMap = await _channel.invokeMethod(RCMethodKey.RecallMessage, map);
+    if (resultMap == null) {
+      return null;
+    }
+    String messageString = resultMap["recallNotificationMessage"];
+    if (messageString == null || messageString.isEmpty) {
+      print(
+          "send message fail: conversationType or targetId or content is null");
+      return null;
+    }
+    RecallNotificationMessage msg = MessageFactory.instance
+        .string2MessageContent(
+            messageString, RecallNotificationMessage.objectName);
+    return msg;
+  }
+
+  //根据消息类型，targetId 获取某一会话的文字消息草稿。用于获取用户输入但未发送的暂存消息。
+  static Future<String> getTextMessageDraft(
+      int conversationType, String targetId) async {
+    if (conversationType == null || targetId == null) {
+      print(
+          "saveTextMessageDraft fail: conversationType or targetId or content is null");
+      return null;
+    }
+    Map paramMap = {
+      "conversationType": conversationType,
+      "targetId": targetId,
+    };
+    String result =
+        await _channel.invokeMethod(RCMethodKey.GetTextMessageDraft, paramMap);
+    return result;
+  }
+
+  //根据消息类型，targetId 保存某一会话的文字消息草稿。用于暂存用户输入但未发送的消息
+  static Future<bool> saveTextMessageDraft(
+      int conversationType, String targetId, String textContent) async {
+    if (conversationType == null || targetId == null || textContent == null) {
+      print(
+          "saveTextMessageDraft fail: conversationType or targetId or content is null");
+      return null;
+    }
+    Map paramMap = {
+      "conversationType": conversationType,
+      "targetId": targetId,
+      "content": textContent
+    };
+    bool result =
+        await _channel.invokeMethod(RCMethodKey.SaveTextMessageDraft, paramMap);
+    return result;
+  }
+
+  //搜索会话（根据关键词）
+  // keyword           搜索的关键字。
+  // conversationTypes 搜索的会话类型。
+  // objectNames       搜索的消息类型,例如:RC:TxtMsg。
+  // resultCallback    搜索结果回调。
+  static void searchConversations(
+      String keyword,
+      List conversationTypes,
+      List objectNames,
+      Function(int code, List searchConversationResult) finished) async {
+    Map paramMap = {
+      "keyword": keyword,
+      "conversationTypes": conversationTypes,
+      "objectNames": objectNames
+    };
+    Map result =
+        await _channel.invokeMethod(RCMethodKey.SearchConversations, paramMap);
+    if (result != null) {
+      int code = result['code'];
+      List resultList = new List();
+      if (code == 0) {
+        List searchConversationResult = result['SearchConversationResult'];
+        for (String resultStr in searchConversationResult) {
+          SearchConversationResult searchConversationResult = MessageFactory
+              .instance
+              .string2SearchConversationResult(resultStr);
+          resultList.add(searchConversationResult);
+        }
+      }
+      if (finished != null) {
+        finished(code, resultList);
+      }
+    }
+  }
+
+  // 根据会话,搜索本地历史消息。
+  // 搜索结果可分页返回。
+  // conversationType 指定的会话类型。
+  // targetId         指定的会话 id。
+  // keyword          搜索的关键字。
+  // count            返回的搜索结果数量, count > 0。
+  // beginTime        查询记录的起始时间, 传0时从最新消息开始搜索。从该时间往前搜索。
+  // resultCallback   搜索结果回调。
+  static void searchMessages(
+      int conversationType,
+      String targetId,
+      String keyword,
+      int count,
+      int beginTime,
+      Function(List/*<Message>*/ msgList, int code) finished) async {
+    Map paramMap = {
+      "conversationType": conversationType,
+      "targetId": targetId,
+      "keyword": keyword,
+      "count": count,
+      "beginTime": beginTime,
+    };
+    Map resultMap =
+        await _channel.invokeMethod(RCMethodKey.SearchMessages, paramMap);
+    int code = resultMap["code"];
+    if (code == 0) {
+      List msgStrList = resultMap["messages"];
+      if (msgStrList == null) {
+        if (finished != null) {
+          finished(null, code);
+        }
+        return;
+      }
+      List l = new List();
+      for (String msgStr in msgStrList) {
+        Message m = MessageFactory.instance.string2Message(msgStr);
+        l.add(m);
+      }
+      if (finished != null) {
+        finished(l, code);
+      }
+    } else {
+      if (finished != null) {
+        finished(null, code);
+      }
+    }
+  }
+
+  // 发送输入状态
+  static void sendTypingStatus(
+      int conversationType, String targetId, String typingContentType) async {
+    Map paramMap = {
+      "conversationType": conversationType,
+      "targetId": targetId,
+      "typingContentType": typingContentType,
+    };
+    await _channel.invokeMethod(RCMethodKey.SendTypingStatus, paramMap);
+  }
+
+  // 下载媒体文件
+  static void downloadMediaMessage(Message message) async {
+    Map msgMap = MessageFactory.instance.message2Map(message);
+    Map paramMap = {"message": msgMap};
+    await _channel.invokeMethod(RCMethodKey.DownloadMediaMessage, paramMap);
+  }
+
+  static void saveMediaToPublicDir(String filePath, String type) async {
+    Map paramMap = {"filePath": filePath, "type": type};
+    await _channel.invokeMethod(RCMethodKey.SaveMediaToPublicDir, paramMap);
+  }
+
+  static void forwardMessageByStep(
+      int conversationType, String targetId, Message message) async {
+    Map msgMap = MessageFactory.instance.message2Map(message);
+    Map map = {
+      "message": msgMap,
+      "conversationType": conversationType,
+      "targetId": targetId
+    };
+    await _channel.invokeMethod(RCMethodKey.ForwardMessageByStep, map);
+  }
+
   ///连接状态发生变更
   ///
   /// [connectionStatus] 连接状态，具体参见枚举 [RCConnectionStatus]
@@ -1511,205 +1699,17 @@ class RongIMClient {
           }
           break;
         case RCMethodCallBackKey.DestructMessage:
-        if (onMessageDestructing != null) {
-          Map map = call.arguments;
-          String messageString = map["message"];
-          int remainDuration = map["remainDuration"];
-          Message message =
-              MessageFactory.instance.string2Message(messageString);
-          onMessageDestructing(message, remainDuration);
-        }
-        break;
+          if (onMessageDestructing != null) {
+            Map map = call.arguments;
+            String messageString = map["message"];
+            int remainDuration = map["remainDuration"];
+            Message message =
+                MessageFactory.instance.string2Message(messageString);
+            onMessageDestructing(message, remainDuration);
+          }
+          break;
       }
       return;
     });
-  }
-
-  ///撤回消息
-  ///
-  ///
-  /// 当接收方离线并允许远程推送时，会收到远程推送。
-  /// 远程推送中包含两部分内容，一是[pushContent]，用于显示；二是[pushData]，用于携带不显示的数据。
-  ///
-  /// SDK内置的消息类型，如果您将[pushContent]和[pushData]置为空或者为null，会使用默认的推送格式进行远程推送。
-  /// 自定义类型的消息，需要您自己设置pushContent和pushData来定义推送内容，否则将不会进行远程推送。
-  static Future<RecallNotificationMessage> recallMessage(
-      Message message, String pushContent) async {
-    if (message == null) {
-      print(
-          "send message fail: conversationType or targetId or content is null");
-      return null;
-    }
-    if (pushContent == null) {
-      pushContent = "";
-    }
-    Map msgMap = MessageFactory.instance.message2Map(message);
-    Map map = {"message": msgMap, "pushContent": pushContent};
-    Map resultMap = await _channel.invokeMethod(RCMethodKey.RecallMessage, map);
-    if (resultMap == null) {
-      return null;
-    }
-    String messageString = resultMap["recallNotificationMessage"];
-    if (messageString == null || messageString.isEmpty) {
-      print(
-          "send message fail: conversationType or targetId or content is null");
-      return null;
-    }
-    RecallNotificationMessage msg = MessageFactory.instance
-        .string2MessageContent(
-            messageString, RecallNotificationMessage.objectName);
-    return msg;
-  }
-
-  //根据消息类型，targetId 获取某一会话的文字消息草稿。用于获取用户输入但未发送的暂存消息。
-  static Future<String> getTextMessageDraft(
-      int conversationType, String targetId) async {
-    if (conversationType == null || targetId == null) {
-      print(
-          "saveTextMessageDraft fail: conversationType or targetId or content is null");
-      return null;
-    }
-    Map paramMap = {
-      "conversationType": conversationType,
-      "targetId": targetId,
-    };
-    String result =
-        await _channel.invokeMethod(RCMethodKey.GetTextMessageDraft, paramMap);
-    return result;
-  }
-
-  //根据消息类型，targetId 保存某一会话的文字消息草稿。用于暂存用户输入但未发送的消息
-  static Future<bool> saveTextMessageDraft(
-      int conversationType, String targetId, String textContent) async {
-    if (conversationType == null || targetId == null || textContent == null) {
-      print(
-          "saveTextMessageDraft fail: conversationType or targetId or content is null");
-      return null;
-    }
-    Map paramMap = {
-      "conversationType": conversationType,
-      "targetId": targetId,
-      "content": textContent
-    };
-    bool result =
-        await _channel.invokeMethod(RCMethodKey.SaveTextMessageDraft, paramMap);
-    return result;
-  }
-
-  //搜索会话（根据关键词）
-  // keyword           搜索的关键字。
-  // conversationTypes 搜索的会话类型。
-  // objectNames       搜索的消息类型,例如:RC:TxtMsg。
-  // resultCallback    搜索结果回调。
-  static void searchConversations(
-      String keyword,
-      List conversationTypes,
-      List objectNames,
-      Function(int code, List searchConversationResult) finished) async {
-    Map paramMap = {
-      "keyword": keyword,
-      "conversationTypes": conversationTypes,
-      "objectNames": objectNames
-    };
-    Map result =
-        await _channel.invokeMethod(RCMethodKey.SearchConversations, paramMap);
-    if (result != null) {
-      int code = result['code'];
-      List resultList = new List();
-      if (code == 0) {
-        List searchConversationResult = result['SearchConversationResult'];
-        for (String resultStr in searchConversationResult) {
-          SearchConversationResult searchConversationResult = MessageFactory
-              .instance
-              .string2SearchConversationResult(resultStr);
-          resultList.add(searchConversationResult);
-        }
-      }
-      if (finished != null) {
-        finished(code, resultList);
-      }
-    }
-  }
-
-  // 根据会话,搜索本地历史消息。
-  // 搜索结果可分页返回。
-  // conversationType 指定的会话类型。
-  // targetId         指定的会话 id。
-  // keyword          搜索的关键字。
-  // count            返回的搜索结果数量, count > 0。
-  // beginTime        查询记录的起始时间, 传0时从最新消息开始搜索。从该时间往前搜索。
-  // resultCallback   搜索结果回调。
-  static void searchMessages(
-      int conversationType,
-      String targetId,
-      String keyword,
-      int count,
-      int beginTime,
-      Function(List/*<Message>*/ msgList, int code) finished) async {
-    Map paramMap = {
-      "conversationType": conversationType,
-      "targetId": targetId,
-      "keyword": keyword,
-      "count": count,
-      "beginTime": beginTime,
-    };
-    Map resultMap =
-        await _channel.invokeMethod(RCMethodKey.SearchMessages, paramMap);
-    int code = resultMap["code"];
-    if (code == 0) {
-      List msgStrList = resultMap["messages"];
-      if (msgStrList == null) {
-        if (finished != null) {
-          finished(null, code);
-        }
-        return;
-      }
-      List l = new List();
-      for (String msgStr in msgStrList) {
-        Message m = MessageFactory.instance.string2Message(msgStr);
-        l.add(m);
-      }
-      if (finished != null) {
-        finished(l, code);
-      }
-    } else {
-      if (finished != null) {
-        finished(null, code);
-      }
-    }
-  }
-
-  // 发送输入状态
-  static void sendTypingStatus(
-      int conversationType, String targetId, String typingContentType) async {
-    Map paramMap = {
-      "conversationType": conversationType,
-      "targetId": targetId,
-      "typingContentType": typingContentType,
-    };
-    await _channel.invokeMethod(RCMethodKey.SendTypingStatus, paramMap);
-  }
-
-  // 下载媒体文件
-  static void downloadMediaMessage(Message message) async {
-    Map msgMap = MessageFactory.instance.message2Map(message);
-    Map paramMap = {"message": msgMap};
-    await _channel.invokeMethod(RCMethodKey.DownloadMediaMessage, paramMap);
-  }
-
-  static void saveMediaToPublicDir(String filePath, String type) async {
-    Map paramMap = {"filePath": filePath, "type": type};
-    await _channel.invokeMethod(RCMethodKey.SaveMediaToPublicDir, paramMap);
-  }
-
-  static void forwardMessageByStep(
-      int conversationType, String targetId, Message message) async {
-    Map msgMap = MessageFactory.instance.message2Map(message);
-    Map map = {
-      "message": msgMap,
-      "conversationType": conversationType,
-      "targetId": targetId
-    };
-    await _channel.invokeMethod(RCMethodKey.ForwardMessageByStep, map);
   }
 }

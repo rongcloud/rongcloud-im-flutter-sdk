@@ -6,20 +6,20 @@ import 'dart:convert' show json;
 class SightMessage extends MessageContent {
   static const String objectName = "RC:SightMsg";
 
-  String localPath;//本地路径
-  String remoteUrl;//远端路径
-  String content;//缩略图内容
-  int duration;//时长
-  String extra;//额外数据
+  String localPath; //本地路径
+  String remoteUrl; //远端路径
+  String content; //缩略图内容
+  int duration; //时长
+  String extra; //额外数据
   int size = 0;
-  String mThumbUri;//缩略图地址
+  String mThumbUri; //缩略图地址
   String mName = "";
   int mSize;
 
   /// [localPath] 本地路径，Android 必须以 file:// 开头
   ///
   /// [duration] 视频时长，单位 秒
-  static SightMessage obtain(String localPath,int duration) {
+  static SightMessage obtain(String localPath, int duration) {
     SightMessage msg = new SightMessage();
     msg.localPath = localPath;
     msg.duration = duration;
@@ -28,14 +28,14 @@ class SightMessage extends MessageContent {
 
   @override
   void decode(String jsonStr) {
-    if(jsonStr == null || jsonStr == "") {
+    if (jsonStr == null || jsonStr == "") {
       print("[RC-Flutter-IM] Flutter SightMessage deocde error: no content");
       return;
     }
     Map map = json.decode(jsonStr.toString());
     this.mName = map["name"];
     var size = map["size"] != null ? map["size"] : 0;
-    if(size is String) {
+    if (size is String) {
       this.mSize = int.parse(size);
     } else {
       this.mSize = size;
@@ -45,9 +45,9 @@ class SightMessage extends MessageContent {
     this.content = map["content"];
     this.mThumbUri = map["thumbUri"];
     var d = map["duration"];
-    if(d is String) {
+    if (d is String) {
       this.duration = int.parse(d);
-    }else {
+    } else {
       this.duration = d;
     }
     this.extra = map["extra"];
@@ -60,7 +60,7 @@ class SightMessage extends MessageContent {
 
   @override
   String encode() {
-    Map map = {"duration":this.duration,"extra":this.extra};
+    Map map = {"duration": this.duration, "extra": this.extra};
     if (this.size > 0) {
       map["size"] = this.size;
     }
@@ -87,7 +87,7 @@ class SightMessage extends MessageContent {
       map["mentionedInfo"] = mentionedMap;
     }
     if (this.destructDuration != null && this.destructDuration > 0) {
-      map["burnDuration"] = this.destructDuration; 
+      map["burnDuration"] = this.destructDuration;
     }
     return json.encode(map);
   }
