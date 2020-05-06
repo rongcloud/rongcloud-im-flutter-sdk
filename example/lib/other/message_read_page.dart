@@ -10,14 +10,13 @@ class MessageReadPage extends StatefulWidget {
   const MessageReadPage({Key key, this.message}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() =>
-    _MessageReadPageState(message);
+  State<StatefulWidget> createState() => _MessageReadPageState(message);
 }
 
 class _MessageReadPageState extends State<MessageReadPage> {
   final prefix.Message message;
   _MessageReadPageState(this.message);
-  
+
   List<Widget> widgetList = new List();
   List<example.UserInfo> userList = new List();
   @override
@@ -26,18 +25,18 @@ class _MessageReadPageState extends State<MessageReadPage> {
     _addFriends();
   }
 
-  _addFriends() async{
+  _addFriends() async {
     List users = await _getRandomUserInfos();
-    for(example.UserInfo u in users) {
+    for (example.UserInfo u in users) {
       this.widgetList.add(getWidget(u));
     }
   }
 
-  Future<List<example.UserInfo>> _getRandomUserInfos() async{
+  Future<List<example.UserInfo>> _getRandomUserInfos() async {
     Map userIdList = message.readReceiptInfo.userIdList;
     if (userIdList != null) {
       for (String key in userIdList.keys) {
-      this.userList.add(await example.UserInfoDataSource.getUserInfo(key));
+        this.userList.add(await example.UserInfoDataSource.getUserInfo(key));
       }
     }
     return this.userList;
@@ -45,24 +44,24 @@ class _MessageReadPageState extends State<MessageReadPage> {
 
   Widget getWidget(example.UserInfo user) {
     return Container(
-            height: 50.0,
-            color: Colors.white,
-            child:InkWell(
-              child: new ListTile(
-                title: new Text(user.id),
-                leading: Container(
-                    width: 36,
-                    height: 36,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(5),
-                      child: CachedNetworkImage(
-                        fit: BoxFit.fill,
-                        imageUrl: user.portraitUrl,
-                      ),
-                    ),
-                  ),
-                ),
+      height: 50.0,
+      color: Colors.white,
+      child: InkWell(
+        child: new ListTile(
+          title: new Text(user.id),
+          leading: Container(
+            width: 36,
+            height: 36,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(5),
+              child: CachedNetworkImage(
+                fit: BoxFit.fill,
+                imageUrl: user.portraitUrl,
               ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 

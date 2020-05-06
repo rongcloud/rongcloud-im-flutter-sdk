@@ -47,7 +47,8 @@ class WidgetUtil {
   static Widget buildUserPortrait(String path) {
     Widget protraitWidget;
     if (path == null || path.isEmpty) {
-      protraitWidget = Image.asset("assets/images/default_portrait.png", fit: BoxFit.fill);
+      protraitWidget =
+          Image.asset("assets/images/default_portrait.png", fit: BoxFit.fill);
     } else {
       if (path.startsWith("http")) {
         protraitWidget = CachedNetworkImage(

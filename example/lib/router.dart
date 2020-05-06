@@ -32,8 +32,10 @@ final routes = {
   '/webview': (context, {arguments}) => WebViewPage(arguments: arguments),
   '/chat_debug': (context, {arguments}) => ChatDebugPage(arguments: arguments),
   '/chatroom_debug': (context, {arguments}) => ChatRoomDebugPage(),
-  '/search_message': (context, {arguments}) => SearchMessagePage(arguments: arguments),
-  '/select_conversation_page': (context, {arguments}) => SelectConversationPage(arguments: arguments),
+  '/search_message': (context, {arguments}) =>
+      SearchMessagePage(arguments: arguments),
+  '/select_conversation_page': (context, {arguments}) =>
+      SelectConversationPage(arguments: arguments),
 };
 
 var onGenerateRoute = (RouteSettings settings) {

@@ -112,7 +112,7 @@ class _FilePreviewState extends State<FilePreviewPage> {
   }
 
   _addIMHander() {
-    RongcloudImPlugin.onDownloadMediaMessageResponse =
+    RongIMClient.onDownloadMediaMessageResponse =
         (int code, int progress, int messageId, Message message) async {
       if (this.message.messageId == messageId) {
         if (code == DOWNLOAD_SUCCESS) {
@@ -148,7 +148,7 @@ class _FilePreviewState extends State<FilePreviewPage> {
 
   void _startDownload() async {
     if (await Permission.storage.status == PermissionStatus.granted) {
-      RongcloudImPlugin.downloadMediaMessage(message);
+      RongIMClient.downloadMediaMessage(message);
     } else {
       Permission.storage.request();
     }

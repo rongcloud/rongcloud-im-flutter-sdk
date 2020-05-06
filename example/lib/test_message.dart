@@ -24,7 +24,7 @@ class TestMessage extends MessageContent {
 
   @override
   String encode() {
-    Map map = {"content":this.content,"extra":this.extra};
+    Map map = {"content": this.content, "extra": this.extra};
 
     // encode 消息内容中携带的发送者的用户信息
     if (this.sendUserInfo != null) {

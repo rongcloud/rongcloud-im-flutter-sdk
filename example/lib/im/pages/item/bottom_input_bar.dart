@@ -188,8 +188,8 @@ class _BottomInputBarState extends State<BottomInputBar> {
         padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
         child: new ConstrainedBox(
           constraints: BoxConstraints(
-            // maxHeight: 200.0,
-          ),
+              // maxHeight: 200.0,
+              ),
           child: new SingleChildScrollView(
             scrollDirection: Axis.vertical,
             reverse: true,

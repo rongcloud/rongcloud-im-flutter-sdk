@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:rongcloud_im_plugin/src/util/type_util.dart';
 import '../rongcloud_im_plugin.dart';
 import 'common_define.dart';
 import 'util/message_factory.dart';

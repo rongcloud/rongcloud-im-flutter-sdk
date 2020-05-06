@@ -38,12 +38,9 @@ class _ContactsPageState extends State<ContactsPage> {
   }
 
   Future<List<example.UserInfo>> _getRandomUserInfos() async {
-    this.userList.add(await example.UserInfoDataSource.getUserInfo(
-        "SealTalk"));
-    this.userList.add(await example.UserInfoDataSource.getUserInfo(
-        "RongRTC"));
-    this.userList.add(await example.UserInfoDataSource.getUserInfo(
-        "RongIM"));
+    this.userList.add(await example.UserInfoDataSource.getUserInfo("SealTalk"));
+    this.userList.add(await example.UserInfoDataSource.getUserInfo("RongRTC"));
+    this.userList.add(await example.UserInfoDataSource.getUserInfo("RongIM"));
     return this.userList;
   }
 
@@ -60,7 +57,7 @@ class _ContactsPageState extends State<ContactsPage> {
   }
 
   void _logout() async {
-    prefix.RongcloudImPlugin.disconnect(false);
+    prefix.RongIMClient.disconnect(false);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove("token");
     Navigator.of(context).pushAndRemoveUntil(
@@ -116,11 +113,11 @@ class _ContactsPageState extends State<ContactsPage> {
         ],
       ),
       body: ListView.builder(
-      itemCount: widgetList.length,
-      itemBuilder: (BuildContext context, int index) {
-        return widgetList[index];
-      },
-    ),
+        itemCount: widgetList.length,
+        itemBuilder: (BuildContext context, int index) {
+          return widgetList[index];
+        },
+      ),
     );
   }
 }

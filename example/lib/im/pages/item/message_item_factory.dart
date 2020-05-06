@@ -44,7 +44,7 @@ class MessageItemFactory extends StatelessWidget {
         Uint8List bytes = base64.decode(msg.content);
         widget = Image.memory(bytes);
         if (msg.localPath == null) {
-          RongcloudImPlugin.downloadMediaMessage(message);
+          RongIMClient.downloadMediaMessage(message);
         }
       } else {
         if (msg.localPath != null) {
@@ -53,7 +53,7 @@ class MessageItemFactory extends StatelessWidget {
           if (file != null && file.existsSync()) {
             widget = Image.file(file);
           } else {
-            RongcloudImPlugin.downloadMediaMessage(message);
+            RongIMClient.downloadMediaMessage(message);
             // widget = Image.network(msg.imageUri);
             widget = CachedNetworkImage(
               progressIndicatorBuilder: (context, url, progress) =>
@@ -64,7 +64,7 @@ class MessageItemFactory extends StatelessWidget {
             );
           }
         } else {
-          RongcloudImPlugin.downloadMediaMessage(message);
+          RongIMClient.downloadMediaMessage(message);
           // widget = Image.network(msg.imageUri);
           widget = CachedNetworkImage(
             progressIndicatorBuilder: (context, url, progress) =>
@@ -117,7 +117,7 @@ class MessageItemFactory extends StatelessWidget {
           widget = Image.file(file);
         } else {
           // 没有 localPath 时下载该媒体消息，更新 localPath
-          RongcloudImPlugin.downloadMediaMessage(message);
+          RongIMClient.downloadMediaMessage(message);
           widget = Image.network(
             msg.remoteUrl,
             fit: BoxFit.cover,
@@ -136,7 +136,7 @@ class MessageItemFactory extends StatelessWidget {
           );
         }
       } else if (msg.remoteUrl != null) {
-        RongcloudImPlugin.downloadMediaMessage(message);
+        RongIMClient.downloadMediaMessage(message);
         widget = Image.network(
           msg.remoteUrl,
           fit: BoxFit.cover,

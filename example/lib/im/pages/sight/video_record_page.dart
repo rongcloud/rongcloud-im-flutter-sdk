@@ -272,7 +272,7 @@ class _VideoRecordPageState extends State<VideoRecordPage>
         sightMessage.destructDuration =
             isSecretChat ? RCDuration.MediaMessageBurnDuration + recodeTime : 0;
       }
-      RongcloudImPlugin.sendMessage(conversationType, targetId, sightMessage);
+      RongIMClient.sendMessage(conversationType, targetId, sightMessage);
       _saveVideo(videoPath);
       onPop();
     } else {

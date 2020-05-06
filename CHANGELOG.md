@@ -174,7 +174,7 @@
 
 ```
 //消息接收回调
-    RongcloudImPlugin.onMessageReceived = (Message msg,int left) {
+    RongIMClient.onMessageReceived = (Message msg,int left) {
       print("receive message messsageId:"+msg.messageId.toString()+" left:"+left.toString());
     };
 ```

@@ -128,8 +128,12 @@ class _MessageContentListState extends State<MessageContentList>
                     messageDataSource.length > 0) {
                   Message tempMessage = messageDataSource[index];
                   // bool isSelected = selectedMessageIds.contains(tempMessage.messageId);
-                  int destructDuration = tempMessage.content != null && tempMessage.content.destructDuration != null ? tempMessage.content.destructDuration : 0;
-                  ValueNotifier<int> time = ValueNotifier<int>(destructDuration);
+                  int destructDuration = tempMessage.content != null &&
+                          tempMessage.content.destructDuration != null
+                      ? tempMessage.content.destructDuration
+                      : 0;
+                  ValueNotifier<int> time =
+                      ValueNotifier<int>(destructDuration);
                   if (burnMsgMap[tempMessage.messageId] != null) {
                     time.value = burnMsgMap[tempMessage.messageId];
                   }

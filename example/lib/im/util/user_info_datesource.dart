@@ -29,8 +29,8 @@ class UserInfoDataSource {
   static UserInfoCacheListener cacheListener;
 
   // 用来刷新用户信息，当有用户信息更新的时候
-  static void setUserInfo (UserInfo info){
-    if(info == null){
+  static void setUserInfo(UserInfo info) {
+    if (info == null) {
       return;
     }
     cachedUserMap[info.id] = info;
@@ -94,8 +94,8 @@ class UserInfoDataSource {
     return group;
   }
 
-  static void setGroupInfo (GroupInfo info){
-    if(info == null){
+  static void setGroupInfo(GroupInfo info) {
+    if (info == null) {
       return;
     }
     cachedGroupMap[info.id] = info;

@@ -73,7 +73,8 @@ class _ConversationItemState extends State<ConversationItem> {
     setInfo(message.senderUserId);
     needShowMessage =
         !(msg.messageDirection == prefix.RCMessageDirection.Receive &&
-            msg.content != null && msg.content.destructDuration!= null &&
+            msg.content != null &&
+            msg.content.destructDuration != null &&
             msg.content.destructDuration > 0 &&
             time.value == msg.content.destructDuration);
   }
@@ -190,7 +191,10 @@ class _ConversationItemState extends State<ConversationItem> {
                       onTap: () {
                         __onTapedReadRequest();
                       },
-                      child: message.content.destructDuration != null && message.content.destructDuration > 0 ? Text("") : buildReadInfo(),
+                      child: message.content.destructDuration != null &&
+                              message.content.destructDuration > 0
+                          ? Text("")
+                          : buildReadInfo(),
                     ),
                   ),
                 ],
@@ -267,7 +271,7 @@ class _ConversationItemState extends State<ConversationItem> {
   }
 
   void __onTapedMesssage() {
-    prefix.RongcloudImPlugin.messageBeginDestruct(message);
+    prefix.RongIMClient.messageBeginDestruct(message);
     // return;
     if (delegate != null) {
       if (multiSelect == true) {

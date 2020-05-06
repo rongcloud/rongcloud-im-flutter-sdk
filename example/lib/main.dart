@@ -12,11 +12,10 @@ import 'router.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
-  
   @override
   _MyAppState createState() => _MyAppState();
 
-  static BuildContext getContext(){
+  static BuildContext getContext() {
     return _MyAppState.getContext();
   }
 }
@@ -27,15 +26,16 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   DateTime notificationQuietStartTime;
   static BuildContext appContext;
 
-  static BuildContext getContext(){
+  static BuildContext getContext() {
     return appContext;
   }
+
   @override
   void initState() {
     super.initState();
 
     //1.初始化 im SDK
-    prefix.RongcloudImPlugin.init(RongAppKey);
+    prefix.RongIMClient.init(RongAppKey);
 
     // _initUserInfoCache();
 
@@ -46,7 +46,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       _getNotificationQuietHours();
     });
 
-    prefix.RongcloudImPlugin.onMessageReceivedWrapper =
+    prefix.RongIMClient.onMessageReceivedWrapper =
         (prefix.Message msg, int left, bool hasPackage, bool offline) {
       String hasP = hasPackage ? "true" : "false";
       String off = offline ? "true" : "false";
@@ -62,13 +62,14 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             " offline:" +
             off);
       } else {
-        print("object onMessageReceivedWrapper objName: ${msg.objectName} content is null left:${left.toString()} hasPackage:$hasP offline:$off");
+        print(
+            "object onMessageReceivedWrapper objName: ${msg.objectName} content is null left:${left.toString()} hasPackage:$hasP offline:$off");
       }
       if (currentState == AppLifecycleState.paused &&
           !checkNoficationQuietStatus()) {
         EventBus.instance.commit(EventKeys.ReceiveMessage,
             {"message": msg, "left": left, "hasPackage": hasPackage});
-        prefix.RongcloudImPlugin.getConversationNotificationStatus(
+        prefix.RongIMClient.getConversationNotificationStatus(
             msg.conversationType, msg.targetId, (int status, int code) {
           if (status == 1) {
             _postLocalNotification(msg, left);
@@ -81,28 +82,28 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       }
     };
 
-    prefix.RongcloudImPlugin.onDataReceived = (Map map) {
+    prefix.RongIMClient.onDataReceived = (Map map) {
       print("object onDataReceived " + map.toString());
     };
 
-    prefix.RongcloudImPlugin.onMessageReceiptRequest = (Map map) {
+    prefix.RongIMClient.onMessageReceiptRequest = (Map map) {
       EventBus.instance.commit(EventKeys.ReceiveReceiptRequest, map);
       print("object onMessageReceiptRequest " + map.toString());
     };
 
-    prefix.RongcloudImPlugin.onMessageReceiptResponse = (Map map) {
+    prefix.RongIMClient.onMessageReceiptResponse = (Map map) {
       EventBus.instance.commit(EventKeys.ReceiveReceiptResponse, map);
       print("object onMessageReceiptResponse " + map.toString());
     };
 
-    prefix.RongcloudImPlugin.onReceiveReadReceipt = (Map map) {
+    prefix.RongIMClient.onReceiveReadReceipt = (Map map) {
       EventBus.instance.commit(EventKeys.ReceiveReadReceipt, map);
       print("object onReceiveReadReceipt " + map.toString());
     };
   }
 
   void _getNotificationQuietHours() {
-    prefix.RongcloudImPlugin.getNotificationQuietHours(
+    prefix.RongIMClient.getNotificationQuietHours(
         (int code, String startTime, int spansMin) {
       if (startTime != null && startTime.length > 0 && spansMin > 0) {
         DateTime now = DateTime.now();

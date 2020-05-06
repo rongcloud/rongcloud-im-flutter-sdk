@@ -52,8 +52,7 @@ class _DebugPageState extends State<DebugPage> {
 
   void _setNotificationQuietHours() {
     print("_setNotificationQuietHours");
-    prefix.RongcloudImPlugin.setNotificationQuietHours("09:00:00", 600,
-        (int code) {
+    prefix.RongIMClient.setNotificationQuietHours("09:00:00", 600, (int code) {
       EventBus.instance.commit(EventKeys.UpdateNotificationQuietStatus, {});
       String toast = "设置全局屏蔽某个时间段的消息提醒:\n" +
           (code == 0 ? "设置成功" : "设置失败, code:" + code.toString());
@@ -64,7 +63,7 @@ class _DebugPageState extends State<DebugPage> {
 
   void _getNotificationQuietHours() {
     print("_getNotificationQuietHours");
-    prefix.RongcloudImPlugin.getNotificationQuietHours(
+    prefix.RongIMClient.getNotificationQuietHours(
         (int code, String startTime, int spansMin) {
       String toast = "查询已设置的全局时间段消息提醒屏蔽\n: startTime:" +
           startTime +
@@ -78,7 +77,7 @@ class _DebugPageState extends State<DebugPage> {
 
   void _removeNotificationQuietHours() {
     print("_removeNotificationQuietHours");
-    prefix.RongcloudImPlugin.removeNotificationQuietHours((int code) {
+    prefix.RongIMClient.removeNotificationQuietHours((int code) {
       EventBus.instance.commit(EventKeys.UpdateNotificationQuietStatus, {});
       String toast = "删除已设置的全局时间段消息提醒屏蔽:\n" +
           (code == 0 ? "删除成功" : "删除失败, code:" + code.toString());
@@ -90,8 +89,8 @@ class _DebugPageState extends State<DebugPage> {
   void _getCons() async {
     int conversationType = prefix.RCConversationType.Private;
     String targetId = "SealTalk";
-    prefix.Conversation con = await prefix.RongcloudImPlugin.getConversation(
-        conversationType, targetId);
+    prefix.Conversation con =
+        await prefix.RongIMClient.getConversation(conversationType, targetId);
     if (con != null) {
       print("getConversation type:" +
           con.conversationType.toString() +
@@ -111,7 +110,7 @@ class _DebugPageState extends State<DebugPage> {
     int sentTime = 1567756686643;
     int beforeCount = 10;
     int afterCount = 10;
-    List msgs = await prefix.RongcloudImPlugin.getHistoryMessages(
+    List msgs = await prefix.RongIMClient.getHistoryMessages(
         conversationType, targetId, sentTime, beforeCount, afterCount);
     if (msgs == null) {
       print("未获取消息列表 type:" +
@@ -131,7 +130,7 @@ class _DebugPageState extends State<DebugPage> {
   }
 
   void _getConversationListByPage() async {
-    List list = await prefix.RongcloudImPlugin.getConversationListByPage(
+    List list = await prefix.RongIMClient.getConversationListByPage(
         [prefix.RCConversationType.Private, prefix.RCConversationType.Group],
         2,
         0);
@@ -149,7 +148,7 @@ class _DebugPageState extends State<DebugPage> {
       }
     }
     if (lastCon != null) {
-      list = await prefix.RongcloudImPlugin.getConversationListByPage(
+      list = await prefix.RongIMClient.getConversationListByPage(
           [prefix.RCConversationType.Private, prefix.RCConversationType.Group],
           2,
           lastCon.sentTime);
@@ -180,7 +179,7 @@ class _DebugPageState extends State<DebugPage> {
     sendUserInfo.extra = "textSendUser.extra";
     msg.sendUserInfo = sendUserInfo;
 
-    prefix.Message message = await prefix.RongcloudImPlugin.sendMessage(
+    prefix.Message message = await prefix.RongIMClient.sendMessage(
         prefix.RCConversationType.Private, "SealTalk", msg);
     String toast = "发送消息携带用户信息:\n 消息的 objectName:" +
         message.content.getObjectName() +

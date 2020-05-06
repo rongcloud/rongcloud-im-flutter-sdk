@@ -42,8 +42,7 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
   }
 
   updateConversationList() async {
-    List list =
-        await RongcloudImPlugin.getConversationList(displayConversationType);
+    List list = await RongIMClient.getConversationList(displayConversationType);
     if (list != null) {
       conList = list;
     }
@@ -136,9 +135,10 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
           msg.content.sendUserInfo = null;
           msg.content.mentionedInfo = null;
           if (TargetPlatform.android == defaultTargetPlatform) {
-            RongcloudImPlugin.forwardMessageByStep(con.conversationType,con.targetId,msg);
+            RongIMClient.forwardMessageByStep(
+                con.conversationType, con.targetId, msg);
           } else {
-            RongcloudImPlugin.sendMessage(
+            RongIMClient.sendMessage(
                 con.conversationType, con.targetId, msg.content);
           }
 

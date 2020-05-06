@@ -84,11 +84,12 @@ class _SearchMessagePageState extends State<SearchMessagePage> {
                                 height: 0.5,
                               );
                             })))
-                : Text("无记录",
+                : Text(
+                    "无记录",
                     style: new TextStyle(
-                      fontSize: 14, 
-                       color: const Color(0xffff0000)
-                    ),textAlign: TextAlign.center,)
+                        fontSize: 14, color: const Color(0xffff0000)),
+                    textAlign: TextAlign.center,
+                  )
           ],
         ),
       ),
@@ -100,7 +101,7 @@ class _SearchMessagePageState extends State<SearchMessagePage> {
       messageList.clear();
       _refreshUI();
     }
-    RongcloudImPlugin.searchMessages(conversationType, targetId, keyWord, 50, 0,
+    RongIMClient.searchMessages(conversationType, targetId, keyWord, 50, 0,
         (List/*<Message>*/ msgList, int code) {
       if (code == 0 && msgList != null) {
         messageList = msgList;

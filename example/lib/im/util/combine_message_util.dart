@@ -409,11 +409,12 @@ class CombineMessageUtils {
     return getHtmlFromType(TAG_BASE_BOTTOM);
   }
 
-  Future<List<String>> getNameList(List<Message> messages) async{
+  Future<List<String>> getNameList(List<Message> messages) async {
     List<String> names = List<String>();
     for (Message msg in messages) {
       if (names.length == 2) return names;
-      String name = (await UserInfoDataSource.getUserInfo(msg.senderUserId)).name;
+      String name =
+          (await UserInfoDataSource.getUserInfo(msg.senderUserId)).name;
       if (name != null && !names.contains(name)) {
         names.add(name);
       }
@@ -441,7 +442,7 @@ class CombineMessageUtils {
     return title;
   }
 
-  Future<List<String>> getSummaryList(List<Message> messages) async{
+  Future<List<String>> getSummaryList(List<Message> messages) async {
     List<String> summaryList = List<String>();
     int conversationType = messages[0].conversationType;
     for (int i = 0; i < messages.length && i < SUMMARY_MAX_SIZE; i++) {
@@ -450,7 +451,8 @@ class CombineMessageUtils {
       // UserInfo userInfo = RongUserInfoManager.getInstance().getUserInfo(message.getSenderUserId());
       String userName = "";
       if (RCConversationType.Group == conversationType) {
-        userName = (await UserInfoDataSource.getUserInfo(message.senderUserId)).name;
+        userName =
+            (await UserInfoDataSource.getUserInfo(message.senderUserId)).name;
       }
 
       String text;
@@ -484,10 +486,10 @@ class CombineMessageUtils {
       temp.createSync();
     }
     String fileName = generateMd5(url) + COMBINE_FILE_SUFFIX;
-    HttpUtil.download(url, "$filePath/$fileName", (int count, int total){});
+    HttpUtil.download(url, "$filePath/$fileName", (int count, int total) {});
   }
 
-  Future<String> getLocalPathFormUrl(String url) async{
+  Future<String> getLocalPathFormUrl(String url) async {
     Directory tempDir = await getTemporaryDirectory();
     String filePath = tempDir.path + "/" + COMBINE_FILE_PATH;
     String fileName = generateMd5(url) + COMBINE_FILE_SUFFIX;

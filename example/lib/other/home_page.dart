@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin_example/im/util/db_manager.dart';
 import 'package:rongcloud_im_plugin_example/im/util/user_info_datesource.dart';
@@ -47,13 +46,13 @@ class _HomePageState extends State<HomePage> {
 
   initPlatformState() async {
     //1.初始化 im SDK
-    // RongcloudImPlugin.init(RongAppKey);
+    // RongIMClient.init(RongAppKey);
 
     //2.连接 im SDK
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.get("token");
     if (token != null && token.length > 0) {
-      int rc = await RongcloudImPlugin.connect(token);
+      int rc = await RongIMClient.connect(token);
       print('connect result ' + rc.toString());
       EventBus.instance.commit(EventKeys.UpdateNotificationQuietStatus, {});
       if (rc == 31004 || rc == 12) {
@@ -78,7 +77,7 @@ class _HomePageState extends State<HomePage> {
     cacheListener.getUserInfo = (String userId) {
       return UserInfoDataSource.generateUserInfo(userId);
     };
-    cacheListener.getGroupInfo = (String groupId){
+    cacheListener.getGroupInfo = (String groupId) {
       return UserInfoDataSource.generateGroupInfo(groupId);
     };
     UserInfoDataSource.setCacheListener(cacheListener);

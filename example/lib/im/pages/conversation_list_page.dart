@@ -53,8 +53,7 @@ class _ConversationListPageState extends State<ConversationListPage>
   }
 
   updateConversationList() async {
-    List list =
-        await RongcloudImPlugin.getConversationList(displayConversationType);
+    List list = await RongIMClient.getConversationList(displayConversationType);
     if (list != null) {
       // list.sort((a,b) => b.sentTime.compareTo(a.sentTime));
       conList = list;
@@ -79,7 +78,7 @@ class _ConversationListPageState extends State<ConversationListPage>
       }
     });
 
-    RongcloudImPlugin.onConnectionStatusChange = (int connectionStatus) {
+    RongIMClient.onConnectionStatusChange = (int connectionStatus) {
       if (RCConnectionStatus.KickedByOtherClient == connectionStatus ||
           RCConnectionStatus.TokenIncorrect == connectionStatus ||
           RCConnectionStatus.UserBlocked == connectionStatus) {
@@ -101,19 +100,19 @@ class _ConversationListPageState extends State<ConversationListPage>
       }
     };
 
-    RongcloudImPlugin.onRecallMessageReceived = (Message message) {
+    RongIMClient.onRecallMessageReceived = (Message message) {
       updateConversationList();
     };
   }
 
   void _deleteConversation(Conversation conversation) {
     //删除会话需要刷新会话列表数据
-    RongcloudImPlugin.removeConversation(
+    RongIMClient.removeConversation(
         conversation.conversationType, conversation.targetId, (bool success) {
       if (success) {
         updateConversationList();
         // // 如果需要删除会话中的消息调用下面的接口
-        // RongcloudImPlugin.deleteMessages(
+        // RongIMClient.deleteMessages(
         //     conversation.conversationType, conversation.targetId, (int code) {
         //   updateConversationList();
         // });
@@ -123,7 +122,7 @@ class _ConversationListPageState extends State<ConversationListPage>
 
   void _clearConversationUnread(Conversation conversation) async {
     //清空未读需要刷新会话列表数据
-    bool success = await RongcloudImPlugin.clearMessagesUnreadStatus(
+    bool success = await RongIMClient.clearMessagesUnreadStatus(
         conversation.conversationType, conversation.targetId);
     if (success) {
       updateConversationList();
@@ -131,7 +130,7 @@ class _ConversationListPageState extends State<ConversationListPage>
   }
 
   void _setConversationToTop(Conversation conversation, bool isTop) {
-    RongcloudImPlugin.setConversationToTop(
+    RongIMClient.setConversationToTop(
         conversation.conversationType, conversation.targetId, isTop,
         (bool status, int code) {
       if (code == 0) {

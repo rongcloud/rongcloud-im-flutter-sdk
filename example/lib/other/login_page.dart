@@ -12,7 +12,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
   TextEditingController _assount = TextEditingController();
   TextEditingController _password = TextEditingController();
 
@@ -46,7 +45,9 @@ class _LoginPageState extends State<LoginPage> {
           String id = result["id"];
           String token = result["token"];
           _saveUserInfo(id, token);
-          Navigator.of(context).pushAndRemoveUntil(new MaterialPageRoute(builder: (context) => new HomePage()), (route) => route == null);
+          Navigator.of(context).pushAndRemoveUntil(
+              new MaterialPageRoute(builder: (context) => new HomePage()),
+              (route) => route == null);
         } else if (errorCode == -1) {
           Fluttertoast.showToast(msg: "网络未连接，请连接网络重试");
         } else {
@@ -66,12 +67,10 @@ class _LoginPageState extends State<LoginPage> {
     prefs.setString("password", _password.text);
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     final logo = new Hero(
-      tag: 'hero', 
+      tag: 'hero',
       child: Container(
         width: 100,
         height: 100,
@@ -84,59 +83,61 @@ class _LoginPageState extends State<LoginPage> {
       autofocus: false,
       controller: _assount,
       decoration: InputDecoration(
-        hintText: 'SealTalk 账号',
-        contentPadding: new EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(32.0)
-        )
-      ),
+          hintText: 'SealTalk 账号',
+          contentPadding: new EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+          border:
+              OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
     );
 
     final password = TextFormField(
       autofocus: false,
       obscureText: true,
       controller: _password,
-      decoration:  InputDecoration(
-        hintText: 'SealTalk 密码',
-        contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(32.0)
-        )
-      ),
+      decoration: InputDecoration(
+          hintText: 'SealTalk 密码',
+          contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+          border:
+              OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
     );
-    
+
     final loginButton = Padding(
       padding: EdgeInsets.symmetric(vertical: 16.0),
       child: MaterialButton(
         minWidth: 200.0,
         height: 42.0,
-        onPressed: (){
+        onPressed: () {
           _loginAction();
         },
         color: Colors.lightBlueAccent,
-        child: Text('登 录',style: TextStyle(color: Colors.white),),
+        child: Text(
+          '登 录',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
     );
 
-  return Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: Text("Login"),
       ),
       body: Center(
-        child: ListView(
-            shrinkWrap: true,
-            padding: EdgeInsets.only(left: 24.0,right: 24.0),
-            children: <Widget>[
-              logo,
-              SizedBox(height: 48.0),
-              account,
-              SizedBox(height: 8.0,),
-              password,
-              SizedBox(height: 24.0,),
-              loginButton
-            ],
-          )
-      ),
-      );
+          child: ListView(
+        shrinkWrap: true,
+        padding: EdgeInsets.only(left: 24.0, right: 24.0),
+        children: <Widget>[
+          logo,
+          SizedBox(height: 48.0),
+          account,
+          SizedBox(
+            height: 8.0,
+          ),
+          password,
+          SizedBox(
+            height: 24.0,
+          ),
+          loginButton
+        ],
+      )),
+    );
   }
 }

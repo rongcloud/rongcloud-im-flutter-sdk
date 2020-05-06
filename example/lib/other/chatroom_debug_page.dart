@@ -28,13 +28,13 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
       "退出聊天室 1",
     ];
 
-    RongcloudImPlugin.onJoinChatRoom = (String targetId, int status) {
+    RongIMClient.onJoinChatRoom = (String targetId, int status) {
       Fluttertoast.showToast(
           msg: "加入聊天室 $targetId " + (status == 0 ? "成功" : "失败"),
           timeInSecForIos: 2);
     };
 
-    RongcloudImPlugin.onQuitChatRoom = (String targetId, int status) {
+    RongIMClient.onQuitChatRoom = (String targetId, int status) {
       Fluttertoast.showToast(
           msg: "退出聊天室 $targetId " + (status == 0 ? "成功" : "失败"),
           timeInSecForIos: 2);
@@ -72,11 +72,11 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
   }
 
   void _joinChatRoom() {
-    RongcloudImPlugin.joinChatRoom(targetId, 10);
+    RongIMClient.joinChatRoom(targetId, 10);
   }
 
   void _setEntry() {
-    RongcloudImPlugin.setChatRoomEntry(
+    RongIMClient.setChatRoomEntry(
         targetId, "key1", "value1", true, true, "notificationExtra",
         (int code) {
       DialogUtil.showAlertDiaLog(context,
@@ -85,7 +85,7 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
   }
 
   void _forceSetEntry() {
-    RongcloudImPlugin.forceSetChatRoomEntry(
+    RongIMClient.forceSetChatRoomEntry(
         targetId, "key2", "value2", false, false, "notificationExtra",
         (int code) {
       DialogUtil.showAlertDiaLog(
@@ -96,7 +96,7 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
   }
 
   void _removeEntry() {
-    RongcloudImPlugin.removeChatRoomEntry(
+    RongIMClient.removeChatRoomEntry(
         targetId, "key1", true, "notificationExtra", (int code) {
       DialogUtil.showAlertDiaLog(
           context, "删除 KV：key1, 发送通知，code：" + CodeUtil.codeString(code));
@@ -104,7 +104,7 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
   }
 
   void _forceRemoveEntry() {
-    RongcloudImPlugin.forceRemoveChatRoomEntry(
+    RongIMClient.forceRemoveChatRoomEntry(
         targetId, "key2", false, "notificationExtra", (int code) {
       DialogUtil.showAlertDiaLog(
           context, "强制删除 KV：key2, 不发送通知，code：" + CodeUtil.codeString(code));
@@ -112,21 +112,21 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
   }
 
   void _getEntry() {
-    RongcloudImPlugin.getChatRoomEntry(targetId, "key1", (Map entry, int code) {
+    RongIMClient.getChatRoomEntry(targetId, "key1", (Map entry, int code) {
       DialogUtil.showAlertDiaLog(context,
           "获取单个 KV：key1, code：" + CodeUtil.codeString(code) + "，entry：$entry");
     });
   }
 
   void _getAllEntry() {
-    RongcloudImPlugin.getAllChatRoomEntries(targetId, (Map entry, int code) {
+    RongIMClient.getAllChatRoomEntries(targetId, (Map entry, int code) {
       DialogUtil.showAlertDiaLog(context,
           "获取所有 KV：code：" + CodeUtil.codeString(code) + "，entry：$entry");
     });
   }
 
   void _quitChatRoom() {
-    RongcloudImPlugin.quitChatRoom(targetId);
+    RongIMClient.quitChatRoom(targetId);
   }
 
   @override
