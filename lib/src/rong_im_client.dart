@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/services.dart';
 import 'package:rongcloud_im_plugin/src/util/type_util.dart';
 import '../rongcloud_im_plugin.dart';
@@ -8,8 +6,7 @@ import 'util/message_factory.dart';
 import 'method_key.dart';
 import 'info/connection_status_convert.dart';
 
-@Deprecated('从 2.0.0 版本开始，RongcloudImPlugin 修改为 RongIMClient，RongcloudImPlugin 将会在后面的版本被删除')
-class RongcloudImPlugin {
+class RongIMClient {
   static final MethodChannel _channel =
       const MethodChannel('rongcloud_im_plugin');
 
