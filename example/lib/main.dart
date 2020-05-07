@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart' as prefix;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:rongcloud_im_plugin_example/im/util/db_manager.dart';
-import 'im/util/user_info_datesource.dart';
 import 'other/home_page.dart';
 
 import 'im/util/event_bus.dart';
