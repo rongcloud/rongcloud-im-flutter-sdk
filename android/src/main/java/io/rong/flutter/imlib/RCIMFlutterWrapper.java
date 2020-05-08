@@ -84,7 +84,7 @@ public class RCIMFlutterWrapper {
 
             @Override
             public void onMessageReceiptRequest(final Conversation.ConversationType conversationType,
-                    final String targetId, final String messageUId) {
+                                                final String targetId, final String messageUId) {
                 mMainHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -102,7 +102,7 @@ public class RCIMFlutterWrapper {
 
             @Override
             public void onMessageReceiptResponse(final Conversation.ConversationType conversationType,
-                    final String targetId, final String messageUId, final HashMap<String, Long> readerList) {
+                                                 final String targetId, final String messageUId, final HashMap<String, Long> readerList) {
                 mMainHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -584,33 +584,51 @@ public class RCIMFlutterWrapper {
                 result.success(null);
                 return;
             }
-            Message message = RongIMClient.getInstance().sendMessage(type, targetId, content, pushContent, pushData,
-                    new RongIMClient.SendMessageCallback() {
+            RongIMClient.getInstance().sendMessage(type, targetId, content, pushContent, pushData,
+                    new IRongCallback.ISendMessageCallback() {
                         @Override
-                        public void onError(Integer messageId, RongIMClient.ErrorCode errorCode) {
+                        public void onAttached(Message message) {
+                            String messageS = MessageFactory.getInstance().message2String(message);
+                            Map msgMap = new HashMap();
+                            msgMap.put("message", messageS);
+                            msgMap.put("status", 10);
+                            result.success(msgMap);
+                            msgMap.put("code", -1);
+                            msgMap.put("messageId", message.getMessageId());
+                            mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, msgMap);
+                        }
+
+                        @Override
+                        public void onSuccess(Message message) {
+                            RCLog.i(LOG_TAG + " success");
+                            if (message == null) {
+                                RCLog.e(LOG_TAG + " message is nil");
+                                result.success(null);
+                                return;
+                            }
+                            Map resultMap = new HashMap();
+                            resultMap.put("messageId", message.getMessageId());
+                            resultMap.put("status", 30);
+                            resultMap.put("code", 0);
+                            mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
+                        }
+
+                        @Override
+                        public void onError(Message message, RongIMClient.ErrorCode errorCode) {
                             RCLog.e(LOG_TAG + " content is nil");
                             Map resultMap = new HashMap();
-                            resultMap.put("messageId", messageId);
+                            resultMap.put("messageId", message.getMessageId());
                             resultMap.put("status", 20);
                             resultMap.put("code", errorCode.getValue());
                             mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
                         }
 
-                        @Override
-                        public void onSuccess(Integer messageId) {
-                            RCLog.i(LOG_TAG + " success");
-                            Map resultMap = new HashMap();
-                            resultMap.put("messageId", messageId);
-                            resultMap.put("status", 30);
-                            resultMap.put("code", 0);
-                            mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
-                        }
                     });
-            String messageS = MessageFactory.getInstance().message2String(message);
-            Map msgMap = new HashMap();
-            msgMap.put("message", messageS);
-            msgMap.put("status", 10);
-            result.success(msgMap);
+//            String messageS = MessageFactory.getInstance().message2String(message);
+//            Map msgMap = new HashMap();
+//            msgMap.put("message", messageS);
+//            msgMap.put("status", 10);
+//            result.success(msgMap);
         }
     }
 
@@ -783,6 +801,9 @@ public class RCIMFlutterWrapper {
                             msgMap.put("message", messageS);
                             msgMap.put("status", 10);
                             result.success(msgMap);
+                            msgMap.put("code", -1);
+                            msgMap.put("messageId", message.getMessageId());
+                            mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, msgMap);
                         }
 
                         @Override
@@ -1904,7 +1925,7 @@ public class RCIMFlutterWrapper {
         RongIMClient.setOnReceiveMessageListener(new RongIMClient.OnReceiveMessageWrapperListener() {
             @Override
             public boolean onReceived(final Message message, final int left, final boolean hasPackage,
-                    final boolean offline) {
+                                      final boolean offline) {
                 mMainHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -1927,7 +1948,7 @@ public class RCIMFlutterWrapper {
         RongIMClient.getInstance().setOnRecallMessageListener(new RongIMClient.OnRecallMessageListener() {
             @Override
             public boolean onMessageRecalled(final Message message,
-                    final RecallNotificationMessage recallNotificationMessage) {
+                                             final RecallNotificationMessage recallNotificationMessage) {
                 mMainHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -1951,7 +1972,7 @@ public class RCIMFlutterWrapper {
         RongIMClient.setTypingStatusListener(new RongIMClient.TypingStatusListener() {
             @Override
             public void onTypingStatusChanged(final Conversation.ConversationType conversationType,
-                    final String targetId, final Collection<TypingStatus> collection) {
+                                              final String targetId, final Collection<TypingStatus> collection) {
                 mMainHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -2732,8 +2753,8 @@ public class RCIMFlutterWrapper {
                 @Override
                 public void onTick(final long untilFinished, String messageUId) {
                     int remainDuration = (int) untilFinished;
-                    RLog.d("messageBeginDestruct","onTick :"+untilFinished+" remainDuration:"+remainDuration);
-                    invokeMessageDestructCallBack(messageUId,remainDuration);
+                    RLog.d("messageBeginDestruct", "onTick :" + untilFinished + " remainDuration:" + remainDuration);
+                    invokeMessageDestructCallBack(messageUId, remainDuration);
                 }
 
                 @Override
@@ -2744,7 +2765,7 @@ public class RCIMFlutterWrapper {
         }
     }
 
-    private void invokeMessageDestructCallBack(String messageUId,final int remainDuration){
+    private void invokeMessageDestructCallBack(String messageUId, final int remainDuration) {
         RongIMClient.getInstance().getMessageByUid(messageUId, new RongIMClient.ResultCallback<Message>() {
             @Override
             public void onSuccess(Message message) {

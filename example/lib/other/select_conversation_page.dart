@@ -113,7 +113,7 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
     // 这里不使用 loading，因为发消息时 sleep 会卡住动画
     DialogUtil.showAlertDiaLog(context, "消息转发中，请稍后...",
         confirmButton: FlatButton(onPressed: () {}, child: Text("")));
-    sendMessage(messageList);
+    sendMessage(messageList,isCombineMsg: true);
   }
 
   void sendMessageOneByOne() {
@@ -127,14 +127,14 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
     sendMessage(selectMessages);
   }
 
-  void sendMessage(List<Message> selectMessages) async {
+  void sendMessage(List<Message> selectMessages ,{bool isCombineMsg = false}) async {
     Future.delayed(Duration(milliseconds: 400), () {
       for (Message msg in selectMessages) {
         for (Conversation con in selectConList) {
           // 转发时去掉消息原先携带的 sendUserInfo 和 mentionedInfo
           msg.content.sendUserInfo = null;
           msg.content.mentionedInfo = null;
-          if (TargetPlatform.android == defaultTargetPlatform) {
+          if (TargetPlatform.android == defaultTargetPlatform && !isCombineMsg) {
             RongIMClient.forwardMessageByStep(
                 con.conversationType, con.targetId, msg);
           } else {

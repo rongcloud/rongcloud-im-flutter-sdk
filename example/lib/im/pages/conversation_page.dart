@@ -203,6 +203,7 @@ class _ConversationPageState extends State<ConversationPage>
     });
 
     RongIMClient.onMessageSend = (int messageId, int status, int code) async {
+      print("messageId:$messageId status:$status code:$code");
       Message msg = await RongIMClient.getMessage(messageId);
       if (msg.targetId == this.targetId) {
         _insertOrReplaceMessage(msg);
@@ -452,7 +453,8 @@ class _ConversationPageState extends State<ConversationPage>
 
     Message message =
         await RongIMClient.sendMessage(conversationType, targetId, msg);
-    _insertOrReplaceMessage(message);
+    // 统一转成了 onMessageSend 回调处理
+    // _insertOrReplaceMessage(message);
   }
 
   void _deleteMessage(Message message) {
