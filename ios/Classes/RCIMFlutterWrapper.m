@@ -41,12 +41,12 @@
 
 /*!
  初始化 RCCombineMessage 消息
-
+ 
  @param summaryList         转发的消息展示的缩略内容列表
  @param nameList            转发的全部消息的发送者名称列表 （单聊是经过排重的，群聊是群组名称）
  @param conversationType    转发的消息会话类型
  @param content             转发的内容
-
+ 
  @return                    消息对象
  */
 + (instancetype)messageWithSummaryList:(NSArray *)summaryList
@@ -378,6 +378,9 @@
         [dic setObject:jsonString forKey:@"message"];
         [dic setObject:@(SentStatus_SENDING) forKey:@"status"];
         result(dic);
+        [dic setObject:@(message.messageId) forKey:@"messageId"];
+        [dic setObject:@(-1) forKey:@"code"];
+        [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
     }
 }
 
@@ -543,6 +546,9 @@
     [dic setObject:jsonString forKey:@"message"];
     [dic setObject:@(SentStatus_SENDING) forKey:@"status"];
     result(dic);
+    [dic setObject:@(message.messageId) forKey:@"messageId"];
+    [dic setObject:@(-1) forKey:@"code"];
+    [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
 }
 
 - (void)sendDirectionalMessage:(id)arg result:(FlutterResult)result{
