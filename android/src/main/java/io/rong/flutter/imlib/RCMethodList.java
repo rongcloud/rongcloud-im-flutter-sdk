@@ -58,6 +58,16 @@ public class RCMethodList {
     static String MethodKeyForwardMessageByStep = "forwardMessageByStep";
     static String MethodKeyMessageBeginDestruct = "messageBeginDestruct";
     static String MethodKeyMessageStopDestruct = "messageStopDestruct";
+    static String MethodKeyDeleteRemoteMessages = "deleteRemoteMessages";
+    static String MethodKeyClearMessages = "clearMessages";
+    static String MethodKeySetMessageExtra = "setMessageExtra";
+    static String MethodKeySetMessageReceivedStatus = "setMessageReceivedStatus";
+    static String MethodKeySetMessageSentStatus = "setMessageSentStatus";
+    static String MethodKeyClearConversations = "clearConversations";
+    static String MethodKeyGetDeltaTime = "getDeltaTime";
+    static String MethodKeySetOfflineMessageDuration = "setOfflineMessageDuration";
+    static String MethodKeyGetOfflineMessageDuration = "getOfflineMessageDuration";
+
 
     //聊天室存储
     static String MethodKeySetChatRoomEntry = "SetChatRoomEntry";

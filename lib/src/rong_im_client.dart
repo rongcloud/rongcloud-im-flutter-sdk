@@ -1442,6 +1442,127 @@ class RongIMClient {
     await _channel.invokeMethod(RCMethodKey.ForwardMessageByStep, map);
   }
 
+  //删除指定的一条或者一组消息。会同时删除本地和远端消息
+  // 会话类型, 不支持聊天室
+  static void deleteRemoteMessages(int conversationType, String targetId,
+      List<Message> messages, Function(int code) finished) async {
+    if (conversationType == null || targetId == null) {
+      print(
+          "deleteRemoteMessages fail: conversationType or targetId or content is null");
+      return null;
+    }
+    List<Map> msgMapList = List();
+    for (Message message in messages) {
+      msgMapList.add(MessageFactory.instance.message2Map(message));
+    }
+    Map paramMap = {
+      "conversationType": conversationType,
+      "targetId": targetId,
+      "messages": msgMapList
+    };
+    int result =
+        await _channel.invokeMethod(RCMethodKey.DeleteRemoteMessages, paramMap);
+    if (finished != null) {
+      finished(result);
+    }
+  }
+
+  // 清空指定类型，targetId 的某一会话所有聊天消息记录
+  static void clearMessages(int conversationType, String targetId,
+      Function(int code) finished) async {
+    if (conversationType == null || targetId == null) {
+      print(
+          "clearMessages fail: conversationType or targetId or content is null");
+      return null;
+    }
+    Map paramMap = {
+      "conversationType": conversationType,
+      "targetId": targetId,
+    };
+    int result =
+        await _channel.invokeMethod(RCMethodKey.ClearMessages, paramMap);
+    if (finished != null) {
+      finished(result);
+    }
+  }
+
+  // 设置本地消息的附加信息
+  static void setMessageExtra(
+      int messageId, String value, Function(int code) finished) async {
+    Map paramMap = {
+      "messageId": messageId,
+      "value": value,
+    };
+    int result =
+        await _channel.invokeMethod(RCMethodKey.SetMessageExtra, paramMap);
+    if (finished != null) {
+      finished(result);
+    }
+  }
+
+  // 设置接收到的消息状态,用于UI标记消息为已读，已下载等状态。
+  static void setMessageReceivedStatus(
+      int messageId, int receivedStatus, Function(int code) finished) async {
+    Map paramMap = {
+      "messageId": messageId,
+      "receivedStatus": receivedStatus,
+    };
+    int result = await _channel.invokeMethod(
+        RCMethodKey.SetMessageReceivedStatus, paramMap);
+    if (finished != null) {
+      finished(result);
+    }
+  }
+
+  // 设置接收到的消息状态,用于UI标记消息为已读，已下载等状态。
+  static void setMessageSentStatus(
+      int messageId, int sentStatus, Function(int code) finished) async {
+    Map paramMap = {
+      "messageId": messageId,
+      "sentStatus": sentStatus,
+    };
+    int result =
+        await _channel.invokeMethod(RCMethodKey.SetMessageSentStatus, paramMap);
+    if (finished != null) {
+      finished(result);
+    }
+  }
+
+  // 清空会话类型列表中的所有会话及会话信息
+  static void clearConversations(
+      List<int> conversationTypes, Function(int code) finished) async {
+    Map paramMap = {"conversationTypes": conversationTypes};
+    int result =
+        await _channel.invokeMethod(RCMethodKey.ClearConversations, paramMap);
+    if (finished != null) {
+      finished(result);
+    }
+  }
+
+  // 获取本地时间与服务器时间的差值。 消息发送成功后，sdk 会与服务器同步时间，消息所在数据库中存储的时间就是服务器时间。
+  static Future<int> getDeltaTime() async {
+    int result = await _channel.invokeMethod(RCMethodKey.GetDeltaTime);
+    return result;
+  }
+
+  // 清空会话类型列表中的所有会话及会话信息
+  static void setOfflineMessageDuration(
+      int duration, Function(int code, int result) finished) async {
+    Map paramMap = {"duration": duration};
+    Map result = await _channel.invokeMethod(
+        RCMethodKey.SetOfflineMessageDuration, paramMap);
+    if (finished != null) {
+      finished(result["code"], result["result"]);
+    }
+  }
+
+  //获取当前用户离线消息的存储时间，取值范围为int值1~7天
+  static Future<int> getOfflineMessageDuration() async {
+    int duration =
+        await _channel.invokeMethod(RCMethodKey.GetOfflineMessageDuration);
+    return duration;
+  }
+
   ///连接状态发生变更
   ///
   /// [connectionStatus] 连接状态，具体参见枚举 [RCConnectionStatus]

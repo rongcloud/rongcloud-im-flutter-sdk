@@ -66,6 +66,7 @@ class MessageFactory extends Object {
     message.sentTime = map["sentTime"];
     message.objectName = map["objectName"];
     message.messageUId = map["messageUId"];
+    message.extra = map["extra"];
     Map readReceiptMap = map["readReceiptInfo"];
     if (readReceiptMap != null) {
       ReadReceiptInfo readReceiptInfo = ReadReceiptInfo();
