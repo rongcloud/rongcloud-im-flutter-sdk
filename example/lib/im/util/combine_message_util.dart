@@ -94,6 +94,25 @@ class CombineMessageUtils {
     return combine;
   }
 
+  // 是否为合并支持的消息类型
+  static bool allowForward(String objectName) {
+    List writeList = [
+      TextMessage.objectName,
+      VoiceMessage.objectName,
+      ImageMessage.objectName,
+      GifMessage.objectName,
+      SightMessage.objectName,
+      FileMessage.objectName,
+      RichContentMessage.objectName,
+      CombineMessage.objectName,
+      RichContentMessage.objectName
+    ];
+    if (writeList.contains(objectName)) {
+      return true;
+    }
+    return false;
+  }
+
   // 为合并消息拼接网页文本,并生成文件.
   Future<String> getUrlFromMessageList(List<Message> messagesList) async {
     style = "";
