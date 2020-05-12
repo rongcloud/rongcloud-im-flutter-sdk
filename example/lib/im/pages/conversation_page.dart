@@ -63,6 +63,7 @@ class _ConversationPageState extends State<ConversationPage>
   int recordTime = 0;
   Map burnMsgMap = Map();
   bool isSecretChat = false;
+  bool isFirstGetHistoryMessages = true;
 
   _ConversationPageState({this.arguments});
   @override
@@ -277,8 +278,11 @@ class _ConversationPageState extends State<ConversationPage>
       msgs.sort((a, b) => b.sentTime.compareTo(a.sentTime));
       messageDataSource = msgs;
     }
-    _sendReadReceipt();
+    if (isFirstGetHistoryMessages) {
+      _sendReadReceipt();
+    }
     _refreshMessageContentListUI();
+    isFirstGetHistoryMessages = false;
   }
 
   onLoadMoreHistoryMessages(int messageId) async {
@@ -626,20 +630,7 @@ class _ConversationPageState extends State<ConversationPage>
               print('sendReadReceiptMessageFailed:code = + $code');
             }
           });
-          break;
-        }
-      }
-    } else if (conversationType == RCConversationType.Group) {
-      _sendReadReceiptResponse(null);
-    }
-    _syncReadStatus();
-  }
-
-  void _syncReadStatus() {
-    for (int i = 0; i < messageDataSource.length; i++) {
-      Message message = messageDataSource[i];
-      if (message.messageDirection == RCMessageDirection.Receive) {
-        RongIMClient.syncConversationReadStatus(
+          RongIMClient.syncConversationReadStatus(
             this.conversationType, this.targetId, message.sentTime, (int code) {
           if (code == 0) {
             print('syncConversationReadStatusSuccess');
@@ -647,10 +638,31 @@ class _ConversationPageState extends State<ConversationPage>
             print('syncConversationReadStatusFailed:code = + $code');
           }
         });
-        break;
+          break;
+        }
       }
+    } else if (conversationType == RCConversationType.Group) {
+      _sendReadReceiptResponse(null);
     }
+    // _syncReadStatus();
   }
+
+  // void _syncReadStatus() {
+  //   for (int i = 0; i < messageDataSource.length; i++) {
+  //     Message message = messageDataSource[i];
+  //     if (message.messageDirection == RCMessageDirection.Receive) {
+  //       RongIMClient.syncConversationReadStatus(
+  //           this.conversationType, this.targetId, message.sentTime, (int code) {
+  //         if (code == 0) {
+  //           print('syncConversationReadStatusSuccess');
+  //         } else {
+  //           print('syncConversationReadStatusFailed:code = + $code');
+  //         }
+  //       });
+  //       break;
+  //     }
+  //   }
+  // }
 
   ///长按录制语音的 gif 动画
   Widget _buildExtraCenterWidget() {
