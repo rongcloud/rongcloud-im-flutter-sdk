@@ -583,7 +583,12 @@ class _ConversationPageState extends State<ConversationPage>
       }
     });
 
-    Widget secretChatWidget = WidgetUtil.buildExtentionWidget(
+    extWidgetList.add(imageWidget);
+    extWidgetList.add(cameraWidget);
+    extWidgetList.add(videoWidget);
+    extWidgetList.add(fileWidget);
+    if (conversationType == RCConversationType.Private) {
+      Widget secretChatWidget = WidgetUtil.buildExtentionWidget(
         Icons.security, RCString.ExtSecretChat, () async {
       print("did tap secret chat");
       isSecretChat = !isSecretChat;
@@ -591,12 +596,8 @@ class _ConversationPageState extends State<ConversationPage>
       print(contentStr);
       DialogUtil.showAlertDiaLog(context, contentStr);
     });
-
-    extWidgetList.add(imageWidget);
-    extWidgetList.add(cameraWidget);
-    extWidgetList.add(videoWidget);
-    extWidgetList.add(fileWidget);
-    extWidgetList.add(secretChatWidget);
+      extWidgetList.add(secretChatWidget);
+    }
 
     //初始化短语
     for (int i = 0; i < 10; i++) {
