@@ -66,6 +66,11 @@ class RCMethodKey {
   static const String GetDeltaTime = 'getDeltaTime';
   static const String SetOfflineMessageDuration = 'setOfflineMessageDuration';
   static const String GetOfflineMessageDuration = 'getOfflineMessageDuration';
+  static const String SetReconnectKickEnable = 'setReconnectKickEnable';
+  static const String GetConnectionStatus = 'getConnectionStatus';
+  static const String CancelDownloadMediaMessage = 'cancelDownloadMediaMessage';
+  static const String GetRemoteChatroomHistoryMessages = 'getRemoteChatroomHistoryMessages';
+  static const String GetMessageByUId = 'getMessageByUId';
 
 
   // 聊天室状态存储

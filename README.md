@@ -47,9 +47,16 @@ RongIMClient.init(RongAppKey);
 ## 2.连接 IM
 
 ```dart
-int rc = await RongIMClient.connect(RongIMToken);
-print('connect result');
-print(rc);
+RongIMClient.connect(RongIMToken, (int code, String userId) {
+  print('connect result ' + code.toString());
+  EventBus.instance.commit(EventKeys.UpdateNotificationQuietStatus, {});
+if (code == 31004 || code == 12) {
+  Navigator.of(context).pushAndRemoveUntil(new MaterialPageRoute(builder: (context) => new LoginPage()), (route) => route == null);
+} else if (code == 0) {
+  print("connect userId" + userId);
+  // 连接成功后打开数据库
+  // _initUserInfoCache();
+}
 ```
 
 # API 调用

@@ -52,17 +52,20 @@ class _HomePageState extends State<HomePage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.get("token");
     if (token != null && token.length > 0) {
-      int rc = await RongIMClient.connect(token);
-      print('connect result ' + rc.toString());
-      EventBus.instance.commit(EventKeys.UpdateNotificationQuietStatus, {});
-      if (rc == 31004 || rc == 12) {
-        Navigator.of(context).pushAndRemoveUntil(
-            new MaterialPageRoute(builder: (context) => new LoginPage()),
-            (route) => route == null);
-      } else if (rc == 0) {
-        // 连接成功后打开数据库
-        // _initUserInfoCache();
-      }
+      // int rc = await RongIMClient.connect(token);
+      RongIMClient.connect(token, (int code, String userId) {
+        print('connect result ' + code.toString());
+        EventBus.instance.commit(EventKeys.UpdateNotificationQuietStatus, {});
+        if (code == 31004 || code == 12) {
+          Navigator.of(context).pushAndRemoveUntil(
+              new MaterialPageRoute(builder: (context) => new LoginPage()),
+              (route) => route == null);
+        } else if (code == 0) {
+          print("connect userId" + userId);
+          // 连接成功后打开数据库
+          // _initUserInfoCache();
+        }
+      });
     } else {
       Navigator.of(context).pushAndRemoveUntil(
           new MaterialPageRoute(builder: (context) => new LoginPage()),

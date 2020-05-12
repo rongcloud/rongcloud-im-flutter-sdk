@@ -26,6 +26,9 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
       "获取单个 KV",
       "获取所有 KV",
       "退出聊天室 1",
+      "获取聊天室历史消息",
+      "设置断线重连时不踢出正在重连的设备",
+      "设置断线重连时踢出正在重连的设备",
     ];
 
     RongIMClient.onJoinChatRoom = (String targetId, int status) {
@@ -67,6 +70,9 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
         break;
       case 7:
         _quitChatRoom();
+        break;
+      case 8:
+        _getChatRoomHistoryMessage();
         break;
     }
   }
@@ -127,6 +133,20 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
 
   void _quitChatRoom() {
     RongIMClient.quitChatRoom(targetId);
+  }
+
+  void _getChatRoomHistoryMessage() {
+    RongIMClient.getRemoteChatroomHistoryMessages(
+        targetId, 0, 20, RCTimestampOrder.RC_Timestamp_Desc,
+        (List/*<Message>*/ msgList, int syncTime, int code) {
+      DialogUtil.showAlertDiaLog(
+          context,
+          "获取聊天室历史消息：code：" +
+              CodeUtil.codeString(code) +
+              "，msgListCount：${msgList.length} 条消息\n" +
+              "，msgList：$msgList" +
+              "，syncTime：$syncTime");
+    });
   }
 
   @override

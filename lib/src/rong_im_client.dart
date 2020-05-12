@@ -31,10 +31,14 @@ class RongIMClient {
   ///
   ///[token] 融云 im token
   ///
-  ///[code] 参见 [RCErrorCode]
-  static Future<int> connect(String token) async {
-    final int code = await _channel.invokeMethod(RCMethodKey.Connect, token);
-    return code;
+  ///[finished] 返回 [RCErrorCode] 以及 userId
+  static void connect(String token, Function(int code ,String userId) finished) async {
+    Map resultMap = await _channel.invokeMethod(RCMethodKey.Connect, token);
+    int code = resultMap["code"];
+    String userId = resultMap["userId"];
+    if (finished != null) {
+      finished(code, userId);
+    }
   }
 
   ///断开连接
@@ -1561,6 +1565,92 @@ class RongIMClient {
     int duration =
         await _channel.invokeMethod(RCMethodKey.GetOfflineMessageDuration);
     return duration;
+  }
+
+  ///设置断线重连时是否踢出当前正在重连的设备
+  ///
+  ///[targetId] 聊天室 id
+  ///
+  /// 用户没有开通多设备登录功能的前提下，同一个账号在一台新设备上登录的时候，会把这个账号在之前登录的设备上踢出。
+  /// 由于 SDK 有断线重连功能，存在下面情况。
+  /// 用户在 A 设备登录，A 设备网络不稳定，没有连接成功，SDK 启动重连机制。
+  /// 用户此时又在 B 设备登录，B 设备连接成功。
+  /// A 设备网络稳定之后，用户在 A 设备连接成功，B 设备被踢出。
+  /// 这个接口就是为这种情况加的。
+  /// 设置 enable 为 YES 时，SDK 重连的时候发现此时已有别的设备连接成功，不再强行踢出已有设备，而是踢出重连设备。
+  static void setReconnectKickEnable(bool enable) {
+    _channel.invokeMethod(RCMethodKey.SetReconnectKickEnable, enable);
+  }
+
+  ///获取当前 SDK 的连接状态
+  static Future<int /*RCConnectionStatus*/ > getConnectionStatus() async {
+    int code = await _channel.invokeMethod(RCMethodKey.GetConnectionStatus);
+    int status = ConnectionStatusConvert.convert(code);
+    return status;
+  }
+
+  ///取消下载的媒体文件
+  static Future<bool> cancelDownloadMediaMessage(int messageId) async {
+    bool success = await _channel.invokeMethod(
+        RCMethodKey.CancelDownloadMediaMessage, messageId);
+    return success;
+  }
+
+  // 从服务器端获取聊天室的历史消息。
+  // targetId         指定的会话 id。
+  // recordTime       起始的消息发送时间戳，毫秒
+  // count            需要获取的消息数量， 0 < count <= 200
+  // order            拉取顺序，RC_Timestamp_Desc:倒序，RC_Timestamp_ASC:正序
+  // resultCallback   获取结果回调。
+  static void getRemoteChatroomHistoryMessages(
+      String targetId,
+      int recordTime,
+      int count,
+      int /*RCTimestampOrder*/ order,
+      Function(List/*<Message>*/ msgList, int syncTime, int code)
+          finished) async {
+    Map map = {
+      "targetId": targetId,
+      "recordTime": recordTime,
+      "count": count,
+      "order": order,
+    };
+    Map resultMap =
+        await _channel.invokeMethod(RCMethodKey.GetRemoteChatroomHistoryMessages, map);
+    int code = resultMap["code"];
+    int syncTime = resultMap["syncTime"];
+    if (code == 0) {
+      List msgStrList = resultMap["messages"];
+      if (msgStrList == null) {
+        if (finished != null) {
+          finished(null, null, code);
+        }
+        return;
+      }
+      List list = new List();
+      for (String msgStr in msgStrList) {
+        Message m = MessageFactory.instance.string2Message(msgStr);
+        list.add(m);
+      }
+      if (finished != null) {
+        finished(list, syncTime, code);
+      }
+    } else {
+      if (finished != null) {
+        finished(null, null, code);
+      }
+    }
+  }
+
+  ///获取当前 SDK 的连接状态
+  static Future<Message> getMessageByUId(String messageUId) async {
+    Map map = {"messageUId": messageUId};
+    String msgStr = await _channel.invokeMethod(RCMethodKey.GetMessageByUId, map);
+    if (msgStr == null) {
+      return null;
+    }
+    Message msg = MessageFactory.instance.string2Message(msgStr);
+    return msg;
   }
 
   ///连接状态发生变更

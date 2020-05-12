@@ -786,6 +786,7 @@ class _ConversationPageState extends State<ConversationPage>
     //   print("code:$code result:$code");
     // });
     // print("code:${await RongIMClient.getOfflineMessageDuration()}");
+    // print('getConnectionStatus: ${await RongIMClient.getConnectionStatus()}');
     if (message.messageDirection == RCMessageDirection.Receive &&
         message.content.destructDuration != null &&
         message.content.destructDuration > 0)

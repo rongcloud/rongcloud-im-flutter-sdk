@@ -58,6 +58,11 @@ static NSString *RCMethodKeyGetUnreadMentionedMessages = @"getUnreadMentionedMes
 static NSString *RCMethodKeySendDirectionalMessage = @"sendDirectionalMessage";
 static NSString *RCMethodKeyMessageBeginDestruct = @"messageBeginDestruct";
 static NSString *RCMethodKeyMessageStopDestruct = @"messageStopDestruct";
+static NSString *RCMethodKeySetReconnectKickEnable = @"setReconnectKickEnable";
+static NSString *RCMethodKeyGetConnectionStatus = @"getConnectionStatus";
+static NSString *RCMethodKeyCancelDownloadMediaMessage = @"cancelDownloadMediaMessage";
+static NSString *RCMethodKeyGetRemoteChatroomHistoryMessages = @"getRemoteChatroomHistoryMessages";
+static NSString *RCMethodKeyGetMessageByUId = @"getMessageByUId";
 
 // 聊天室状态存储
 static NSString *RCMethodKeySetChatRoomEntry = @"SetChatRoomEntry";

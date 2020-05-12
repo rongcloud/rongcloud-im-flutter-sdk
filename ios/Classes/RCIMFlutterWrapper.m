@@ -202,7 +202,18 @@
     }else if([RCMethodKeyMessageBeginDestruct isEqualToString:call.method]) {
         [self messageBeginDestruct:call.arguments result:result];
     }else if([RCMethodKeyMessageStopDestruct isEqualToString:call.method]) {
-        [self messageStopDestruct:call.arguments result:result];}
+        [self messageStopDestruct:call.arguments result:result];
+    }else if([RCMethodKeySetReconnectKickEnable isEqualToString:call.method]) {
+        [self setReconnectKickEnable:call.arguments result:result];
+    }else if([RCMethodKeyGetConnectionStatus isEqualToString:call.method]) {
+        [self getConnectionStatus:call.arguments result:result];
+    }else if([RCMethodKeyCancelDownloadMediaMessage isEqualToString:call.method]) {
+        [self cancelDownloadMediaMessage:call.arguments result:result];
+    }else if([RCMethodKeyGetRemoteChatroomHistoryMessages isEqualToString:call.method]) {
+        [self getRemoteChatroomHistoryMessages:call.arguments result:result];
+    }else if([RCMethodKeyGetMessageByUId isEqualToString:call.method]) {
+        [self getMessageByUId:call.arguments result:result];
+    }
     else {
         result(FlutterMethodNotImplemented);
     }
@@ -266,13 +277,16 @@
         NSString *token = (NSString *)arg;
         [[RCIMClient sharedRCIMClient] connectWithToken:token success:^(NSString *userId) {
             [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
-            result(@(0));
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:userId forKey:@"userId"];
+            [dic setObject:@(0) forKey:@"code"];
+            result(dic);
         } error:^(RCConnectErrorCode status) {
             [RCLog i:[NSString stringWithFormat:@"%@ fail %@",LOG_TAG,@(status)]];
-            result(@(status));
+            result(@{@"code":@(status), @"userId":@""});
         } tokenIncorrect:^{
             [RCLog i:[NSString stringWithFormat:@"%@ fail %@",LOG_TAG,@(RC_CONN_TOKEN_INCORRECT)]];
-            result(@(RC_CONN_TOKEN_INCORRECT));
+            result(@{@"code":@(RC_CONN_TOKEN_INCORRECT), @"userId":@""});
         }];
     }
 }
@@ -1244,6 +1258,70 @@
         RCMessage *message = [RCFlutterMessageFactory dic2Message:messageDic];
         
         [[RCIMClient sharedRCIMClient] messageStopDestruct:message];;
+    }
+}
+
+- (void)setReconnectKickEnable:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"setReconnectKickEnable";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    BOOL enable = (BOOL)arg;
+    [[RCIMClient sharedRCIMClient] setReconnectKickEnable:enable];
+}
+
+- (void)getConnectionStatus:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"getConnectionStatus";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    
+    RCConnectionStatus status = [[RCIMClient sharedRCIMClient] getConnectionStatus];
+    result(@(status));
+}
+
+- (void)cancelDownloadMediaMessage:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"cancelDownloadMediaMessage";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    long messageId = (long)arg;
+    [[RCIMClient sharedRCIMClient] cancelDownloadMediaMessage:messageId];
+}
+
+- (void)getRemoteChatroomHistoryMessages:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"getRemoteChatroomHistoryMessages";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        NSString *targetId = param[@"targetId"];
+        long long recordTime = [param[@"recordTime"] longLongValue];
+        int count = [param[@"count"] intValue];
+        RCTimestampOrder order = [param[@"order"] intValue];
+        
+        [[RCIMClient sharedRCIMClient] getRemoteChatroomHistoryMessages:targetId recordTime:recordTime count:count order:order success:^(NSArray *messages, long long syncTime) {
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            NSMutableArray *msgsArray = [NSMutableArray new];
+            for(RCMessage *message in messages) {
+                NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+                [msgsArray addObject:jsonString];
+            }
+            NSMutableDictionary *callbackDic = [NSMutableDictionary new];
+            [callbackDic setObject:@(0) forKey:@"code"];
+            [callbackDic setObject:msgsArray forKey:@"messages"];
+            [callbackDic setObject:@(syncTime) forKey:@"syncTime"];
+            result(callbackDic);
+        } error:^(RCErrorCode status) {
+            [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(status)]];
+            NSMutableDictionary *callbackDic = [NSMutableDictionary new];
+            [callbackDic setObject:@(status) forKey:@"code"];
+            result(callbackDic);
+        }];
+    }
+}
+
+- (void)getMessageByUId:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"getMessageByUId";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSString class]]) {
+        NSString *messageUId = (NSString *)arg;
+        RCMessage *message = [[RCIMClient sharedRCIMClient] getMessageByUId:messageUId];
+        NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+        result(jsonString);
     }
 }
 
