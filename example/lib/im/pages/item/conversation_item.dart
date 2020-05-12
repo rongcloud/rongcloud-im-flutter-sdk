@@ -191,7 +191,8 @@ class _ConversationItemState extends State<ConversationItem> {
                       onTap: () {
                         __onTapedReadRequest();
                       },
-                      child: message.content.destructDuration != null &&
+                      child: message.content != null &&
+                              message.content.destructDuration != null &&
                               message.content.destructDuration > 0
                           ? Text("")
                           : buildReadInfo(),
