@@ -417,6 +417,7 @@ public class RCIMFlutterWrapper {
             setConnectStatusListener();
             setTypingStatusListener();
             setOnRecallMessageListener();
+            setOnReceiveDestructionMessageListener();
         } else {
             Log.e("RCIM flutter init", "非法参数");
         }
@@ -1961,6 +1962,22 @@ public class RCIMFlutterWrapper {
                     }
                 });
                 return false;
+            }
+        });
+    }
+
+    // 阅后即焚销毁回调
+    private void setOnReceiveDestructionMessageListener() {
+        RongIMClient.getInstance().setOnReceiveDestructionMessageListener(new RongIMClient.OnReceiveDestructionMessageListener() {
+
+            @Override
+            public void onReceive(final Message message) {
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        invokeMessageDestructCallBack(message.getUId(), 0);
+                    }
+                });
             }
         });
     }
