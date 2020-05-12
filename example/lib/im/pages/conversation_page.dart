@@ -785,7 +785,7 @@ class _ConversationPageState extends State<ConversationPage>
     // RongIMClient.setOfflineMessageDuration(3, (code, result){
     //   print("code:$code result:$code");
     // });
-      // print("code:${await RongIMClient.getOfflineMessageDuration()}");
+    // print("code:${await RongIMClient.getOfflineMessageDuration()}");
     if (message.messageDirection == RCMessageDirection.Receive &&
         message.content.destructDuration != null &&
         message.content.destructDuration > 0)
@@ -992,33 +992,16 @@ class _ConversationPageState extends State<ConversationPage>
     });
   }
 
-  bool canForward(String objectName) {
-    List writeList = [
-      TextMessage.objectName,
-      VoiceMessage.objectName,
-      ImageMessage.objectName,
-      GifMessage.objectName,
-      SightMessage.objectName,
-      FileMessage.objectName,
-      RichContentMessage.objectName,
-    ];
-    if (writeList.contains(objectName)) {
-      return true;
-    }
-    return false;
-  }
-
   @override
   void didTapForward() async {
     List selectMsgs = new List();
+    bool isAllowCombine = true;
     for (int msgId in selectedMessageIds) {
       Message forwardMsg = await RongIMClient.getMessage(msgId);
-      if (canForward(forwardMsg.objectName)) {
-        selectMsgs.add(forwardMsg);
-      } else {
-        DialogUtil.showAlertDiaLog(context, RCString.ForwardHint);
-        return;
+      if (!CombineMessageUtils.allowForward(forwardMsg.objectName)) {
+        isAllowCombine = false;
       }
+      selectMsgs.add(forwardMsg);
     }
 
     Map arguments = {"selectMessages": selectMsgs};
@@ -1029,9 +1012,13 @@ class _ConversationPageState extends State<ConversationPage>
             arguments: arguments);
       },
       "合并转发": () {
-        arguments["forwardType"] = 1;
-        Navigator.pushNamed(context, "/select_conversation_page",
-            arguments: arguments);
+        if (isAllowCombine) {
+          arguments["forwardType"] = 1;
+          Navigator.pushNamed(context, "/select_conversation_page",
+              arguments: arguments);
+        } else {
+          DialogUtil.showAlertDiaLog(context, RCString.ForwardHint);
+        }
       },
       "取消": () {}
     });
