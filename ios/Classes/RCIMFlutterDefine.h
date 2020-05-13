@@ -63,6 +63,15 @@ static NSString *RCMethodKeyGetConnectionStatus = @"getConnectionStatus";
 static NSString *RCMethodKeyCancelDownloadMediaMessage = @"cancelDownloadMediaMessage";
 static NSString *RCMethodKeyGetRemoteChatroomHistoryMessages = @"getRemoteChatroomHistoryMessages";
 static NSString *RCMethodKeyGetMessageByUId = @"getMessageByUId";
+static NSString *RCMethodKeyDeleteRemoteMessages = @"deleteRemoteMessages";
+static NSString *RCMethodKeyClearMessages = @"clearMessages";
+static NSString *RCMethodKeySetMessageExtra = @"setMessageExtra";
+static NSString *RCMethodKeySetMessageReceivedStatus = @"setMessageReceivedStatus";
+static NSString *RCMethodKeySetMessageSentStatus = @"setMessageSentStatus";
+static NSString *RCMethodKeyClearConversations = @"clearConversations";
+static NSString *RCMethodKeyGetDeltaTime = @"getDeltaTime";
+static NSString *RCMethodKeySetOfflineMessageDuration = @"setOfflineMessageDuration";
+static NSString *RCMethodKeyGetOfflineMessageDuration = @"getOfflineMessageDuration";
 
 // 聊天室状态存储
 static NSString *RCMethodKeySetChatRoomEntry = @"SetChatRoomEntry";

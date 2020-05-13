@@ -772,20 +772,20 @@ class _ConversationPageState extends State<ConversationPage>
   void didTapMessageItem(Message message) async {
     print("didTapMessageItem " + message.objectName);
     // RongIMClient.setMessageReceivedStatus(message.messageId, 1, (code) async{
-    //   print("result:$code");
+    //   print("setMessageReceivedStatus result:$code");
     //   Message msg = await RongIMClient.getMessage(message.messageId);
-    //   print("result:${msg.toString()}");
+    //   print("getMessage result:${msg.toString()}");
     // });
     // List<int> conversations = List();
     // conversations.add(3);
     // RongIMClient.clearConversations(conversations, (code) async{
-    //   print("result:$code");
+    //   print("clearConversations result:$code");
     // });
-    // print("result:${await RongIMClient.getDeltaTime()}");
+    // print("getDeltaTime result:${await RongIMClient.getDeltaTime()}");
     // RongIMClient.setOfflineMessageDuration(3, (code, result){
-    //   print("code:$code result:$code");
+    //   print("setOfflineMessageDuration code:$code result:$result");
     // });
-    // print("code:${await RongIMClient.getOfflineMessageDuration()}");
+    // print("getOfflineMessageDuration code:${await RongIMClient.getOfflineMessageDuration()}");
     // print('getConnectionStatus: ${await RongIMClient.getConnectionStatus()}');
     if (message.messageDirection == RCMessageDirection.Receive &&
         message.content.destructDuration != null &&

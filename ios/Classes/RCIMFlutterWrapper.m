@@ -213,6 +213,24 @@
         [self getRemoteChatroomHistoryMessages:call.arguments result:result];
     }else if([RCMethodKeyGetMessageByUId isEqualToString:call.method]) {
         [self getMessageByUId:call.arguments result:result];
+    }else if([RCMethodKeyDeleteRemoteMessages isEqualToString:call.method]) {
+        [self deleteRemoteMessages:call.arguments result:result];
+    }else if([RCMethodKeyClearMessages isEqualToString:call.method]) {
+        [self clearMessages:call.arguments result:result];
+    }else if([RCMethodKeySetMessageExtra isEqualToString:call.method]) {
+        [self setMessageExtra:call.arguments result:result];
+    }else if([RCMethodKeySetMessageReceivedStatus isEqualToString:call.method]) {
+        [self setMessageReceivedStatus:call.arguments result:result];
+    }else if([RCMethodKeySetMessageSentStatus isEqualToString:call.method]) {
+        [self setMessageSentStatus:call.arguments result:result];
+    }else if([RCMethodKeyClearConversations isEqualToString:call.method]) {
+        [self clearConversations:call.arguments result:result];
+    }else if([RCMethodKeyGetDeltaTime isEqualToString:call.method]) {
+        [self getDeltaTime:call.arguments result:result];
+    }else if([RCMethodKeySetOfflineMessageDuration isEqualToString:call.method]) {
+        [self setOfflineMessageDuration:call.arguments result:result];
+    }else if([RCMethodKeyGetOfflineMessageDuration isEqualToString:call.method]) {
+        [self getOfflineMessageDuration:call.arguments result:result];
     }
     else {
         result(FlutterMethodNotImplemented);
@@ -1648,6 +1666,154 @@
             result(@{@"code":@(nErrorCode)});
         }];
     }
+}
+
+- (void)deleteRemoteMessages:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"deleteRemoteMessages";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        RCConversationType type = [param[@"conversationType"] integerValue];
+        NSString *targetId = param[@"targetId"];
+        NSArray *messageMapList = param[@"messages"];
+        NSMutableArray *messageList = [NSMutableArray arrayWithCapacity:messageMapList.count];
+        for (NSDictionary *messageDic in messageMapList) {
+            RCMessage *message = [RCFlutterMessageFactory dic2Message:messageDic];
+            [messageList addObject:message];
+        }
+        
+        [[RCIMClient sharedRCIMClient] deleteRemoteMessage:type targetId:targetId messages:messageList success:^{
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            result(@(0));
+        } error:^(RCErrorCode status) {
+            [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(status)]];
+            result(@(status));
+        }];
+    }
+}
+
+- (void)clearMessages:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"clearMessages";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        RCConversationType type = [param[@"conversationType"] integerValue];
+        NSString *targetId = param[@"targetId"];
+        BOOL success = [[RCIMClient sharedRCIMClient] clearMessages:type targetId:targetId];
+        if (success) {
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            result(@(0));
+        } else {
+            [RCLog i:[NSString stringWithFormat:@"%@ error",LOG_TAG]];
+            result(@(-1));
+        }
+    }
+}
+
+- (void)setMessageExtra:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"setMessageExtra";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        long messageId = [param[@"messageId"] longValue];
+        NSString *value = param[@"value"];
+        
+        BOOL success = [[RCIMClient sharedRCIMClient] setMessageExtra:messageId value:value];
+        if (success) {
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            result(@(0));
+        } else {
+            [RCLog i:[NSString stringWithFormat:@"%@ error",LOG_TAG]];
+            result(@(-1));
+        }
+    }
+}
+
+- (void)setMessageReceivedStatus:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"setMessageReceivedStatus";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        long messageId = [param[@"messageId"] longValue];
+        RCReceivedStatus receivedStatus = [param[@"receivedStatus"] intValue];
+        
+        BOOL success = [[RCIMClient sharedRCIMClient] setMessageReceivedStatus:messageId receivedStatus:receivedStatus];
+        if (success) {
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            result(@(0));
+        } else {
+            [RCLog i:[NSString stringWithFormat:@"%@ error",LOG_TAG]];
+            result(@(-1));
+        }
+    }
+}
+
+- (void)setMessageSentStatus:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"setMessageSentStatus";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        long messageId = [param[@"messageId"] longValue];
+        RCSentStatus receivedStatus = [param[@"sentStatus"] intValue];
+        
+        BOOL success = [[RCIMClient sharedRCIMClient] setMessageSentStatus:messageId sentStatus:receivedStatus];
+        if (success) {
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            result(@(0));
+        } else {
+            [RCLog i:[NSString stringWithFormat:@"%@ error",LOG_TAG]];
+            result(@(-1));
+        }
+    }
+}
+
+- (void)clearConversations:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"clearConversations";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        NSArray *conversationType = param[@"conversationTypes"];
+        BOOL success = [[RCIMClient sharedRCIMClient] clearConversations:conversationType];
+        if (success) {
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            result(@(0));
+        } else {
+            [RCLog i:[NSString stringWithFormat:@"%@ error",LOG_TAG]];
+            result(@(-1));
+        }
+    }
+}
+
+- (void)getDeltaTime:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"getDeltaTime";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    
+    long long deltaTime = [[RCIMClient sharedRCIMClient] getDeltaTime];
+    result(@(deltaTime));
+}
+
+- (void)setOfflineMessageDuration:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"setOfflineMessageDuration";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        int duration = [param[@"duration"] intValue];
+        
+        [[RCIMClient sharedRCIMClient] setOfflineMessageDuration:duration success:^{
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            result(@{@"code":@(0)});
+        } failure:^(RCErrorCode nErrorCode) {
+            [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(nErrorCode)]];
+            result(@{@"code":@(nErrorCode)});
+        }];
+    }
+}
+
+- (void)getOfflineMessageDuration:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"getOfflineMessageDuration";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    int duration = [[RCIMClient sharedRCIMClient] getOfflineMessageDuration];
+    result(@(duration));
 }
 
 - (void)receiveMessageHasReadNotification:(NSNotification *)notification {
