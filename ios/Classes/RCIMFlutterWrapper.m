@@ -1327,6 +1327,7 @@
             [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(status)]];
             NSMutableDictionary *callbackDic = [NSMutableDictionary new];
             [callbackDic setObject:@(status) forKey:@"code"];
+            [callbackDic setObject:@(-1) forKey:@"syncTime"];
             result(callbackDic);
         }];
     }

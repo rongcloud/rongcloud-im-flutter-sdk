@@ -1623,7 +1623,7 @@ class RongIMClient {
       List msgStrList = resultMap["messages"];
       if (msgStrList == null) {
         if (finished != null) {
-          finished(null, null, code);
+          finished(null, syncTime, code);
         }
         return;
       }
@@ -1637,7 +1637,7 @@ class RongIMClient {
       }
     } else {
       if (finished != null) {
-        finished(null, null, code);
+        finished(null, syncTime, code);
       }
     }
   }
