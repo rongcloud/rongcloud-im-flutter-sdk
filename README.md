@@ -540,6 +540,55 @@ onSendDirectionalMessage() async {
   }
 ```
 
+## 设置断线重连时是否踢出当前正在重连的设备
+
+设置 enable 为 YES 时，SDK 重连的时候发现此时已有别的设备连接成功，不再强行踢出已有设备，而是踢出重连设备。
+
+```dart
+RongIMClient.setReconnectKickEnable(true);
+```
+
+## 获取当前 SDK 的连接状态
+
+```dart
+void getConnectionStatus() async {
+  int status = await RongIMClient.getConnectionStatus();
+  print('getConnectionStatus: $status');
+}
+```
+
+
+## 取消下载中的媒体文件
+
+```dart
+RongIMClient.cancelDownloadMediaMessage(100);
+```
+
+## 从服务器端获取聊天室的历史消息
+
+```dart
+void _getChatRoomHistoryMessage() {
+  RongIMClient.getRemoteChatroomHistoryMessages(
+      targetId, 0, 20, RCTimestampOrder.RC_Timestamp_Desc,
+      (List/*<Message>*/ msgList, int syncTime, int code) {
+    DialogUtil.showAlertDiaLog(
+        context,
+        "获取聊天室历史消息：code：" +
+            CodeUtil.codeString(code) +
+            "，msgListCount：${msgList.length} 条消息\n" +
+            "，msgList：$msgList" +
+            "，syncTime：$syncTime");
+  });
+}
+```
+
+## 通过全局唯一ID获取消息实体
+
+```dart
+Message msg = await RongIMClient.getMessageByUId(message.messageUId);
+```
+
+
 
 更多接口请[参考](https://github.com/rongcloud/rongcloud-im-flutter-sdk)
 
