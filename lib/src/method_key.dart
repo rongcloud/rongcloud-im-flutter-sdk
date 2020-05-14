@@ -69,7 +69,7 @@ class RCMethodKey {
   static const String SetReconnectKickEnable = 'setReconnectKickEnable';
   static const String GetConnectionStatus = 'getConnectionStatus';
   static const String CancelDownloadMediaMessage = 'cancelDownloadMediaMessage';
-  static const String GetRemoteChatroomHistoryMessages = 'getRemoteChatroomHistoryMessages';
+  static const String GetRemoteChatRoomHistoryMessages = 'getRemoteChatRoomHistoryMessages';
   static const String GetMessageByUId = 'getMessageByUId';
 
 

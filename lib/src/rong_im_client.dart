@@ -1596,13 +1596,13 @@ class RongIMClient {
     return success;
   }
 
-  /// 从服务器端获取聊天室的历史消息。
-  /// targetId         指定的会话 id。
-  /// recordTime       起始的消息发送时间戳，毫秒
-  /// count            需要获取的消息数量， 0 < count <= 200
-  /// order            拉取顺序，RC_Timestamp_Desc:倒序，RC_Timestamp_ASC:正序
-  /// resultCallback   获取结果回调。
-  static void getRemoteChatroomHistoryMessages(
+  // 从服务器端获取聊天室的历史消息。
+  // targetId         指定的会话 id。
+  // recordTime       起始的消息发送时间戳，毫秒
+  // count            需要获取的消息数量， 0 < count <= 200
+  // order            拉取顺序，RC_Timestamp_Desc:倒序，RC_Timestamp_ASC:正序
+  // resultCallback   获取结果回调。
+  static void getRemoteChatRoomHistoryMessages(
       String targetId,
       int recordTime,
       int count,
@@ -1616,7 +1616,7 @@ class RongIMClient {
       "order": order,
     };
     Map resultMap =
-        await _channel.invokeMethod(RCMethodKey.GetRemoteChatroomHistoryMessages, map);
+        await _channel.invokeMethod(RCMethodKey.GetRemoteChatRoomHistoryMessages, map);
     int code = resultMap["code"];
     int syncTime = resultMap["syncTime"];
     if (code == 0) {

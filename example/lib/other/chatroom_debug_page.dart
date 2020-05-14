@@ -136,7 +136,7 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
   }
 
   void _getChatRoomHistoryMessage() {
-    RongIMClient.getRemoteChatroomHistoryMessages(
+    RongIMClient.getRemoteChatRoomHistoryMessages(
         targetId, 0, 20, RCTimestampOrder.RC_Timestamp_Desc,
         (List/*<Message>*/ msgList, int syncTime, int code) {
       DialogUtil.showAlertDiaLog(

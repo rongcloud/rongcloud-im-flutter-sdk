@@ -281,6 +281,16 @@ public class RCIMFlutterWrapper {
             setOfflineMessageDuration(call.arguments, result);
         } else if (RCMethodList.MethodKeyGetOfflineMessageDuration.equalsIgnoreCase(call.method)) {
             getOfflineMessageDuration(result);
+        } else if (RCMethodList.MethodKeySetReconnectKickEnable.equalsIgnoreCase(call.method)) {
+            setReconnectKickEnable(call.arguments);
+        } else if (RCMethodList.MethodKeyGetConnectionStatus.equalsIgnoreCase(call.method)) {
+            getConnectionStatus(result);
+        } else if (RCMethodList.MethodKeyCancelDownloadMediaMessage.equalsIgnoreCase(call.method)) {
+            cancelDownloadMediaMessage(call.arguments, result);
+        } else if (RCMethodList.MethodKeyGetRemoteChatRoomHistoryMessages.equalsIgnoreCase(call.method)) {
+            getRemoteChatRoomHistoryMessages(call.arguments, result);
+        } else if (RCMethodList.MethodKeyGetMessageByUId.equalsIgnoreCase(call.method)) {
+            getMessageByUId(call.arguments, result);
         } else {
             result.notImplemented();
         }
@@ -2992,6 +3002,102 @@ public class RCIMFlutterWrapper {
                 result.success(errorCode.getValue());
             }
         });
+    }
+
+    private void setReconnectKickEnable(Object arg) {
+        if (arg instanceof Boolean) {
+            boolean enable = (boolean) arg;
+            RongIMClient.getInstance().setReconnectKickEnable(enable);
+        }
+    }
+
+    private void getConnectionStatus(final Result result) {
+        RongIMClient.ConnectionStatusListener.ConnectionStatus connectionStatus = RongIMClient.getInstance().getCurrentConnectionStatus();
+        result.success(connectionStatus.getValue());
+    }
+
+    private void cancelDownloadMediaMessage(Object arg, final Result result) {
+        if (arg instanceof Integer) {
+            int messageId = (int) arg;
+            RongIMClient.getInstance().getMessage(messageId, new RongIMClient.ResultCallback<Message>() {
+                @Override
+                public void onSuccess(Message message) {
+                    if (message != null) {
+                        RongIMClient.getInstance().cancelDownloadMediaMessage(message, new RongIMClient.OperationCallback() {
+                            @Override
+                            public void onSuccess() {
+                                result.success(true);
+                            }
+
+                            @Override
+                            public void onError(RongIMClient.ErrorCode errorCode) {
+                                result.success(false);
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    result.success(false);
+                }
+            });
+        }
+    }
+
+    private void getRemoteChatRoomHistoryMessages(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            String targetId = (String) paramMap.get("targetId");
+            long recordTime = Long.valueOf(paramMap.get("recordTime").toString());
+            int count = (int) paramMap.get("count");
+            int order = (int) paramMap.get("order");
+            RongIMClient.TimestampOrder timestampOrder = RongIMClient.TimestampOrder.RC_TIMESTAMP_DESC;
+            if (order == 1) {
+                timestampOrder = RongIMClient.TimestampOrder.RC_TIMESTAMP_ASC;
+            }
+            RongIMClient.getInstance().getChatroomHistoryMessages(targetId, recordTime, count, timestampOrder, new IRongCallback.IChatRoomHistoryMessageCallback() {
+                @Override
+                public void onSuccess(List<Message> list, long syncTime) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("code", 0);
+                    resultMap.put("syncTime", syncTime);
+                    List<String> msgStrList = new ArrayList<>();
+                    if (list != null) {
+                        for (Message message : list) {
+                            msgStrList.add(MessageFactory.getInstance().message2String(message));
+                        }
+                    }
+                    resultMap.put("messages", msgStrList);
+                    result.success(resultMap);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("code", errorCode.getValue());
+                    result.success(resultMap);
+                }
+            });
+        }
+    }
+
+    private void getMessageByUId(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            String uId = (String) paramMap.get("messageUId");
+            RongIMClient.getInstance().getMessageByUid(uId, new RongIMClient.ResultCallback<Message>() {
+                @Override
+                public void onSuccess(Message message) {
+                    result.success(MessageFactory.getInstance().message2String(message));
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    result.success(null);
+                }
+            });
+        }
     }
 
 

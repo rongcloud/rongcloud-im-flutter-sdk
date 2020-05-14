@@ -209,7 +209,7 @@
         [self getConnectionStatus:call.arguments result:result];
     }else if([RCMethodKeyCancelDownloadMediaMessage isEqualToString:call.method]) {
         [self cancelDownloadMediaMessage:call.arguments result:result];
-    }else if([RCMethodKeyGetRemoteChatroomHistoryMessages isEqualToString:call.method]) {
+    }else if([RCMethodKeyGetRemoteChatRoomHistoryMessages isEqualToString:call.method]) {
         [self getRemoteChatroomHistoryMessages:call.arguments result:result];
     }else if([RCMethodKeyGetMessageByUId isEqualToString:call.method]) {
         [self getMessageByUId:call.arguments result:result];
