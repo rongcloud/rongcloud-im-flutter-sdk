@@ -31,10 +31,14 @@ class RongIMClient {
   ///
   ///[token] 融云 im token
   ///
-  ///[code] 参见 [RCErrorCode]
-  static Future<int> connect(String token) async {
-    final int code = await _channel.invokeMethod(RCMethodKey.Connect, token);
-    return code;
+  ///[finished] 返回 [RCErrorCode] 以及 userId
+  static void connect(String token, Function(int code ,String userId) finished) async {
+    Map resultMap = await _channel.invokeMethod(RCMethodKey.Connect, token);
+    int code = resultMap["code"];
+    String userId = resultMap["userId"];
+    if (finished != null) {
+      finished(code, userId);
+    }
   }
 
   ///断开连接
@@ -1290,7 +1294,7 @@ class RongIMClient {
     return msg;
   }
 
-  //根据消息类型，targetId 获取某一会话的文字消息草稿。用于获取用户输入但未发送的暂存消息。
+  ///根据消息类型，targetId 获取某一会话的文字消息草稿。用于获取用户输入但未发送的暂存消息。
   static Future<String> getTextMessageDraft(
       int conversationType, String targetId) async {
     if (conversationType == null || targetId == null) {
@@ -1307,7 +1311,7 @@ class RongIMClient {
     return result;
   }
 
-  //根据消息类型，targetId 保存某一会话的文字消息草稿。用于暂存用户输入但未发送的消息
+  ///根据消息类型，targetId 保存某一会话的文字消息草稿。用于暂存用户输入但未发送的消息
   static Future<bool> saveTextMessageDraft(
       int conversationType, String targetId, String textContent) async {
     if (conversationType == null || targetId == null || textContent == null) {
@@ -1325,11 +1329,11 @@ class RongIMClient {
     return result;
   }
 
-  //搜索会话（根据关键词）
-  // keyword           搜索的关键字。
-  // conversationTypes 搜索的会话类型。
-  // objectNames       搜索的消息类型,例如:RC:TxtMsg。
-  // resultCallback    搜索结果回调。
+  ///搜索会话（根据关键词）
+  /// keyword           搜索的关键字。
+  /// conversationTypes 搜索的会话类型。
+  /// objectNames       搜索的消息类型,例如:RC:TxtMsg。
+  /// resultCallback    搜索结果回调。
   static void searchConversations(
       String keyword,
       List conversationTypes,
@@ -1360,14 +1364,14 @@ class RongIMClient {
     }
   }
 
-  // 根据会话,搜索本地历史消息。
-  // 搜索结果可分页返回。
-  // conversationType 指定的会话类型。
-  // targetId         指定的会话 id。
-  // keyword          搜索的关键字。
-  // count            返回的搜索结果数量, count > 0。
-  // beginTime        查询记录的起始时间, 传0时从最新消息开始搜索。从该时间往前搜索。
-  // resultCallback   搜索结果回调。
+  /// 根据会话,搜索本地历史消息。
+  /// 搜索结果可分页返回。
+  /// conversationType 指定的会话类型。
+  /// targetId         指定的会话 id。
+  /// keyword          搜索的关键字。
+  /// count            返回的搜索结果数量, count > 0。
+  /// beginTime        查询记录的起始时间, 传0时从最新消息开始搜索。从该时间往前搜索。
+  /// resultCallback   搜索结果回调。
   static void searchMessages(
       int conversationType,
       String targetId,
@@ -1408,7 +1412,7 @@ class RongIMClient {
     }
   }
 
-  // 发送输入状态
+  /// 发送输入状态
   static void sendTypingStatus(
       int conversationType, String targetId, String typingContentType) async {
     Map paramMap = {
@@ -1419,7 +1423,7 @@ class RongIMClient {
     await _channel.invokeMethod(RCMethodKey.SendTypingStatus, paramMap);
   }
 
-  // 下载媒体文件
+  /// 下载媒体文件
   static void downloadMediaMessage(Message message) async {
     Map msgMap = MessageFactory.instance.message2Map(message);
     Map paramMap = {"message": msgMap};
@@ -1440,6 +1444,213 @@ class RongIMClient {
       "targetId": targetId
     };
     await _channel.invokeMethod(RCMethodKey.ForwardMessageByStep, map);
+  }
+
+  ///删除指定的一条或者一组消息。会同时删除本地和远端消息
+  /// 会话类型, 不支持聊天室
+  static void deleteRemoteMessages(int conversationType, String targetId,
+      List<Message> messages, Function(int code) finished) async {
+    if (conversationType == null || targetId == null) {
+      print(
+          "deleteRemoteMessages fail: conversationType or targetId or content is null");
+      return null;
+    }
+    List<Map> msgMapList = List();
+    for (Message message in messages) {
+      msgMapList.add(MessageFactory.instance.message2Map(message));
+    }
+    Map paramMap = {
+      "conversationType": conversationType,
+      "targetId": targetId,
+      "messages": msgMapList
+    };
+    int result =
+        await _channel.invokeMethod(RCMethodKey.DeleteRemoteMessages, paramMap);
+    if (finished != null) {
+      finished(result);
+    }
+  }
+
+  /// 清空指定类型，targetId 的某一会话所有聊天消息记录
+  static void clearMessages(int conversationType, String targetId,
+      Function(int code) finished) async {
+    if (conversationType == null || targetId == null) {
+      print(
+          "clearMessages fail: conversationType or targetId or content is null");
+      return null;
+    }
+    Map paramMap = {
+      "conversationType": conversationType,
+      "targetId": targetId,
+    };
+    int result =
+        await _channel.invokeMethod(RCMethodKey.ClearMessages, paramMap);
+    if (finished != null) {
+      finished(result);
+    }
+  }
+
+  /// 设置本地消息的附加信息
+  static void setMessageExtra(
+      int messageId, String value, Function(int code) finished) async {
+    Map paramMap = {
+      "messageId": messageId,
+      "value": value,
+    };
+    int result =
+        await _channel.invokeMethod(RCMethodKey.SetMessageExtra, paramMap);
+    if (finished != null) {
+      finished(result);
+    }
+  }
+
+  /// 设置接收到的消息状态,用于UI标记消息为已读，已下载等状态。
+  static void setMessageReceivedStatus(
+      int messageId, int receivedStatus, Function(int code) finished) async {
+    Map paramMap = {
+      "messageId": messageId,
+      "receivedStatus": receivedStatus,
+    };
+    int result = await _channel.invokeMethod(
+        RCMethodKey.SetMessageReceivedStatus, paramMap);
+    if (finished != null) {
+      finished(result);
+    }
+  }
+
+  /// 设置接收到的消息状态,用于UI标记消息为已读，已下载等状态。
+  static void setMessageSentStatus(
+      int messageId, int sentStatus, Function(int code) finished) async {
+    Map paramMap = {
+      "messageId": messageId,
+      "sentStatus": sentStatus,
+    };
+    int result =
+        await _channel.invokeMethod(RCMethodKey.SetMessageSentStatus, paramMap);
+    if (finished != null) {
+      finished(result);
+    }
+  }
+
+  /// 清空会话类型列表中的所有会话及会话信息
+  static void clearConversations(
+      List<int> conversationTypes, Function(int code) finished) async {
+    Map paramMap = {"conversationTypes": conversationTypes};
+    int result =
+        await _channel.invokeMethod(RCMethodKey.ClearConversations, paramMap);
+    if (finished != null) {
+      finished(result);
+    }
+  }
+
+  /// 获取本地时间与服务器时间的差值。 消息发送成功后，sdk 会与服务器同步时间，消息所在数据库中存储的时间就是服务器时间。
+  static Future<int> getDeltaTime() async {
+    int result = await _channel.invokeMethod(RCMethodKey.GetDeltaTime);
+    return result;
+  }
+
+  /// 清空会话类型列表中的所有会话及会话信息
+  static void setOfflineMessageDuration(
+      int duration, Function(int code, int result) finished) async {
+    Map paramMap = {"duration": duration};
+    Map result = await _channel.invokeMethod(
+        RCMethodKey.SetOfflineMessageDuration, paramMap);
+    if (finished != null) {
+      finished(result["code"], result["result"]);
+    }
+  }
+
+  ///获取当前用户离线消息的存储时间，取值范围为int值1~7天
+  static Future<int> getOfflineMessageDuration() async {
+    int duration =
+        await _channel.invokeMethod(RCMethodKey.GetOfflineMessageDuration);
+    return duration;
+  }
+
+  ///设置断线重连时是否踢出当前正在重连的设备
+  ///
+  ///[targetId] 聊天室 id
+  ///
+  /// 用户没有开通多设备登录功能的前提下，同一个账号在一台新设备上登录的时候，会把这个账号在之前登录的设备上踢出。
+  /// 由于 SDK 有断线重连功能，存在下面情况。
+  /// 用户在 A 设备登录，A 设备网络不稳定，没有连接成功，SDK 启动重连机制。
+  /// 用户此时又在 B 设备登录，B 设备连接成功。
+  /// A 设备网络稳定之后，用户在 A 设备连接成功，B 设备被踢出。
+  /// 这个接口就是为这种情况加的。
+  /// 设置 enable 为 true 时，SDK 重连的时候发现此时已有别的设备连接成功，不再强行踢出已有设备，而是踢出重连设备。
+  static void setReconnectKickEnable(bool enable) {
+    _channel.invokeMethod(RCMethodKey.SetReconnectKickEnable, enable);
+  }
+
+  ///获取当前 SDK 的连接状态
+  static Future<int /*RCConnectionStatus*/ > getConnectionStatus() async {
+    int code = await _channel.invokeMethod(RCMethodKey.GetConnectionStatus);
+    int status = ConnectionStatusConvert.convert(code);
+    return status;
+  }
+
+  ///取消下载中的媒体文件
+  static Future<bool> cancelDownloadMediaMessage(int messageId) async {
+    bool success = await _channel.invokeMethod(
+        RCMethodKey.CancelDownloadMediaMessage, messageId);
+    return success;
+  }
+
+  // 从服务器端获取聊天室的历史消息。
+  // targetId         指定的会话 id。
+  // recordTime       起始的消息发送时间戳，毫秒
+  // count            需要获取的消息数量， 0 < count <= 200
+  // order            拉取顺序，RC_Timestamp_Desc:倒序，RC_Timestamp_ASC:正序
+  // resultCallback   获取结果回调。
+  static void getRemoteChatRoomHistoryMessages(
+      String targetId,
+      int recordTime,
+      int count,
+      int /*RCTimestampOrder*/ order,
+      Function(List/*<Message>*/ msgList, int syncTime, int code)
+          finished) async {
+    Map map = {
+      "targetId": targetId,
+      "recordTime": recordTime,
+      "count": count,
+      "order": order,
+    };
+    Map resultMap =
+        await _channel.invokeMethod(RCMethodKey.GetRemoteChatRoomHistoryMessages, map);
+    int code = resultMap["code"];
+    int syncTime = resultMap["syncTime"];
+    if (code == 0) {
+      List msgStrList = resultMap["messages"];
+      if (msgStrList == null) {
+        if (finished != null) {
+          finished(null, syncTime, code);
+        }
+        return;
+      }
+      List list = new List();
+      for (String msgStr in msgStrList) {
+        Message m = MessageFactory.instance.string2Message(msgStr);
+        list.add(m);
+      }
+      if (finished != null) {
+        finished(list, syncTime, code);
+      }
+    } else {
+      if (finished != null) {
+        finished(null, syncTime, code);
+      }
+    }
+  }
+
+  ///通过全局唯一ID获取消息实体
+  static Future<Message> getMessageByUId(String messageUId) async {
+    Map map = {"messageUId": messageUId};
+    String msgStr = await _channel.invokeMethod(RCMethodKey.GetMessageByUId, map);
+    if (msgStr == null) {
+      return null;
+    }
+    Message msg = MessageFactory.instance.string2Message(msgStr);
+    return msg;
   }
 
   ///连接状态发生变更

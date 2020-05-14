@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import '../im/util/dialog_util.dart';
@@ -25,7 +27,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     super.initState();
     conversationType = arguments["coversationType"];
     targetId = arguments["targetId"];
-    titles = ["设置免打扰", "取消免打扰", "查看免打扰", "搜索会话消息记录"];
+    titles = ["设置免打扰", "取消免打扰", "查看免打扰", "搜索会话消息记录", "通过UId获取消息"];
     if (conversationType == RCConversationType.Private) {
       List onlyPrivateTitles = [
         "加入黑名单",
@@ -63,6 +65,9 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
         break;
       case "搜索会话消息记录":
         _goToSearchMessagePage();
+        break;
+      case "通过UId获取消息":
+        _getMessageByUId();
         break;
     }
   }
@@ -148,6 +153,15 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   void _goToSearchMessagePage() {
     Map arg = {"coversationType": conversationType, "targetId": targetId};
     Navigator.pushNamed(context, "/search_message", arguments: arg);
+  }
+
+  void _getMessageByUId() async{
+    List msgs =
+        await RongIMClient.getHistoryMessage(conversationType, targetId, 0, 20);
+    Message message = msgs[(Random().nextInt(msgs.length-1))];
+    String uId = message.messageUId;
+    Message msg = await RongIMClient.getMessageByUId(uId);
+    DialogUtil.showAlertDiaLog(context, "${msg.toString()}");
   }
 
   @override

@@ -134,3 +134,10 @@ class RCSaveMediaType {
   static const String IMAGE = 'image';
   static const String VIDEO = 'video';
 }
+
+class RCTimestampOrder {
+  /// 降序, 按照时间戳从大到小
+  static const int RC_Timestamp_Desc = 0;
+  /// 升序, 按照时间戳从小到大
+  static const int RC_Timestamp_Asc = 1;
+}

@@ -466,6 +466,13 @@ class _ConversationPageState extends State<ConversationPage>
     RongIMClient.deleteMessageByIds([message.messageId], (int code) {
       onGetHistoryMessages();
     });
+    // 远程删除测试入口
+    // List<Message> messageList = List();
+    // messageList.add(message);
+    // RongIMClient.deleteRemoteMessages(conversationType, targetId, messageList, (code){
+    //   print("result: $code");
+    //   onGetHistoryMessages();
+    // });
   }
 
   void _recallMessage(Message message) async {
@@ -777,6 +784,23 @@ class _ConversationPageState extends State<ConversationPage>
   @override
   void didTapMessageItem(Message message) async {
     print("didTapMessageItem " + message.objectName);
+    // RongIMClient.setMessageReceivedStatus(message.messageId, 1, (code) async{
+    //   print("setMessageReceivedStatus result:$code");
+    //   Message msg = await RongIMClient.getMessage(message.messageId);
+    //   print("getMessage result:${msg.toString()}");
+    // });
+    // List<int> conversations = List();
+    // conversations.add(3);
+    // RongIMClient.clearConversations(conversations, (code) async{
+    //   print("clearConversations result:$code");
+    // });
+    // print("getDeltaTime result:${await RongIMClient.getDeltaTime()}");
+    // RongIMClient.setOfflineMessageDuration(3, (code, result){
+    //   print("setOfflineMessageDuration code:$code result:$result");
+    // });
+    // print("getOfflineMessageDuration code:${await RongIMClient.getOfflineMessageDuration()}");
+    // print('getConnectionStatus: ${await RongIMClient.getConnectionStatus()}');
+    // RongIMClient.setReconnectKickEnable(true);
     if (message.messageDirection == RCMessageDirection.Receive &&
         message.content.destructDuration != null &&
         message.content.destructDuration > 0)

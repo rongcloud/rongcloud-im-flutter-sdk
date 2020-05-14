@@ -12,6 +12,7 @@ class Message extends Object {
   String objectName;//消息 objName
   MessageContent content;//消息内容
   String messageUId;//消息 UID，全网唯一 Id
+  String extra;// 扩展信息
 
   ReadReceiptInfo readReceiptInfo;//阅读回执状态
   

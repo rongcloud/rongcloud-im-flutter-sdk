@@ -57,6 +57,20 @@ class RCMethodKey {
   static const String ForwardMessageByStep = 'forwardMessageByStep';
   static const String MessageBeginDestruct = 'messageBeginDestruct';
   static const String MessageStopDestruct = 'messageStopDestruct';
+  static const String DeleteRemoteMessages = 'deleteRemoteMessages';
+  static const String ClearMessages = 'clearMessages';
+  static const String SetMessageExtra = 'setMessageExtra';
+  static const String SetMessageReceivedStatus = 'setMessageReceivedStatus';
+  static const String SetMessageSentStatus = 'setMessageSentStatus';
+  static const String ClearConversations = 'clearConversations';
+  static const String GetDeltaTime = 'getDeltaTime';
+  static const String SetOfflineMessageDuration = 'setOfflineMessageDuration';
+  static const String GetOfflineMessageDuration = 'getOfflineMessageDuration';
+  static const String SetReconnectKickEnable = 'setReconnectKickEnable';
+  static const String GetConnectionStatus = 'getConnectionStatus';
+  static const String CancelDownloadMediaMessage = 'cancelDownloadMediaMessage';
+  static const String GetRemoteChatRoomHistoryMessages = 'getRemoteChatRoomHistoryMessages';
+  static const String GetMessageByUId = 'getMessageByUId';
 
 
   // 聊天室状态存储

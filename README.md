@@ -47,9 +47,16 @@ RongIMClient.init(RongAppKey);
 ## 2.连接 IM
 
 ```dart
-int rc = await RongIMClient.connect(RongIMToken);
-print('connect result');
-print(rc);
+RongIMClient.connect(RongIMToken, (int code, String userId) {
+  print('connect result ' + code.toString());
+  EventBus.instance.commit(EventKeys.UpdateNotificationQuietStatus, {});
+if (code == 31004 || code == 12) {
+  Navigator.of(context).pushAndRemoveUntil(new MaterialPageRoute(builder: (context) => new LoginPage()), (route) => route == null);
+} else if (code == 0) {
+  print("connect userId" + userId);
+  // 连接成功后打开数据库
+  // _initUserInfoCache();
+}
 ```
 
 # API 调用
@@ -532,6 +539,55 @@ onSendDirectionalMessage() async {
     print("send directional message start senderUserId = " + msg.senderUserId);
   }
 ```
+
+## 设置断线重连时是否踢出当前正在重连的设备
+
+设置 enable 为 YES 时，SDK 重连的时候发现此时已有别的设备连接成功，不再强行踢出已有设备，而是踢出重连设备。
+
+```dart
+RongIMClient.setReconnectKickEnable(true);
+```
+
+## 获取当前 SDK 的连接状态
+
+```dart
+void getConnectionStatus() async {
+  int status = await RongIMClient.getConnectionStatus();
+  print('getConnectionStatus: $status');
+}
+```
+
+
+## 取消下载中的媒体文件
+
+```dart
+RongIMClient.cancelDownloadMediaMessage(100);
+```
+
+## 从服务器端获取聊天室的历史消息
+
+```dart
+void _getChatRoomHistoryMessage() {
+  RongIMClient.getRemoteChatroomHistoryMessages(
+      targetId, 0, 20, RCTimestampOrder.RC_Timestamp_Desc,
+      (List/*<Message>*/ msgList, int syncTime, int code) {
+    DialogUtil.showAlertDiaLog(
+        context,
+        "获取聊天室历史消息：code：" +
+            CodeUtil.codeString(code) +
+            "，msgListCount：${msgList.length} 条消息\n" +
+            "，msgList：$msgList" +
+            "，syncTime：$syncTime");
+  });
+}
+```
+
+## 通过全局唯一ID获取消息实体
+
+```dart
+Message msg = await RongIMClient.getMessageByUId(message.messageUId);
+```
+
 
 
 更多接口请[参考](https://github.com/rongcloud/rongcloud-im-flutter-sdk)

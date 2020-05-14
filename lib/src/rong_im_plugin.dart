@@ -35,9 +35,8 @@ class RongcloudImPlugin {
   ///[token] 融云 im token
   ///
   ///[code] 参见 [RCErrorCode]
-  static Future<int> connect(String token) async {
-    int code = await RongIMClient.connect(token);
-    return code;
+  static void connect(String token, Function(int code ,String userId) finished) async {
+    RongIMClient.connect(token, finished);
   }
 
   ///断开连接

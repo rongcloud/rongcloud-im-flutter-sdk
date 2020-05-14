@@ -58,6 +58,20 @@ static NSString *RCMethodKeyGetUnreadMentionedMessages = @"getUnreadMentionedMes
 static NSString *RCMethodKeySendDirectionalMessage = @"sendDirectionalMessage";
 static NSString *RCMethodKeyMessageBeginDestruct = @"messageBeginDestruct";
 static NSString *RCMethodKeyMessageStopDestruct = @"messageStopDestruct";
+static NSString *RCMethodKeySetReconnectKickEnable = @"setReconnectKickEnable";
+static NSString *RCMethodKeyGetConnectionStatus = @"getConnectionStatus";
+static NSString *RCMethodKeyCancelDownloadMediaMessage = @"cancelDownloadMediaMessage";
+static NSString *RCMethodKeyGetRemoteChatRoomHistoryMessages = @"getRemoteChatRoomHistoryMessages";
+static NSString *RCMethodKeyGetMessageByUId = @"getMessageByUId";
+static NSString *RCMethodKeyDeleteRemoteMessages = @"deleteRemoteMessages";
+static NSString *RCMethodKeyClearMessages = @"clearMessages";
+static NSString *RCMethodKeySetMessageExtra = @"setMessageExtra";
+static NSString *RCMethodKeySetMessageReceivedStatus = @"setMessageReceivedStatus";
+static NSString *RCMethodKeySetMessageSentStatus = @"setMessageSentStatus";
+static NSString *RCMethodKeyClearConversations = @"clearConversations";
+static NSString *RCMethodKeyGetDeltaTime = @"getDeltaTime";
+static NSString *RCMethodKeySetOfflineMessageDuration = @"setOfflineMessageDuration";
+static NSString *RCMethodKeyGetOfflineMessageDuration = @"getOfflineMessageDuration";
 
 // 聊天室状态存储
 static NSString *RCMethodKeySetChatRoomEntry = @"SetChatRoomEntry";
