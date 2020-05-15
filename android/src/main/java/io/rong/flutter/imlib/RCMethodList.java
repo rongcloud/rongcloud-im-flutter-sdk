@@ -7,7 +7,7 @@ public class RCMethodList {
     static String MethodKeyConnect = "connect";
     static String MethodKeyDisconnect = "disconnect";
     static String MethodKeySendMessage = "sendMessage";
-    static String MethodKeyRefrechUserInfo = "refreshUserInfo";
+    static String MethodKeyRefreshUserInfo = "refreshUserInfo";
     static String MethodKeyJoinChatRoom = "joinChatRoom";
     static String MethodKeyQuitChatRoom = "quitChatRoom";
     static String MethodKeyGetHistoryMessage ="getHistoryMessage";

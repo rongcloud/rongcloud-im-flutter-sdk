@@ -147,7 +147,7 @@ public class RCIMFlutterWrapper {
             connect(call.arguments, result);
         } else if (RCMethodList.MethodKeyDisconnect.equalsIgnoreCase(call.method)) {
             disconnect(call.arguments);
-        } else if (RCMethodList.MethodKeyRefrechUserInfo.equalsIgnoreCase(call.method)) {
+        } else if (RCMethodList.MethodKeyRefreshUserInfo.equalsIgnoreCase(call.method)) {
             refreshUserInfo(call.arguments);
         } else if (RCMethodList.MethodKeySendMessage.equalsIgnoreCase(call.method)) {
             sendMessage(call.arguments, result);
