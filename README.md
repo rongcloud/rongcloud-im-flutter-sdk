@@ -582,13 +582,79 @@ void _getChatRoomHistoryMessage() {
 }
 ```
 
-## 通过全局唯一ID获取消息实体
+## 通过 messageUId(发送 message 成功后，服务器会给每个 message 分配一个唯一 messageUId)获取消息实体
 
 ```dart
 Message msg = await RongIMClient.getMessageByUId(message.messageUId);
 ```
 
+## 删除指定的一条或者一组消息。会同时删除本地和远端消息(会话类型不支持聊天室)
 
+```dart
+RongIMClient.deleteRemoteMessages(conversationType, targetId, messageList, (code){
+    print("result: $code");
+    });
+```
+
+## 清空指定会话类型，targetId 的某一会话所有聊天消息记录
+
+```dart
+RongIMClient.clearMessages(con.conversationType, con.targetId, (code) {
+    print("result:$code");
+    });
+```
+
+## 设置本地消息的附加信息（message.extra）
+
+```dart
+RongIMClient.setMessageExtra(int messageId, value, (code) {
+    print("result:$code");
+    });
+```
+
+## 根据 messageId 设置接收到的消息状态。用于UI标记消息为已读，已下载等状态
+
+```dart
+RongIMClient.setMessageReceivedStatus(message.messageId, 1, (code) async{
+    print("setMessageReceivedStatus result:$code");
+    });
+```
+
+## 根据 messageId 设置消息的发送状态。用于UI标记消息为正在发送，对方已接收等状态。
+
+```dart
+RongIMClient.setMessageSentStatus(message.messageId, 1, (code) async{
+    print("setMessageReceivedStatus result:$code");
+    });
+```
+
+## 清空会话类型列表中的所有会话及会话信息
+
+```dart
+RongIMClient.clearConversations(conversations, (code) async{
+    print("clearConversations result:$code");
+    });
+```
+
+## 获取本地时间与服务器时间的差值。 消息发送成功后，sdk 会与服务器同步时间，消息所在数据库中存储的时间就是服务器时间。
+
+```dart
+int deltaTime = await RongIMClient.getDeltaTime()
+```
+
+## 设置当前用户离线消息补偿时间
+
+```dart
+RongIMClient.setOfflineMessageDuration(3, (code, result){
+    print("setOfflineMessageDuration code:$code result:$result");
+    });
+```
+
+## 获取当前用户离线消息的存储时间，取值范围为int值1~7天
+
+```dart
+int duration = await RongIMClient.getOfflineMessageDuration();
+```
 
 更多接口请[参考](https://github.com/rongcloud/rongcloud-im-flutter-sdk)
 
