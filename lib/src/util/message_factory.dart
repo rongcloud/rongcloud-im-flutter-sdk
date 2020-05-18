@@ -158,6 +158,9 @@ class MessageFactory extends Object {
     }else if(objectName == ReferenceMessage.objectName){
       content = new ReferenceMessage();
       content.decode(contentS); 
+    }else if(objectName == LocationMessage.objectName){
+      content = new LocationMessage();
+      content.decode(contentS); 
     }
     return content;
   }

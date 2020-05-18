@@ -487,7 +487,9 @@ class MessageItemFactory extends StatelessWidget {
       return combineMessageItem(context);
     } else if (message.content is ReferenceMessage) {
       return Text("引用消息 " + message.objectName);
-    }  else {
+    } else if (message.content is LocationMessage) {
+      return Text("位置消息 " + message.objectName);
+    } else {
       return Text("无法识别消息 " + message.objectName);
     }
   }

@@ -13,15 +13,20 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.MessageDigest;
 
 import io.rong.common.FileUtils;
 import io.rong.common.RLog;
 import io.rong.imlib.RongIMClient;
+import io.rong.imlib.common.NetUtils;
 import io.rong.imlib.model.Message;
 import io.rong.message.GIFMessage;
 import io.rong.message.ImageMessage;
+import io.rong.message.LocationMessage;
 import io.rong.message.SightMessage;
 import io.rong.message.utils.BitmapUtil;
 
@@ -45,6 +50,10 @@ public class RCMessageHandler {
     private final static String IMAGE_THUMBNAIL_PATH = "/image/thumbnail/";
 
     private final static String VIDEO_THUMBNAIL_PATH = "/video/thumbnail/";
+
+    private final static int THUMB_WIDTH = 408;
+    private final static int THUMB_HEIGHT = 240;
+
 
     //ImageMessageHandler encodeMessage 方法的副本
     public static void encodeImageMessage(Message message) {
@@ -416,6 +425,96 @@ public class RCMessageHandler {
             return "";
         }
     }
+
+    public static void encodeLocationMessage(Message message) {
+        LocationMessage content = (LocationMessage) message.getContent();
+        if (content.getImgUri() == null) {
+            return;
+        }
+        File file;
+        Uri uri = obtainMediaFileSavedUri();
+        String thumbnailPath;
+        String scheme = content.getImgUri().getScheme();
+        if (!TextUtils.isEmpty(scheme) && scheme.toLowerCase().equals("file")) {
+            thumbnailPath = content.getImgUri().getPath();
+        } else {
+            file = loadLocationThumbnail(content, message.getSentTime() + "");
+            thumbnailPath = file != null ? file.getPath() : null;
+        }
+        if (thumbnailPath == null) {
+            RLog.e("encodeLocationMessage", "load thumbnailPath null!");
+            return;
+        }
+        try {
+            Bitmap bitmap = BitmapUtil.interceptBitmap(thumbnailPath, THUMB_WIDTH, THUMB_HEIGHT);
+            if (bitmap != null) {
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, THUMB_COMPRESSED_QUALITY, outputStream);
+                byte[] data = outputStream.toByteArray();
+                outputStream.close();
+
+                String base64 = Base64.encodeToString(data, Base64.NO_WRAP);
+                content.setBase64(base64);
+                file = FileUtils.byte2File(data, uri.toString(), message.getMessageId() + "");
+                if (file != null && file.exists()) {
+                    content.setImgUri(Uri.fromFile(file));
+                }
+                if (!bitmap.isRecycled())
+                    bitmap.recycle();
+            } else {
+                RLog.e("encodeLocationMessage", "get null bitmap!");
+            }
+        } catch (Exception e) {
+        }
+    }
+
+    private static File loadLocationThumbnail(LocationMessage content, String name) {
+        File file = null;
+        HttpURLConnection conn = null;
+        int responseCode = 0;
+        try {
+            Uri uri = content.getImgUri();
+            URL url = new URL(uri.toString());
+            conn = NetUtils.createURLConnection(url.toString());
+            conn.setRequestMethod("GET");
+            conn.setReadTimeout(3000);
+            conn.connect();
+
+            responseCode = conn.getResponseCode();
+            Context context = RCIMFlutterWrapper.getInstance().getMainContext();
+            if (responseCode >= 200 && responseCode < 300) {
+                String path = FileUtils.getInternalCachePath(context, "location");
+                file = new File(path);
+                if (!file.exists()) {
+                    boolean successMkdir = file.mkdirs();
+                    if (!successMkdir) {
+                        RLog.e("loadLocationThumbnailG", "Created folders unSuccessfully");
+                    }
+                }
+
+                file = new File(path, name);
+                InputStream is = conn.getInputStream();
+                FileOutputStream os = new FileOutputStream(file);
+                byte[] buffer = new byte[1024];
+                int len;
+                while ((len = is.read(buffer)) != -1) {
+                    os.write(buffer, 0, len);
+                }
+                is.close();
+                os.close();
+            }
+        } catch (Exception e) {
+            RLog.e("loadLocationThumbnailG", "Exception ", e);
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+            RLog.d("loadLocationThumbnailG", "loadLocationThumbnail result : " + responseCode);
+        }
+        return file;
+    }
+
+
 
     static private Uri obtainMediaFileSavedUri() {
 

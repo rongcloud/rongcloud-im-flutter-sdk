@@ -1,7 +1,6 @@
 package io.rong.flutter.imlib;
 
 
-
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -19,6 +18,7 @@ import io.rong.imlib.model.SearchConversationResult;
 import io.rong.imlib.typingmessage.TypingStatus;
 import io.rong.message.GIFMessage;
 import io.rong.message.ImageMessage;
+import io.rong.message.LocationMessage;
 import io.rong.message.SightMessage;
 import io.rong.message.TextMessage;
 
@@ -60,7 +60,7 @@ public class MessageFactory {
         }
         map.put("sentTime", message.getSentTime());
         map.put("objectName", message.getObjectName());
-        map.put("extra",message.getExtra());
+        map.put("extra", message.getExtra());
         String uid = message.getUId();
         if (uid == null || uid.length() <= 0) {
             uid = "";
@@ -74,6 +74,8 @@ public class MessageFactory {
             RCMessageHandler.encodeSightMessage(message);
         } else if (message.getContent() instanceof GIFMessage) {
             RCMessageHandler.encodeGifMessage(message);
+        } else if (message.getContent() instanceof LocationMessage) {
+            RCMessageHandler.encodeLocationMessage(message);
         }
         // 判断 TextMessage 内容不能为 null
         if (content instanceof TextMessage) {
