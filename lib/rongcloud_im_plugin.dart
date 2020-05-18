@@ -16,6 +16,7 @@ export 'src/message/chatroom_kv_notification_message.dart';
 export 'src/message/rich_content_message.dart';
 export 'src/message/gif_message.dart';
 export 'src/message/combine_message.dart';
+export 'src/message/reference_message.dart';
 
 //实体类
 export 'src/info/chatroom_info.dart';

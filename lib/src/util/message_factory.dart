@@ -155,6 +155,9 @@ class MessageFactory extends Object {
     }else if(objectName == CombineMessage.objectName){
       content = new CombineMessage();
       content.decode(contentS); 
+    }else if(objectName == ReferenceMessage.objectName){
+      content = new ReferenceMessage();
+      content.decode(contentS); 
     }
     return content;
   }

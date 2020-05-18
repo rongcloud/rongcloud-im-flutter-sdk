@@ -485,7 +485,9 @@ class MessageItemFactory extends StatelessWidget {
       return gifMessageItem(context);
     } else if (message.content is CombineMessage) {
       return combineMessageItem(context);
-    } else {
+    } else if (message.content is ReferenceMessage) {
+      return Text("引用消息 " + message.objectName);
+    }  else {
       return Text("无法识别消息 " + message.objectName);
     }
   }
