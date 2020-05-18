@@ -830,6 +830,26 @@ class _ConversationPageState extends State<ConversationPage>
       }
       Map param = {"url": url, "title": CombineMessageUtils().getTitle(msg)};
       Navigator.pushNamed(context, "/webview", arguments: param);
+    } else if (message.content is ReferenceMessage) {
+      ReferenceMessage msg = message.content;
+      if (msg.referMsg is ImageMessage) { // 引用的消息为图片时的点击事件
+        Message tempMsg = message;
+        tempMsg.content = msg.referMsg;
+        Navigator.pushNamed(context, "/image_preview", arguments: tempMsg);
+      } else if (msg.referMsg is FileMessage) { // 引用的消息为文件时的点击事件
+        Message tempMsg = message;
+        tempMsg.content = msg.referMsg;
+        Navigator.pushNamed(context, "/file_preview", arguments: tempMsg);
+      } else if (msg.referMsg is RichContentMessage) { // 引用的消息为图文时的点击事件
+        RichContentMessage richContentMessage = msg.referMsg;
+        Map param = {
+          "url": richContentMessage.url,
+          "title": richContentMessage.title
+        };
+        Navigator.pushNamed(context, "/webview", arguments: param);
+      } else {
+        // 引用的消息为文本时的点击事件
+      }
     }
   }
 

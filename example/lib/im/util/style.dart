@@ -11,6 +11,7 @@ class RCColor {
   static const ConListBorderColor = 0xff6C7B8B;
   static const ConListTopBgColor = 0xFFBBDEFB;
   static const ConCombineMsgContentColor = 0xFF9E9E9E;
+  static const ConReferenceMsgContentColor = 0xFF9E9E9E;
   //会话页面，消息相关颜色
   static const MessageSendBgColor = 0xffC8E9FD;
   static const MessageReceiveBgColor = 0xffffffff;
@@ -32,6 +33,8 @@ class RCFont {
   static const double MessageNotifiFont = 15;
   static const double MessageCombineTitleFont = 12;
   static const double MessageCombineContentFont = 10;
+  static const double MessageReferenceTitleFont = 12;
+  static const double MessageReferenceContentFont = 10;
 
   //加号扩展栏
   static const double ExtIconSize = 40;
