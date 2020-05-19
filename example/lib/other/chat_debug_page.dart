@@ -36,7 +36,12 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
         "获取黑名单列表",
       ];
       titles.addAll(onlyPrivateTitles);
-    } else if (conversationType == RCConversationType.Group) {}
+    } else if (conversationType == RCConversationType.Group) {
+      List onlyGroupTitles = [
+        "发送定向消息",
+      ];
+      titles.addAll(onlyGroupTitles);
+    }
   }
 
   void _didTap(int index) {
@@ -68,6 +73,9 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
         break;
       case "通过UId获取消息":
         _getMessageByUId();
+        break;
+      case "发送定向消息":
+        _onSendDirectionalMessage();
         break;
     }
   }
@@ -155,13 +163,23 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     Navigator.pushNamed(context, "/search_message", arguments: arg);
   }
 
-  void _getMessageByUId() async{
+  void _getMessageByUId() async {
     List msgs =
         await RongIMClient.getHistoryMessage(conversationType, targetId, 0, 20);
-    Message message = msgs[(Random().nextInt(msgs.length-1))];
+    Message message = msgs[(Random().nextInt(msgs.length - 1))];
     String uId = message.messageUId;
     Message msg = await RongIMClient.getMessageByUId(uId);
     DialogUtil.showAlertDiaLog(context, "${msg.toString()}");
+  }
+
+  void _onSendDirectionalMessage() async {
+    TextMessage txtMessage = new TextMessage();
+    txtMessage.content = "这条消息来自 Flutter 的群定向消息";
+    RongIMClient.sendDirectionalMessage(
+        conversationType, targetId, ['UserId1', 'UserId2'], txtMessage,
+        finished: (int messageId, int status, int code) {
+      print("sendDirectionalMessage $messageId, $status, $code");
+    });
   }
 
   @override

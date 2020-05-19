@@ -198,7 +198,9 @@ class RongIMClient {
   /// 目前仅支持群组。
   static Future<Message> sendDirectionalMessage(int conversationType,
       String targetId, List userIdList, MessageContent content,
-      {String pushContent, String pushData}) async {
+      {String pushContent,
+      String pushData,
+      Function(int messageId, int status, int code) finished}) async {
     if (conversationType == null || targetId == null || content == null) {
       print(
           "send directional message fail: conversationType or targetId or content is null");
@@ -231,6 +233,10 @@ class RongIMClient {
       "pushData": pushData,
       "timestamp": timestamp
     };
+
+    if (finished != null) {
+      sendMessageCallbacks[timestamp] = finished;
+    }
 
     Map resultMap =
         await _channel.invokeMethod(RCMethodKey.SendDirectionalMessage, map);
@@ -1443,7 +1449,8 @@ class RongIMClient {
   }
 
   static void forwardMessageByStep(
-      int conversationType, String targetId, Message message) async {
+      int conversationType, String targetId, Message message,
+      {Function(int messageId, int status, int code) finished}) async {
     Map msgMap = MessageFactory.instance.message2Map(message);
     // 此处获取当前时间戳传给原生方法，并且当做 sendMessageCallbacks 的 key 记录 finished
     DateTime time = DateTime.now();
@@ -1455,6 +1462,10 @@ class RongIMClient {
       "targetId": targetId,
       "timestamp": timestamp
     };
+
+    if (finished != null) {
+      sendMessageCallbacks[timestamp] = finished;
+    }
     await _channel.invokeMethod(RCMethodKey.ForwardMessageByStep, map);
   }
 
