@@ -32,7 +32,8 @@ class RongIMClient {
   ///[token] 融云 im token
   ///
   ///[finished] 返回 [RCErrorCode] 以及 userId
-  static void connect(String token, Function(int code ,String userId) finished) async {
+  static void connect(
+      String token, Function(int code, String userId) finished) async {
     Map resultMap = await _channel.invokeMethod(RCMethodKey.Connect, token);
     int code = resultMap["code"];
     String userId = resultMap["userId"];
@@ -215,6 +216,11 @@ class RongIMClient {
     }
     String jsonStr = content.encode();
     String objName = content.getObjectName();
+
+    // 此处获取当前时间戳传给原生方法，并且当做 sendMessageCallbacks 的 key 记录 finished
+    DateTime time = DateTime.now();
+    int timestamp = time.millisecondsSinceEpoch;
+
     Map map = {
       'conversationType': conversationType,
       'targetId': targetId,
@@ -222,7 +228,8 @@ class RongIMClient {
       "content": jsonStr,
       "objectName": objName,
       "pushContent": pushContent,
-      "pushData": pushData
+      "pushData": pushData,
+      "timestamp": timestamp
     };
 
     Map resultMap =
@@ -1438,10 +1445,15 @@ class RongIMClient {
   static void forwardMessageByStep(
       int conversationType, String targetId, Message message) async {
     Map msgMap = MessageFactory.instance.message2Map(message);
+    // 此处获取当前时间戳传给原生方法，并且当做 sendMessageCallbacks 的 key 记录 finished
+    DateTime time = DateTime.now();
+    int timestamp = time.millisecondsSinceEpoch;
+
     Map map = {
       "message": msgMap,
       "conversationType": conversationType,
-      "targetId": targetId
+      "targetId": targetId,
+      "timestamp": timestamp
     };
     await _channel.invokeMethod(RCMethodKey.ForwardMessageByStep, map);
   }
@@ -1619,8 +1631,8 @@ class RongIMClient {
       "count": count,
       "order": order,
     };
-    Map resultMap =
-        await _channel.invokeMethod(RCMethodKey.GetRemoteChatRoomHistoryMessages, map);
+    Map resultMap = await _channel.invokeMethod(
+        RCMethodKey.GetRemoteChatRoomHistoryMessages, map);
     int code = resultMap["code"];
     int syncTime = resultMap["syncTime"];
     if (code == 0) {
@@ -1650,7 +1662,8 @@ class RongIMClient {
   ///发送 message 成功后，服务器会给每个 message 分配一个唯一 ID(messageUId)
   static Future<Message> getMessageByUId(String messageUId) async {
     Map map = {"messageUId": messageUId};
-    String msgStr = await _channel.invokeMethod(RCMethodKey.GetMessageByUId, map);
+    String msgStr =
+        await _channel.invokeMethod(RCMethodKey.GetMessageByUId, map);
     if (msgStr == null) {
       return null;
     }
