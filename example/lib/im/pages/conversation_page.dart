@@ -17,6 +17,7 @@ import '../util/event_bus.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import '../util/dialog_util.dart';
+import 'dart:developer' as developer;
 
 enum ConversationStatus {
   Normal, //正常
@@ -187,14 +188,16 @@ class _ConversationPageState extends State<ConversationPage>
 
     EventBus.instance.addListener(EventKeys.ReceiveReceiptResponse, (map) {
       String tId = map["targetId"];
-      print("ReceiveReceiptResponse" + tId + this.targetId);
+      developer.log("ReceiveReceiptResponse" + tId + this.targetId,
+          name: "ConversationPage");
       if (tId == this.targetId) {
         onGetHistoryMessages();
       }
     });
 
     EventBus.instance.addListener(EventKeys.ForwardMessageEnd, (arg) {
-      print("ForwardMessageEnd：" + this.targetId);
+      developer.log("ForwardMessageEnd：" + this.targetId,
+          name: "ConversationPage");
       multiSelect = false;
       selectedMessageIds.clear();
       // onGetHistoryMessages();
@@ -203,7 +206,8 @@ class _ConversationPageState extends State<ConversationPage>
     });
 
     RongIMClient.onMessageSend = (int messageId, int status, int code) async {
-      print("messageId:$messageId status:$status code:$code");
+      developer.log("messageId:$messageId status:$status code:$code",
+          name: "ConversationPage");
       Message msg = await RongIMClient.getMessage(messageId);
       if (msg.targetId == this.targetId) {
         _insertOrReplaceMessage(msg);
@@ -214,7 +218,8 @@ class _ConversationPageState extends State<ConversationPage>
         (Message message, int remainDuration) async {
       EventBus.instance.commit(EventKeys.BurnMessage,
           {"messageId": message.messageId, "remainDuration": remainDuration});
-      print(message.toString() + remainDuration.toString());
+      developer.log(message.toString() + remainDuration.toString(),
+          name: "ConversationPage");
       burnMsgMap[message.messageId] = remainDuration;
       if (remainDuration == 0) {
         onGetHistoryMessages();
@@ -269,7 +274,7 @@ class _ConversationPageState extends State<ConversationPage>
   }
 
   onGetHistoryMessages() async {
-    print("get history message");
+    developer.log("get history message", name: "ConversationPage");
 
     List msgs =
         await RongIMClient.getHistoryMessage(conversationType, targetId, 0, 20);
@@ -282,7 +287,7 @@ class _ConversationPageState extends State<ConversationPage>
   }
 
   onLoadMoreHistoryMessages(int messageId) async {
-    print("get more history message");
+    developer.log("get more history message", name: "ConversationPage");
 
     List msgs = await RongIMClient.getHistoryMessage(
         conversationType, targetId, messageId, 20);
@@ -299,7 +304,7 @@ class _ConversationPageState extends State<ConversationPage>
   }
 
   onLoadRemoteHistoryMessages() async {
-    print("get Remote history message");
+    developer.log("get Remote history message", name: "ConversationPage");
 
     RongIMClient.getRemoteHistoryMessages(
         conversationType, targetId, recordTime, 20,
@@ -465,8 +470,9 @@ class _ConversationPageState extends State<ConversationPage>
     // 远程删除测试入口
     // List<Message> messageList = List();
     // messageList.add(message);
-    // RongIMClient.deleteRemoteMessages(conversationType, targetId, messageList, (code){
-    //   print("result: $code");
+    // RongIMClient.deleteRemoteMessages(conversationType, targetId, messageList,
+    //     (code) {
+    //   developer.log("result: $code", name: "ConversationPage");
     //   onGetHistoryMessages();
     // });
   }
@@ -504,7 +510,7 @@ class _ConversationPageState extends State<ConversationPage>
       if (imgPath == null) {
         return;
       }
-      print("imagepath " + imgPath);
+      developer.log("imagepath " + imgPath, name: "ConversationPage");
       if (imgPath.endsWith("gif")) {
         GifMessage gifMsg = GifMessage.obtain(imgPath);
         if (conversationType == RCConversationType.Private) {
@@ -546,7 +552,7 @@ class _ConversationPageState extends State<ConversationPage>
       if (imgPath == null) {
         return;
       }
-      print("imagepath " + imgPath);
+      developer.log("imagepath " + imgPath, name: "ConversationPage");
       String temp = imgPath.replaceAll("file://", "");
       // 保存不需要 file 开头的路径
       _saveImage(temp);
@@ -562,7 +568,7 @@ class _ConversationPageState extends State<ConversationPage>
 
     Widget videoWidget = WidgetUtil.buildExtentionWidget(
         Icons.video_call, RCString.ExtVideo, () async {
-      print("push to video record page");
+      developer.log("push to video record page", name: "ConversationPage");
       Map map = {
         "coversationType": conversationType,
         "targetId": targetId,
@@ -592,10 +598,10 @@ class _ConversationPageState extends State<ConversationPage>
 
     Widget secretChatWidget = WidgetUtil.buildExtentionWidget(
         Icons.security, RCString.ExtSecretChat, () async {
-      print("did tap secret chat");
+      developer.log("did tap secret chat", name: "ConversationPage");
       isSecretChat = !isSecretChat;
       String contentStr = isSecretChat ? "打开阅后即焚" : "关闭阅后即焚";
-      print(contentStr);
+      developer.log(contentStr, name: "ConversationPage");
       DialogUtil.showAlertDiaLog(context, contentStr);
     });
 
@@ -615,7 +621,8 @@ class _ConversationPageState extends State<ConversationPage>
 
   void _saveImage(String imagePath) async {
     final result = await ImageGallerySaver.saveFile(imagePath);
-    print("save image result: " + result.toString());
+    developer.log("save image result: " + result.toString(),
+        name: "ConversationPage");
   }
 
   void _sendReadReceipt() {
@@ -627,9 +634,11 @@ class _ConversationPageState extends State<ConversationPage>
               this.conversationType, this.targetId, message.sentTime,
               (int code) {
             if (code == 0) {
-              print('sendReadReceiptMessageSuccess');
+              developer.log("sendReadReceiptMessageSuccess",
+                  name: "ConversationPage");
             } else {
-              print('sendReadReceiptMessageFailed:code = + $code');
+              developer.log("sendReadReceiptMessageFailed:code = + $code",
+                  name: "ConversationPage");
             }
           });
           break;
@@ -648,9 +657,11 @@ class _ConversationPageState extends State<ConversationPage>
         RongIMClient.syncConversationReadStatus(
             this.conversationType, this.targetId, message.sentTime, (int code) {
           if (code == 0) {
-            print('syncConversationReadStatusSuccess');
+            developer.log("syncConversationReadStatusSuccess",
+                name: "ConversationPage");
           } else {
-            print('syncConversationReadStatusFailed:code = + $code');
+            developer.log("syncConversationReadStatusFailed:code = + $code",
+                name: "ConversationPage");
           }
         });
         break;
@@ -728,9 +739,11 @@ class _ConversationPageState extends State<ConversationPage>
       RongIMClient.sendReadReceiptResponse(
           this.conversationType, this.targetId, readReceiptList, (int code) {
         if (code == 0) {
-          print('sendReadReceiptResponseSuccess');
+          developer.log("sendReadReceiptResponseSuccess",
+              name: "ConversationPage");
         } else {
-          print('sendReadReceiptResponseFailed:code = + $code');
+          developer.log("sendReadReceiptResponseFailed:code = + $code",
+              name: "ConversationPage");
         }
       });
     }
@@ -770,23 +783,33 @@ class _ConversationPageState extends State<ConversationPage>
 
   @override
   void didTapMessageItem(Message message) async {
-    print("didTapMessageItem " + message.objectName);
-    // RongIMClient.setMessageReceivedStatus(message.messageId, 1, (code) async{
-    //   print("setMessageReceivedStatus result:$code");
+    developer.log("didTapMessageItem " + message.objectName,
+        name: "ConversationPage");
+    // RongIMClient.setMessageReceivedSttus(message.messageId, 1, (code) async {
+    //   developer.log("setMessageReceivedStatus result:$code",
+    //       name: "ConversationPage");
     //   Message msg = await RongIMClient.getMessage(message.messageId);
-    //   print("getMessage result:${msg.toString()}");
+    //   developer.log("getMessage result:${msg.toString()}",
+    //       name: "ConversationPage");
     // });
     // List<int> conversations = List();
     // conversations.add(3);
-    // RongIMClient.clearConversations(conversations, (code) async{
-    //   print("clearConversations result:$code");
+    // RongIMClient.clearConversations(conversations, (code) async {
+    //   developer.log("clearConversations result:$code",
+    //       name: "ConversationPage");
     // });
-    // print("getDeltaTime result:${await RongIMClient.getDeltaTime()}");
-    // RongIMClient.setOfflineMessageDuration(3, (code, result){
-    //   print("setOfflineMessageDuration code:$code result:$result");
+    // developer.log("getDeltaTime result:${await RongIMClient.getDeltaTime()}",
+    //     name: "ConversationPage");
+    // RongIMClient.setOfflineMessageDuration(3, (code, result) {
+    //   developer.log("setOfflineMessageDuration code:$code result:$result",
+    //       name: "ConversationPage");
     // });
-    // print("getOfflineMessageDuration code:${await RongIMClient.getOfflineMessageDuration()}");
-    // print('getConnectionStatus: ${await RongIMClient.getConnectionStatus()}');
+    // developer.log(
+    //     "getOfflineMessageDuration code:${await RongIMClient.getOfflineMessageDuration()}",
+    //     name: "ConversationPage");
+    // developer.log(
+    //     "getConnectionStatus: ${await RongIMClient.getConnectionStatus()}",
+    //     name: "ConversationPage");
     // RongIMClient.setReconnectKickEnable(true);
     if (message.messageDirection == RCMessageDirection.Receive &&
         message.content.destructDuration != null &&
@@ -832,15 +855,18 @@ class _ConversationPageState extends State<ConversationPage>
       Navigator.pushNamed(context, "/webview", arguments: param);
     } else if (message.content is ReferenceMessage) {
       ReferenceMessage msg = message.content;
-      if (msg.referMsg is ImageMessage) { // 引用的消息为图片时的点击事件
+      if (msg.referMsg is ImageMessage) {
+        // 引用的消息为图片时的点击事件
         Message tempMsg = message;
         tempMsg.content = msg.referMsg;
         Navigator.pushNamed(context, "/image_preview", arguments: tempMsg);
-      } else if (msg.referMsg is FileMessage) { // 引用的消息为文件时的点击事件
+      } else if (msg.referMsg is FileMessage) {
+        // 引用的消息为文件时的点击事件
         Message tempMsg = message;
         tempMsg.content = msg.referMsg;
         Navigator.pushNamed(context, "/file_preview", arguments: tempMsg);
-      } else if (msg.referMsg is RichContentMessage) { // 引用的消息为图文时的点击事件
+      } else if (msg.referMsg is RichContentMessage) {
+        // 引用的消息为图文时的点击事件
         RichContentMessage richContentMessage = msg.referMsg;
         Map param = {
           "url": richContentMessage.url,
@@ -855,20 +881,23 @@ class _ConversationPageState extends State<ConversationPage>
 
   @override
   void didSendMessageRequest(Message message) {
-    print("didSendMessageRequest " + message.objectName);
+    developer.log("didSendMessageRequest " + message.objectName,
+        name: "ConversationPage");
     RongIMClient.sendReadReceiptRequest(message, (int code) {
       if (0 == code) {
-        print("sendReadReceiptRequest success");
+        developer.log("sendReadReceiptRequest success",
+            name: "ConversationPage");
         onGetHistoryMessages();
       } else {
-        print("sendReadReceiptRequest error");
+        developer.log("sendReadReceiptRequest error", name: "ConversationPage");
       }
     });
   }
 
   @override
   void didTapMessageReadInfo(Message message) {
-    print("didTapMessageReadInfo " + message.objectName);
+    developer.log("didTapMessageReadInfo " + message.objectName,
+        name: "ConversationPage");
     Navigator.pushNamed(context, "/message_read_page", arguments: message);
   }
 
@@ -892,13 +921,13 @@ class _ConversationPageState extends State<ConversationPage>
         _refreshMessageContentListUI();
         _refreshUI();
       }
-      print("当前选中的是 " + key);
+      developer.log("当前选中的是 " + key, name: "ConversationPage");
     });
   }
 
   @override
   void didTapUserPortrait(String userId) {
-    print("点击了用户头像 " + userId);
+    developer.log("点击了用户头像 " + userId, name: "ConversationPage");
   }
 
   @override
@@ -920,7 +949,7 @@ class _ConversationPageState extends State<ConversationPage>
       bottomInputBar.setTextContent(content);
       userIdList.add(userId);
     }
-    print("长按头像");
+    developer.log("长按头像" + userId, name: "ConversationPage");
   }
 
   @override
@@ -985,7 +1014,6 @@ class _ConversationPageState extends State<ConversationPage>
 
   @override
   void onTextChange(String text) {
-    // print('input ' + text);
     textDraft = text;
     RongIMClient.sendTypingStatus(
         conversationType, targetId, TextMessage.objectName);
