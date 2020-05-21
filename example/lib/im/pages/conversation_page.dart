@@ -768,7 +768,7 @@ class _ConversationPageState extends State<ConversationPage>
                       ),
                     ),
                     Container(
-                      height: multiSelect ? 55 : 82,
+                      // height: multiSelect ? 55 : 82,
                       child: _buildBottomInputBar(),
                     ),
                     _getExtentionWidget(),
@@ -905,11 +905,18 @@ class _ConversationPageState extends State<ConversationPage>
   void didLongPressMessageItem(Message message, Offset tapPos) {
     Map<String, String> actionMap = {
       RCLongPressAction.DeleteKey: RCLongPressAction.DeleteValue,
-      RCLongPressAction.MutiSelectKey: RCLongPressAction.MutiSelectValue
     };
+    // 引用消息
+    if (_isShowReference(message)) {
+      actionMap[RCLongPressAction.ReferenceKey] =
+          RCLongPressAction.ReferenceValue;
+    }
+    actionMap[RCLongPressAction.MutiSelectKey] =
+        RCLongPressAction.MutiSelectValue;
     if (message.messageDirection == RCMessageDirection.Send) {
       actionMap[RCLongPressAction.RecallKey] = RCLongPressAction.RecallValue;
     }
+
     WidgetUtil.showLongPressMenu(context, tapPos, actionMap, (String key) {
       if (key == RCLongPressAction.DeleteKey) {
         _deleteMessage(message);
@@ -920,9 +927,26 @@ class _ConversationPageState extends State<ConversationPage>
         currentInputStatus = InputBarStatus.Normal;
         _refreshMessageContentListUI();
         _refreshUI();
+      } else if (key == RCLongPressAction.ReferenceKey) {
+        bottomInputBar.makeReferenceMessage(message);
       }
       developer.log("当前选中的是 " + key, name: "ConversationPage");
     });
+  }
+
+  bool _isShowReference(Message message) {
+    //过滤失败消息
+    bool isSuccess = message.sentStatus == RCSentStatus.Sent;
+    bool isFireMsg = message.content.destructDuration != 0;
+    // bool isFireMode = mRongExtension != null && mRongExtension.isFireStatus();
+    // bool isEnableReferenceMsg = RongContext.getInstance().getResources().getBoolean(R.bool.rc_enable_reference_message);
+    bool isSupport = (message.content.getObjectName() ==
+            TextMessage.objectName) ||
+        (message.content.getObjectName() == ImageMessage.objectName) ||
+        (message.content.getObjectName() == FileMessage.objectName) ||
+        (message.content.getObjectName() == RichContentMessage.objectName) ||
+        (message.content.getObjectName() == ReferenceMessage.objectName);
+    return isSuccess && isSupport && !isFireMsg;
   }
 
   @override
@@ -954,8 +978,16 @@ class _ConversationPageState extends State<ConversationPage>
 
   @override
   void willSendText(String text) async {
-    TextMessage msg = new TextMessage();
-    msg.content = text;
+    MessageContent msg;
+    if (bottomInputBar.getReferenceMessage() != null) {
+      ReferenceMessage referenceMessage = bottomInputBar.getReferenceMessage();
+      referenceMessage.content = text;
+      msg = referenceMessage; 
+    } else {
+      TextMessage textMessage = new TextMessage();
+      textMessage.content = text;
+      msg =  textMessage;
+    }
 
     if (conversationType == RCConversationType.Group) {
       // 群组发送消息携带@信息
@@ -987,6 +1019,7 @@ class _ConversationPageState extends State<ConversationPage>
     Message message =
         await RongIMClient.sendMessage(conversationType, targetId, msg);
     userIdList.clear();
+    bottomInputBar.clearReferenceMessage();
     _insertOrReplaceMessage(message);
   }
 

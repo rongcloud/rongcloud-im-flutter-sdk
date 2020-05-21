@@ -509,8 +509,43 @@ class MessageItemFactory extends StatelessWidget {
               color: Color(RCColor.ConReferenceMsgContentColor)));
     } else if (msg.referMsg is ImageMessage) {
       ImageMessage imageMessage = msg.referMsg;
-      Uint8List bytes = base64.decode(imageMessage.content);
-      return Image.memory(bytes);
+      Widget widget;
+      if (imageMessage.content != null && imageMessage.content.length > 0) {
+        Uint8List bytes = base64.decode(msg.content);
+        widget = Image.memory(bytes);
+        if (imageMessage.localPath == null) {
+          RongIMClient.downloadMediaMessage(message);
+        }
+      } else {
+        if (imageMessage.localPath != null) {
+          String path = MediaUtil.instance.getCorrectedLocalPath(imageMessage.localPath);
+          File file = File(path);
+          if (file != null && file.existsSync()) {
+            widget = Image.file(file);
+          } else {
+            RongIMClient.downloadMediaMessage(message);
+            // widget = Image.network(msg.imageUri);
+            widget = CachedNetworkImage(
+              progressIndicatorBuilder: (context, url, progress) =>
+                  CircularProgressIndicator(
+                value: progress.progress,
+              ),
+              imageUrl: imageMessage.imageUri,
+            );
+          }
+        } else {
+          RongIMClient.downloadMediaMessage(message);
+          // widget = Image.network(msg.imageUri);
+          widget = CachedNetworkImage(
+            progressIndicatorBuilder: (context, url, progress) =>
+                CircularProgressIndicator(
+              value: progress.progress,
+            ),
+            imageUrl: imageMessage.imageUri,
+          );
+        }
+      }
+      return widget;
     } else if (msg.referMsg is FileMessage) {
       FileMessage fileMessage = msg.referMsg;
       return Text("${msg.referMsgUserId}:\n\n[文件] ${fileMessage.mName}",
