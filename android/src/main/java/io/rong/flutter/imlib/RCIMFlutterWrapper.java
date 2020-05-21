@@ -976,6 +976,10 @@ public class RCIMFlutterWrapper {
                     content.setMentionedInfo(info);
                 }
             }
+            if (contentObject.has("burnDuration")){
+                long burnDuration = Long.valueOf(contentObject.get("burnDuration").toString());
+                content.setDestructTime(burnDuration);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
