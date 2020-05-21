@@ -1,5 +1,6 @@
 import 'message_content.dart';
 import 'dart:convert' show json;
+import 'dart:developer' as developer;
 
 class TextMessage extends MessageContent {
   static const String objectName = "RC:TxtMsg";
@@ -16,8 +17,9 @@ class TextMessage extends MessageContent {
 
   @override
   void decode(String jsonStr) {
-    if(jsonStr == null) {
-      print("[RC-Flutter-IM] Flutter TextMessage deocde error: no content");
+    if (jsonStr == null) {
+      developer.log("Flutter TextMessage deocde error: no content",
+          name: "RongIMClient.TextMessage");
       return;
     }
     Map map = json.decode(jsonStr.toString());
@@ -32,7 +34,7 @@ class TextMessage extends MessageContent {
 
   @override
   String encode() {
-    Map map = {"content":this.content,"extra":this.extra};
+    Map map = {"content": this.content, "extra": this.extra};
     if (this.sendUserInfo != null) {
       Map userMap = super.encodeUserInfo(this.sendUserInfo);
       map["user"] = userMap;
@@ -42,7 +44,7 @@ class TextMessage extends MessageContent {
       map["mentionedInfo"] = mentionedMap;
     }
     if (this.destructDuration != null && this.destructDuration > 0) {
-      map["burnDuration"] = this.destructDuration; 
+      map["burnDuration"] = this.destructDuration;
     }
     return json.encode(map);
   }
@@ -56,5 +58,4 @@ class TextMessage extends MessageContent {
   String getObjectName() {
     return objectName;
   }
-
 }

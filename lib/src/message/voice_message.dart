@@ -1,8 +1,8 @@
 import 'dart:convert' show json;
 import 'message_content.dart';
+import 'dart:developer' as developer;
 
 class VoiceMessage extends MessageContent {
-
   static const String objectName = "RC:HQVCMsg";
 
   String localPath;
@@ -13,7 +13,7 @@ class VoiceMessage extends MessageContent {
   /// [localPath] 本地路径，Android 必须以 file:// 开头
   ///
   /// [duration] 语音时长，单位 秒
-  static VoiceMessage obtain(String localPath,int duration) {
+  static VoiceMessage obtain(String localPath, int duration) {
     VoiceMessage msg = new VoiceMessage();
     msg.localPath = localPath;
     msg.duration = duration;
@@ -22,8 +22,9 @@ class VoiceMessage extends MessageContent {
 
   @override
   void decode(String jsonStr) {
-    if(jsonStr == null) {
-      print("[RC-Flutter-IM] Flutter VoiceMessage deocde error: no content");
+    if (jsonStr == null) {
+      developer.log("Flutter VoiceMessage deocde error: no content",
+          name: "RongIMClient.VoiceMessage");
       return;
     }
     Map map = json.decode(jsonStr.toString());
@@ -40,7 +41,7 @@ class VoiceMessage extends MessageContent {
 
   @override
   String encode() {
-    Map map = {"duration":this.duration,"extra":this.extra};
+    Map map = {"duration": this.duration, "extra": this.extra};
     if (this.localPath != null) {
       map["localPath"] = this.localPath;
     } else {
@@ -58,7 +59,7 @@ class VoiceMessage extends MessageContent {
       map["mentionedInfo"] = mentionedMap;
     }
     if (this.destructDuration != null && this.destructDuration > 0) {
-      map["burnDuration"] = this.destructDuration; 
+      map["burnDuration"] = this.destructDuration;
     }
     return json.encode(map);
   }

@@ -1,6 +1,6 @@
 import 'dart:convert';
-
-import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'message_content.dart';
+import 'dart:developer' as developer;
 
 class LocationMessage extends MessageContent {
   static const String objectName = "RC:LBSMsg";
@@ -22,6 +22,11 @@ class LocationMessage extends MessageContent {
 
   @override
   void decode(String jsonStr) {
+    if (jsonStr == null && jsonStr.isEmpty) {
+      developer.log("Flutter LocationMessage deocde error: no content",
+          name: "RongIMClient.LocationMessage");
+      return;
+    }
     Map map = json.decode(jsonStr);
     this.mLat = map["latitude"];
     this.mLng = map["longitude"];
@@ -34,8 +39,13 @@ class LocationMessage extends MessageContent {
 
   @override
   String encode() {
-    Map map = {"latitude":this.mLat,"longitude":this.mLng,"poi":mPoi
-    ,"mBase64":mBase64,"mImgUri":mImgUri};
+    Map map = {
+      "latitude": this.mLat,
+      "longitude": this.mLng,
+      "poi": mPoi,
+      "mBase64": mBase64,
+      "mImgUri": mImgUri
+    };
     if (this.sendUserInfo != null) {
       Map userMap = super.encodeUserInfo(this.sendUserInfo);
       map["user"] = userMap;

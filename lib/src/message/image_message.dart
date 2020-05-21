@@ -1,5 +1,6 @@
 import 'message_content.dart';
 import 'dart:convert' show json;
+import 'dart:developer' as developer;
 
 class ImageMessage extends MessageContent {
   static const String objectName = "RC:ImgMsg";
@@ -8,8 +9,7 @@ class ImageMessage extends MessageContent {
   String extra;
   String content;
   String imageUri;
-  String mThumbUri;//缩略图地址
-
+  String mThumbUri; //缩略图地址
 
   /// [localPath] 本地路径，Android 必须以 file:// 开头
   static ImageMessage obtain(String localPath) {
@@ -20,6 +20,11 @@ class ImageMessage extends MessageContent {
 
   @override
   void decode(String jsonStr) {
+    if (jsonStr == null && jsonStr.isEmpty) {
+      developer.log("Flutter ImageMessage deocde error: no content",
+          name: "RongIMClient.ImageMessage");
+      return;
+    }
     Map map = json.decode(jsonStr.toString());
     this.localPath = map["localPath"];
     this.content = map["content"];
@@ -35,7 +40,7 @@ class ImageMessage extends MessageContent {
 
   @override
   String encode() {
-    Map map = {"extra":this.extra};
+    Map map = {"extra": this.extra};
     if (this.content != null) {
       map["content"] = this.content;
     }
@@ -59,7 +64,7 @@ class ImageMessage extends MessageContent {
       map["mentionedInfo"] = mentionedMap;
     }
     if (this.destructDuration != null && this.destructDuration > 0) {
-      map["burnDuration"] = this.destructDuration; 
+      map["burnDuration"] = this.destructDuration;
     }
     return json.encode(map);
   }

@@ -3,6 +3,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'message_content.dart';
 import 'dart:convert' show json;
 import '../util/message_factory.dart';
+import 'dart:developer' as developer;
 
 //Gif消息
 class ReferenceMessage extends MessageContent {
@@ -16,8 +17,8 @@ class ReferenceMessage extends MessageContent {
   @override
   void decode(String jsonStr) {
     if (jsonStr == null || jsonStr == "") {
-      print(
-          "[RC-Flutter-IM] Flutter ReferenceMessage deocde error: no content");
+      developer.log("Flutter ReferenceMessage deocde error: no content",
+          name: "RongIMClient.ReferenceMessage");
       return;
     }
     Map map = json.decode(jsonStr.toString());

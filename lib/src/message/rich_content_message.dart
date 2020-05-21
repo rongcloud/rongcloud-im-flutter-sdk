@@ -1,10 +1,10 @@
 import 'message_content.dart';
 import 'dart:convert' show json;
+import 'dart:developer' as developer;
 
 /// 图文消息
 class RichContentMessage extends MessageContent {
   static const String objectName = "RC:ImgTextMsg";
-
 
   String title;
   String digest;
@@ -13,7 +13,8 @@ class RichContentMessage extends MessageContent {
   String extra;
 
   /// [content] 文本内容
-  static RichContentMessage obtain(String title, String digest, String imageURL, {String url = '', String extra = ''}) {
+  static RichContentMessage obtain(String title, String digest, String imageURL,
+      {String url = '', String extra = ''}) {
     RichContentMessage msg = new RichContentMessage();
     msg.title = title;
     msg.digest = digest;
@@ -25,8 +26,9 @@ class RichContentMessage extends MessageContent {
 
   @override
   void decode(String jsonStr) {
-    if(jsonStr == null) {
-      print("[RC-Flutter-IM] Flutter TextMessage deocde error: no content");
+    if (jsonStr == null) {
+      developer.log("Flutter TextMessage deocde error: no content",
+          name: "RongIMClient.RichContentMessage");
       return;
     }
     Map map = json.decode(jsonStr.toString());
@@ -44,8 +46,13 @@ class RichContentMessage extends MessageContent {
 
   @override
   String encode() {
-
-    Map map = {"imageUri":this.imageURL,"extra":this.extra,"content":this.digest,"title":this.title,"url":this.url};
+    Map map = {
+      "imageUri": this.imageURL,
+      "extra": this.extra,
+      "content": this.digest,
+      "title": this.title,
+      "url": this.url
+    };
     if (this.sendUserInfo != null) {
       Map userMap = super.encodeUserInfo(this.sendUserInfo);
       map["user"] = userMap;
@@ -55,7 +62,7 @@ class RichContentMessage extends MessageContent {
       map["mentionedInfo"] = mentionedMap;
     }
     // if (this.destructDuration != null && this.destructDuration > 0) {
-    //   map["burnDuration"] = this.destructDuration; 
+    //   map["burnDuration"] = this.destructDuration;
     // }
     return json.encode(map);
   }
@@ -69,5 +76,4 @@ class RichContentMessage extends MessageContent {
   String getObjectName() {
     return objectName;
   }
-
 }

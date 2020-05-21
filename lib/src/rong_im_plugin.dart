@@ -7,6 +7,7 @@ import 'util/message_factory.dart';
 import 'method_key.dart';
 import 'info/connection_status_convert.dart';
 import 'rong_im_client.dart';
+import 'dart:developer' as developer;
 
 @Deprecated(
     '从 2.0.0 版本开始，RongcloudImPlugin 修改为 RongIMClient，RongcloudImPlugin 将会在后面的版本被删除')
@@ -35,7 +36,8 @@ class RongcloudImPlugin {
   ///[token] 融云 im token
   ///
   ///[code] 参见 [RCErrorCode]
-  static void connect(String token, Function(int code ,String userId) finished) async {
+  static void connect(
+      String token, Function(int code, String userId) finished) async {
     RongIMClient.connect(token, finished);
   }
 
@@ -967,8 +969,9 @@ class RongcloudImPlugin {
               onMessageReceivedWrapper(msg, left, hasPackage, offline);
             }
             if (count == 2) {
-              print(
-                  "警告：同时实现了 onMessageReceived 和 onMessageReceivedWrapper 两个接收消息的回调，可能会出现重复接收消息或者重复刷新的问题，建议只实现其中一个！！！");
+              developer.log(
+                  "警告：同时实现了 onMessageReceived 和 onMessageReceivedWrapper 两个接收消息的回调，可能会出现重复接收消息或者重复刷新的问题，建议只实现其中一个！！！",
+                  name: "RongcloudImPlugin");
             }
           }
           break;
