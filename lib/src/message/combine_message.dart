@@ -58,7 +58,12 @@ class CombineMessage extends MessageContent {
     this.mMediaUrl = map["remoteUrl"];
     this.localPath = map["localPath"];
     this.conversationType = map["conversationType"];
-    this.nameList = List<String>.from(map["nameList"]);
+    if (map["nameList"] != null) {
+      this.nameList = List<String>.from(map["nameList"]);
+    } else {
+      this.nameList = List();
+    }
+    
     this.summaryList = List<String>.from(map["summaryList"]);
     this.extra = map["extra"];
     Map userMap = map["user"];
