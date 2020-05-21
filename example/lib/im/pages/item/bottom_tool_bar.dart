@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin_example/im/util/style.dart';
+import 'dart:developer' as developer;
 
 class BottomToolBar extends StatefulWidget {
   BottomToolBarDelegate delegate;
@@ -14,6 +15,7 @@ class BottomToolBar extends StatefulWidget {
 }
 
 class _BottomToolBarState extends State<BottomToolBar> {
+  String pageName = "example.BottomToolBar";
   BottomToolBarDelegate delegate;
   _BottomToolBarState(BottomToolBarDelegate delegate) {
     this.delegate = delegate;
@@ -54,7 +56,7 @@ class _BottomToolBarState extends State<BottomToolBar> {
     if (this.delegate != null) {
       this.delegate.didTapDelete();
     } else {
-      print("没有实现 BottomToolBarDelegate");
+      developer.log("没有实现 BottomToolBarDelegate", name: pageName);
     }
   }
 
@@ -62,7 +64,7 @@ class _BottomToolBarState extends State<BottomToolBar> {
     if (this.delegate != null) {
       this.delegate.didTapForward();
     } else {
-      print("没有实现 BottomToolBarDelegate");
+      developer.log("没有实现 BottomToolBarDelegate", name: pageName);
     }
   }
 }

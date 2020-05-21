@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import '../im/util/dialog_util.dart';
+import 'dart:developer' as developer;
 
 class ChatDebugPage extends StatefulWidget {
   final Map arguments;
@@ -15,6 +16,7 @@ class ChatDebugPage extends StatefulWidget {
 }
 
 class _ChatDebugPageState extends State<ChatDebugPage> {
+  String pageName = "example.ChatDebugPage";
   Map arguments;
   List titles;
   int conversationType;
@@ -40,7 +42,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   }
 
   void _didTap(int index) {
-    print("did tap debug " + titles[index]);
+    developer.log("did tap debug " + titles[index], name: pageName);
     switch (titles[index]) {
       case "加入黑名单":
         _addBlackList();
@@ -73,36 +75,37 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   }
 
   void _addBlackList() {
-    print("_addBlackList");
+    developer.log("_addBlackList", name: pageName);
     RongIMClient.addToBlackList(targetId, (int code) {
       String toast = code == 0 ? "加入黑名单成功" : "加入黑名单失败， $code";
-      print(toast);
+      developer.log(toast, name: pageName);
       DialogUtil.showAlertDiaLog(context, toast);
     });
   }
 
   void _removeBalckList() {
-    print("_removeBalckList");
+    developer.log("_removeBalckList", name: pageName);
     RongIMClient.removeFromBlackList(targetId, (int code) {
       String toast = code == 0 ? "取消黑名单成功" : "取消黑名单失败，错误码: $code";
-      print(toast);
+      developer.log(toast, name: pageName);
       DialogUtil.showAlertDiaLog(context, toast);
     });
   }
 
   void _getBlackStatus() {
-    print("_getBlackStatus");
+    developer.log("_getBlackStatus", name: pageName);
     RongIMClient.getBlackListStatus(targetId, (int blackStatus, int code) {
       if (0 == code) {
         if (RCBlackListStatus.In == blackStatus) {
-          print("用户:" + targetId + " 在黑名单中");
+          developer.log("用户:" + targetId + " 在黑名单中", name: pageName);
           DialogUtil.showAlertDiaLog(context, "用户:" + targetId + " 在黑名单中");
         } else {
-          print("用户:" + targetId + " 不在黑名单中");
+          developer.log("用户:" + targetId + " 不在黑名单中", name: pageName);
           DialogUtil.showAlertDiaLog(context, "用户:" + targetId + " 不在黑名单中");
         }
       } else {
-        print("用户:" + targetId + " 黑名单状态查询失败" + code.toString());
+        developer.log("用户:" + targetId + " 黑名单状态查询失败" + code.toString(),
+            name: pageName);
         DialogUtil.showAlertDiaLog(
             context, "用户:" + targetId + " 黑名单状态查询失败" + code.toString());
       }
@@ -110,7 +113,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   }
 
   void _getBlackList() {
-    print("_getBlackList");
+    developer.log("_getBlackList", name: pageName);
     RongIMClient.getBlackList((List/*<String>*/ userIdList, int code) {
       DialogUtil.showAlertDiaLog(
           context,
@@ -118,7 +121,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
               userIdList.toString() +
               (code == 0 ? "" : "\n获取失败，错误码 code:" + code.toString()));
       userIdList.forEach((userId) {
-        print("userId:" + userId);
+        developer.log("userId:" + userId, name: pageName);
       });
     });
   }
@@ -126,7 +129,9 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   void _setConStatusEnable() {
     RongIMClient.setConversationNotificationStatus(
         conversationType, targetId, true, (int status, int code) {
-      print("setConversationNotificationStatus1 status " + status.toString());
+      developer.log(
+          "setConversationNotificationStatus1 status " + status.toString(),
+          name: pageName);
       String toast = code == 0 ? "设置免打扰成功" : "设置免打扰失败，错误码: $code";
       DialogUtil.showAlertDiaLog(context, toast);
     });
@@ -135,7 +140,9 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   void _setConStatusDisanable() {
     RongIMClient.setConversationNotificationStatus(
         conversationType, targetId, false, (int status, int code) {
-      print("setConversationNotificationStatus2 status " + status.toString());
+      developer.log(
+          "setConversationNotificationStatus2 status " + status.toString(),
+          name: pageName);
       String toast = code == 0 ? "取消免打扰成功" : "取消免打扰失败，错误码: $code";
       DialogUtil.showAlertDiaLog(context, toast);
     });
@@ -145,7 +152,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     RongIMClient.getConversationNotificationStatus(conversationType, targetId,
         (int status, int code) {
       String toast = "免打扰状态:" + (status == 0 ? "免打扰" : "有消息提醒");
-      print(toast);
+      developer.log(toast, name: pageName);
       DialogUtil.showAlertDiaLog(context, toast);
     });
   }
@@ -155,10 +162,10 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     Navigator.pushNamed(context, "/search_message", arguments: arg);
   }
 
-  void _getMessageByUId() async{
+  void _getMessageByUId() async {
     List msgs =
         await RongIMClient.getHistoryMessage(conversationType, targetId, 0, 20);
-    Message message = msgs[(Random().nextInt(msgs.length-1))];
+    Message message = msgs[(Random().nextInt(msgs.length - 1))];
     String uId = message.messageUId;
     Message msg = await RongIMClient.getMessageByUId(uId);
     DialogUtil.showAlertDiaLog(context, "${msg.toString()}");

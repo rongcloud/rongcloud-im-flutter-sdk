@@ -10,6 +10,7 @@ import '../../util/media_util.dart';
 import '../../util/style.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import '../../util/user_info_datesource.dart' as example;
+import 'dart:developer' as developer;
 
 class BottomInputBar extends StatefulWidget {
   BottomInputBarDelegate delegate;
@@ -29,21 +30,21 @@ class BottomInputBar extends StatefulWidget {
     this.state._refreshUI();
   }
 
-  void makeReferenceMessage(Message message){
+  void makeReferenceMessage(Message message) {
     this.state.makeReferenceMessage(message);
   }
 
-  ReferenceMessage getReferenceMessage(){
+  ReferenceMessage getReferenceMessage() {
     return this.state.referenceMessage;
   }
 
-  void clearReferenceMessage(){
+  void clearReferenceMessage() {
     this.state.clearReferenceMessage();
   }
-
 }
 
 class _BottomInputBarState extends State<BottomInputBar> {
+  String pageName = "example.BottomInputBar";
   BottomInputBarDelegate delegate;
   TextField textField;
   FocusNode focusNode = FocusNode();
@@ -101,20 +102,20 @@ class _BottomInputBarState extends State<BottomInputBar> {
 
   void _clickSendMessage(String messageStr) {
     if (messageStr == null || messageStr.length <= 0) {
-      print('不能为空');
+      developer.log("clickSendMessage MessageStr 不能为空", name: pageName);
       return;
     }
 
     if (this.delegate != null) {
       this.delegate.willSendText(messageStr);
     } else {
-      print("没有实现 BottomInputBarDelegate");
+      developer.log("没有实现 BottomInputBarDelegate", name: pageName);
     }
     this.textField.controller.text = '';
   }
 
   switchPhrases() {
-    print("switchPhrases");
+    developer.log("switchPhrases", name: pageName);
     if (focusNode.hasFocus) {
       focusNode.unfocus();
     }
@@ -126,7 +127,7 @@ class _BottomInputBarState extends State<BottomInputBar> {
   }
 
   switchVoice() {
-    print("switchVoice");
+    developer.log("switchVoice", name: pageName);
     InputBarStatus status = InputBarStatus.Normal;
     if (this.inputBarStatus != InputBarStatus.Voice) {
       status = InputBarStatus.Voice;
@@ -135,7 +136,7 @@ class _BottomInputBarState extends State<BottomInputBar> {
   }
 
   switchEmoji() {
-    print("switchEmoji");
+    developer.log("switchEmoji", name: pageName);
     InputBarStatus status = InputBarStatus.Normal;
     if (this.inputBarStatus != InputBarStatus.Emoji) {
       if (focusNode.hasFocus) {
@@ -147,7 +148,7 @@ class _BottomInputBarState extends State<BottomInputBar> {
   }
 
   switchExtention() {
-    print("switchExtention");
+    developer.log("switchExtention", name: pageName);
     if (focusNode.hasFocus) {
       focusNode.unfocus();
     }
@@ -158,35 +159,35 @@ class _BottomInputBarState extends State<BottomInputBar> {
     if (this.delegate != null) {
       this.delegate.didTapExtentionButton();
     } else {
-      print("没有实现 BottomInputBarDelegate");
+      developer.log("没有实现 BottomInputBarDelegate", name: pageName);
     }
     _notifyInputStatusChanged(status);
   }
 
   _onVoiceGesLongPress() {
-    print("_onVoiceGesLongPress");
+    developer.log("_onVoiceGesLongPress", name: pageName);
     MediaUtil.instance.startRecordAudio();
     if (this.delegate != null) {
       this.delegate.willStartRecordVoice();
     } else {
-      print("没有实现 BottomInputBarDelegate");
+      developer.log("没有实现 BottomInputBarDelegate", name: pageName);
     }
   }
 
   _onVoiceGesLongPressEnd() {
-    print("_onVoiceGesLongPressEnd");
+    developer.log("_onVoiceGesLongPressEnd", name: pageName);
 
     if (this.delegate != null) {
       this.delegate.willStopRecordVoice();
     } else {
-      print("没有实现 BottomInputBarDelegate");
+      developer.log("没有实现 BottomInputBarDelegate", name: pageName);
     }
 
     MediaUtil.instance.stopRecordAudio((String path, int duration) {
       if (this.delegate != null && path.length > 0) {
         this.delegate.willSendVoice(path, duration);
       } else {
-        print("没有实现 BottomInputBarDelegate || 录音路径为空");
+        developer.log("没有实现 BottomInputBarDelegate || 录音路径为空", name: pageName);
       }
     });
   }
@@ -243,7 +244,7 @@ class _BottomInputBarState extends State<BottomInputBar> {
     if (this.delegate != null) {
       this.delegate.inputStatusDidChange(status);
     } else {
-      print("没有实现 BottomInputBarDelegate");
+      developer.log("没有实现 BottomInputBarDelegate", name: pageName);
     }
   }
 
@@ -333,14 +334,12 @@ class _BottomInputBarState extends State<BottomInputBar> {
                 child: new SingleChildScrollView(
                     scrollDirection: Axis.vertical,
                     reverse: false,
-                    child: 
-                    GestureDetector(
-                      child:_buildReferenceContent(),
-                      onTap: (){
+                    child: GestureDetector(
+                      child: _buildReferenceContent(),
+                      onTap: () {
                         _clickContent();
                       },
-                    )
-                    ),
+                    )),
               )
             ])),
         Container(
@@ -357,28 +356,28 @@ class _BottomInputBarState extends State<BottomInputBar> {
     ));
   }
 
-  void _clickContent(){
-      if (referenceMessage.referMsg is ImageMessage) {
-        // 引用的消息为图片时的点击事件
-        Message tempMsg = message;
-        tempMsg.content = referenceMessage.referMsg;
-        Navigator.pushNamed(context, "/image_preview", arguments: tempMsg);
-      } else if (referenceMessage.referMsg is FileMessage) {
-        // 引用的消息为文件时的点击事件
-        Message tempMsg = message;
-        tempMsg.content = referenceMessage.referMsg;
-        Navigator.pushNamed(context, "/file_preview", arguments: tempMsg);
-      } else if (referenceMessage.referMsg is RichContentMessage) {
-        // 引用的消息为图文时的点击事件
-        RichContentMessage richContentMessage = referenceMessage.referMsg;
-        Map param = {
-          "url": richContentMessage.url,
-          "title": richContentMessage.title
-        };
-        Navigator.pushNamed(context, "/webview", arguments: param);
-      } else {
-        // 引用的消息为文本时的点击事件
-      }
+  void _clickContent() {
+    if (referenceMessage.referMsg is ImageMessage) {
+      // 引用的消息为图片时的点击事件
+      Message tempMsg = message;
+      tempMsg.content = referenceMessage.referMsg;
+      Navigator.pushNamed(context, "/image_preview", arguments: tempMsg);
+    } else if (referenceMessage.referMsg is FileMessage) {
+      // 引用的消息为文件时的点击事件
+      Message tempMsg = message;
+      tempMsg.content = referenceMessage.referMsg;
+      Navigator.pushNamed(context, "/file_preview", arguments: tempMsg);
+    } else if (referenceMessage.referMsg is RichContentMessage) {
+      // 引用的消息为图文时的点击事件
+      RichContentMessage richContentMessage = referenceMessage.referMsg;
+      Map param = {
+        "url": richContentMessage.url,
+        "title": richContentMessage.title
+      };
+      Navigator.pushNamed(context, "/webview", arguments: param);
+    } else {
+      // 引用的消息为文本时的点击事件
+    }
   }
 
   Widget _buildReferenceContent() {
@@ -474,14 +473,14 @@ class _BottomInputBarState extends State<BottomInputBar> {
     } else {
       referenceMessage = null;
     }
-     _refreshUI();
+    _refreshUI();
   }
 
-  ReferenceMessage getReferenceMessage(){
+  ReferenceMessage getReferenceMessage() {
     return referenceMessage;
   }
 
-  void clearReferenceMessage(){
+  void clearReferenceMessage() {
     referenceMessage = null;
     message = null;
     _refreshUI();

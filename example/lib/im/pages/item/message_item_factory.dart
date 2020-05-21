@@ -9,8 +9,10 @@ import '../../util/media_util.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 import '../../util/style.dart';
+import 'dart:developer' as developer;
 
 class MessageItemFactory extends StatelessWidget {
+  final String pageName = "example.MessageItemFactory";
   final Message message;
   final bool needShow;
   const MessageItemFactory({Key key, this.message, this.needShow = true})
@@ -154,7 +156,8 @@ class MessageItemFactory extends StatelessWidget {
           },
         );
       } else {
-        print("GifMessage localPath && remoteUrl is null");
+        developer.log("GifMessage localPath && remoteUrl is null",
+            name: pageName);
       }
 
       double screenWidth = MediaQuery.of(context).size.width;
@@ -515,7 +518,8 @@ class MessageItemFactory extends StatelessWidget {
         widget = Image.memory(bytes);
       } else {
         if (imageMessage.localPath != null) {
-          String path = MediaUtil.instance.getCorrectedLocalPath(imageMessage.localPath);
+          String path =
+              MediaUtil.instance.getCorrectedLocalPath(imageMessage.localPath);
           File file = File(path);
           if (file != null && file.existsSync()) {
             widget = Image.file(file);

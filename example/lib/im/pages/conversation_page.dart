@@ -38,6 +38,7 @@ class _ConversationPageState extends State<ConversationPage>
         BottomInputBarDelegate,
         MessageContentListDelegate,
         BottomToolBarDelegate {
+  String pageName = "example.ConversationPage";
   Map arguments;
   int conversationType;
   String targetId;
@@ -189,7 +190,7 @@ class _ConversationPageState extends State<ConversationPage>
     EventBus.instance.addListener(EventKeys.ReceiveReceiptResponse, (map) {
       String tId = map["targetId"];
       developer.log("ReceiveReceiptResponse" + tId + this.targetId,
-          name: "ConversationPage");
+          name: pageName);
       if (tId == this.targetId) {
         onGetHistoryMessages();
       }
@@ -197,7 +198,7 @@ class _ConversationPageState extends State<ConversationPage>
 
     EventBus.instance.addListener(EventKeys.ForwardMessageEnd, (arg) {
       developer.log("ForwardMessageEnd：" + this.targetId,
-          name: "ConversationPage");
+          name: pageName);
       multiSelect = false;
       selectedMessageIds.clear();
       // onGetHistoryMessages();
@@ -207,7 +208,7 @@ class _ConversationPageState extends State<ConversationPage>
 
     RongIMClient.onMessageSend = (int messageId, int status, int code) async {
       developer.log("messageId:$messageId status:$status code:$code",
-          name: "ConversationPage");
+          name: pageName);
       Message msg = await RongIMClient.getMessage(messageId);
       if (msg.targetId == this.targetId) {
         _insertOrReplaceMessage(msg);
@@ -219,7 +220,7 @@ class _ConversationPageState extends State<ConversationPage>
       EventBus.instance.commit(EventKeys.BurnMessage,
           {"messageId": message.messageId, "remainDuration": remainDuration});
       developer.log(message.toString() + remainDuration.toString(),
-          name: "ConversationPage");
+          name: pageName);
       burnMsgMap[message.messageId] = remainDuration;
       if (remainDuration == 0) {
         onGetHistoryMessages();
@@ -274,7 +275,7 @@ class _ConversationPageState extends State<ConversationPage>
   }
 
   onGetHistoryMessages() async {
-    developer.log("get history message", name: "ConversationPage");
+    developer.log("get history message", name: pageName);
 
     List msgs =
         await RongIMClient.getHistoryMessage(conversationType, targetId, 0, 20);
@@ -287,7 +288,7 @@ class _ConversationPageState extends State<ConversationPage>
   }
 
   onLoadMoreHistoryMessages(int messageId) async {
-    developer.log("get more history message", name: "ConversationPage");
+    developer.log("get more history message", name: pageName);
 
     List msgs = await RongIMClient.getHistoryMessage(
         conversationType, targetId, messageId, 20);
@@ -304,7 +305,7 @@ class _ConversationPageState extends State<ConversationPage>
   }
 
   onLoadRemoteHistoryMessages() async {
-    developer.log("get Remote history message", name: "ConversationPage");
+    developer.log("get Remote history message", name: pageName);
 
     RongIMClient.getRemoteHistoryMessages(
         conversationType, targetId, recordTime, 20,
@@ -472,7 +473,7 @@ class _ConversationPageState extends State<ConversationPage>
     // messageList.add(message);
     // RongIMClient.deleteRemoteMessages(conversationType, targetId, messageList,
     //     (code) {
-    //   developer.log("result: $code", name: "ConversationPage");
+    //   developer.log("result: $code", name: pageName);
     //   onGetHistoryMessages();
     // });
   }
@@ -510,7 +511,7 @@ class _ConversationPageState extends State<ConversationPage>
       if (imgPath == null) {
         return;
       }
-      developer.log("imagepath " + imgPath, name: "ConversationPage");
+      developer.log("imagepath " + imgPath, name: pageName);
       if (imgPath.endsWith("gif")) {
         GifMessage gifMsg = GifMessage.obtain(imgPath);
         if (conversationType == RCConversationType.Private) {
@@ -552,7 +553,7 @@ class _ConversationPageState extends State<ConversationPage>
       if (imgPath == null) {
         return;
       }
-      developer.log("imagepath " + imgPath, name: "ConversationPage");
+      developer.log("imagepath " + imgPath, name: pageName);
       String temp = imgPath.replaceAll("file://", "");
       // 保存不需要 file 开头的路径
       _saveImage(temp);
@@ -568,7 +569,7 @@ class _ConversationPageState extends State<ConversationPage>
 
     Widget videoWidget = WidgetUtil.buildExtentionWidget(
         Icons.video_call, RCString.ExtVideo, () async {
-      developer.log("push to video record page", name: "ConversationPage");
+      developer.log("push to video record page", name: pageName);
       Map map = {
         "coversationType": conversationType,
         "targetId": targetId,
@@ -598,10 +599,10 @@ class _ConversationPageState extends State<ConversationPage>
 
     Widget secretChatWidget = WidgetUtil.buildExtentionWidget(
         Icons.security, RCString.ExtSecretChat, () async {
-      developer.log("did tap secret chat", name: "ConversationPage");
+      developer.log("did tap secret chat", name: pageName);
       isSecretChat = !isSecretChat;
       String contentStr = isSecretChat ? "打开阅后即焚" : "关闭阅后即焚";
-      developer.log(contentStr, name: "ConversationPage");
+      developer.log(contentStr, name: pageName);
       DialogUtil.showAlertDiaLog(context, contentStr);
     });
 
@@ -622,7 +623,7 @@ class _ConversationPageState extends State<ConversationPage>
   void _saveImage(String imagePath) async {
     final result = await ImageGallerySaver.saveFile(imagePath);
     developer.log("save image result: " + result.toString(),
-        name: "ConversationPage");
+        name: pageName);
   }
 
   void _sendReadReceipt() {
@@ -635,10 +636,10 @@ class _ConversationPageState extends State<ConversationPage>
               (int code) {
             if (code == 0) {
               developer.log("sendReadReceiptMessageSuccess",
-                  name: "ConversationPage");
+                  name: pageName);
             } else {
               developer.log("sendReadReceiptMessageFailed:code = + $code",
-                  name: "ConversationPage");
+                  name: pageName);
             }
           });
           break;
@@ -658,10 +659,10 @@ class _ConversationPageState extends State<ConversationPage>
             this.conversationType, this.targetId, message.sentTime, (int code) {
           if (code == 0) {
             developer.log("syncConversationReadStatusSuccess",
-                name: "ConversationPage");
+                name: pageName);
           } else {
             developer.log("syncConversationReadStatusFailed:code = + $code",
-                name: "ConversationPage");
+                name: pageName);
           }
         });
         break;
@@ -740,10 +741,10 @@ class _ConversationPageState extends State<ConversationPage>
           this.conversationType, this.targetId, readReceiptList, (int code) {
         if (code == 0) {
           developer.log("sendReadReceiptResponseSuccess",
-              name: "ConversationPage");
+              name: pageName);
         } else {
           developer.log("sendReadReceiptResponseFailed:code = + $code",
-              name: "ConversationPage");
+              name: pageName);
         }
       });
     }
@@ -784,32 +785,32 @@ class _ConversationPageState extends State<ConversationPage>
   @override
   void didTapMessageItem(Message message) async {
     developer.log("didTapMessageItem " + message.objectName,
-        name: "ConversationPage");
+        name: pageName);
     // RongIMClient.setMessageReceivedSttus(message.messageId, 1, (code) async {
     //   developer.log("setMessageReceivedStatus result:$code",
-    //       name: "ConversationPage");
+    //       name: pageName);
     //   Message msg = await RongIMClient.getMessage(message.messageId);
     //   developer.log("getMessage result:${msg.toString()}",
-    //       name: "ConversationPage");
+    //       name: pageName);
     // });
     // List<int> conversations = List();
     // conversations.add(3);
     // RongIMClient.clearConversations(conversations, (code) async {
     //   developer.log("clearConversations result:$code",
-    //       name: "ConversationPage");
+    //       name: pageName);
     // });
     // developer.log("getDeltaTime result:${await RongIMClient.getDeltaTime()}",
-    //     name: "ConversationPage");
+    //     name: pageName);
     // RongIMClient.setOfflineMessageDuration(3, (code, result) {
     //   developer.log("setOfflineMessageDuration code:$code result:$result",
-    //       name: "ConversationPage");
+    //       name: pageName);
     // });
     // developer.log(
     //     "getOfflineMessageDuration code:${await RongIMClient.getOfflineMessageDuration()}",
-    //     name: "ConversationPage");
+    //     name: pageName);
     // developer.log(
     //     "getConnectionStatus: ${await RongIMClient.getConnectionStatus()}",
-    //     name: "ConversationPage");
+    //     name: pageName);
     // RongIMClient.setReconnectKickEnable(true);
     if (message.messageDirection == RCMessageDirection.Receive &&
         message.content.destructDuration != null &&
@@ -882,14 +883,14 @@ class _ConversationPageState extends State<ConversationPage>
   @override
   void didSendMessageRequest(Message message) {
     developer.log("didSendMessageRequest " + message.objectName,
-        name: "ConversationPage");
+        name: pageName);
     RongIMClient.sendReadReceiptRequest(message, (int code) {
       if (0 == code) {
         developer.log("sendReadReceiptRequest success",
-            name: "ConversationPage");
+            name: pageName);
         onGetHistoryMessages();
       } else {
-        developer.log("sendReadReceiptRequest error", name: "ConversationPage");
+        developer.log("sendReadReceiptRequest error", name: pageName);
       }
     });
   }
@@ -897,7 +898,7 @@ class _ConversationPageState extends State<ConversationPage>
   @override
   void didTapMessageReadInfo(Message message) {
     developer.log("didTapMessageReadInfo " + message.objectName,
-        name: "ConversationPage");
+        name: pageName);
     Navigator.pushNamed(context, "/message_read_page", arguments: message);
   }
 
@@ -930,7 +931,7 @@ class _ConversationPageState extends State<ConversationPage>
       } else if (key == RCLongPressAction.ReferenceKey) {
         bottomInputBar.makeReferenceMessage(message);
       }
-      developer.log("当前选中的是 " + key, name: "ConversationPage");
+      developer.log("当前选中的是 " + key, name: pageName);
     });
   }
 
@@ -951,7 +952,7 @@ class _ConversationPageState extends State<ConversationPage>
 
   @override
   void didTapUserPortrait(String userId) {
-    developer.log("点击了用户头像 " + userId, name: "ConversationPage");
+    developer.log("点击了用户头像 " + userId, name: pageName);
   }
 
   @override
@@ -973,7 +974,7 @@ class _ConversationPageState extends State<ConversationPage>
       bottomInputBar.setTextContent(content);
       userIdList.add(userId);
     }
-    developer.log("长按头像" + userId, name: "ConversationPage");
+    developer.log("长按头像" + userId, name: pageName);
   }
 
   @override

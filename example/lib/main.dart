@@ -20,6 +20,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  String pageName = "example.main";
   AppLifecycleState currentState = AppLifecycleState.resumed;
   DateTime notificationQuietEndTime;
   DateTime notificationQuietStartTime;
@@ -59,9 +60,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             " hasPackage:" +
             hasP +
             " offline:" +
-            off, name: "example.main");
+            off, name: pageName);
       } else {
-        developer.log("object onMessageReceivedWrapper objName: ${msg.objectName} content is null left:${left.toString()} hasPackage:$hasP offline:$off", name: "example.main");
+        developer.log("object onMessageReceivedWrapper objName: ${msg.objectName} content is null left:${left.toString()} hasPackage:$hasP offline:$off", name: pageName);
       }
       if (currentState == AppLifecycleState.paused &&
           !checkNoficationQuietStatus()) {
@@ -81,22 +82,22 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     };
 
     prefix.RongIMClient.onDataReceived = (Map map) {
-      developer.log("object onDataReceived " + map.toString(), name: "example.main");
+      developer.log("object onDataReceived " + map.toString(), name: pageName);
     };
 
     prefix.RongIMClient.onMessageReceiptRequest = (Map map) {
       EventBus.instance.commit(EventKeys.ReceiveReceiptRequest, map);
-      developer.log("object onMessageReceiptRequest " + map.toString(), name: "example.main");
+      developer.log("object onMessageReceiptRequest " + map.toString(), name: pageName);
     };
 
     prefix.RongIMClient.onMessageReceiptResponse = (Map map) {
       EventBus.instance.commit(EventKeys.ReceiveReceiptResponse, map);
-      developer.log("object onMessageReceiptResponse " + map.toString(), name: "example.main");
+      developer.log("object onMessageReceiptResponse " + map.toString(), name: pageName);
     };
 
     prefix.RongIMClient.onReceiveReadReceipt = (Map map) {
       EventBus.instance.commit(EventKeys.ReceiveReadReceipt, map);
-      developer.log("object onReceiveReadReceipt " + map.toString(), name: "example.main");
+      developer.log("object onReceiveReadReceipt " + map.toString(), name: pageName);
     };
   }
 
@@ -174,7 +175,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    developer.log("--" + state.toString(), name: "example.main");
+    developer.log("--" + state.toString(), name: pageName);
     currentState = state;
     switch (state) {
       case AppLifecycleState.inactive: // 处于这种状态的应用程序应该假设它们可能在任何时候暂停。

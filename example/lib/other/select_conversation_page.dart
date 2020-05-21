@@ -24,6 +24,7 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
   final Map arguments;
   _SelectConversationPageState(this.arguments);
 
+  String pageName = "example.SelectConversationPage";
   List<Message> selectMessages;
   int forwardType; // 0:逐条转发，1:合并转发
   List conList = new List();
@@ -103,7 +104,7 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
       sendMessageByCombine();
     }
     RongIMClient.clearMessages(con.conversationType, con.targetId, (code) {
-      developer.log("result:$code", name: "example.SelectConversationPage");
+      developer.log("result:$code", name: pageName);
     });
   }
 
@@ -126,7 +127,7 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
             selectMessages.toString() +
             "转发的会话个数：" +
             selectConList.length.toString(),
-        name: "example.SelectConversationPage");
+        name: pageName);
     // 这里不使用 loading，因为发消息时 sleep 会卡住动画
     DialogUtil.showAlertDiaLog(context, "消息转发中，请稍后...",
         confirmButton: FlatButton(onPressed: () {}, child: Text("")));

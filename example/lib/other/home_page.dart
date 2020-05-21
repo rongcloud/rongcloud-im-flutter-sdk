@@ -18,6 +18,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  String pageName = "example.HomePage";
   final List<BottomNavigationBarItem> tabbarList = [
     new BottomNavigationBarItem(
       icon: new Icon(Icons.chat, color: Colors.grey),
@@ -56,16 +57,16 @@ class _HomePageState extends State<HomePage> {
       // int rc = await RongIMClient.connect(token);
       RongIMClient.connect(token, (int code, String userId) {
         developer.log("connect result " + code.toString(),
-            name: "example.HomePage");
+            name: pageName);
         EventBus.instance.commit(EventKeys.UpdateNotificationQuietStatus, {});
         if (code == 31004 || code == 12) {
           developer.log("connect result " + code.toString(),
-              name: "example.HomePage");
+              name: pageName);
           Navigator.of(context).pushAndRemoveUntil(
               new MaterialPageRoute(builder: (context) => new LoginPage()),
               (route) => route == null);
         } else if (code == 0) {
-          developer.log("connect userId" + userId, name: "example.HomePage");
+          developer.log("connect userId" + userId, name: pageName);
           // 连接成功后打开数据库
           // _initUserInfoCache();
         }

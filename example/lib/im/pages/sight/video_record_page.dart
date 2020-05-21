@@ -13,6 +13,7 @@ import 'record_top_item.dart';
 import 'record_bottom_item.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import '../../util/style.dart';
+import 'dart:developer' as developer;
 
 class VideoRecordPage extends StatefulWidget {
   final Map arguments;
@@ -26,6 +27,7 @@ class VideoRecordPage extends StatefulWidget {
 
 class _VideoRecordPageState extends State<VideoRecordPage>
     implements VideoBottomToolBarDelegate, TopRecordItemDelegate {
+  String pageName = "example.VideoRecordPage";
   Map arguments;
   int conversationType;
   String targetId;
@@ -70,13 +72,13 @@ class _VideoRecordPageState extends State<VideoRecordPage>
   }
 
   void onPop() {
-    print("onPop");
+    developer.log("onPop", name: pageName);
     resetData();
     Navigator.pop(context);
   }
 
   void onSwitchCamera() async {
-    print("onSwitchCamera");
+    developer.log("onSwitchCamera", name: pageName);
     CameraDescription curDes = cameraController.description;
     CameraDescription targetDes = cameras[0];
     if (cameras[0].name == curDes.name) {
@@ -98,7 +100,7 @@ class _VideoRecordPageState extends State<VideoRecordPage>
 
   Future<String> startVideoRecording() async {
     if (!cameraController.value.isInitialized) {
-      print('Error: select a camera first.');
+      developer.log("Error: select a camera first.", name: pageName);
       return null;
     }
 
@@ -116,7 +118,7 @@ class _VideoRecordPageState extends State<VideoRecordPage>
       videoPath = filePath;
       await cameraController.startVideoRecording(filePath);
     } on CameraException catch (e) {
-      print(e);
+      developer.log(e.toString(), name: pageName);
       return null;
     }
     return filePath;
@@ -130,11 +132,11 @@ class _VideoRecordPageState extends State<VideoRecordPage>
     try {
       await cameraController.stopVideoRecording();
     } on CameraException catch (e) {
-      print(e);
+      developer.log(e.toString(), name: pageName);
       return null;
     }
 
-    print("rc videoPath $videoPath");
+    developer.log("rc videoPath $videoPath", name: pageName);
 
     videoPlayerController = VideoPlayerController.file(File(videoPath));
 //    await videoPlayerController.setLooping(true);
@@ -215,7 +217,7 @@ class _VideoRecordPageState extends State<VideoRecordPage>
     if (timer == null) {
       timer = Timer.periodic(Duration(milliseconds: 1000), (timer) {
         recodeTime++;
-        print('!!!!timer + $recodeTime');
+        developer.log("!!!!timer + $recodeTime", name: pageName);
         if (recodeTime >= 10) {
           didLongPressEndCamera();
         }
@@ -229,13 +231,14 @@ class _VideoRecordPageState extends State<VideoRecordPage>
 
   @override
   void didLongPressCamera() {
-    print("onLongPressCamera");
+    developer.log("onLongPressCamera", name: pageName);
     videoPath = null;
 
     topitem.updateRecordState(RecordState.Recording);
     startVideoRecording().then((String filePath) {
       // if (mounted) setState(() {});
-      if (filePath != null) print('Saving video to $filePath');
+      if (filePath != null)
+        developer.log("Saving video to $filePath", name: pageName);
     });
 
     startTimer();
@@ -244,10 +247,10 @@ class _VideoRecordPageState extends State<VideoRecordPage>
   @override
   void didLongPressEndCamera() {
     topitem.updateRecordState(RecordState.Preview);
-    print("onLongPressEndCamera");
+    developer.log("onLongPressEndCamera", name: pageName);
     stopVideoRecording().then((_) {
       // if (mounted) setState(() {});
-      print('Video recorded to: $videoPath');
+      developer.log("Video recorded to: $videoPath", name: pageName);
     });
     stopTimer();
   }
@@ -255,7 +258,7 @@ class _VideoRecordPageState extends State<VideoRecordPage>
   //录制视频后取消
   @override
   void didCancelEvent() {
-    print("onCancelEvent");
+    developer.log("onCancelEvent", name: pageName);
     topitem.updateRecordState(RecordState.Normal);
     resetData();
     setState(() {});
@@ -264,9 +267,10 @@ class _VideoRecordPageState extends State<VideoRecordPage>
   //录制视频后完成
   @override
   void didFinishEvent() {
-    print("onFinishEvent");
+    developer.log("onFinishEvent", name: pageName);
     if (videoPath != null) {
-      print("onFinishEvent con $conversationType targetId $targetId");
+      developer.log("onFinishEvent con $conversationType targetId $targetId",
+          name: pageName);
       SightMessage sightMessage = SightMessage.obtain(videoPath, recodeTime);
       if (conversationType == RCConversationType.Private) {
         sightMessage.destructDuration =
@@ -276,13 +280,13 @@ class _VideoRecordPageState extends State<VideoRecordPage>
       _saveVideo(videoPath);
       onPop();
     } else {
-      print("onFinishEvent videoPath is null");
+      developer.log("onFinishEvent videoPath is null", name: pageName);
     }
   }
 
   void _saveVideo(String videoPath) async {
     final result = await ImageGallerySaver.saveFile(videoPath);
-    print("save video result: " + result.toString());
+    developer.log("save video result: " + result.toString(), name: pageName);
   }
 
   @override

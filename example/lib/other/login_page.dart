@@ -13,6 +13,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  String pageName = "example.LoginPage";
   TextEditingController _assount = TextEditingController();
   TextEditingController _password = TextEditingController();
 
@@ -46,7 +47,7 @@ class _LoginPageState extends State<LoginPage> {
           String id = result["id"];
           String token = result["token"];
           _saveUserInfo(id, token);
-          developer.log("Login Success, $map", name: "example.LoginPage");
+          developer.log("Login Success, $map", name: pageName);
           Navigator.of(context).pushAndRemoveUntil(
               new MaterialPageRoute(builder: (context) => new HomePage()),
               (route) => route == null);
@@ -56,7 +57,7 @@ class _LoginPageState extends State<LoginPage> {
           Fluttertoast.showToast(msg: "服务器登录失败，errorCode： $errorCode");
         }
       } else {
-        developer.log("data is null", name: "example.LoginPage");
+        developer.log("data is null", name: pageName);
       }
     }, params: map);
   }

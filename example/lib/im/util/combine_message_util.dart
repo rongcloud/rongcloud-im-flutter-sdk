@@ -14,8 +14,10 @@ import 'package:rongcloud_im_plugin_example/main.dart';
 import 'file.dart';
 import 'style.dart';
 import 'user_info_datesource.dart';
+import 'dart:developer' as developer;
 
 class CombineMessageUtils {
+  String pageName = "example.CombineMessageUtils";
   String style = "";
   String uri;
   bool isSameDay;
@@ -79,7 +81,7 @@ class CombineMessageUtils {
 
   Future<CombineMessage> combineMessage(List<Message> messageList) async {
     if (messageList == null || messageList.length == 0) {
-      print("sendMessageByCombine param is null");
+      developer.log("sendMessageByCombine param is null", name: pageName);
       return null;
     }
     String uri = await CombineMessageUtils().getUrlFromMessageList(messageList);
@@ -172,7 +174,8 @@ class CombineMessageUtils {
 
     String html = DATA[type];
     if (html == null || html.isEmpty) {
-      print("getHtmlFromType html is null, type: $type");
+      developer.log("getHtmlFromType html is null, type: $type",
+          name: pageName);
       return "";
     }
     return html;
@@ -224,7 +227,9 @@ class CombineMessageUtils {
       Message message, MessageContent content) async {
     String objectName = content.getObjectName();
     if (objectName == null || !objectName.startsWith("RC:")) {
-      print("getHtmlFromMessageContent tag is UnKnown, content: $content");
+      developer.log(
+          "getHtmlFromMessageContent tag is UnKnown, content: $content",
+          name: pageName);
       return "";
     }
     String type = objectName;
@@ -317,7 +322,8 @@ class CombineMessageUtils {
             .replaceAll(MSG_FOOT, RCString.RCCombineChatHistory);
         break;
       default:
-        print("getHtmlFromMessageContent UnKnown type:$type");
+        developer.log("getHtmlFromMessageContent UnKnown type:$type",
+            name: pageName);
     }
     return html;
   }
@@ -331,7 +337,7 @@ class CombineMessageUtils {
     String portrait =
         (await UserInfoDataSource.getUserInfo(msg.senderUserId)).portraitUrl;
     if (portrait == null || portrait == portraitUri) {
-      print("getUserPortrait is same uri:$uri");
+      developer.log("getUserPortrait is same uri:$uri", name: pageName);
       portrait = "";
     } else {
       portraitUri = portrait;
@@ -495,7 +501,7 @@ class CombineMessageUtils {
 
   void downLoadHtml(String url) async {
     if (url == null && url.isEmpty) {
-      print("downLoadHtml url is null");
+      developer.log("downLoadHtml url is null", name: pageName);
       return;
     }
     Directory tempDir = await getTemporaryDirectory();

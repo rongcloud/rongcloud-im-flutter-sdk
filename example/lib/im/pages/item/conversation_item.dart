@@ -5,6 +5,7 @@ import 'message_item_factory.dart';
 import 'widget_util.dart';
 import '../../util/style.dart';
 import '../../util/user_info_datesource.dart' as example;
+import 'dart:developer' as developer;
 
 class ConversationItem extends StatefulWidget {
   prefix.Message message;
@@ -43,6 +44,7 @@ class ConversationItem extends StatefulWidget {
 }
 
 class _ConversationItemState extends State<ConversationItem> {
+  String pageName = "example.ConversationItem";
   prefix.Message message;
   ConversationItemDelegate delegate;
   bool showTime;
@@ -266,7 +268,7 @@ class _ConversationItemState extends State<ConversationItem> {
       bool isSelected = selectedMessageIds.contains(message.messageId);
       icon.updateUI(isSelected);
     } else {
-      print("没有实现 ConversationItemDelegate");
+      developer.log("没有实现 ConversationItemDelegate", name: pageName);
     }
   }
 
@@ -287,7 +289,7 @@ class _ConversationItemState extends State<ConversationItem> {
         delegate.didTapMessageItem(message);
       }
     } else {
-      print("没有实现 ConversationItemDelegate");
+      developer.log("没有实现 ConversationItemDelegate", name: pageName);
     }
   }
 
@@ -300,7 +302,7 @@ class _ConversationItemState extends State<ConversationItem> {
         delegate.didSendMessageRequest(message);
       }
     } else {
-      print("没有实现 ConversationItemDelegate");
+      developer.log("没有实现 ConversationItemDelegate", name: pageName);
     }
   }
 
@@ -308,7 +310,7 @@ class _ConversationItemState extends State<ConversationItem> {
     if (delegate != null) {
       delegate.didLongPressMessageItem(message, tapPos);
     } else {
-      print("没有实现 ConversationItemDelegate");
+      developer.log("没有实现 ConversationItemDelegate", name: pageName);
     }
   }
 
@@ -318,7 +320,7 @@ class _ConversationItemState extends State<ConversationItem> {
     if (delegate != null) {
       delegate.didLongPressUserPortrait(this.user.id, tapPos);
     } else {
-      print("没有实现 ConversationItemDelegate");
+      developer.log("没有实现 ConversationItemDelegate", name: pageName);
     }
   }
 
