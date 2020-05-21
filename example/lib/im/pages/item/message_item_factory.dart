@@ -511,11 +511,8 @@ class MessageItemFactory extends StatelessWidget {
       ImageMessage imageMessage = msg.referMsg;
       Widget widget;
       if (imageMessage.content != null && imageMessage.content.length > 0) {
-        Uint8List bytes = base64.decode(msg.content);
+        Uint8List bytes = base64.decode(imageMessage.content);
         widget = Image.memory(bytes);
-        if (imageMessage.localPath == null) {
-          RongIMClient.downloadMediaMessage(message);
-        }
       } else {
         if (imageMessage.localPath != null) {
           String path = MediaUtil.instance.getCorrectedLocalPath(imageMessage.localPath);
@@ -523,7 +520,6 @@ class MessageItemFactory extends StatelessWidget {
           if (file != null && file.existsSync()) {
             widget = Image.file(file);
           } else {
-            RongIMClient.downloadMediaMessage(message);
             // widget = Image.network(msg.imageUri);
             widget = CachedNetworkImage(
               progressIndicatorBuilder: (context, url, progress) =>
@@ -534,7 +530,6 @@ class MessageItemFactory extends StatelessWidget {
             );
           }
         } else {
-          RongIMClient.downloadMediaMessage(message);
           // widget = Image.network(msg.imageUri);
           widget = CachedNetworkImage(
             progressIndicatorBuilder: (context, url, progress) =>

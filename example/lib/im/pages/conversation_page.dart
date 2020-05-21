@@ -937,7 +937,7 @@ class _ConversationPageState extends State<ConversationPage>
   bool _isShowReference(Message message) {
     //过滤失败消息
     bool isSuccess = message.sentStatus == RCSentStatus.Sent;
-    bool isFireMsg = message.content.destructDuration != 0;
+    bool isFireMsg = message.content != null && message.content.destructDuration != null && message.content.destructDuration != 0;
     // bool isFireMode = mRongExtension != null && mRongExtension.isFireStatus();
     // bool isEnableReferenceMsg = RongContext.getInstance().getResources().getBoolean(R.bool.rc_enable_reference_message);
     bool isSupport = (message.content.getObjectName() ==
