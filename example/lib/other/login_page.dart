@@ -3,6 +3,7 @@ import '../im/util/http_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'home_page.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'dart:developer' as developer;
 
 class LoginPage extends StatefulWidget {
   @override
@@ -45,6 +46,7 @@ class _LoginPageState extends State<LoginPage> {
           String id = result["id"];
           String token = result["token"];
           _saveUserInfo(id, token);
+          developer.log("Login Success, $map", name: "example.LoginPage");
           Navigator.of(context).pushAndRemoveUntil(
               new MaterialPageRoute(builder: (context) => new HomePage()),
               (route) => route == null);
@@ -54,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
           Fluttertoast.showToast(msg: "服务器登录失败，errorCode： $errorCode");
         }
       } else {
-        print("data is null");
+        developer.log("data is null", name: "example.LoginPage");
       }
     }, params: map);
   }
