@@ -19,6 +19,7 @@ import io.rong.imlib.typingmessage.TypingStatus;
 import io.rong.message.GIFMessage;
 import io.rong.message.ImageMessage;
 import io.rong.message.LocationMessage;
+import io.rong.message.ReferenceMessage;
 import io.rong.message.SightMessage;
 import io.rong.message.TextMessage;
 
@@ -76,6 +77,9 @@ public class MessageFactory {
             RCMessageHandler.encodeGifMessage(message);
         } else if (message.getContent() instanceof LocationMessage) {
             RCMessageHandler.encodeLocationMessage(message);
+        } else if (message.getContent() instanceof ReferenceMessage){
+            // 引用消息的引用内容的类型需要判断
+            RCMessageHandler.encodeReferenceMessage(message);
         }
         // 判断 TextMessage 内容不能为 null
         if (content instanceof TextMessage) {
