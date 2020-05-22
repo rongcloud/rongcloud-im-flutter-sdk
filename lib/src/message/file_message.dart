@@ -37,14 +37,14 @@ class FileMessage extends MessageContent{
 
   @override
   String encode() {
-    Map map;
+    Map map = Map();
     if (this.extra != null) {
       map["extra"] = this.extra;
     }
     if (this.mType != null) {
       map["type"] = this.mType;
     } else {
-      map["type"] = "bin";
+      map["type"] = "";
     }
     if (this.mName != null) {
       map["name"] = this.mName;
