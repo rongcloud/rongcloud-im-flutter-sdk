@@ -600,13 +600,13 @@ class _ConversationPageState extends State<ConversationPage>
     extWidgetList.add(fileWidget);
     if (conversationType == RCConversationType.Private) {
       Widget secretChatWidget = WidgetUtil.buildExtentionWidget(
-        Icons.security, RCString.ExtSecretChat, () async {
-      print("did tap secret chat");
-      isSecretChat = !isSecretChat;
-      String contentStr = isSecretChat ? "打开阅后即焚" : "关闭阅后即焚";
-      print(contentStr);
-      DialogUtil.showAlertDiaLog(context, contentStr);
-    });
+          Icons.security, RCString.ExtSecretChat, () async {
+        print("did tap secret chat");
+        isSecretChat = !isSecretChat;
+        String contentStr = isSecretChat ? "打开阅后即焚" : "关闭阅后即焚";
+        print(contentStr);
+        DialogUtil.showAlertDiaLog(context, contentStr);
+      });
       extWidgetList.add(secretChatWidget);
     }
 
@@ -638,13 +638,14 @@ class _ConversationPageState extends State<ConversationPage>
             }
           });
           RongIMClient.syncConversationReadStatus(
-            this.conversationType, this.targetId, message.sentTime, (int code) {
-          if (code == 0) {
-            print('syncConversationReadStatusSuccess');
-          } else {
-            print('syncConversationReadStatusFailed:code = + $code');
-          }
-        });
+              this.conversationType, this.targetId, message.sentTime,
+              (int code) {
+            if (code == 0) {
+              print('syncConversationReadStatusSuccess');
+            } else {
+              print('syncConversationReadStatusFailed:code = + $code');
+            }
+          });
           break;
         }
       }
@@ -803,8 +804,8 @@ class _ConversationPageState extends State<ConversationPage>
     // RongIMClient.setReconnectKickEnable(true);
     if (message.messageDirection == RCMessageDirection.Receive &&
         message.content.destructDuration != null &&
-        message.content.destructDuration > 0 && multiSelect != true)
-      RongIMClient.messageBeginDestruct(message);
+        message.content.destructDuration > 0 &&
+        multiSelect != true) RongIMClient.messageBeginDestruct(message);
     if (message.content is VoiceMessage) {
       VoiceMessage msg = message.content;
       if (msg.localPath != null &&
@@ -1016,7 +1017,12 @@ class _ConversationPageState extends State<ConversationPage>
       if (!CombineMessageUtils.allowForward(forwardMsg.objectName)) {
         isAllowCombine = false;
       }
-      if (forwardMsg.content == null || (forwardMsg.content != null && forwardMsg.content.destructDuration != null && forwardMsg.content.destructDuration > 0) || forwardMsg.sentStatus != RCSentStatus.Sent) {
+      if (forwardMsg.content == null ||
+          (forwardMsg.content != null &&
+              forwardMsg.content.destructDuration != null &&
+              forwardMsg.content.destructDuration > 0) ||
+          forwardMsg.sentStatus == RCSentStatus.Failed ||
+          forwardMsg.sentStatus == RCSentStatus.Sending) {
         DialogUtil.showAlertDiaLog(context, "无法识别的消息、阅后即焚消息以及未发送成功的消息不支持转发");
         return;
       }

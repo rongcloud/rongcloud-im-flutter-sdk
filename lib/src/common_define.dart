@@ -11,6 +11,8 @@ class RCSentStatus {
   static const int Sending = 10;//发送中
   static const int Failed = 20;//发送失败
   static const int Sent = 30;//发送成功
+  static const int Received = 40;//对方已接收
+  static const int Read = 50;//对方已阅读
 }
 
 //消息方向
