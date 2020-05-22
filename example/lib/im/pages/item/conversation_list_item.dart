@@ -113,7 +113,11 @@ class _ConversationListItemState extends State<ConversationListItem> {
         (this.info == null || this.info.id == null ? "" : this.info.id);
     String digest = "";
     if (conversation.latestMessageContent != null) {
-      digest = conversation.latestMessageContent.conversationDigest();
+      if (conversation.latestMessageContent.destructDuration != null && conversation.latestMessageContent.destructDuration > 0) {
+        digest = "[阅后即焚]";
+      } else {
+        digest = conversation.latestMessageContent.conversationDigest();
+      }
     } else {
       digest = "无法识别消息 " + conversation.objectName;
     }
