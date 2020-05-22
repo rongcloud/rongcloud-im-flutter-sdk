@@ -52,6 +52,10 @@ class CombineMessage extends MessageContent {
 
   @override
   void decode(String jsonStr) {
+    if(jsonStr == null || jsonStr == "") {
+      print("[RC-Flutter-IM] Flutter CombineMessage deocde error: no content");
+      return;
+    }
     Map map = json.decode(jsonStr);
     this.title = map["title"];
     this.mName = map["name"];
