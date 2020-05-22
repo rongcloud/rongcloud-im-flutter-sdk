@@ -803,7 +803,7 @@ class _ConversationPageState extends State<ConversationPage>
     // RongIMClient.setReconnectKickEnable(true);
     if (message.messageDirection == RCMessageDirection.Receive &&
         message.content.destructDuration != null &&
-        message.content.destructDuration > 0)
+        message.content.destructDuration > 0 && multiSelect != true)
       RongIMClient.messageBeginDestruct(message);
     if (message.content is VoiceMessage) {
       VoiceMessage msg = message.content;

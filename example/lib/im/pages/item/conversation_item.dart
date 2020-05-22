@@ -272,7 +272,9 @@ class _ConversationItemState extends State<ConversationItem> {
   }
 
   void __onTapedMesssage() {
-    prefix.RongIMClient.messageBeginDestruct(message);
+    if (multiSelect == false) {
+      prefix.RongIMClient.messageBeginDestruct(message);
+    }
     // return;
     if (delegate != null) {
       if (multiSelect == true) {
