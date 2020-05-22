@@ -1016,6 +1016,10 @@ class _ConversationPageState extends State<ConversationPage>
       if (!CombineMessageUtils.allowForward(forwardMsg.objectName)) {
         isAllowCombine = false;
       }
+      if (forwardMsg.content == null || (forwardMsg.content != null && forwardMsg.content.destructDuration != null && forwardMsg.content.destructDuration > 0) || forwardMsg.sentStatus != RCSentStatus.Sent) {
+        DialogUtil.showAlertDiaLog(context, "无法识别的消息、阅后即焚消息以及未发送成功的消息不支持转发");
+        return;
+      }
       selectMsgs.add(forwardMsg);
     }
 
