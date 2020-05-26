@@ -29,8 +29,6 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
       "获取所有 KV",
       "退出聊天室 1",
       "获取聊天室历史消息",
-      "设置断线重连时不踢出正在重连的设备",
-      "设置断线重连时踢出正在重连的设备",
     ];
 
     RongIMClient.onJoinChatRoom = (String targetId, int status) {

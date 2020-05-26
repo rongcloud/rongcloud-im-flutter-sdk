@@ -200,7 +200,9 @@ class RongIMClient {
   /// 目前仅支持群组。
   static Future<Message> sendDirectionalMessage(int conversationType,
       String targetId, List userIdList, MessageContent content,
-      {String pushContent, String pushData}) async {
+      {String pushContent,
+      String pushData,
+      Function(int messageId, int status, int code) finished}) async {
     if (conversationType == null || targetId == null || content == null) {
       developer.log(
           "send directional message fail: conversationType or targetId or content is null",
@@ -219,6 +221,11 @@ class RongIMClient {
     }
     String jsonStr = content.encode();
     String objName = content.getObjectName();
+
+    // 此处获取当前时间戳传给原生方法，并且当做 sendMessageCallbacks 的 key 记录 finished
+    DateTime time = DateTime.now();
+    int timestamp = time.millisecondsSinceEpoch;
+
     Map map = {
       'conversationType': conversationType,
       'targetId': targetId,
@@ -226,8 +233,13 @@ class RongIMClient {
       "content": jsonStr,
       "objectName": objName,
       "pushContent": pushContent,
-      "pushData": pushData
+      "pushData": pushData,
+      "timestamp": timestamp
     };
+
+    if (finished != null) {
+      sendMessageCallbacks[timestamp] = finished;
+    }
 
     Map resultMap =
         await _channel.invokeMethod(RCMethodKey.SendDirectionalMessage, map);
@@ -1450,13 +1462,23 @@ class RongIMClient {
   }
 
   static void forwardMessageByStep(
-      int conversationType, String targetId, Message message) async {
+      int conversationType, String targetId, Message message,
+      {Function(int messageId, int status, int code) finished}) async {
     Map msgMap = MessageFactory.instance.message2Map(message);
+    // 此处获取当前时间戳传给原生方法，并且当做 sendMessageCallbacks 的 key 记录 finished
+    DateTime time = DateTime.now();
+    int timestamp = time.millisecondsSinceEpoch;
+
     Map map = {
       "message": msgMap,
       "conversationType": conversationType,
-      "targetId": targetId
+      "targetId": targetId,
+      "timestamp": timestamp
     };
+
+    if (finished != null) {
+      sendMessageCallbacks[timestamp] = finished;
+    }
     await _channel.invokeMethod(RCMethodKey.ForwardMessageByStep, map);
   }
 
@@ -1520,7 +1542,7 @@ class RongIMClient {
     }
   }
 
-  /// 设置接收到的消息状态,用于UI标记消息为已读，已下载等状态。
+  /// 根据 messageId 设置接收到的消息状态。用于UI标记消息为已读，已下载等状态。
   static void setMessageReceivedStatus(
       int messageId, int receivedStatus, Function(int code) finished) async {
     Map paramMap = {
@@ -1534,7 +1556,7 @@ class RongIMClient {
     }
   }
 
-  /// 设置接收到的消息状态,用于UI标记消息为已读，已下载等状态。
+  /// 根据 messageId 设置消息的发送状态。用于UI标记消息为正在发送，对方已接收等状态。
   static void setMessageSentStatus(
       int messageId, int sentStatus, Function(int code) finished) async {
     Map paramMap = {
@@ -1565,7 +1587,11 @@ class RongIMClient {
     return result;
   }
 
-  /// 清空会话类型列表中的所有会话及会话信息
+  /// 设置当前用户离线消息补偿时间
+  /// 离线消息补偿时间是指某用户离线后，在下次登录时，服务端下发的离线消息对应的时间段。比如某应用的离线消息补偿时间是 2 天，用户离线 3 天，在第 4 天登录的时候，
+  /// 服务端只会主动下发该用户第 2 天和第 3 天对应的离线消息；第 1 天的离线消息不会下发。
+  /// 该功能首先需要客户提工单，在服务端开通此功能后，客户端调用该方法才生效
+  /// duration 离线消息补偿时间，参数取值范围为int值1~7天。
   static void setOfflineMessageDuration(
       int duration, Function(int code, int result) finished) async {
     Map paramMap = {"duration": duration};
@@ -1658,7 +1684,8 @@ class RongIMClient {
     }
   }
 
-  ///通过全局唯一ID获取消息实体
+  ///通过全局唯一 ID 获取消息实体
+  ///发送 message 成功后，服务器会给每个 message 分配一个唯一 ID(messageUId)
   static Future<Message> getMessageByUId(String messageUId) async {
     Map map = {"messageUId": messageUId};
     String msgStr =

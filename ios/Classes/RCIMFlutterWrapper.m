@@ -484,10 +484,14 @@
     } else if ([objName isEqualToString:@"RC:FileMsg"]) {
         NSString *extra = [msgDic valueForKey:@"extra"] ?: @"";
         NSString *name = [msgDic valueForKey:@"name"] ?: @"";
+        int size = [msgDic valueForKey:@"size"] ?: 0;
+        NSString *type = [msgDic valueForKey:@"type"] ?: @"bin";
         content = [RCFileMessage messageWithFile:localPath];
         RCFileMessage *fileMsg = (RCFileMessage *)content;
         fileMsg.name = name;
         fileMsg.extra = extra;
+        fileMsg.size = size;
+        fileMsg.type = type;
     } else if ([objName isEqualToString:@"RC:GIFMsg"]) {
         NSString *extra = [msgDic valueForKey:@"extra"];
         long width = [[msgDic valueForKey:@"width"] longValue];
@@ -598,6 +602,7 @@
         NSArray *userIdList = param[@"userIdList"];
         NSString *contentStr = param[@"content"];
         NSString *pushContent = param[@"pushContent"];
+        long long timestamp = [param[@"timestamp"] longLongValue];
         if(pushContent.length <= 0) {
             pushContent = nil;
         }
@@ -627,6 +632,9 @@
             [dic setObject:@(messageId) forKey:@"messageId"];
             [dic setObject:@(SentStatus_SENT) forKey:@"status"];
             [dic setObject:@(0) forKey:@"code"];
+            if (timestamp > 0) {
+                [dic setObject:@(timestamp) forKey:@"timestamp"];
+            }
             [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
         } error:^(RCErrorCode nErrorCode, long messageId) {
             [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(nErrorCode)]];
@@ -634,6 +642,9 @@
             [dic setObject:@(messageId) forKey:@"messageId"];
             [dic setObject:@(SentStatus_FAILED) forKey:@"status"];
             [dic setObject:@(nErrorCode) forKey:@"code"];
+            if (timestamp > 0) {
+                [dic setObject:@(timestamp) forKey:@"timestamp"];
+            }
             [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
         }];
         NSString *jsonString = [RCFlutterMessageFactory message2String:message];

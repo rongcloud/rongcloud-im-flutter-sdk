@@ -150,7 +150,7 @@ public class RCIMFlutterWrapper {
             connect(call.arguments, result);
         } else if (RCMethodList.MethodKeyDisconnect.equalsIgnoreCase(call.method)) {
             disconnect(call.arguments);
-        } else if (RCMethodList.MethodKeyRefrechUserInfo.equalsIgnoreCase(call.method)) {
+        } else if (RCMethodList.MethodKeyRefreshUserInfo.equalsIgnoreCase(call.method)) {
             refreshUserInfo(call.arguments);
         } else if (RCMethodList.MethodKeySendMessage.equalsIgnoreCase(call.method)) {
             sendMessage(call.arguments, result);
@@ -449,6 +449,7 @@ public class RCIMFlutterWrapper {
             setConnectStatusListener();
             setTypingStatusListener();
             setOnRecallMessageListener();
+            setOnReceiveDestructionMessageListener();
         } else {
             Log.e("RCIM flutter init", "非法参数");
         }
@@ -586,6 +587,8 @@ public class RCIMFlutterWrapper {
             Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
             String targetId = (String) map.get("targetId");
             String pushContent = (String) map.get("pushContent");
+            final Number timestamp = (Number) map.get("timestamp");
+
             if (pushContent.length() <= 0) {
                 pushContent = null;
             }
@@ -646,6 +649,9 @@ public class RCIMFlutterWrapper {
                             resultMap.put("messageId", message.getMessageId());
                             resultMap.put("status", 30);
                             resultMap.put("code", 0);
+                            if (timestamp.longValue() > 0) {
+                                resultMap.put("timestamp", timestamp);
+                            }
                             mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
                         }
 
@@ -656,6 +662,9 @@ public class RCIMFlutterWrapper {
                             resultMap.put("messageId", message.getMessageId());
                             resultMap.put("status", 20);
                             resultMap.put("code", errorCode.getValue());
+                            if (timestamp.longValue() > 0) {
+                                resultMap.put("timestamp", timestamp);
+                            }
                             mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
                         }
 
@@ -705,6 +714,7 @@ public class RCIMFlutterWrapper {
             String targetId = (String) map.get("targetId");
             String contentStr = (String) map.get("content");
             String pushContent = (String) map.get("pushContent");
+            final Number timestamp = (Number) map.get("timestamp");
             if (pushContent.length() <= 0) {
                 pushContent = null;
             }
@@ -835,6 +845,9 @@ public class RCIMFlutterWrapper {
                     resultMap.put("messageId", -1);
                     resultMap.put("status", 20);
                     resultMap.put("code", errorCode.getValue());
+                    if (timestamp.longValue() > 0) {
+                        resultMap.put("timestamp", timestamp);
+                    }
                     mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
                     return;
                 }
@@ -880,6 +893,9 @@ public class RCIMFlutterWrapper {
                             resultMap.put("messageId", message.getMessageId());
                             resultMap.put("status", 30);
                             resultMap.put("code", 0);
+                            if (timestamp.longValue() > 0) {
+                                resultMap.put("timestamp", timestamp);
+                            }
                             mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
                         }
 
@@ -890,6 +906,9 @@ public class RCIMFlutterWrapper {
                             resultMap.put("messageId", message.getMessageId());
                             resultMap.put("status", 20);
                             resultMap.put("code", errorCode.getValue());
+                            if (timestamp.longValue() > 0) {
+                                resultMap.put("timestamp", timestamp);
+                            }
                             mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
                         }
                     });
@@ -989,6 +1008,10 @@ public class RCIMFlutterWrapper {
                     }
                     content.setMentionedInfo(info);
                 }
+            }
+            if (contentObject.has("burnDuration")){
+                long burnDuration = Long.valueOf(contentObject.get("burnDuration").toString());
+                content.setDestructTime(burnDuration);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -2027,6 +2050,22 @@ public class RCIMFlutterWrapper {
         });
     }
 
+    // 阅后即焚销毁回调
+    private void setOnReceiveDestructionMessageListener() {
+        RongIMClient.getInstance().setOnReceiveDestructionMessageListener(new RongIMClient.OnReceiveDestructionMessageListener() {
+
+            @Override
+            public void onReceive(final Message message) {
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        invokeMessageDestructCallBack(message.getUId(), 0);
+                    }
+                });
+            }
+        });
+    }
+
     /*
      * 输入状态的监听
      */
@@ -2696,6 +2735,7 @@ public class RCIMFlutterWrapper {
             String objectName = (String) paramMap.get("objectName");
             String pushContent = (String) paramMap.get("pushContent");
             String pushData = (String) paramMap.get("pushData");
+            final Number timestamp = (Number) paramMap.get("timestamp");
             if (TextUtils.isEmpty(content)) {
                 return;
             }
@@ -2727,6 +2767,9 @@ public class RCIMFlutterWrapper {
                             resultMap.put("messageId", message.getMessageId());
                             resultMap.put("status", 30);
                             resultMap.put("code", 0);
+                            if (timestamp.longValue() > 0) {
+                                resultMap.put("timestamp", timestamp);
+                            }
                             mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
                         }
 
@@ -2736,6 +2779,9 @@ public class RCIMFlutterWrapper {
                             resultMap.put("messageId", message.getMessageId());
                             resultMap.put("status", 20);
                             resultMap.put("code", errorCode.getValue());
+                            if (timestamp.longValue() > 0) {
+                                resultMap.put("timestamp", timestamp);
+                            }
                             mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
                         }
                     });
@@ -2751,6 +2797,7 @@ public class RCIMFlutterWrapper {
             MessageContent messageContent = message.getContent();
             String targetId = (String) map.get("targetId");
             int conversationType = (int) map.get("conversationType");
+            final Number timestamp = (Number) map.get("timestamp");
             // 有些消息携带了用户信息，转发的消息必须把用户信息去掉
             messageContent.setUserInfo(null);
             Message forwardMessage = Message.obtain(targetId, Conversation.ConversationType.setValue(conversationType),
@@ -2769,6 +2816,9 @@ public class RCIMFlutterWrapper {
                     resultMap.put("messageId", message.getMessageId());
                     resultMap.put("status", 30);
                     resultMap.put("code", 0);
+                    if (timestamp.longValue() > 0) {
+                        resultMap.put("timestamp", timestamp);
+                    }
                     mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
                 }
 
@@ -2779,6 +2829,9 @@ public class RCIMFlutterWrapper {
                     resultMap.put("messageId", message.getMessageId());
                     resultMap.put("status", 20);
                     resultMap.put("code", errorCode.getValue());
+                    if (timestamp.longValue() > 0) {
+                        resultMap.put("timestamp", timestamp);
+                    }
                     mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
                 }
             });

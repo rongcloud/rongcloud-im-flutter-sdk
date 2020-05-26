@@ -65,6 +65,7 @@ class _ConversationPageState extends State<ConversationPage>
   int recordTime = 0;
   Map burnMsgMap = Map();
   bool isSecretChat = false;
+  bool isFirstGetHistoryMessages = true;
 
   _ConversationPageState({this.arguments});
   @override
@@ -283,8 +284,11 @@ class _ConversationPageState extends State<ConversationPage>
       msgs.sort((a, b) => b.sentTime.compareTo(a.sentTime));
       messageDataSource = msgs;
     }
-    _sendReadReceipt();
+    if (isFirstGetHistoryMessages) {
+      _sendReadReceipt();
+    }
     _refreshMessageContentListUI();
+    isFirstGetHistoryMessages = false;
   }
 
   onLoadMoreHistoryMessages(int messageId) async {
@@ -596,21 +600,21 @@ class _ConversationPageState extends State<ConversationPage>
         }
       }
     });
-
-    Widget secretChatWidget = WidgetUtil.buildExtentionWidget(
-        Icons.security, RCString.ExtSecretChat, () async {
-      developer.log("did tap secret chat", name: pageName);
-      isSecretChat = !isSecretChat;
-      String contentStr = isSecretChat ? "打开阅后即焚" : "关闭阅后即焚";
-      developer.log(contentStr, name: pageName);
-      DialogUtil.showAlertDiaLog(context, contentStr);
-    });
-
     extWidgetList.add(imageWidget);
     extWidgetList.add(cameraWidget);
     extWidgetList.add(videoWidget);
     extWidgetList.add(fileWidget);
-    extWidgetList.add(secretChatWidget);
+    if (conversationType == RCConversationType.Private) {
+      Widget secretChatWidget = WidgetUtil.buildExtentionWidget(
+          Icons.security, RCString.ExtSecretChat, () async {
+        print("did tap secret chat");
+        isSecretChat = !isSecretChat;
+        String contentStr = isSecretChat ? "打开阅后即焚" : "关闭阅后即焚";
+        print(contentStr);
+        DialogUtil.showAlertDiaLog(context, contentStr);
+      });
+      extWidgetList.add(secretChatWidget);
+    }
 
     //初始化短语
     for (int i = 0; i < 10; i++) {
@@ -642,33 +646,40 @@ class _ConversationPageState extends State<ConversationPage>
                   name: pageName);
             }
           });
+          RongIMClient.syncConversationReadStatus(
+              this.conversationType, this.targetId, message.sentTime,
+              (int code) {
+            if (code == 0) {
+              print('syncConversationReadStatusSuccess');
+            } else {
+              print('syncConversationReadStatusFailed:code = + $code');
+            }
+          });
           break;
         }
       }
     } else if (conversationType == RCConversationType.Group) {
       _sendReadReceiptResponse(null);
     }
-    _syncReadStatus();
+    // _syncReadStatus();
   }
 
-  void _syncReadStatus() {
-    for (int i = 0; i < messageDataSource.length; i++) {
-      Message message = messageDataSource[i];
-      if (message.messageDirection == RCMessageDirection.Receive) {
-        RongIMClient.syncConversationReadStatus(
-            this.conversationType, this.targetId, message.sentTime, (int code) {
-          if (code == 0) {
-            developer.log("syncConversationReadStatusSuccess",
-                name: pageName);
-          } else {
-            developer.log("syncConversationReadStatusFailed:code = + $code",
-                name: pageName);
-          }
-        });
-        break;
-      }
-    }
-  }
+  // void _syncReadStatus() {
+  //   for (int i = 0; i < messageDataSource.length; i++) {
+  //     Message message = messageDataSource[i];
+  //     if (message.messageDirection == RCMessageDirection.Receive) {
+  //       RongIMClient.syncConversationReadStatus(
+  //           this.conversationType, this.targetId, message.sentTime, (int code) {
+  //         if (code == 0) {
+  //           print('syncConversationReadStatusSuccess');
+  //         } else {
+  //           print('syncConversationReadStatusFailed:code = + $code');
+  //         }
+  //       });
+  //       break;
+  //     }
+  //   }
+  // }
 
   ///长按录制语音的 gif 动画
   Widget _buildExtraCenterWidget() {
@@ -814,8 +825,8 @@ class _ConversationPageState extends State<ConversationPage>
     // RongIMClient.setReconnectKickEnable(true);
     if (message.messageDirection == RCMessageDirection.Receive &&
         message.content.destructDuration != null &&
-        message.content.destructDuration > 0)
-      RongIMClient.messageBeginDestruct(message);
+        message.content.destructDuration > 0 &&
+        multiSelect != true) RongIMClient.messageBeginDestruct(message);
     if (message.content is VoiceMessage) {
       VoiceMessage msg = message.content;
       if (msg.localPath != null &&
@@ -1084,6 +1095,15 @@ class _ConversationPageState extends State<ConversationPage>
       Message forwardMsg = await RongIMClient.getMessage(msgId);
       if (!CombineMessageUtils.allowForward(forwardMsg.objectName)) {
         isAllowCombine = false;
+      }
+      if (forwardMsg.content == null ||
+          (forwardMsg.content != null &&
+              forwardMsg.content.destructDuration != null &&
+              forwardMsg.content.destructDuration > 0) ||
+          forwardMsg.sentStatus == RCSentStatus.Failed ||
+          forwardMsg.sentStatus == RCSentStatus.Sending) {
+        DialogUtil.showAlertDiaLog(context, "无法识别的消息、阅后即焚消息以及未发送成功的消息不支持转发");
+        return;
       }
       selectMsgs.add(forwardMsg);
     }

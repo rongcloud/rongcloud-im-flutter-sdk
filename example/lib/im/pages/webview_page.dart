@@ -59,17 +59,23 @@ class _WebViewPageState extends State<WebViewPage> {
     // );
     String correctUrl = _getCorrectLocalPath(this.url);
     return WebviewScaffold(
-      url: correctUrl,
-      appBar: AppBar(
-        title: Text(title == null && title.isEmpty ? this.url : this.title),
-      ),
-      withZoom: true,
-      withLocalStorage: true,
-      withJavascript: true,
-      javascriptChannels: <JavascriptChannel>[
-        _getJavascriptChannel(context),
-      ].toSet(),
-    );
+        url: correctUrl,
+        appBar: AppBar(
+          title: Text(title == null && title.isEmpty ? this.url : this.title),
+        ),
+        withZoom: true,
+        hidden: true,
+        withLocalStorage: true,
+        withJavascript: true,
+        javascriptChannels: <JavascriptChannel>[
+          _getJavascriptChannel(context),
+        ].toSet(),
+        initialChild: Center(
+          child: CupertinoActivityIndicator(
+            radius: 15.0,
+            animating: true,
+          ),
+        ));
   }
 
   String _getCorrectLocalPath(String url) {

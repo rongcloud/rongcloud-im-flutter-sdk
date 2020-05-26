@@ -105,6 +105,11 @@ class _ConversationItemState extends State<ConversationItem> {
   void _refreshUI(prefix.Message msg) {
     // setState(() {
     this.message = msg;
+    // 撤回消息的时候因为是替换之前的消息 UI ，需要整个刷新 item
+    if(msg.content is prefix.RecallNotificationMessage){
+      setState(() {
+      });
+    }
     // });
   }
 
@@ -193,7 +198,8 @@ class _ConversationItemState extends State<ConversationItem> {
                       onTap: () {
                         __onTapedReadRequest();
                       },
-                      child: message.content.destructDuration != null &&
+                      child: message.content != null &&
+                              message.content.destructDuration != null &&
                               message.content.destructDuration > 0
                           ? Text("")
                           : buildReadInfo(),
@@ -273,7 +279,9 @@ class _ConversationItemState extends State<ConversationItem> {
   }
 
   void __onTapedMesssage() {
-    prefix.RongIMClient.messageBeginDestruct(message);
+    if (multiSelect == false) {
+      prefix.RongIMClient.messageBeginDestruct(message);
+    }
     // return;
     if (delegate != null) {
       if (multiSelect == true) {

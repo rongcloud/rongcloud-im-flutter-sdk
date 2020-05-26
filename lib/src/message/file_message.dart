@@ -42,12 +42,25 @@ class FileMessage extends MessageContent {
 
   @override
   String encode() {
-    Map map = {
-      "extra": this.extra,
-      "type": mType,
-      "name": mName,
-      "size": mSize
-    };
+    Map map = Map();
+    if (this.extra != null) {
+      map["extra"] = this.extra;
+    }
+    if (this.mType != null) {
+      map["type"] = this.mType;
+    } else {
+      map["type"] = "";
+    }
+    if (this.mName != null) {
+      map["name"] = this.mName;
+    } else {
+      map["name"] = "";
+    }
+    if (this.mSize != null) {
+      map["size"] = this.mSize;
+    } else {
+      map["size"] = 0;
+    }
     if (this.localPath != null) {
       map["localPath"] = this.localPath;
     } else {
