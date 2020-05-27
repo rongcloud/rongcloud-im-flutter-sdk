@@ -492,6 +492,7 @@ public class RCIMFlutterWrapper {
                         public void run() {
                             Map msgMap = new HashMap();
                             msgMap.put("code", 31004);
+                            msgMap.put("userId", "");
                             RCLog.e("connect " + String.valueOf(31004));
                             result.success(msgMap);
                         }
@@ -522,6 +523,7 @@ public class RCIMFlutterWrapper {
                             try {
                                 Map msgMap = new HashMap();
                                 msgMap.put("code", code.getValue());
+                                msgMap.put("userId", "");
                                 result.success(msgMap);
                             } catch (Exception e) {
                                 e.printStackTrace();
