@@ -490,8 +490,10 @@ public class RCIMFlutterWrapper {
                     mMainHandler.post(new Runnable() {
                         @Override
                         public void run() {
+                            Map msgMap = new HashMap();
+                            msgMap.put("code", 31004);
                             RCLog.e("connect " + String.valueOf(31004));
-                            result.success(new Integer(31004));
+                            result.success(msgMap);
                         }
                     });
                 }
@@ -502,7 +504,10 @@ public class RCIMFlutterWrapper {
                         @Override
                         public void run() {
                             RCLog.i("connect success");
-                            result.success(new Integer(0));
+                            Map msgMap = new HashMap();
+                            msgMap.put("code", 0);
+                            msgMap.put("userId", s);
+                            result.success(msgMap);
                         }
                     });
                 }
@@ -515,7 +520,9 @@ public class RCIMFlutterWrapper {
                         public void run() {
                             RCLog.e("connect " + String.valueOf(code.getValue()));
                             try {
-                                result.success(new Integer(code.getValue()));
+                                Map msgMap = new HashMap();
+                                msgMap.put("code", code.getValue());
+                                result.success(msgMap);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
