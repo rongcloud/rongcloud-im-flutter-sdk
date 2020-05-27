@@ -501,13 +501,14 @@ public class RCIMFlutterWrapper {
 
                 @Override
                 public void onSuccess(String s) {
+                    final String userId = s;
                     mMainHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             RCLog.i("connect success");
                             Map msgMap = new HashMap();
                             msgMap.put("code", 0);
-                            msgMap.put("userId", s);
+                            msgMap.put("userId", userId);
                             result.success(msgMap);
                         }
                     });
