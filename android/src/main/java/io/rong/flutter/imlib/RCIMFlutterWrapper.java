@@ -491,18 +491,24 @@ public class RCIMFlutterWrapper {
                         @Override
                         public void run() {
                             RCLog.e("connect " + String.valueOf(31004));
-                            result.success(new Integer(31004));
+                            Map resultMap = new HashMap();
+                            resultMap.put("userId", "");
+                            resultMap.put("code", 31004);
+                            result.success(resultMap);
                         }
                     });
                 }
 
                 @Override
-                public void onSuccess(String s) {
+                public void onSuccess(final String userId) {
                     mMainHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             RCLog.i("connect success");
-                            result.success(new Integer(0));
+                            Map resultMap = new HashMap();
+                            resultMap.put("userId", userId);
+                            resultMap.put("code", 0);
+                            result.success(resultMap);
                         }
                     });
                 }
@@ -514,12 +520,10 @@ public class RCIMFlutterWrapper {
                         @Override
                         public void run() {
                             RCLog.e("connect " + String.valueOf(code.getValue()));
-                            try {
-                                result.success(new Integer(code.getValue()));
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
+                            Map resultMap = new HashMap();
+                            resultMap.put("userId", "");
+                            resultMap.put("code", code.getValue());
+                            result.success(resultMap);
                         }
                     });
 

@@ -88,7 +88,7 @@ public class MessageFactory {
             data = RCMessageHandler.encodeImageContent((ImageMessage) content);
         } else if (content instanceof SightMessage) {
             data = RCMessageHandler.encodeSightContent((SightMessage) content);
-        } else {
+        } else if (content != null){
             data = content.encode();
         }
 
