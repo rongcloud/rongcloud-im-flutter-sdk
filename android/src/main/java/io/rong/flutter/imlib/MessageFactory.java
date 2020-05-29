@@ -77,7 +77,7 @@ public class MessageFactory {
             RCMessageHandler.encodeGifMessage(message);
         } else if (message.getContent() instanceof LocationMessage) {
             RCMessageHandler.encodeLocationMessage(message);
-        } else if (message.getContent() instanceof ReferenceMessage){
+        } else if (message.getContent() instanceof ReferenceMessage) {
             // 引用消息的引用内容的类型需要判断
             RCMessageHandler.encodeReferenceMessage(message);
         }
@@ -94,7 +94,7 @@ public class MessageFactory {
             data = RCMessageHandler.encodeImageContent((ImageMessage) content);
         } else if (content instanceof SightMessage) {
             data = RCMessageHandler.encodeSightContent((SightMessage) content);
-        } else {
+        } else if (content != null) {
             data = content.encode();
         }
 
