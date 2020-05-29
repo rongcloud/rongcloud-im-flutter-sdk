@@ -1,3 +1,8 @@
+## 2.0.0+1
+* SDK:
+* 1.修复 Android connect 返回给 flutter 的数据结构不正确问题
+* 2.修复 Android 收到不正常消息崩溃问题
+
 ## 2.0.0
 `从 2.0.0 开始废弃 RongcloudImPlugin，改为使用 RongIMClient`
 
