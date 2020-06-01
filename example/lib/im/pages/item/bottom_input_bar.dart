@@ -468,7 +468,13 @@ class _BottomInputBarState extends State<BottomInputBar> {
       this.message = message;
       referenceMessage = ReferenceMessage();
       referenceMessage.referMsgUserId = message.senderUserId;
-      referenceMessage.referMsg = message.content;
+      if (message.content is ReferenceMessage) {
+        ReferenceMessage content = message.content;
+        TextMessage textMessage = TextMessage.obtain(content.content);
+        referenceMessage.referMsg = textMessage;
+      } else {
+        referenceMessage.referMsg = message.content;
+      }
       setInfo(referenceMessage.referMsgUserId);
     } else {
       referenceMessage = null;
