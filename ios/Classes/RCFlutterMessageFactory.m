@@ -77,6 +77,8 @@
     content = [self convertLocalPathIfNeed:content];
     if ([content isKindOfClass:[RCFileMessage class]]) {
         content = [self converFileMessage:content];
+    } else if ([content isKindOfClass:[RCReferenceMessage class]]) {
+        content = [self converReferenceMessage:content];
     }
     if ([content isKindOfClass:[RCPublicServiceCommandMessage class]]) {
         if (((RCPublicServiceCommandMessage *)content).command) {
@@ -101,6 +103,16 @@
         msg.localPath = msg.localPath?:@"";
     }
     return content;
+}
+
++ (RCMessageContent *)converReferenceMessage:(RCMessageContent *)content {
+    RCReferenceMessage *msg = (RCReferenceMessage *)content;
+    RCMessageContent *msgContent = msg.referMsg;
+    if ([msgContent isKindOfClass:[RCFileMessage class]]) {
+        msgContent = [self converFileMessage:msgContent];
+        msg.referMsg = msgContent;
+    }
+    return msg;
 }
 
 + (RCMessageContent *)convertLocalPathIfNeed:(RCMessageContent *)content {
