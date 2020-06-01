@@ -198,8 +198,7 @@ class _ConversationPageState extends State<ConversationPage>
     });
 
     EventBus.instance.addListener(EventKeys.ForwardMessageEnd, (arg) {
-      developer.log("ForwardMessageEnd：" + this.targetId,
-          name: pageName);
+      developer.log("ForwardMessageEnd：" + this.targetId, name: pageName);
       multiSelect = false;
       selectedMessageIds.clear();
       // onGetHistoryMessages();
@@ -626,8 +625,7 @@ class _ConversationPageState extends State<ConversationPage>
 
   void _saveImage(String imagePath) async {
     final result = await ImageGallerySaver.saveFile(imagePath);
-    developer.log("save image result: " + result.toString(),
-        name: pageName);
+    developer.log("save image result: " + result.toString(), name: pageName);
   }
 
   void _sendReadReceipt() {
@@ -639,8 +637,7 @@ class _ConversationPageState extends State<ConversationPage>
               this.conversationType, this.targetId, message.sentTime,
               (int code) {
             if (code == 0) {
-              developer.log("sendReadReceiptMessageSuccess",
-                  name: pageName);
+              developer.log("sendReadReceiptMessageSuccess", name: pageName);
             } else {
               developer.log("sendReadReceiptMessageFailed:code = + $code",
                   name: pageName);
@@ -751,8 +748,7 @@ class _ConversationPageState extends State<ConversationPage>
       RongIMClient.sendReadReceiptResponse(
           this.conversationType, this.targetId, readReceiptList, (int code) {
         if (code == 0) {
-          developer.log("sendReadReceiptResponseSuccess",
-              name: pageName);
+          developer.log("sendReadReceiptResponseSuccess", name: pageName);
         } else {
           developer.log("sendReadReceiptResponseFailed:code = + $code",
               name: pageName);
@@ -795,8 +791,7 @@ class _ConversationPageState extends State<ConversationPage>
 
   @override
   void didTapMessageItem(Message message) async {
-    developer.log("didTapMessageItem " + message.objectName,
-        name: pageName);
+    developer.log("didTapMessageItem " + message.objectName, name: pageName);
     // RongIMClient.setMessageReceivedSttus(message.messageId, 1, (code) async {
     //   developer.log("setMessageReceivedStatus result:$code",
     //       name: pageName);
@@ -897,8 +892,7 @@ class _ConversationPageState extends State<ConversationPage>
         name: pageName);
     RongIMClient.sendReadReceiptRequest(message, (int code) {
       if (0 == code) {
-        developer.log("sendReadReceiptRequest success",
-            name: pageName);
+        developer.log("sendReadReceiptRequest success", name: pageName);
         onGetHistoryMessages();
       } else {
         developer.log("sendReadReceiptRequest error", name: pageName);
@@ -948,8 +942,11 @@ class _ConversationPageState extends State<ConversationPage>
 
   bool _isShowReference(Message message) {
     //过滤失败消息
-    bool isSuccess = message.sentStatus == RCSentStatus.Sent;
-    bool isFireMsg = message.content != null && message.content.destructDuration != null && message.content.destructDuration != 0;
+    bool isSuccess = (message.sentStatus != RCSentStatus.Sending &&
+        message.sentStatus != RCSentStatus.Failed);
+    bool isFireMsg = message.content != null &&
+        message.content.destructDuration != null &&
+        message.content.destructDuration != 0;
     // bool isFireMode = mRongExtension != null && mRongExtension.isFireStatus();
     // bool isEnableReferenceMsg = RongContext.getInstance().getResources().getBoolean(R.bool.rc_enable_reference_message);
     bool isSupport = (message.content.getObjectName() ==
@@ -994,11 +991,11 @@ class _ConversationPageState extends State<ConversationPage>
     if (bottomInputBar.getReferenceMessage() != null) {
       ReferenceMessage referenceMessage = bottomInputBar.getReferenceMessage();
       referenceMessage.content = text;
-      msg = referenceMessage; 
+      msg = referenceMessage;
     } else {
       TextMessage textMessage = new TextMessage();
       textMessage.content = text;
-      msg =  textMessage;
+      msg = textMessage;
     }
 
     if (conversationType == RCConversationType.Group) {
