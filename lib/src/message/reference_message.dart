@@ -21,7 +21,12 @@ class ReferenceMessage extends MessageContent {
           name: "RongIMClient.ReferenceMessage");
       return;
     }
-    Map map = json.decode(jsonStr.toString());
+    Map map = json.decode(jsonStr);
+    if (map == null) {
+      developer.log("Flutter ReferenceMessage deocde error: no right content",
+          name: "RongIMClient.ReferenceMessage");
+      return;
+    }
     this.content = map["content"];
     this.referMsgUserId = map["referMsgUserId"];
     Map messageMap = map["referMsg"];
