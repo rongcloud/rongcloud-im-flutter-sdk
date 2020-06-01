@@ -6,6 +6,7 @@ import 'other/home_page.dart';
 import 'im/util/event_bus.dart';
 import 'user_data.dart';
 import 'router.dart';
+import 'dart:developer' as developer;
 
 void main() => runApp(MyApp());
 
@@ -19,6 +20,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  String pageName = "example.main";
   AppLifecycleState currentState = AppLifecycleState.resumed;
   DateTime notificationQuietEndTime;
   DateTime notificationQuietStartTime;
@@ -49,7 +51,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       String hasP = hasPackage ? "true" : "false";
       String off = offline ? "true" : "false";
       if (msg.content != null) {
-        print("object onMessageReceivedWrapper objName:" +
+        developer.log("object onMessageReceivedWrapper objName:" +
             msg.content.getObjectName() +
             " msgContent:" +
             msg.content.encode() +
@@ -58,10 +60,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             " hasPackage:" +
             hasP +
             " offline:" +
-            off);
+            off, name: pageName);
       } else {
-        print(
-            "object onMessageReceivedWrapper objName: ${msg.objectName} content is null left:${left.toString()} hasPackage:$hasP offline:$off");
+        developer.log("object onMessageReceivedWrapper objName: ${msg.objectName} content is null left:${left.toString()} hasPackage:$hasP offline:$off", name: pageName);
       }
       if (currentState == AppLifecycleState.paused &&
           !checkNoficationQuietStatus()) {
@@ -81,22 +82,22 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     };
 
     prefix.RongIMClient.onDataReceived = (Map map) {
-      print("object onDataReceived " + map.toString());
+      developer.log("object onDataReceived " + map.toString(), name: pageName);
     };
 
     prefix.RongIMClient.onMessageReceiptRequest = (Map map) {
       EventBus.instance.commit(EventKeys.ReceiveReceiptRequest, map);
-      print("object onMessageReceiptRequest " + map.toString());
+      developer.log("object onMessageReceiptRequest " + map.toString(), name: pageName);
     };
 
     prefix.RongIMClient.onMessageReceiptResponse = (Map map) {
       EventBus.instance.commit(EventKeys.ReceiveReceiptResponse, map);
-      print("object onMessageReceiptResponse " + map.toString());
+      developer.log("object onMessageReceiptResponse " + map.toString(), name: pageName);
     };
 
     prefix.RongIMClient.onReceiveReadReceipt = (Map map) {
       EventBus.instance.commit(EventKeys.ReceiveReadReceipt, map);
-      print("object onReceiveReadReceipt " + map.toString());
+      developer.log("object onReceiveReadReceipt " + map.toString(), name: pageName);
     };
   }
 
@@ -174,7 +175,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    print("--" + state.toString());
+    developer.log("--" + state.toString(), name: pageName);
     currentState = state;
     switch (state) {
       case AppLifecycleState.inactive: // 处于这种状态的应用程序应该假设它们可能在任何时候暂停。

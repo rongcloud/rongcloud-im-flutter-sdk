@@ -17,6 +17,7 @@ import '../util/event_bus.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import '../util/dialog_util.dart';
+import 'dart:developer' as developer;
 
 enum ConversationStatus {
   Normal, //正常
@@ -37,6 +38,7 @@ class _ConversationPageState extends State<ConversationPage>
         BottomInputBarDelegate,
         MessageContentListDelegate,
         BottomToolBarDelegate {
+  String pageName = "example.ConversationPage";
   Map arguments;
   int conversationType;
   String targetId;
@@ -188,14 +190,16 @@ class _ConversationPageState extends State<ConversationPage>
 
     EventBus.instance.addListener(EventKeys.ReceiveReceiptResponse, (map) {
       String tId = map["targetId"];
-      print("ReceiveReceiptResponse" + tId + this.targetId);
+      developer.log("ReceiveReceiptResponse" + tId + this.targetId,
+          name: pageName);
       if (tId == this.targetId) {
         onGetHistoryMessages();
       }
     });
 
     EventBus.instance.addListener(EventKeys.ForwardMessageEnd, (arg) {
-      print("ForwardMessageEnd：" + this.targetId);
+      developer.log("ForwardMessageEnd：" + this.targetId,
+          name: pageName);
       multiSelect = false;
       selectedMessageIds.clear();
       // onGetHistoryMessages();
@@ -204,7 +208,8 @@ class _ConversationPageState extends State<ConversationPage>
     });
 
     RongIMClient.onMessageSend = (int messageId, int status, int code) async {
-      print("messageId:$messageId status:$status code:$code");
+      developer.log("messageId:$messageId status:$status code:$code",
+          name: pageName);
       Message msg = await RongIMClient.getMessage(messageId);
       if (msg.targetId == this.targetId) {
         _insertOrReplaceMessage(msg);
@@ -215,7 +220,8 @@ class _ConversationPageState extends State<ConversationPage>
         (Message message, int remainDuration) async {
       EventBus.instance.commit(EventKeys.BurnMessage,
           {"messageId": message.messageId, "remainDuration": remainDuration});
-      print(message.toString() + remainDuration.toString());
+      developer.log(message.toString() + remainDuration.toString(),
+          name: pageName);
       burnMsgMap[message.messageId] = remainDuration;
       if (remainDuration == 0) {
         onGetHistoryMessages();
@@ -270,7 +276,7 @@ class _ConversationPageState extends State<ConversationPage>
   }
 
   onGetHistoryMessages() async {
-    print("get history message");
+    developer.log("get history message", name: pageName);
 
     List msgs =
         await RongIMClient.getHistoryMessage(conversationType, targetId, 0, 20);
@@ -286,7 +292,7 @@ class _ConversationPageState extends State<ConversationPage>
   }
 
   onLoadMoreHistoryMessages(int messageId) async {
-    print("get more history message");
+    developer.log("get more history message", name: pageName);
 
     List msgs = await RongIMClient.getHistoryMessage(
         conversationType, targetId, messageId, 20);
@@ -303,7 +309,7 @@ class _ConversationPageState extends State<ConversationPage>
   }
 
   onLoadRemoteHistoryMessages() async {
-    print("get Remote history message");
+    developer.log("get Remote history message", name: pageName);
 
     RongIMClient.getRemoteHistoryMessages(
         conversationType, targetId, recordTime, 20,
@@ -469,8 +475,9 @@ class _ConversationPageState extends State<ConversationPage>
     // 远程删除测试入口
     // List<Message> messageList = List();
     // messageList.add(message);
-    // RongIMClient.deleteRemoteMessages(conversationType, targetId, messageList, (code){
-    //   print("result: $code");
+    // RongIMClient.deleteRemoteMessages(conversationType, targetId, messageList,
+    //     (code) {
+    //   developer.log("result: $code", name: pageName);
     //   onGetHistoryMessages();
     // });
   }
@@ -508,7 +515,7 @@ class _ConversationPageState extends State<ConversationPage>
       if (imgPath == null) {
         return;
       }
-      print("imagepath " + imgPath);
+      developer.log("imagepath " + imgPath, name: pageName);
       if (imgPath.endsWith("gif")) {
         GifMessage gifMsg = GifMessage.obtain(imgPath);
         if (conversationType == RCConversationType.Private) {
@@ -550,7 +557,7 @@ class _ConversationPageState extends State<ConversationPage>
       if (imgPath == null) {
         return;
       }
-      print("imagepath " + imgPath);
+      developer.log("imagepath " + imgPath, name: pageName);
       String temp = imgPath.replaceAll("file://", "");
       // 保存不需要 file 开头的路径
       _saveImage(temp);
@@ -566,7 +573,7 @@ class _ConversationPageState extends State<ConversationPage>
 
     Widget videoWidget = WidgetUtil.buildExtentionWidget(
         Icons.video_call, RCString.ExtVideo, () async {
-      print("push to video record page");
+      developer.log("push to video record page", name: pageName);
       Map map = {
         "coversationType": conversationType,
         "targetId": targetId,
@@ -593,7 +600,6 @@ class _ConversationPageState extends State<ConversationPage>
         }
       }
     });
-
     extWidgetList.add(imageWidget);
     extWidgetList.add(cameraWidget);
     extWidgetList.add(videoWidget);
@@ -620,7 +626,8 @@ class _ConversationPageState extends State<ConversationPage>
 
   void _saveImage(String imagePath) async {
     final result = await ImageGallerySaver.saveFile(imagePath);
-    print("save image result: " + result.toString());
+    developer.log("save image result: " + result.toString(),
+        name: pageName);
   }
 
   void _sendReadReceipt() {
@@ -632,9 +639,11 @@ class _ConversationPageState extends State<ConversationPage>
               this.conversationType, this.targetId, message.sentTime,
               (int code) {
             if (code == 0) {
-              print('sendReadReceiptMessageSuccess');
+              developer.log("sendReadReceiptMessageSuccess",
+                  name: pageName);
             } else {
-              print('sendReadReceiptMessageFailed:code = + $code');
+              developer.log("sendReadReceiptMessageFailed:code = + $code",
+                  name: pageName);
             }
           });
           RongIMClient.syncConversationReadStatus(
@@ -742,9 +751,11 @@ class _ConversationPageState extends State<ConversationPage>
       RongIMClient.sendReadReceiptResponse(
           this.conversationType, this.targetId, readReceiptList, (int code) {
         if (code == 0) {
-          print('sendReadReceiptResponseSuccess');
+          developer.log("sendReadReceiptResponseSuccess",
+              name: pageName);
         } else {
-          print('sendReadReceiptResponseFailed:code = + $code');
+          developer.log("sendReadReceiptResponseFailed:code = + $code",
+              name: pageName);
         }
       });
     }
@@ -769,7 +780,7 @@ class _ConversationPageState extends State<ConversationPage>
                       ),
                     ),
                     Container(
-                      height: multiSelect ? 55 : 82,
+                      // height: multiSelect ? 55 : 82,
                       child: _buildBottomInputBar(),
                     ),
                     _getExtentionWidget(),
@@ -784,23 +795,33 @@ class _ConversationPageState extends State<ConversationPage>
 
   @override
   void didTapMessageItem(Message message) async {
-    print("didTapMessageItem " + message.objectName);
-    // RongIMClient.setMessageReceivedStatus(message.messageId, 1, (code) async{
-    //   print("setMessageReceivedStatus result:$code");
+    developer.log("didTapMessageItem " + message.objectName,
+        name: pageName);
+    // RongIMClient.setMessageReceivedSttus(message.messageId, 1, (code) async {
+    //   developer.log("setMessageReceivedStatus result:$code",
+    //       name: pageName);
     //   Message msg = await RongIMClient.getMessage(message.messageId);
-    //   print("getMessage result:${msg.toString()}");
+    //   developer.log("getMessage result:${msg.toString()}",
+    //       name: pageName);
     // });
     // List<int> conversations = List();
     // conversations.add(3);
-    // RongIMClient.clearConversations(conversations, (code) async{
-    //   print("clearConversations result:$code");
+    // RongIMClient.clearConversations(conversations, (code) async {
+    //   developer.log("clearConversations result:$code",
+    //       name: pageName);
     // });
-    // print("getDeltaTime result:${await RongIMClient.getDeltaTime()}");
-    // RongIMClient.setOfflineMessageDuration(3, (code, result){
-    //   print("setOfflineMessageDuration code:$code result:$result");
+    // developer.log("getDeltaTime result:${await RongIMClient.getDeltaTime()}",
+    //     name: pageName);
+    // RongIMClient.setOfflineMessageDuration(3, (code, result) {
+    //   developer.log("setOfflineMessageDuration code:$code result:$result",
+    //       name: pageName);
     // });
-    // print("getOfflineMessageDuration code:${await RongIMClient.getOfflineMessageDuration()}");
-    // print('getConnectionStatus: ${await RongIMClient.getConnectionStatus()}');
+    // developer.log(
+    //     "getOfflineMessageDuration code:${await RongIMClient.getOfflineMessageDuration()}",
+    //     name: pageName);
+    // developer.log(
+    //     "getConnectionStatus: ${await RongIMClient.getConnectionStatus()}",
+    //     name: pageName);
     // RongIMClient.setReconnectKickEnable(true);
     if (message.messageDirection == RCMessageDirection.Receive &&
         message.content.destructDuration != null &&
@@ -844,25 +865,51 @@ class _ConversationPageState extends State<ConversationPage>
       }
       Map param = {"url": url, "title": CombineMessageUtils().getTitle(msg)};
       Navigator.pushNamed(context, "/webview", arguments: param);
+    } else if (message.content is ReferenceMessage) {
+      ReferenceMessage msg = message.content;
+      if (msg.referMsg is ImageMessage) {
+        // 引用的消息为图片时的点击事件
+        Message tempMsg = message;
+        tempMsg.content = msg.referMsg;
+        Navigator.pushNamed(context, "/image_preview", arguments: tempMsg);
+      } else if (msg.referMsg is FileMessage) {
+        // 引用的消息为文件时的点击事件
+        Message tempMsg = message;
+        tempMsg.content = msg.referMsg;
+        Navigator.pushNamed(context, "/file_preview", arguments: tempMsg);
+      } else if (msg.referMsg is RichContentMessage) {
+        // 引用的消息为图文时的点击事件
+        RichContentMessage richContentMessage = msg.referMsg;
+        Map param = {
+          "url": richContentMessage.url,
+          "title": richContentMessage.title
+        };
+        Navigator.pushNamed(context, "/webview", arguments: param);
+      } else {
+        // 引用的消息为文本时的点击事件
+      }
     }
   }
 
   @override
   void didSendMessageRequest(Message message) {
-    print("didSendMessageRequest " + message.objectName);
+    developer.log("didSendMessageRequest " + message.objectName,
+        name: pageName);
     RongIMClient.sendReadReceiptRequest(message, (int code) {
       if (0 == code) {
-        print("sendReadReceiptRequest success");
+        developer.log("sendReadReceiptRequest success",
+            name: pageName);
         onGetHistoryMessages();
       } else {
-        print("sendReadReceiptRequest error");
+        developer.log("sendReadReceiptRequest error", name: pageName);
       }
     });
   }
 
   @override
   void didTapMessageReadInfo(Message message) {
-    print("didTapMessageReadInfo " + message.objectName);
+    developer.log("didTapMessageReadInfo " + message.objectName,
+        name: pageName);
     Navigator.pushNamed(context, "/message_read_page", arguments: message);
   }
 
@@ -870,11 +917,18 @@ class _ConversationPageState extends State<ConversationPage>
   void didLongPressMessageItem(Message message, Offset tapPos) {
     Map<String, String> actionMap = {
       RCLongPressAction.DeleteKey: RCLongPressAction.DeleteValue,
-      RCLongPressAction.MutiSelectKey: RCLongPressAction.MutiSelectValue
     };
+    // 引用消息
+    if (_isShowReference(message)) {
+      actionMap[RCLongPressAction.ReferenceKey] =
+          RCLongPressAction.ReferenceValue;
+    }
+    actionMap[RCLongPressAction.MutiSelectKey] =
+        RCLongPressAction.MutiSelectValue;
     if (message.messageDirection == RCMessageDirection.Send) {
       actionMap[RCLongPressAction.RecallKey] = RCLongPressAction.RecallValue;
     }
+
     WidgetUtil.showLongPressMenu(context, tapPos, actionMap, (String key) {
       if (key == RCLongPressAction.DeleteKey) {
         _deleteMessage(message);
@@ -885,14 +939,31 @@ class _ConversationPageState extends State<ConversationPage>
         currentInputStatus = InputBarStatus.Normal;
         _refreshMessageContentListUI();
         _refreshUI();
+      } else if (key == RCLongPressAction.ReferenceKey) {
+        bottomInputBar.makeReferenceMessage(message);
       }
-      print("当前选中的是 " + key);
+      developer.log("当前选中的是 " + key, name: pageName);
     });
+  }
+
+  bool _isShowReference(Message message) {
+    //过滤失败消息
+    bool isSuccess = message.sentStatus == RCSentStatus.Sent;
+    bool isFireMsg = message.content != null && message.content.destructDuration != null && message.content.destructDuration != 0;
+    // bool isFireMode = mRongExtension != null && mRongExtension.isFireStatus();
+    // bool isEnableReferenceMsg = RongContext.getInstance().getResources().getBoolean(R.bool.rc_enable_reference_message);
+    bool isSupport = (message.content.getObjectName() ==
+            TextMessage.objectName) ||
+        (message.content.getObjectName() == ImageMessage.objectName) ||
+        (message.content.getObjectName() == FileMessage.objectName) ||
+        (message.content.getObjectName() == RichContentMessage.objectName) ||
+        (message.content.getObjectName() == ReferenceMessage.objectName);
+    return isSuccess && isSupport && !isFireMsg;
   }
 
   @override
   void didTapUserPortrait(String userId) {
-    print("点击了用户头像 " + userId);
+    developer.log("点击了用户头像 " + userId, name: pageName);
   }
 
   @override
@@ -914,13 +985,21 @@ class _ConversationPageState extends State<ConversationPage>
       bottomInputBar.setTextContent(content);
       userIdList.add(userId);
     }
-    print("长按头像");
+    developer.log("长按头像" + userId, name: pageName);
   }
 
   @override
   void willSendText(String text) async {
-    TextMessage msg = new TextMessage();
-    msg.content = text;
+    MessageContent msg;
+    if (bottomInputBar.getReferenceMessage() != null) {
+      ReferenceMessage referenceMessage = bottomInputBar.getReferenceMessage();
+      referenceMessage.content = text;
+      msg = referenceMessage; 
+    } else {
+      TextMessage textMessage = new TextMessage();
+      textMessage.content = text;
+      msg =  textMessage;
+    }
 
     if (conversationType == RCConversationType.Group) {
       // 群组发送消息携带@信息
@@ -952,6 +1031,7 @@ class _ConversationPageState extends State<ConversationPage>
     Message message =
         await RongIMClient.sendMessage(conversationType, targetId, msg);
     userIdList.clear();
+    bottomInputBar.clearReferenceMessage();
     _insertOrReplaceMessage(message);
   }
 
@@ -979,7 +1059,6 @@ class _ConversationPageState extends State<ConversationPage>
 
   @override
   void onTextChange(String text) {
-    // print('input ' + text);
     textDraft = text;
     RongIMClient.sendTypingStatus(
         conversationType, targetId, TextMessage.objectName);

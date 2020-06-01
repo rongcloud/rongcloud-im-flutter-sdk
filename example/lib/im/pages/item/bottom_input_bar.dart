@@ -1,7 +1,16 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:rongcloud_im_plugin_example/im/pages/item/widget_util.dart';
+import 'package:rongcloud_im_plugin_example/im/widget/cachImage/cached_image_widget.dart';
 
 import '../../util/media_util.dart';
 import '../../util/style.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import '../../util/user_info_datesource.dart' as example;
+import 'dart:developer' as developer;
 
 class BottomInputBar extends StatefulWidget {
   BottomInputBarDelegate delegate;
@@ -20,14 +29,30 @@ class BottomInputBar extends StatefulWidget {
   void refreshUI() {
     this.state._refreshUI();
   }
+
+  void makeReferenceMessage(Message message) {
+    this.state.makeReferenceMessage(message);
+  }
+
+  ReferenceMessage getReferenceMessage() {
+    return this.state.referenceMessage;
+  }
+
+  void clearReferenceMessage() {
+    this.state.clearReferenceMessage();
+  }
 }
 
 class _BottomInputBarState extends State<BottomInputBar> {
+  String pageName = "example.BottomInputBar";
   BottomInputBarDelegate delegate;
   TextField textField;
   FocusNode focusNode = FocusNode();
   InputBarStatus inputBarStatus;
   TextEditingController textEditingController;
+  Message message;
+  ReferenceMessage referenceMessage;
+  example.UserInfo referenceUserInfo;
 
   _BottomInputBarState(BottomInputBarDelegate delegate) {
     this.delegate = delegate;
@@ -77,20 +102,20 @@ class _BottomInputBarState extends State<BottomInputBar> {
 
   void _clickSendMessage(String messageStr) {
     if (messageStr == null || messageStr.length <= 0) {
-      print('不能为空');
+      developer.log("clickSendMessage MessageStr 不能为空", name: pageName);
       return;
     }
 
     if (this.delegate != null) {
       this.delegate.willSendText(messageStr);
     } else {
-      print("没有实现 BottomInputBarDelegate");
+      developer.log("没有实现 BottomInputBarDelegate", name: pageName);
     }
     this.textField.controller.text = '';
   }
 
   switchPhrases() {
-    print("switchPhrases");
+    developer.log("switchPhrases", name: pageName);
     if (focusNode.hasFocus) {
       focusNode.unfocus();
     }
@@ -102,7 +127,7 @@ class _BottomInputBarState extends State<BottomInputBar> {
   }
 
   switchVoice() {
-    print("switchVoice");
+    developer.log("switchVoice", name: pageName);
     InputBarStatus status = InputBarStatus.Normal;
     if (this.inputBarStatus != InputBarStatus.Voice) {
       status = InputBarStatus.Voice;
@@ -111,7 +136,7 @@ class _BottomInputBarState extends State<BottomInputBar> {
   }
 
   switchEmoji() {
-    print("switchEmoji");
+    developer.log("switchEmoji", name: pageName);
     InputBarStatus status = InputBarStatus.Normal;
     if (this.inputBarStatus != InputBarStatus.Emoji) {
       if (focusNode.hasFocus) {
@@ -123,7 +148,7 @@ class _BottomInputBarState extends State<BottomInputBar> {
   }
 
   switchExtention() {
-    print("switchExtention");
+    developer.log("switchExtention", name: pageName);
     if (focusNode.hasFocus) {
       focusNode.unfocus();
     }
@@ -134,35 +159,35 @@ class _BottomInputBarState extends State<BottomInputBar> {
     if (this.delegate != null) {
       this.delegate.didTapExtentionButton();
     } else {
-      print("没有实现 BottomInputBarDelegate");
+      developer.log("没有实现 BottomInputBarDelegate", name: pageName);
     }
     _notifyInputStatusChanged(status);
   }
 
   _onVoiceGesLongPress() {
-    print("_onVoiceGesLongPress");
+    developer.log("_onVoiceGesLongPress", name: pageName);
     MediaUtil.instance.startRecordAudio();
     if (this.delegate != null) {
       this.delegate.willStartRecordVoice();
     } else {
-      print("没有实现 BottomInputBarDelegate");
+      developer.log("没有实现 BottomInputBarDelegate", name: pageName);
     }
   }
 
   _onVoiceGesLongPressEnd() {
-    print("_onVoiceGesLongPressEnd");
+    developer.log("_onVoiceGesLongPressEnd", name: pageName);
 
     if (this.delegate != null) {
       this.delegate.willStopRecordVoice();
     } else {
-      print("没有实现 BottomInputBarDelegate");
+      developer.log("没有实现 BottomInputBarDelegate", name: pageName);
     }
 
     MediaUtil.instance.stopRecordAudio((String path, int duration) {
       if (this.delegate != null && path.length > 0) {
         this.delegate.willSendVoice(path, duration);
       } else {
-        print("没有实现 BottomInputBarDelegate || 录音路径为空");
+        developer.log("没有实现 BottomInputBarDelegate || 录音路径为空", name: pageName);
       }
     });
   }
@@ -219,7 +244,7 @@ class _BottomInputBarState extends State<BottomInputBar> {
     if (this.delegate != null) {
       this.delegate.inputStatusDidChange(status);
     } else {
-      print("没有实现 BottomInputBarDelegate");
+      developer.log("没有实现 BottomInputBarDelegate", name: pageName);
     }
   }
 
@@ -230,6 +255,9 @@ class _BottomInputBarState extends State<BottomInputBar> {
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
+              referenceMessage == null
+                  ? WidgetUtil.buildEmptyWidget()
+                  : _buildReferenceWidget(),
               GestureDetector(
                   onTap: () {
                     switchPhrases();
@@ -277,6 +305,185 @@ class _BottomInputBarState extends State<BottomInputBar> {
                 ],
               ),
             ]));
+  }
+
+  Widget _buildReferenceWidget() {
+    return IntrinsicHeight(
+        child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        VerticalDivider(
+          color: Colors.grey,
+          thickness: 3,
+        ),
+        Expanded(
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+              Container(
+                  margin: EdgeInsets.only(top: 4, bottom: 2),
+                  child: Text(
+                      referenceUserInfo == null ? "" : referenceUserInfo.id,
+                      style: TextStyle(
+                          fontSize: RCFont.BottomReferenceNameSize,
+                          color: Color(RCColor.BottomReferenceNameColor)))),
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: 60.0,
+                ),
+                child: new SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    reverse: false,
+                    child: GestureDetector(
+                      child: _buildReferenceContent(),
+                      onTap: () {
+                        _clickContent();
+                      },
+                    )),
+              )
+            ])),
+        Container(
+            margin: EdgeInsets.only(right: 10),
+            height: 30,
+            width: 30,
+            child: IconButton(
+              icon: Icon(Icons.close),
+              onPressed: () {
+                clearReferenceMessage();
+              },
+            ))
+      ],
+    ));
+  }
+
+  void _clickContent() {
+    if (referenceMessage.referMsg is ImageMessage) {
+      // 引用的消息为图片时的点击事件
+      Message tempMsg = message;
+      tempMsg.content = referenceMessage.referMsg;
+      Navigator.pushNamed(context, "/image_preview", arguments: tempMsg);
+    } else if (referenceMessage.referMsg is FileMessage) {
+      // 引用的消息为文件时的点击事件
+      Message tempMsg = message;
+      tempMsg.content = referenceMessage.referMsg;
+      Navigator.pushNamed(context, "/file_preview", arguments: tempMsg);
+    } else if (referenceMessage.referMsg is RichContentMessage) {
+      // 引用的消息为图文时的点击事件
+      RichContentMessage richContentMessage = referenceMessage.referMsg;
+      Map param = {
+        "url": richContentMessage.url,
+        "title": richContentMessage.title
+      };
+      Navigator.pushNamed(context, "/webview", arguments: param);
+    } else {
+      // 引用的消息为文本时的点击事件
+    }
+  }
+
+  Widget _buildReferenceContent() {
+    Widget widget = WidgetUtil.buildEmptyWidget();
+    MessageContent messageContent = referenceMessage.referMsg;
+    if (messageContent is TextMessage) {
+      TextMessage textMessage = messageContent;
+      widget = Text(textMessage.content,
+          style: TextStyle(
+              fontSize: RCFont.BottomReferenceContentSize,
+              color: Color(RCColor.BottomReferenceContentColor)));
+    } else if (messageContent is ImageMessage) {
+      ImageMessage imageMessage = messageContent;
+      Widget imageWidget;
+      if (imageMessage.content != null && imageMessage.content.length > 0) {
+        Uint8List bytes = base64.decode(imageMessage.content);
+        imageWidget = Image.memory(bytes);
+      } else {
+        if (imageMessage.localPath != null) {
+          String path =
+              MediaUtil.instance.getCorrectedLocalPath(imageMessage.localPath);
+          File file = File(path);
+          if (file != null && file.existsSync()) {
+            imageWidget = Image.file(file);
+          } else {
+            imageWidget = CachedNetworkImage(
+              progressIndicatorBuilder: (context, url, progress) =>
+                  CircularProgressIndicator(
+                value: progress.progress,
+              ),
+              imageUrl: imageMessage.imageUri,
+            );
+          }
+        } else {
+          imageWidget = CachedNetworkImage(
+            progressIndicatorBuilder: (context, url, progress) =>
+                CircularProgressIndicator(
+              value: progress.progress,
+            ),
+            imageUrl: imageMessage.imageUri,
+          );
+        }
+      }
+      widget = Container(
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width - 150,
+        ),
+        child: imageWidget,
+      );
+    } else if (messageContent is FileMessage) {
+      FileMessage fileMessage = messageContent;
+      widget = Text("[文件] ${fileMessage.mName}",
+          style: TextStyle(
+              fontSize: RCFont.BottomReferenceContentSize,
+              color: Color(RCColor.BottomReferenceContentColorFile)));
+    } else if (messageContent is RichContentMessage) {
+      RichContentMessage richContentMessage = messageContent;
+      widget = Text("[图文] ${richContentMessage.title}",
+          style: TextStyle(
+              fontSize: RCFont.BottomReferenceContentSize,
+              color: Color(RCColor.BottomReferenceContentColorFile)));
+    } else if (messageContent is ReferenceMessage) {
+      ReferenceMessage referenceMessage = messageContent;
+      widget = Text(referenceMessage.content,
+          style: TextStyle(
+              fontSize: RCFont.BottomReferenceContentSize,
+              color: Color(RCColor.BottomReferenceContentColorFile)));
+    }
+    return widget;
+  }
+
+  void setInfo(String userId) {
+    example.UserInfo userInfo =
+        example.UserInfoDataSource.cachedUserMap[userId];
+    if (userInfo != null) {
+      this.referenceUserInfo = userInfo;
+    } else {
+      example.UserInfoDataSource.getUserInfo(userId).then((onValue) {
+        setState(() {
+          this.referenceUserInfo = onValue;
+        });
+      });
+    }
+  }
+
+  void makeReferenceMessage(Message message) {
+    if (message != null) {
+      this.message = message;
+      referenceMessage = ReferenceMessage();
+      referenceMessage.referMsgUserId = message.senderUserId;
+      referenceMessage.referMsg = message.content;
+      setInfo(referenceMessage.referMsgUserId);
+    } else {
+      referenceMessage = null;
+    }
+    _refreshUI();
+  }
+
+  ReferenceMessage getReferenceMessage() {
+    return referenceMessage;
+  }
+
+  void clearReferenceMessage() {
+    referenceMessage = null;
+    message = null;
+    _refreshUI();
   }
 }
 

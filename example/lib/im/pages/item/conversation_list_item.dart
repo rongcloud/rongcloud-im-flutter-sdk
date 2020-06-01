@@ -6,6 +6,7 @@ import 'widget_util.dart';
 import '../../util/style.dart';
 import '../../util/time.dart';
 import '../../util/user_info_datesource.dart' as example;
+import 'dart:developer' as developer;
 
 class ConversationListItem extends StatefulWidget {
   final Conversation conversation;
@@ -20,6 +21,7 @@ class ConversationListItem extends StatefulWidget {
 }
 
 class _ConversationListItemState extends State<ConversationListItem> {
+  String pageName = "example.ConversationListItem";
   Conversation conversation;
   ConversationListItemDelegate delegate;
   example.BaseInfo info;
@@ -36,7 +38,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
     if (this.delegate != null) {
       this.delegate.didTapConversation(this.conversation);
     } else {
-      print("没有实现 ConversationListItemDelegate");
+      developer.log("没有实现 ConversationListItemDelegate", name: pageName);
     }
   }
 
@@ -44,7 +46,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
     if (this.delegate != null) {
       this.delegate.didLongPressConversation(this.conversation, this.tapPos);
     } else {
-      print("没有实现 ConversationListItemDelegate");
+      developer.log("没有实现 ConversationListItemDelegate", name: pageName);
     }
   }
 

@@ -5,6 +5,7 @@ import 'common_define.dart';
 import 'util/message_factory.dart';
 import 'method_key.dart';
 import 'info/connection_status_convert.dart';
+import 'dart:developer' as developer;
 
 class RongIMClient {
   static final MethodChannel _channel =
@@ -140,8 +141,9 @@ class RongIMClient {
       String pushData,
       Function(int messageId, int status, int code) finished) async {
     if (conversationType == null || targetId == null || content == null) {
-      print(
-          "send message fail: conversationType or targetId or content is null");
+      developer.log(
+          "send message fail: conversationType or targetId or content is null",
+          name: "RongIMClient");
       return null;
     }
     if (pushContent == null) {
@@ -202,12 +204,13 @@ class RongIMClient {
       String pushData,
       Function(int messageId, int status, int code) finished}) async {
     if (conversationType == null || targetId == null || content == null) {
-      print(
-          "send directional message fail: conversationType or targetId or content is null");
+      developer.log(
+          "send directional message fail: conversationType or targetId or content is null",
+          name: "RongIMClient");
       return null;
     }
     if (userIdList.length <= 0) {
-      print("userIdList 为空");
+      developer.log("userIdList 为空", name: "RongIMClient");
       return null;
     }
     if (pushContent == null) {
@@ -295,7 +298,9 @@ class RongIMClient {
   static Future<List> getHistoryMessages(int conversationType, String targetId,
       int sentTime, int beforeCount, int afterCount) async {
     if (conversationType == null || targetId == null) {
-      print("getHistoryMessages error: conversationType or targetId null");
+      developer.log(
+          "getHistoryMessages error: conversationType or targetId null",
+          name: "RongIMClient");
       return null;
     }
     Map map = {
@@ -321,7 +326,9 @@ class RongIMClient {
   static clearHistoryMessages(int conversationType, String targetId,
       int recordTime, bool clearRemote, Function(int code) finished) async {
     if (conversationType == null || targetId == null) {
-      print("getHistoryMessages error: conversationType or targetId null");
+      developer.log(
+          "getHistoryMessages error: conversationType or targetId null",
+          name: "RongIMClient");
       return null;
     }
     Map map = {
@@ -423,7 +430,9 @@ class RongIMClient {
   static Future<Conversation> getConversation(
       int conversationType, String targetId) async {
     if (conversationType == null || targetId == null) {
-      print("getConversation error, conversationType or targetId is null");
+      developer.log(
+          "getConversation error, conversationType or targetId is null",
+          name: "RongIMClient");
       return null;
     }
     Map param = {"conversationType": conversationType, "targetId": targetId};
@@ -1282,8 +1291,9 @@ class RongIMClient {
   static Future<RecallNotificationMessage> recallMessage(
       Message message, String pushContent) async {
     if (message == null) {
-      print(
-          "send message fail: conversationType or targetId or content is null");
+      developer.log(
+          "send message fail: conversationType or targetId or content is null",
+          name: "RongIMClient");
       return null;
     }
     if (pushContent == null) {
@@ -1297,8 +1307,9 @@ class RongIMClient {
     }
     String messageString = resultMap["recallNotificationMessage"];
     if (messageString == null || messageString.isEmpty) {
-      print(
-          "send message fail: conversationType or targetId or content is null");
+      developer.log(
+          "send message fail: conversationType or targetId or content is null",
+          name: "RongIMClient");
       return null;
     }
     RecallNotificationMessage msg = MessageFactory.instance
@@ -1311,8 +1322,9 @@ class RongIMClient {
   static Future<String> getTextMessageDraft(
       int conversationType, String targetId) async {
     if (conversationType == null || targetId == null) {
-      print(
-          "saveTextMessageDraft fail: conversationType or targetId or content is null");
+      developer.log(
+          "saveTextMessageDraft fail: conversationType or targetId or content is null",
+          name: "RongIMClient");
       return null;
     }
     Map paramMap = {
@@ -1328,8 +1340,9 @@ class RongIMClient {
   static Future<bool> saveTextMessageDraft(
       int conversationType, String targetId, String textContent) async {
     if (conversationType == null || targetId == null || textContent == null) {
-      print(
-          "saveTextMessageDraft fail: conversationType or targetId or content is null");
+      developer.log(
+          "saveTextMessageDraft fail: conversationType or targetId or content is null",
+          name: "RongIMClient");
       return null;
     }
     Map paramMap = {
@@ -1474,8 +1487,9 @@ class RongIMClient {
   static void deleteRemoteMessages(int conversationType, String targetId,
       List<Message> messages, Function(int code) finished) async {
     if (conversationType == null || targetId == null) {
-      print(
-          "deleteRemoteMessages fail: conversationType or targetId or content is null");
+      developer.log(
+          "deleteRemoteMessages fail: conversationType or targetId or content is null",
+          name: "RongIMClient");
       return null;
     }
     List<Map> msgMapList = List();
@@ -1498,8 +1512,9 @@ class RongIMClient {
   static void clearMessages(int conversationType, String targetId,
       Function(int code) finished) async {
     if (conversationType == null || targetId == null) {
-      print(
-          "clearMessages fail: conversationType or targetId or content is null");
+      developer.log(
+          "clearMessages fail: conversationType or targetId or content is null",
+          name: "RongIMClient");
       return null;
     }
     Map paramMap = {
@@ -1835,8 +1850,9 @@ class RongIMClient {
               onMessageReceivedWrapper(msg, left, hasPackage, offline);
             }
             if (count == 2) {
-              print(
-                  "警告：同时实现了 onMessageReceived 和 onMessageReceivedWrapper 两个接收消息的回调，可能会出现重复接收消息或者重复刷新的问题，建议只实现其中一个！！！");
+              developer.log(
+                  "警告：同时实现了 onMessageReceived 和 onMessageReceivedWrapper 两个接收消息的回调，可能会出现重复接收消息或者重复刷新的问题，建议只实现其中一个！！！",
+                  name: "RongIMClient");
             }
           }
           break;

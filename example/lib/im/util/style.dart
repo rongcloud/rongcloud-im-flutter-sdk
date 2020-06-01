@@ -11,11 +11,17 @@ class RCColor {
   static const ConListBorderColor = 0xff6C7B8B;
   static const ConListTopBgColor = 0xFFBBDEFB;
   static const ConCombineMsgContentColor = 0xFF9E9E9E;
+  static const ConReferenceMsgContentColor = 0xFF9E9E9E;
   //会话页面，消息相关颜色
   static const MessageSendBgColor = 0xffC8E9FD;
   static const MessageReceiveBgColor = 0xffffffff;
   static const MessageTimeBgColor = 0xffC8C8C8;
   static const MessageNameBgColor = 0xff9B9B9B;
+
+  // 底部引用消息
+  static const BottomReferenceNameColor = 0xff999999;
+  static const BottomReferenceContentColor = 0xff333333;
+  static const BottomReferenceContentColorFile = 0xff436EEE;
 }
 
 class RCFont {
@@ -32,11 +38,17 @@ class RCFont {
   static const double MessageNotifiFont = 15;
   static const double MessageCombineTitleFont = 12;
   static const double MessageCombineContentFont = 10;
+  static const double MessageReferenceTitleFont = 12;
+  static const double MessageReferenceContentFont = 10;
 
   //加号扩展栏
   static const double ExtIconSize = 40;
   static const double ExtTextFont = 13;
   static const double CommonPhrasesSize = 14;
+
+  // 底部引用消息
+  static const double BottomReferenceNameSize = 13;
+  static const double BottomReferenceContentSize = 14;
 }
 
 class RCLayout {
@@ -90,6 +102,9 @@ class RCLongPressAction {
 
   static const String MutiSelectKey = "MutiSelectMessage";
   static const String MutiSelectValue = "多选";
+
+  static const String ReferenceKey = "ReferenceMessage";
+  static const String ReferenceValue = "引用消息";
 }
 
 class RCString {

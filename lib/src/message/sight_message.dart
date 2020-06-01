@@ -1,5 +1,6 @@
 import 'message_content.dart';
 import 'dart:convert' show json;
+import 'dart:developer' as developer;
 
 //小视频消息
 //小视频消息使用必须在融云开发者后台进行开通
@@ -29,7 +30,8 @@ class SightMessage extends MessageContent {
   @override
   void decode(String jsonStr) {
     if (jsonStr == null || jsonStr == "") {
-      print("[RC-Flutter-IM] Flutter SightMessage deocde error: no content");
+      developer.log("Flutter SightMessage deocde error: no content",
+          name: "RongIMClient.SightMessage");
       return;
     }
     Map map = json.decode(jsonStr.toString());

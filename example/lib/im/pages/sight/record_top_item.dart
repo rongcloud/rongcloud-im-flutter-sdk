@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'dart:developer' as developer;
 
 enum RecordState {
   //正常 [返回,切换摄像头]
@@ -27,6 +28,7 @@ class TopRecordItem extends StatefulWidget {
 }
 
 class _TopRecordItemState extends State<TopRecordItem> {
+  String pageName = "example.TopRecordItem";
   TopRecordItemDelegate delegate;
 
   RecordState currentRecordState = RecordState.Normal;
@@ -109,7 +111,7 @@ class _TopRecordItemState extends State<TopRecordItem> {
     if (delegate != null) {
       delegate.didPop();
     } else {
-      print("没有实现 didPop");
+      developer.log("没有实现 didPop", name: pageName);
     }
   }
 
@@ -117,7 +119,7 @@ class _TopRecordItemState extends State<TopRecordItem> {
     if (delegate != null) {
       delegate.didSwitchCamera();
     } else {
-      print("没有实现 didSwitchCamera");
+      developer.log("没有实现 didSwitchCamera", name: pageName);
     }
   }
 

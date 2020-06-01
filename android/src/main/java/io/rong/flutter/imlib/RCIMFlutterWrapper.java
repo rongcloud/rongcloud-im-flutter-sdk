@@ -7,6 +7,8 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 
+import androidx.core.app.ActivityCompat;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,6 +53,7 @@ import io.rong.message.ImageMessage;
 import io.rong.message.MessageHandler;
 import io.rong.message.ReadReceiptMessage;
 import io.rong.message.RecallNotificationMessage;
+import io.rong.message.ReferenceMessage;
 import io.rong.message.SightMessage;
 import io.rong.message.VoiceMessage;
 
@@ -613,7 +616,11 @@ public class RCIMFlutterWrapper {
                 }
             } else {
                 content = newMessageContent(objectName, bytes);
+                if (objectName.equalsIgnoreCase("RC:ReferenceMsg")) {
+                    makeReferenceMessage(content, contentStr);
+                }
             }
+            // 处理引用消息内容丢失的问题
 
             if (content == null) {
                 RCLog.e(LOG_TAG + " message content is nil");
@@ -671,6 +678,32 @@ public class RCIMFlutterWrapper {
 //            msgMap.put("message", messageS);
 //            msgMap.put("status", 10);
 //            result.success(msgMap);
+        }
+    }
+
+    private void makeReferenceMessage(MessageContent content, String contentStr) {
+        if (content == null || TextUtils.isEmpty(contentStr)) {
+            return;
+        }
+        JSONObject jsonObject = null;
+        String objName;
+        try {
+            jsonObject = new JSONObject(contentStr);
+            if (jsonObject.has("objName")) {
+                objName = (String) jsonObject.get("objName");
+                // 处理引用内容为 ImageMessage
+                if (objName.equalsIgnoreCase("RC:ImgMsg")) {
+                    if (jsonObject.has("referMsg")) {
+                        JSONObject referMsgObject = (JSONObject) jsonObject.get("referMsg");
+                        if (referMsgObject.has("thumbUri")) {
+                            String thumbUri = (String) referMsgObject.get("thumbUri");
+                            ((ImageMessage) ((ReferenceMessage) content).getReferenceContent()).setThumUri(Uri.parse(thumbUri));
+                        }
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
@@ -3215,6 +3248,36 @@ public class RCIMFlutterWrapper {
         if (constructor == null || content == null) {
             return new UnknownMessage(content);
         }
+        // 单独处理引用消息
+//        String contentStr = content.toString();
+//        JSONObject contentObject = null;
+//        String objName = "";
+//        try {
+//            contentObject = new JSONObject(contentStr);
+//            if (contentObject.has("objName")) {
+//                objName = (String) contentObject.get("objName");
+//            }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        if (contentObject != null && "RC:ReferenceMsg".equalsIgnoreCase(objectName) && "RC:ImgMsg".equalsIgnoreCase(objName)) {
+//            String referenceContent = "";
+//            String referMsgUserId = "";
+//            try {
+//                if (contentObject.has("content")) {
+//                    referenceContent = (String) contentObject.get("content");
+//
+//                }
+//                if (contentObject.has("referMsgUserId")) {
+//                    referenceContent = (String) contentObject.get("referMsgUserId");
+//                }
+//                if (contentObject.)
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//
+//        }
+//        else {
         try {
             result = constructor.newInstance(content);
         } catch (Exception e) {
@@ -3222,6 +3285,7 @@ public class RCIMFlutterWrapper {
             result = new UnknownMessage(content);
             FwLog.write(FwLog.F, FwLog.MSG, "L-decode_msg-E", "msg_type|stacks", objectName, FwLog.stackToString(e));
         }
+//        }
         return result;
     }
 

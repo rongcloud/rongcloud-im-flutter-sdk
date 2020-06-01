@@ -9,8 +9,10 @@ import '../../util/media_util.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 import '../../util/style.dart';
+import 'dart:developer' as developer;
 
 class MessageItemFactory extends StatelessWidget {
+  final String pageName = "example.MessageItemFactory";
   final Message message;
   final bool needShow;
   const MessageItemFactory({Key key, this.message, this.needShow = true})
@@ -154,7 +156,8 @@ class MessageItemFactory extends StatelessWidget {
           },
         );
       } else {
-        print("GifMessage localPath && remoteUrl is null");
+        developer.log("GifMessage localPath && remoteUrl is null",
+            name: pageName);
       }
 
       double screenWidth = MediaQuery.of(context).size.width;
@@ -468,6 +471,97 @@ class MessageItemFactory extends StatelessWidget {
         ]));
   }
 
+  // 引用消息 item
+  Widget referenceMessageItem(BuildContext context) {
+    ReferenceMessage msg = message.content;
+    double screenWidth = MediaQuery.of(context).size.width;
+    return Container(
+        width: screenWidth - 140,
+        child: Column(children: <Widget>[
+          Container(
+            padding: EdgeInsets.fromLTRB(10, 4, 10, 4),
+            alignment: Alignment.centerLeft,
+            child: referenceWidget(msg),
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(10, 4, 10, 0),
+            width: double.infinity,
+            height: 1.0,
+            color: Color(0xFFF3F3F3),
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(10, 4, 10, 10),
+            alignment: Alignment.centerLeft,
+            child: Text(msg.content,
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                    fontSize: RCFont.MessageReferenceTitleFont,
+                    color: Colors.black)),
+          ),
+        ]));
+  }
+
+  // 被引用的消息 UI
+  Widget referenceWidget(ReferenceMessage msg) {
+    if (msg.referMsg is TextMessage) {
+      TextMessage textMessage = msg.referMsg;
+      return Text("${msg.referMsgUserId}:\n\n${textMessage.content}",
+          textAlign: TextAlign.left,
+          style: TextStyle(
+              fontSize: RCFont.MessageReferenceContentFont,
+              color: Color(RCColor.ConReferenceMsgContentColor)));
+    } else if (msg.referMsg is ImageMessage) {
+      ImageMessage imageMessage = msg.referMsg;
+      Widget widget;
+      if (imageMessage.content != null && imageMessage.content.length > 0) {
+        Uint8List bytes = base64.decode(imageMessage.content);
+        widget = Image.memory(bytes);
+      } else {
+        if (imageMessage.localPath != null) {
+          String path =
+              MediaUtil.instance.getCorrectedLocalPath(imageMessage.localPath);
+          File file = File(path);
+          if (file != null && file.existsSync()) {
+            widget = Image.file(file);
+          } else {
+            // widget = Image.network(msg.imageUri);
+            widget = CachedNetworkImage(
+              progressIndicatorBuilder: (context, url, progress) =>
+                  CircularProgressIndicator(
+                value: progress.progress,
+              ),
+              imageUrl: imageMessage.imageUri,
+            );
+          }
+        } else {
+          // widget = Image.network(msg.imageUri);
+          widget = CachedNetworkImage(
+            progressIndicatorBuilder: (context, url, progress) =>
+                CircularProgressIndicator(
+              value: progress.progress,
+            ),
+            imageUrl: imageMessage.imageUri,
+          );
+        }
+      }
+      return widget;
+    } else if (msg.referMsg is FileMessage) {
+      FileMessage fileMessage = msg.referMsg;
+      return Text("${msg.referMsgUserId}:\n\n[文件] ${fileMessage.mName}",
+          textAlign: TextAlign.left,
+          style: TextStyle(
+              fontSize: RCFont.MessageReferenceContentFont,
+              color: Color(RCColor.ConReferenceMsgContentColor)));
+    } else if (msg.referMsg is RichContentMessage) {
+      RichContentMessage richContentMessage = msg.referMsg;
+      return Text("${msg.referMsgUserId}:\n\n[图文] ${richContentMessage.title}",
+          textAlign: TextAlign.left,
+          style: TextStyle(
+              fontSize: RCFont.MessageReferenceContentFont,
+              color: Color(RCColor.ConReferenceMsgContentColor)));
+    }
+  }
+
   Widget messageItem(BuildContext context) {
     if (message.content is TextMessage) {
       return textMessageItem(context);
@@ -485,6 +579,10 @@ class MessageItemFactory extends StatelessWidget {
       return gifMessageItem(context);
     } else if (message.content is CombineMessage) {
       return combineMessageItem(context);
+    } else if (message.content is ReferenceMessage) {
+      return referenceMessageItem(context);
+    } else if (message.content is LocationMessage) {
+      return Text("位置消息 " + message.objectName);
     } else {
       return Text("无法识别消息 " + message.objectName);
     }

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'dart:developer' as developer;
 
 class WebViewPage extends StatefulWidget {
   final Map arguments;
@@ -17,6 +18,7 @@ class WebViewPage extends StatefulWidget {
 }
 
 class _WebViewPageState extends State<WebViewPage> {
+  String pageName = "example.WebViewPage";
   final String url;
   final String title;
   // final Completer<WebViewController> _controller =
@@ -99,7 +101,7 @@ class _WebViewPageState extends State<WebViewPage> {
       String type = map["type"];
       switch (type) {
         case FileMessage.objectName:
-          print("FileMessage click coming");
+          developer.log("FileMessage click coming", name: pageName);
           String fileName = map["fileName"];
           String fileUrl = map["fileUrl"];
           String fileSize = map["fileSize"];

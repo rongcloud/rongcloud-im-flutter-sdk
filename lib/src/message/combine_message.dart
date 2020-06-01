@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'message_content.dart';
+import 'dart:developer' as developer;
 
 class CombineMessage extends MessageContent {
   static const String objectName = "RC:CombineMsg";
@@ -45,15 +46,16 @@ class CombineMessage extends MessageContent {
       map["mentionedInfo"] = mentionedMap;
     }
     if (this.destructDuration != null && this.destructDuration > 0) {
-      map["burnDuration"] = this.destructDuration; 
+      map["burnDuration"] = this.destructDuration;
     }
     return json.encode(map);
   }
 
   @override
   void decode(String jsonStr) {
-    if(jsonStr == null || jsonStr == "") {
-      print("[RC-Flutter-IM] Flutter CombineMessage deocde error: no content");
+    if (jsonStr == null || jsonStr == "") {
+      developer.log("Flutter CombineMessage deocde error: no content",
+          name: "RongIMClient.CombineMessage");
       return;
     }
     Map map = json.decode(jsonStr);
@@ -86,5 +88,4 @@ class CombineMessage extends MessageContent {
   String getObjectName() {
     return objectName;
   }
-
 }

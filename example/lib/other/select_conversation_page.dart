@@ -8,6 +8,7 @@ import 'package:rongcloud_im_plugin_example/im/util/combine_message_util.dart';
 import 'package:rongcloud_im_plugin_example/im/util/dialog_util.dart';
 import 'package:rongcloud_im_plugin_example/im/util/style.dart';
 import '../im/util/event_bus.dart';
+import 'dart:developer' as developer;
 
 class SelectConversationPage extends StatefulWidget {
   // final List selectMessages;
@@ -23,6 +24,7 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
   final Map arguments;
   _SelectConversationPageState(this.arguments);
 
+  String pageName = "example.SelectConversationPage";
   List<Message> selectMessages;
   int forwardType; // 0:逐条转发，1:合并转发
   List conList = new List();
@@ -101,9 +103,9 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
       // 合并转发
       sendMessageByCombine();
     }
-    // RongIMClient.clearMessages(con.conversationType, con.targetId, (code) {
-    //   print("result:$code");
-    // });
+    RongIMClient.clearMessages(con.conversationType, con.targetId, (code) {
+      developer.log("result:$code", name: pageName);
+    });
   }
 
   void sendMessageByCombine() async {
@@ -116,28 +118,32 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
     // 这里不使用 loading，因为发消息时 sleep 会卡住动画
     DialogUtil.showAlertDiaLog(context, "消息转发中，请稍后...",
         confirmButton: FlatButton(onPressed: () {}, child: Text("")));
-    sendMessage(messageList,isCombineMsg: true);
+    sendMessage(messageList, isCombineMsg: true);
   }
 
   void sendMessageOneByOne() {
-    print("sendMessageOneByOne" +
-        selectMessages.toString() +
-        "转发的会话个数：" +
-        selectConList.length.toString());
+    developer.log(
+        "sendMessageOneByOne" +
+            selectMessages.toString() +
+            "转发的会话个数：" +
+            selectConList.length.toString(),
+        name: pageName);
     // 这里不使用 loading，因为发消息时 sleep 会卡住动画
     DialogUtil.showAlertDiaLog(context, "消息转发中，请稍后...",
         confirmButton: FlatButton(onPressed: () {}, child: Text("")));
     sendMessage(selectMessages);
   }
 
-  void sendMessage(List<Message> selectMessages ,{bool isCombineMsg = false}) async {
+  void sendMessage(List<Message> selectMessages,
+      {bool isCombineMsg = false}) async {
     Future.delayed(Duration(milliseconds: 400), () {
       for (Message msg in selectMessages) {
         for (Conversation con in selectConList) {
           // 转发时去掉消息原先携带的 sendUserInfo 和 mentionedInfo
           msg.content.sendUserInfo = null;
           msg.content.mentionedInfo = null;
-          if (TargetPlatform.android == defaultTargetPlatform && !isCombineMsg) {
+          if (TargetPlatform.android == defaultTargetPlatform &&
+              !isCombineMsg) {
             RongIMClient.forwardMessageByStep(
                 con.conversationType, con.targetId, msg);
           } else {

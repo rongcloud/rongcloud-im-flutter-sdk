@@ -1,11 +1,11 @@
 import 'dart:convert';
+import 'message_content.dart';
+import 'dart:developer' as developer;
 
-import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-
-class FileMessage extends MessageContent{
+class FileMessage extends MessageContent {
   static const String objectName = "RC:FileMsg";
   int mSize;
-  String mType;//后缀名，默认是 bin
+  String mType; //后缀名，默认是 bin
   int progress;
   String localPath;
   String mMediaUrl;
@@ -21,6 +21,11 @@ class FileMessage extends MessageContent{
 
   @override
   void decode(String jsonStr) {
+    if (jsonStr == null || jsonStr == "") {
+      developer.log("Flutter FileMessage deocde error: no content",
+          name: "RongIMClient.FileMessage");
+      return;
+    }
     Map map = json.decode(jsonStr);
     this.mName = map["name"];
     this.mType = map["type"];
@@ -73,7 +78,7 @@ class FileMessage extends MessageContent{
       map["mentionedInfo"] = mentionedMap;
     }
     // if (this.destructDuration != null && this.destructDuration > 0) {
-    //   map["burnDuration"] = this.destructDuration; 
+    //   map["burnDuration"] = this.destructDuration;
     // }
     return json.encode(map);
   }
@@ -87,5 +92,4 @@ class FileMessage extends MessageContent{
   String getObjectName() {
     return objectName;
   }
-
 }

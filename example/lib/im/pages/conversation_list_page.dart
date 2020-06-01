@@ -13,6 +13,7 @@ import '../util/style.dart';
 import '../util/event_bus.dart';
 import '../util/dialog_util.dart';
 import '../../other/login_page.dart';
+import 'dart:developer' as developer;
 
 class ConversationListPage extends StatefulWidget {
   @override
@@ -23,6 +24,7 @@ class ConversationListPage extends StatefulWidget {
 
 class _ConversationListPageState extends State<ConversationListPage>
     implements ConversationListItemDelegate {
+  String pageName = "example.ConversationListPage";
   List conList = new List();
   List<int> displayConversationType = [
     RCConversationType.Private,
@@ -184,7 +186,7 @@ class _ConversationListPageState extends State<ConversationListPage>
           : RCLongPressAction.SetConversationToTopValue
     };
     WidgetUtil.showLongPressMenu(context, tapPos, actionMap, (String key) {
-      print("当前选中的是 " + key);
+      developer.log("当前选中的是 " + key, name: pageName);
       if (key == RCLongPressAction.DeleteConversationKey) {
         _deleteConversation(conversation);
       } else if (key == RCLongPressAction.ClearUnreadKey) {
@@ -196,7 +198,7 @@ class _ConversationListPageState extends State<ConversationListPage>
         }
         _setConversationToTop(conversation, isTop);
       } else {
-        print("未实现操作 " + key);
+        developer.log("未实现操作 " + key, name: pageName);
       }
     });
   }

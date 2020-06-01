@@ -8,11 +8,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'dart:developer' as developer;
 
 ///媒体工具，负责申请权限，选照片，拍照，录音，播放语音
 class MediaUtil {
   FlutterSound flutterSound = new FlutterSound();
 
+  String pageName = "example.MediaUtil";
   factory MediaUtil() => _getInstance();
   static MediaUtil get instance => _getInstance();
   static MediaUtil _instance;
@@ -36,7 +38,10 @@ class MediaUtil {
       Permission.microphone,
       Permission.storage
     ].request();
-    print(statuses[Permission.location]);
+    for (var status in statuses.keys) {
+      developer.log(status.toString() + "：" + statuses[status].toString(),
+          name: pageName);
+    }
   }
 
   //拍照，成功则返回照片的本地路径，注：Android 必须要加 file:// 头
@@ -73,10 +78,10 @@ class MediaUtil {
 
   //开始录音
   void startRecordAudio() async {
-    print("debug 准备录音并检查权限");
+    developer.log("debug 准备录音并检查权限", name: pageName);
     bool hasPermission = await FlutterAudioRecorder.hasPermissions;
     if (hasPermission) {
-      print("debug 录音权限已开启");
+      developer.log("debug 录音权限已开启", name: pageName);
       Directory tempDir = await getTemporaryDirectory();
       String tempPath = tempDir.path +
           "/" +
@@ -86,7 +91,7 @@ class MediaUtil {
           audioFormat: AudioFormat.AAC); // or AudioFormat.WAV
       await _recorder.initialized;
       await _recorder.start();
-      print("debug 开始录音");
+      developer.log("debug 开始录音", name: pageName);
     } else {
       Fluttertoast.showToast(
           msg: "录音权限未开启",
@@ -102,8 +107,11 @@ class MediaUtil {
   //录音结束，通过 finished 返回本地路径和语音时长，注：Android 必须要加 file:// 头
   void stopRecordAudio(Function(String path, int duration) finished) async {
     var result = await _recorder.stop();
-    print("Stop recording: ${result.path}");
-    print("Stop recording: ${result.duration}");
+    developer.log(
+        "Stop recording: path = ${result.path}，duration = ${result.duration}",
+        name: pageName);
+    developer.log("Stop recording: duration = ${result.duration}",
+        name: pageName);
     if (result.duration.inSeconds > 0) {
       String path = result.path;
       if (path == null) {

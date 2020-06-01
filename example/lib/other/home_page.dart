@@ -8,6 +8,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../im/util/event_bus.dart';
+import 'dart:developer' as developer;
 
 class HomePage extends StatefulWidget {
   @override
@@ -17,6 +18,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  String pageName = "example.HomePage";
   final List<BottomNavigationBarItem> tabbarList = [
     new BottomNavigationBarItem(
       icon: new Icon(Icons.chat, color: Colors.grey),
@@ -54,14 +56,17 @@ class _HomePageState extends State<HomePage> {
     if (token != null && token.length > 0) {
       // int rc = await RongIMClient.connect(token);
       RongIMClient.connect(token, (int code, String userId) {
-        print('connect result ' + code.toString());
+        developer.log("connect result " + code.toString(),
+            name: pageName);
         EventBus.instance.commit(EventKeys.UpdateNotificationQuietStatus, {});
         if (code == 31004 || code == 12) {
+          developer.log("connect result " + code.toString(),
+              name: pageName);
           Navigator.of(context).pushAndRemoveUntil(
               new MaterialPageRoute(builder: (context) => new LoginPage()),
               (route) => route == null);
         } else if (code == 0) {
-          print("connect userId" + userId);
+          developer.log("connect userId" + userId, name: pageName);
           // 连接成功后打开数据库
           // _initUserInfoCache();
         }

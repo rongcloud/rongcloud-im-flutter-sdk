@@ -3,6 +3,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../im/util/code_util.dart';
 import '../im/util/dialog_util.dart';
+import 'dart:developer' as developer;
 
 class ChatRoomDebugPage extends StatefulWidget {
   @override
@@ -10,6 +11,7 @@ class ChatRoomDebugPage extends StatefulWidget {
 }
 
 class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
+  String pageName = "example.ChatRoomDebugPage";
   List titles;
   String targetId = "kvchatroom1";
 
@@ -43,7 +45,7 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
   }
 
   void _didTap(int index) {
-    print("did tap debug " + titles[index]);
+    developer.log("did tap debug " + titles[index], name: pageName);
     switch (index) {
       case 0:
         _joinChatRoom();
