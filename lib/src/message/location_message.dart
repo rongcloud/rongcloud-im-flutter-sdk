@@ -44,7 +44,8 @@ class LocationMessage extends MessageContent {
       "longitude": this.mLng,
       "poi": mPoi,
       "mBase64": mBase64,
-      "mImgUri": mImgUri
+      "mImgUri": mImgUri,
+      "content": mBase64
     };
     if (this.sendUserInfo != null) {
       Map userMap = super.encodeUserInfo(this.sendUserInfo);

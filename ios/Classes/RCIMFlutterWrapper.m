@@ -374,7 +374,18 @@
         RCMessageContent *content = nil;
         if([objName isEqualToString:RCVoiceMessageTypeIdentifier]) {
             content = [self getVoiceMessage:data];
-        }else {
+        } else if ([objName isEqualToString:RCLocationMessageTypeIdentifier]) {
+            NSDictionary *msgDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+            NSString *thumbnailBase64String = [msgDic valueForKey:@"content"];
+            double latitude = [[msgDic valueForKey:@"latitude"] doubleValue];
+            double longitude = [[msgDic valueForKey:@"longitude"] doubleValue];
+            NSString *imageUri = [msgDic valueForKey:@"mImgUri"];
+            UIImage *image = [UIImage imageWithContentsOfFile:imageUri];
+            CLLocationCoordinate2D location = CLLocationCoordinate2DMake(latitude, longitude);
+            NSString *poi = [msgDic valueForKey:@"poi"];
+            RCLocationMessage *locationMessage = [RCLocationMessage messageWithLocationImage:image location:location locationName:poi];
+            content = locationMessage;
+        } else {
             content = [[RCMessageMapper sharedMapper] messageContentWithClass:clazz fromData:data];
         }
         if(content == nil) {
