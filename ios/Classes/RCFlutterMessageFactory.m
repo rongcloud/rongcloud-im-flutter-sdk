@@ -89,6 +89,11 @@
             [dic setObject:@"" forKey:@"content"];
         }
     } else {
+        if ([content isKindOfClass:[RCFileMessage class]]) {
+            content = [self converFileMessage:content];
+        } else if ([content isKindOfClass:[RCReferenceMessage class]]) {
+            content = [self converReferenceMessage:content];
+        }
         NSData *data = content.encode;
         NSString *contentStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
         [dic setObject:contentStr forKey:@"content"];
@@ -141,6 +146,12 @@
     [dic setObject:@(conversation.mentionedCount) forKey:@"mentionedCount"];
     [dic setObject:conversation.draft forKey:@"draft"];
     RCMessageContent *content = conversation.lastestMessage;
+    content = [self convertLocalPathIfNeed:content];
+    if ([content isKindOfClass:[RCFileMessage class]]) {
+        content = [self converFileMessage:content];
+    } else if ([content isKindOfClass:[RCReferenceMessage class]]) {
+        content = [self converReferenceMessage:content];
+    }
     NSData *data = content.encode;
     NSString *contentStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     [dic setObject:contentStr forKey:@"content"];
@@ -168,7 +179,7 @@
     if([message.objectName isEqualToString:RCVoiceMessageTypeIdentifier]) {
         content = [self getVoiceMessage:data];
     }else {
-         content = [[RCMessageMapper sharedMapper] messageContentWithClass:clazz fromData:data];
+        content = [[RCMessageMapper sharedMapper] messageContentWithClass:clazz fromData:data];
     }
     message.content = content;
     return message;
@@ -177,6 +188,11 @@
 + (NSString *)messageContent2String:(RCMessageContent *)content {
     if (!content) {
         return @"";
+    }
+    if ([content isKindOfClass:[RCFileMessage class]]) {
+        content = [self converFileMessage:content];
+    } else if ([content isKindOfClass:[RCReferenceMessage class]]) {
+        content = [self converReferenceMessage:content];
     }
     NSData *data = content.encode;
     NSString *contentStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
