@@ -494,15 +494,9 @@
         sightMsg.extra = extra;
     } else if ([objName isEqualToString:@"RC:FileMsg"]) {
         NSString *extra = [msgDic valueForKey:@"extra"] ?: @"";
-        NSString *name = [msgDic valueForKey:@"name"] ?: @"";
-        int size = [msgDic valueForKey:@"size"] ?: 0;
-        NSString *type = [msgDic valueForKey:@"type"] ?: @"bin";
         content = [RCFileMessage messageWithFile:localPath];
         RCFileMessage *fileMsg = (RCFileMessage *)content;
-        fileMsg.name = name;
         fileMsg.extra = extra;
-        fileMsg.size = size;
-        fileMsg.type = type;
     } else if ([objName isEqualToString:@"RC:GIFMsg"]) {
         NSString *extra = [msgDic valueForKey:@"extra"];
         long width = [[msgDic valueForKey:@"width"] longValue];
