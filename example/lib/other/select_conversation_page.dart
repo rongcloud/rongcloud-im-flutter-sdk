@@ -103,9 +103,9 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
       // 合并转发
       sendMessageByCombine();
     }
-    RongIMClient.clearMessages(con.conversationType, con.targetId, (code) {
-      developer.log("result:$code", name: pageName);
-    });
+    // RongIMClient.clearMessages(con.conversationType, con.targetId, (code) {
+    //   developer.log("result:$code", name: pageName);
+    // });
   }
 
   void sendMessageByCombine() async {
