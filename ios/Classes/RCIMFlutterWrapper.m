@@ -513,7 +513,10 @@
         NSString *localPath = [msgDic valueForKey:@"localPath"];
         localPath = [self getCorrectLocalPath:localPath];
         NSString *extra = [msgDic valueForKey:@"extra"];
-        NSArray * nameList = [msgDic valueForKey:@"nameList"] ?: @[];
+        NSArray * nameList = @[];
+        if (![[msgDic valueForKey:@"nameList"] isKindOfClass:[NSNull class]]) {
+            nameList = [msgDic valueForKey:@"nameList"];
+        }
         NSArray * summaryList = [msgDic valueForKey:@"summaryList"] ?: @[];
         RCConversationType type = [param[@"conversationType"] integerValue];
         
