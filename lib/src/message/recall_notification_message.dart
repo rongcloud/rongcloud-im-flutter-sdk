@@ -28,7 +28,8 @@ class RecallNotificationMessage extends MessageContent {
     this.mAdmin = map["admin"];
     this.mDelete = map["delete"];
     this.recallContent = map["recallContent"];
-    this.recallActionTime = map["recallActionTime"] != null ? map["recallActionTime"] : 0;
+    this.recallActionTime =
+        map["recallActionTime"] != null ? map["recallActionTime"] : 0;
     Map userMap = map["user"];
     super.decodeUserInfo(userMap);
     Map menthionedMap = map["mentionedInfo"];

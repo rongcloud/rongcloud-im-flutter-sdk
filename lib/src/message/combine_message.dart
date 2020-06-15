@@ -69,7 +69,7 @@ class CombineMessage extends MessageContent {
     } else {
       this.nameList = List();
     }
-    
+
     this.summaryList = List<String>.from(map["summaryList"]);
     this.extra = map["extra"];
     Map userMap = map["user"];

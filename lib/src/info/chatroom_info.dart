@@ -1,8 +1,6 @@
-
-
 class ChatRoomInfo {
   String targetId;
-  int memberOrder;//参考 RCChatRoomMemberOrder
+  int memberOrder; //参考 RCChatRoomMemberOrder
   List memberInfoList;
   int totalMemeberCount;
 }

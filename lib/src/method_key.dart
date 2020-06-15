@@ -1,4 +1,3 @@
-
 //method list
 class RCMethodKey {
   static const String Init = 'init';
@@ -23,9 +22,12 @@ class RCMethodKey {
   static const String InsertOutgoingMessage = 'insertOutgoingMessage';
   static const String GetTotalUnreadCount = 'getTotalUnreadCount';
   static const String GetUnreadCountTargetId = 'getUnreadCountTargetId';
-  static const String GetUnreadCountConversationTypeList = 'getUnreadCountConversationTypeList';
-  static const String SetConversationNotificationStatus = 'setConversationNotificationStatus';
-  static const String GetConversationNotificationStatus = 'getConversationNotificationStatus';
+  static const String GetUnreadCountConversationTypeList =
+      'getUnreadCountConversationTypeList';
+  static const String SetConversationNotificationStatus =
+      'setConversationNotificationStatus';
+  static const String GetConversationNotificationStatus =
+      'getConversationNotificationStatus';
   static const String RemoveConversation = 'RemoveConversation';
   static const String GetBlockedConversationList = 'getBlockedConversationList';
   static const String SetConversationToTop = 'setConversationToTop';
@@ -49,7 +51,8 @@ class RCMethodKey {
   static const String SendTypingStatus = 'sendTypingStatus';
   static const String DownloadMediaMessage = 'downloadMediaMessage';
   static const String SetNotificationQuietHours = 'setNotificationQuietHours';
-  static const String RemoveNotificationQuietHours = 'removeNotificationQuietHours';
+  static const String RemoveNotificationQuietHours =
+      'removeNotificationQuietHours';
   static const String GetNotificationQuietHours = 'getNotificationQuietHours';
   static const String GetUnreadMentionedMessages = 'getUnreadMentionedMessages';
   static const String SendDirectionalMessage = 'sendDirectionalMessage';
@@ -69,9 +72,9 @@ class RCMethodKey {
   static const String SetReconnectKickEnable = 'setReconnectKickEnable';
   static const String GetConnectionStatus = 'getConnectionStatus';
   static const String CancelDownloadMediaMessage = 'cancelDownloadMediaMessage';
-  static const String GetRemoteChatRoomHistoryMessages = 'getRemoteChatRoomHistoryMessages';
+  static const String GetRemoteChatRoomHistoryMessages =
+      'getRemoteChatRoomHistoryMessages';
   static const String GetMessageByUId = 'getMessageByUId';
-
 
   // 聊天室状态存储
   static const String SetChatRoomEntry = 'SetChatRoomEntry';
@@ -90,7 +93,8 @@ class RCMethodCallBackKey {
   static const String JoinChatRoom = 'joinChatRoomCallBack';
   static const String QuitChatRoom = 'quitChatRoomCallBack';
   static const String UploadMediaProgress = 'uploadMediaProgressCallBack';
-  static const String GetRemoteHistoryMessages = 'getRemoteHistoryMessagesCallBack';
+  static const String GetRemoteHistoryMessages =
+      'getRemoteHistoryMessagesCallBack';
   static const String ConnectionStatusChange = 'ConnectionStatusChangeCallBack';
   static const String SendDataToFlutter = 'SendDataToFlutterCallBack';
   static const String ReceiveReadReceipt = 'ReceiveReadReceiptCallBack';

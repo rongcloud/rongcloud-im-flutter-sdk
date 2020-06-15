@@ -9,47 +9,47 @@ import '../common_define.dart';
 ///具体可以参见对应平台的枚举： iOS 的 [RCConnectionStatus] 和 Android 的 [ConnectionStatus]
 class ConnectionStatusConvert {
   static int convert(int originCode) {
-    if(TargetPlatform.android == defaultTargetPlatform) {
+    if (TargetPlatform.android == defaultTargetPlatform) {
       return _convertAndroid(originCode);
-    }else if(TargetPlatform.iOS == defaultTargetPlatform) {
+    } else if (TargetPlatform.iOS == defaultTargetPlatform) {
       return _convertIOS(originCode);
     }
     return originCode;
   }
 
   static int _convertIOS(int originCode) {
-    if(originCode == 0) {
+    if (originCode == 0) {
       return RCConnectionStatus.Connected;
-    }else if(originCode == 10) {
+    } else if (originCode == 10) {
       return RCConnectionStatus.Connecting;
-    }else if(originCode == 6) {
+    } else if (originCode == 6) {
       return RCConnectionStatus.KickedByOtherClient;
-    }else if(originCode == 1) {
+    } else if (originCode == 1) {
       return RCConnectionStatus.NetworkUnavailable;
-    }else if(originCode == 31004) {
+    } else if (originCode == 31004) {
       return RCConnectionStatus.TokenIncorrect;
-    }else if(originCode == 31011) {
+    } else if (originCode == 31011) {
       return RCConnectionStatus.UserBlocked;
-    }else if (originCode == 12) {
+    } else if (originCode == 12) {
       return RCConnectionStatus.DisConnected;
     }
     return originCode;
   }
-  
+
   static int _convertAndroid(int originCode) {
-    if(originCode == 0) {
+    if (originCode == 0) {
       return RCConnectionStatus.Connected;
-    }else if(originCode == 1) {
+    } else if (originCode == 1) {
       return RCConnectionStatus.Connecting;
-    }else if(originCode == 2) {
+    } else if (originCode == 2) {
       return RCConnectionStatus.DisConnected;
-    }else if(originCode == 3) {
+    } else if (originCode == 3) {
       return RCConnectionStatus.KickedByOtherClient;
-    }else if(originCode == -1) {
+    } else if (originCode == -1) {
       return RCConnectionStatus.NetworkUnavailable;
-    }else if(originCode == 4) {
+    } else if (originCode == 4) {
       return RCConnectionStatus.TokenIncorrect;
-    }else if(originCode == 6) {
+    } else if (originCode == 6) {
       return RCConnectionStatus.UserBlocked;
     }
     return originCode;

@@ -2,9 +2,9 @@ import '../common_define.dart';
 
 class MessageContent implements MessageCoding, MessageContentView {
   // 消息内容中携带的发送者的用户信息
-  UserInfo sendUserInfo; 
+  UserInfo sendUserInfo;
   // 消息中的 @ 提醒信息
-  MentionedInfo mentionedInfo; 
+  MentionedInfo mentionedInfo;
   // 焚烧时间，默认是 0，0 代表该消息非阅后即焚消息。
   int destructDuration = 0;
   @override
@@ -28,7 +28,7 @@ class MessageContent implements MessageCoding, MessageContentView {
   String getObjectName() {
     return null;
   }
-  
+
   void decodeUserInfo(Map userMap) {
     if (userMap == null) {
       return;
@@ -70,7 +70,8 @@ class MessageContent implements MessageCoding, MessageContentView {
       if (mentionedMap["userIdList"] == null) {
         return;
       }
-      List<String> userIdList = new List<String>.from(mentionedMap["userIdList"]);
+      List<String> userIdList =
+          new List<String>.from(mentionedMap["userIdList"]);
       mentionedInfo.userIdList = userIdList;
     }
     mentionedInfo.mentionedContent = mentionedMap["mentionedContent"];
@@ -83,7 +84,8 @@ class MessageContent implements MessageCoding, MessageContentView {
       if (mentionedInfo.type != null) {
         mentionedMap["type"] = mentionedInfo.type;
       }
-      if (mentionedInfo.type == RCMentionedType.Users && mentionedInfo.userIdList != null) {
+      if (mentionedInfo.type == RCMentionedType.Users &&
+          mentionedInfo.userIdList != null) {
         mentionedMap["userIdList"] = mentionedInfo.userIdList;
       }
       if (mentionedInfo.mentionedContent != null) {
@@ -121,9 +123,9 @@ class UserInfo {
 // 消息中的 @ 提醒信息
 class MentionedInfo {
   // @ 提醒的类型，参见枚举 [RCMentionedType]
-  int/*RCMentionedType*/ type;
+  int /*RCMentionedType*/ type;
   // @ 的用户 ID 列表，如果 type 是 @ 所有人，则可以传 nil
-  List<String> userIdList; 
+  List<String> userIdList;
   // 包含 @ 提醒的消息，建议用做本地通知和远程推送显示的内容
-  String mentionedContent; 
+  String mentionedContent;
 }
