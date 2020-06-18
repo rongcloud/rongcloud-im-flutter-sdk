@@ -131,7 +131,7 @@ class RongIMClient {
   /// 自定义类型的消息，需要您自己设置pushContent和pushData来定义推送内容，否则将不会进行远程推送。
   ///
   ///
-  /// 发送消息之后有两种查看结果的方式：1、发送消息的 callback 2、onMessageSend；推荐使用 callback 的方式
+  /// 发送消息之后有两种查看结果的方式：1、发送消息的 callback（消息插入数据库时会走一次 onMessageSend） 2、onMessageSend；推荐使用 callback 的方式
   /// 如果未实现此方法的 callback，则会通过 onMessageSend 返回发送消息的结果
   static Future<Message> sendMessageWithCallBack(
       int conversationType,
