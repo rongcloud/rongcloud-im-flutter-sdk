@@ -293,18 +293,17 @@
     [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSString class]]) {
         NSString *token = (NSString *)arg;
-        [[RCIMClient sharedRCIMClient] connectWithToken:token success:^(NSString *userId) {
+        [[RCIMClient sharedRCIMClient] connectWithToken:token dbOpened:^(RCDBErrorCode code) {
+            [RCLog i:[NSString stringWithFormat:@"%@ dbOpened，code: %@",LOG_TAG, @(code)]];
+        } success:^(NSString *userId) {
             [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
             NSMutableDictionary *dic = [NSMutableDictionary new];
             [dic setObject:userId forKey:@"userId"];
             [dic setObject:@(0) forKey:@"code"];
             result(dic);
-        } error:^(RCConnectErrorCode status) {
-            [RCLog i:[NSString stringWithFormat:@"%@ fail %@",LOG_TAG,@(status)]];
-            result(@{@"code":@(status), @"userId":@""});
-        } tokenIncorrect:^{
-            [RCLog i:[NSString stringWithFormat:@"%@ fail %@",LOG_TAG,@(RC_CONN_TOKEN_INCORRECT)]];
-            result(@{@"code":@(RC_CONN_TOKEN_INCORRECT), @"userId":@""});
+        } error:^(RCConnectErrorCode errorCode) {
+            [RCLog i:[NSString stringWithFormat:@"%@ fail %@",LOG_TAG,@(errorCode)]];
+            result(@{@"code":@(errorCode), @"userId":@""});
         }];
     }
 }
@@ -1245,7 +1244,9 @@
     [[RCIMClient sharedRCIMClient] getNotificationQuietHours:^(NSString *startTime, int spansMin) {
         NSMutableDictionary *dict = [NSMutableDictionary new];
         [dict setObject:@(0) forKey:@"code"];
-        [dict setObject:startTime forKey:@"startTime"];
+        if (startTime) {
+            [dict setObject:startTime forKey:@"startTime"];
+        }
         [dict setObject:@(spansMin) forKey:@"spansMin"];
         result(dict);
     } error:^(RCErrorCode status) {
