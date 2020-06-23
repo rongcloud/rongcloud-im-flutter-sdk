@@ -272,12 +272,16 @@ class _VideoRecordPageState extends State<VideoRecordPage>
       developer.log("onFinishEvent con $conversationType targetId $targetId",
           name: pageName);
       SightMessage sightMessage = SightMessage.obtain(videoPath, recodeTime);
-      if (conversationType == RCConversationType.Private) {
+      if (sightMessage.duration != null && sightMessage.duration > 0) {
+        if (conversationType == RCConversationType.Private) {
         sightMessage.destructDuration =
             isSecretChat ? RCDuration.MediaMessageBurnDuration + recodeTime : 0;
       }
       RongIMClient.sendMessage(conversationType, targetId, sightMessage);
       _saveVideo(videoPath);
+      } else {
+        developer.log("sightMessage duration is 0", name: pageName);
+      }
       onPop();
     } else {
       developer.log("onFinishEvent videoPath is null", name: pageName);

@@ -35,6 +35,10 @@
 }
 
 + (UIImage *)getThumbnailImage:(NSString *)thumbnailBase64String {
+    if (!thumbnailBase64String) {
+        NSLog(@"getThumbnailImage thumbnailBase64String is nil");
+        return nil;;
+    }
     NSData *imageData = nil;
     if (class_getInstanceMethod([NSData class], @selector(initWithBase64EncodedString:options:))) {
         imageData = [[NSData alloc] initWithBase64EncodedString:thumbnailBase64String options:NSDataBase64DecodingIgnoreUnknownCharacters];
