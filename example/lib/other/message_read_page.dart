@@ -26,20 +26,28 @@ class _MessageReadPageState extends State<MessageReadPage> {
   }
 
   _addFriends() async {
-    List users = await _getRandomUserInfos();
-    for (example.UserInfo u in users) {
+    await _getRandomUserInfos();
+    for (example.UserInfo u in this.userList) {
       this.widgetList.add(getWidget(u));
     }
+    setState(() {});
   }
 
-  Future<List<example.UserInfo>> _getRandomUserInfos() async {
+  Future<void> _getRandomUserInfos() async {
     Map userIdList = message.readReceiptInfo.userIdList;
     if (userIdList != null) {
       for (String key in userIdList.keys) {
-        this.userList.add(await example.UserInfoDataSource.getUserInfo(key));
+        example.UserInfo userInfo =
+            example.UserInfoDataSource.cachedUserMap[key];
+        if (userInfo == null) {
+          userInfo = await example.UserInfoDataSource.getUserInfo(key);
+        }
+        if (userInfo != null) {
+          this.userList.add(userInfo);
+        }
       }
+      // return this.userList;
     }
-    return this.userList;
   }
 
   Widget getWidget(example.UserInfo user) {
@@ -71,8 +79,13 @@ class _MessageReadPageState extends State<MessageReadPage> {
       appBar: AppBar(
         title: Text("已读成员列表"),
       ),
-      body: new ListView(
-        children: this.widgetList,
+      body:
+      ListView.builder(
+        scrollDirection: Axis.vertical,
+        itemCount: this.widgetList.length,
+        itemBuilder: (BuildContext context, int index) {
+          return this.widgetList[index];
+        },
       ),
     );
   }

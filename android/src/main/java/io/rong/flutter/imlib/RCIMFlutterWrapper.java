@@ -489,20 +489,6 @@ public class RCIMFlutterWrapper {
             String token = String.valueOf(arg);
             RongIMClient.connect(token, new RongIMClient.ConnectCallback() {
                 @Override
-                public void onTokenIncorrect() {
-                    mMainHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            RCLog.e("connect " + String.valueOf(31004));
-                            Map resultMap = new HashMap();
-                            resultMap.put("userId", "");
-                            resultMap.put("code", 31004);
-                            result.success(resultMap);
-                        }
-                    });
-                }
-
-                @Override
                 public void onSuccess(final String userId) {
                     mMainHandler.post(new Runnable() {
                         @Override
@@ -517,8 +503,8 @@ public class RCIMFlutterWrapper {
                 }
 
                 @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    final RongIMClient.ErrorCode code = errorCode;
+                public void onError(RongIMClient.ConnectionErrorCode connectionErrorCode) {
+                    final RongIMClient.ConnectionErrorCode code = connectionErrorCode;
                     mMainHandler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -527,8 +513,13 @@ public class RCIMFlutterWrapper {
                             resultMap.put("userId", "");
                             resultMap.put("code", code.getValue());
                             result.success(resultMap);
+
                         }
                     });
+                }
+
+                @Override
+                public void onDatabaseOpened(RongIMClient.DatabaseOpenStatus databaseOpenStatus) {
 
                 }
             });
@@ -1013,7 +1004,7 @@ public class RCIMFlutterWrapper {
                     content.setMentionedInfo(info);
                 }
             }
-            if (contentObject.has("burnDuration")){
+            if (contentObject.has("burnDuration")) {
                 long burnDuration = Long.valueOf(contentObject.get("burnDuration").toString());
                 content.setDestructTime(burnDuration);
             }
@@ -2156,12 +2147,12 @@ public class RCIMFlutterWrapper {
             }
 
         } catch (Exception e) {
-            FwLog.write(FwLog.E, FwLog.MSG, "L-register_type-S", "class_name", className);
+            FwLog.write(FwLog.E, FwLog.IM, "L-register_type-S", "class_name", className);
             StringWriter stringWriter = new StringWriter();
             PrintWriter printWriter = new PrintWriter(stringWriter);
             e.printStackTrace(printWriter);
         } catch (Throwable throwable) {
-            FwLog.write(FwLog.E, FwLog.MSG, "L-regtype-E", null);
+            FwLog.write(FwLog.E, FwLog.IM, "L-regtype-E", null);
         }
     }
 
@@ -3003,18 +2994,31 @@ public class RCIMFlutterWrapper {
         if (arg instanceof Map) {
             Map paramMap = (Map) arg;
             int messageId = (int) paramMap.get("messageId");
-            int sentStatus = (int) paramMap.get("sentStatus");
-            RongIMClient.getInstance().setMessageSentStatus(messageId, Message.SentStatus.setValue(sentStatus), new RongIMClient.ResultCallback<Boolean>() {
+            final int sentStatus = (int) paramMap.get("sentStatus");
+            RongIMClient.getInstance().getMessage(messageId, new RongIMClient.ResultCallback<Message>() {
                 @Override
-                public void onSuccess(Boolean aBoolean) {
-                    RCLog.i(TAG + " success");
-                    result.success(0);
+                public void onSuccess(Message message) {
+                    if (message != null) {
+                        message.setSentStatus(Message.SentStatus.setValue(sentStatus));
+                        RongIMClient.getInstance().setMessageSentStatus(message, new RongIMClient.ResultCallback<Boolean>() {
+                            @Override
+                            public void onSuccess(Boolean aBoolean) {
+                                RCLog.i(TAG + " success");
+                                result.success(0);
+                            }
+
+                            @Override
+                            public void onError(RongIMClient.ErrorCode errorCode) {
+                                RCLog.e(TAG + " error:" + errorCode.getValue());
+                                result.success(errorCode.getValue());
+                            }
+                        });
+                    }
                 }
 
                 @Override
                 public void onError(RongIMClient.ErrorCode errorCode) {
-                    RCLog.e(TAG + " error:" + errorCode.getValue());
-                    result.success(errorCode.getValue());
+                    result.success(false);
                 }
             });
         }
@@ -3283,7 +3287,7 @@ public class RCIMFlutterWrapper {
         } catch (Exception e) {
             // FwLog TBC.
             result = new UnknownMessage(content);
-            FwLog.write(FwLog.F, FwLog.MSG, "L-decode_msg-E", "msg_type|stacks", objectName, FwLog.stackToString(e));
+            FwLog.write(FwLog.F, FwLog.IM, "L-decode_msg-E", "msg_type|stacks", objectName, FwLog.stackToString(e));
         }
 //        }
         return result;
