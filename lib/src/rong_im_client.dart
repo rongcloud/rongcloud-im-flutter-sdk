@@ -257,7 +257,7 @@ class RongIMClient {
   ///
   ///[targetId] 会话 id
   ///
-  ///[messageId] 消息 id，每次进入聊天页面可以传 0
+  ///[messageId] 消息 id，每次进入聊天页面可以传 -1
   ///
   ///[count] 需要获取的消息数
   static Future<List> getHistoryMessage(

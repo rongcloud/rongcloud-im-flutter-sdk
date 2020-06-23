@@ -278,7 +278,7 @@ class _ConversationPageState extends State<ConversationPage>
     developer.log("get history message", name: pageName);
 
     List msgs =
-        await RongIMClient.getHistoryMessage(conversationType, targetId, 0, 20);
+        await RongIMClient.getHistoryMessage(conversationType, targetId, -1, 20);
     if (msgs != null) {
       msgs.sort((a, b) => b.sentTime.compareTo(a.sentTime));
       messageDataSource = msgs;
