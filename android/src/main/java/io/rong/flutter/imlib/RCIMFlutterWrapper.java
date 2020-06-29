@@ -81,7 +81,7 @@ public class RCIMFlutterWrapper {
                     msgMap.put("cType", message.getConversationType().getValue());
                     msgMap.put("messageTime", ((ReadReceiptMessage) message.getContent()).getLastMessageSendTime());
                     msgMap.put("tId", message.getTargetId());
-                    RCLog.i(LOG_TAG + " start param:" + msgMap.toString());
+//                    RCLog.i(LOG_TAG + " start param:" + msgMap.toString());
                     mChannel.invokeMethod(RCMethodList.MethodCallBackKeyReceiveReadReceipt, msgMap);
                 }
             }
@@ -311,7 +311,7 @@ public class RCIMFlutterWrapper {
     // 可通过该接口向Flutter传递数据
     public void sendDataToFlutter(final Map map) {
         String LOG_TAG = "sendDataToFlutter";
-        RCLog.i(LOG_TAG + " start param:" + map.toString());
+//        RCLog.i(LOG_TAG + " start param:" + map.toString());
         mMainHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -322,7 +322,7 @@ public class RCIMFlutterWrapper {
 
     public void sendReadReceiptMessage(Object arg, final Result result) {
         String LOG_TAG = "sendReadReceiptMessage";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             Integer t = (Integer) map.get("conversationType");
@@ -430,7 +430,7 @@ public class RCIMFlutterWrapper {
     // private method
     private void initRCIM(Object arg) {
         String LOG_TAG = "init";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof String) {
             String appkey = String.valueOf(arg);
             this.appkey = appkey;
@@ -457,7 +457,7 @@ public class RCIMFlutterWrapper {
 
     private void config(Object arg) {
         String LOG_TAG = "config";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map conf = (Map) arg;
             RCFlutterConfig config = new RCFlutterConfig();
@@ -473,7 +473,7 @@ public class RCIMFlutterWrapper {
 
     private void setServerInfo(Object arg) {
         String LOG_TAG = "setServerInfo";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             String naviServer = (String) map.get("naviServer");
@@ -484,7 +484,7 @@ public class RCIMFlutterWrapper {
 
     private void connect(Object arg, final Result result) {
         String LOG_TAG = "connect";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof String) {
             String token = String.valueOf(arg);
             RongIMClient.connect(token, new RongIMClient.ConnectCallback() {
@@ -532,7 +532,7 @@ public class RCIMFlutterWrapper {
 
     private void disconnect(Object arg) {
         String LOG_TAG = "disconnect";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Boolean) {
             boolean needPush = (boolean) arg;
             if (needPush) {
@@ -577,7 +577,7 @@ public class RCIMFlutterWrapper {
                 return;
             }
             final String LOG_TAG = "sendMessage";
-            RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//            RCLog.i(LOG_TAG + " start param:" + arg.toString());
             Integer t = (Integer) map.get("conversationType");
             Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
             String targetId = (String) map.get("targetId");
@@ -700,7 +700,7 @@ public class RCIMFlutterWrapper {
 
     private void sendMediaMessage(Object arg, final Result result) {
         final String LOG_TAG = "sendMediaMessage";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             String objectName = (String) map.get("objectName");
@@ -1015,7 +1015,7 @@ public class RCIMFlutterWrapper {
 
     private void joinChatRoom(Object arg) {
         final String LOG_TAG = "joinChatRoom";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             final String targetId = (String) map.get("targetId");
@@ -1044,7 +1044,7 @@ public class RCIMFlutterWrapper {
 
     private void quitChatRoom(Object arg) {
         final String LOG_TAG = "quitChatRoom";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             final String targetId = (String) map.get("targetId");
@@ -1072,7 +1072,7 @@ public class RCIMFlutterWrapper {
 
     private void getHistoryMessage(Object arg, final Result result) {
         final String LOG_TAG = "getHistoryMessage";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             Integer t = (Integer) map.get("conversationType");
@@ -1109,7 +1109,7 @@ public class RCIMFlutterWrapper {
 
     private void getHistoryMessages(Object arg, final Result result) {
         final String LOG_TAG = "getHistoryMessages";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             Integer t = (Integer) map.get("conversationType");
@@ -1146,7 +1146,7 @@ public class RCIMFlutterWrapper {
 
     private void getMessage(Object arg, final Result result) {
         final String LOG_TAG = "getMessage";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             Integer mId = (Integer) map.get("messageId");
@@ -1169,7 +1169,7 @@ public class RCIMFlutterWrapper {
 
     private void getConversationList(Object arg, final Result result) {
         final String LOG_TAG = "getConversationList";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             List conversationTypeList = (List) map.get("conversationTypeList");
@@ -1209,7 +1209,7 @@ public class RCIMFlutterWrapper {
 
     private void getConversationListByPage(Object arg, final Result result) {
         final String LOG_TAG = "getConversationListByPage";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             List conversationTypeList = (List) map.get("conversationTypeList");
@@ -1251,7 +1251,7 @@ public class RCIMFlutterWrapper {
 
     private void getConversation(Object arg, final Result result) {
         final String LOG_TAG = "getConversation";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             Integer t = (Integer) map.get("conversationType");
@@ -1281,7 +1281,7 @@ public class RCIMFlutterWrapper {
 
     private void getChatRoomInfo(Object arg, final Result result) {
         final String LOG_TAG = "getChatRoomInfo";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             String targetId = (String) map.get("targetId");
@@ -1315,7 +1315,7 @@ public class RCIMFlutterWrapper {
 
     private void clearMessagesUnreadStatus(Object arg, final Result result) {
         final String LOG_TAG = "clearMessagesUnreadStatus";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             Integer t = (Integer) map.get("conversationType");
@@ -1341,7 +1341,7 @@ public class RCIMFlutterWrapper {
 
     private void getUnreadCountConversationTypeList(Object arg, final Result result) {
         final String LOG_TAG = "getUnreadCountConversationTypeList";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             List conversationTypeList = (List) map.get("conversationTypeList");
@@ -1379,7 +1379,7 @@ public class RCIMFlutterWrapper {
 
     private void getUnreadCountTargetId(Object arg, final Result result) {
         final String LOG_TAG = "getUnreadCountTargetId";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             Integer t = (Integer) map.get("conversationType");
@@ -1410,7 +1410,7 @@ public class RCIMFlutterWrapper {
 
     private void getTotalUnreadCount(final Result result) {
         final String LOG_TAG = "getTotalUnreadCount";
-        RCLog.i(LOG_TAG + " start ");
+//        RCLog.i(LOG_TAG + " start ");
         RongIMClient.getInstance().getTotalUnreadCount(new RongIMClient.ResultCallback<Integer>() {
             @Override
             public void onSuccess(Integer integer) {
@@ -1434,7 +1434,7 @@ public class RCIMFlutterWrapper {
 
     private void insertOutgoingMessage(Object arg, final Result result) {
         final String LOG_TAG = "insertOutgoingMessage";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             String objectName = (String) map.get("objectName");
@@ -1497,7 +1497,7 @@ public class RCIMFlutterWrapper {
 
     private void insertIncomingMessage(Object arg, final Result result) {
         final String LOG_TAG = "insertIncomingMessage";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             String objectName = (String) map.get("objectName");
@@ -1561,7 +1561,7 @@ public class RCIMFlutterWrapper {
 
     public void getRemoteHistoryMessages(Object arg, final Result result) {
         final String LOG_TAG = "getRemoteHistoryMessages";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             final Map map = (Map) arg;
             Integer t = (Integer) map.get("conversationType");
@@ -1606,7 +1606,7 @@ public class RCIMFlutterWrapper {
 
     private void setConversationNotificationStatus(Object arg, final Result result) {
         final String LOG_TAG = "setConversationNotificationStatus";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             Integer t = (Integer) map.get("conversationType");
@@ -1644,7 +1644,7 @@ public class RCIMFlutterWrapper {
 
     private void getConversationNotificationStatus(Object arg, final Result result) {
         final String LOG_TAG = "getConversationNotificationStatus";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             Integer t = (Integer) map.get("conversationType");
@@ -1676,7 +1676,7 @@ public class RCIMFlutterWrapper {
 
     private void getBlockedConversationList(Object arg, final Result result) {
         final String LOG_TAG = "getBlockedConversationList";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             List conversationTypeList = (List) map.get("conversationTypeList");
@@ -1722,7 +1722,7 @@ public class RCIMFlutterWrapper {
 
     private void setConversationToTop(Object arg, final Result result) {
         final String LOG_TAG = "setConversationToTop";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             Integer t = (Integer) map.get("conversationType");
@@ -1754,7 +1754,7 @@ public class RCIMFlutterWrapper {
 
     private void deleteMessages(Object arg, final Result result) {
         final String LOG_TAG = "deleteMessages";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             Integer t = (Integer) map.get("conversationType");
@@ -1778,7 +1778,7 @@ public class RCIMFlutterWrapper {
 
     private void deleteMessageByIds(Object arg, final Result result) {
         final String LOG_TAG = "deleteMessageByIds";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             List messageIds = (List) map.get("messageIds");
@@ -1805,54 +1805,9 @@ public class RCIMFlutterWrapper {
         }
     }
 
-    // private void getTopConversationList(Object arg, final Result result) {
-    // if (arg instanceof Map) {
-    // Map map = (Map) arg;
-    // List conversationTypeList = (List)map.get("conversationTypeList");
-    //
-    // Conversation.ConversationType[] types = new
-    // Conversation.ConversationType[conversationTypeList.size()];
-    // for (int i=0;i<conversationTypeList.size();i++) {
-    // Integer t = (Integer)conversationTypeList.get(i);
-    // Conversation.ConversationType type =
-    // Conversation.ConversationType.setValue(t.intValue());
-    // types[i] = type;
-    // }
-    //
-    // RongIMClient.getInstance().getBlockedConversationList(new
-    // RongIMClient.ResultCallback<List<Conversation>>() {
-    // @Override
-    // public void onSuccess(List<Conversation> conversations) {
-    //
-    // if(conversations == null) {
-    // result.success(null);
-    // return ;
-    // }
-    // List l = new ArrayList();
-    // for(Conversation con : conversations) {
-    // String conStr = MessageFactory.getInstance().conversation2String(con);
-    // l.add(conStr);
-    // }
-    //
-    // Map resultMap = new HashMap();
-    // resultMap.put("conversationList",l);
-    // resultMap.put("code",0);
-    // result.success(resultMap);
-    // }
-    //
-    // @Override
-    // public void onError(RongIMClient.ErrorCode errorCode) {
-    // Map resultMap = new HashMap();
-    // resultMap.put("code",errorCode.getValue());
-    // result.success(resultMap);
-    // }
-    // });
-    // }
-    // }
-
     private void removeConversation(Object arg, final Result result) {
         final String LOG_TAG = "removeConversation";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             Integer t = (Integer) map.get("conversationType");
@@ -1876,7 +1831,7 @@ public class RCIMFlutterWrapper {
 
     private void addToBlackList(Object arg, final Result result) {
         final String LOG_TAG = "addToBlackList";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             String userId = (String) map.get("userId");
@@ -1898,7 +1853,7 @@ public class RCIMFlutterWrapper {
 
     private void removeFromBlackList(Object arg, final Result result) {
         final String LOG_TAG = "removeFromBlackList";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             String userId = (String) map.get("userId");
@@ -1920,7 +1875,7 @@ public class RCIMFlutterWrapper {
 
     private void getBlackListStatus(Object arg, final Result result) {
         final String LOG_TAG = "getBlackListStatus";
-        RCLog.i(LOG_TAG + " start param:" + arg.toString());
+//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             String userId = (String) map.get("userId");
