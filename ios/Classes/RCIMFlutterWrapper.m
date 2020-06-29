@@ -243,8 +243,8 @@
 
 #pragma mark - selector
 - (void)initWithRCIMAppKey:(id)arg {
-    NSString *LOG_TAG =  @"init";
-    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+//    NSString *LOG_TAG =  @"init";
+//    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSString class]]) {
         NSString *appkey = (NSString *)arg;
         [[RCIMClient sharedRCIMClient] initWithAppKey:appkey];
@@ -290,7 +290,7 @@
 
 - (void)connectWithToken:(id)arg result:(FlutterResult)result {
     NSString *LOG_TAG =  @"connect";
-    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+//    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSString class]]) {
         NSString *token = (NSString *)arg;
         [[RCIMClient sharedRCIMClient] connectWithToken:token dbOpened:^(RCDBErrorCode code) {
