@@ -397,7 +397,37 @@
         if (param[@"disableNotification"]) {
             BOOL disableNotification = [param[@"disableNotification"] boolValue];
             RCMessage *message = [[RCMessage alloc] initWithType:type targetId:targetId direction:MessageDirection_SEND messageId:0 content:content];
-            // sendMessage
+            message.messageConfig.disableNotification = disableNotification;
+            [[RCIMClient sharedRCIMClient] sendMessage:message pushContent:pushContent pushData:pushData successBlock:^(RCMessage *successMessage) {
+                [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+                NSMutableDictionary *dic = [NSMutableDictionary new];
+                [dic setObject:@(successMessage.messageId) forKey:@"messageId"];
+                [dic setObject:@(SentStatus_SENT) forKey:@"status"];
+                [dic setObject:@(0) forKey:@"code"];
+                if (timestamp > 0) {
+                    [dic setObject:@(timestamp) forKey:@"timestamp"];
+                }
+                [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
+            } errorBlock:^(RCErrorCode nErrorCode, RCMessage *errorMessage) {
+                [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(nErrorCode)]];
+                NSMutableDictionary *dic = [NSMutableDictionary new];
+                [dic setObject:@(errorMessage.messageId) forKey:@"messageId"];
+                [dic setObject:@(SentStatus_FAILED) forKey:@"status"];
+                [dic setObject:@(nErrorCode) forKey:@"code"];
+                if (timestamp > 0) {
+                    [dic setObject:@(timestamp) forKey:@"timestamp"];
+                }
+                [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
+            }];
+            message.senderUserId = [RCIMClient sharedRCIMClient].currentUserInfo.userId ?: @"";
+            NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:jsonString forKey:@"message"];
+            [dic setObject:@(SentStatus_SENDING) forKey:@"status"];
+            result(dic);
+            [dic setObject:@(message.messageId) forKey:@"messageId"];
+            [dic setObject:@(-1) forKey:@"code"];
+            [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
         } else {
             RCMessage *message = [[RCIMClient sharedRCIMClient] sendMessage:type targetId:targetId content:content pushContent:pushContent pushData:pushData success:^(long messageId) {
                 [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
@@ -567,7 +597,42 @@
     if (param[@"disableNotification"]) {
         BOOL disableNotification = [param[@"disableNotification"] boolValue];
         RCMessage *message = [[RCMessage alloc] initWithType:type targetId:targetId direction:MessageDirection_SEND messageId:0 content:content];
-        // sendMediaMessage
+        message.messageConfig.disableNotification = disableNotification;
+        [[RCIMClient sharedRCIMClient] sendMediaMessage:message pushContent:pushContent pushData:pushData progress:^(int progress, RCMessage *progressMessage) {
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:@(progressMessage.messageId) forKey:@"messageId"];
+            [dic setObject:@(progress) forKey:@"progress"];
+            [ws.channel invokeMethod:RCMethodCallBackKeyUploadMediaProgress arguments:dic];
+        } successBlock:^(RCMessage *successMessage) {
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:@(successMessage.messageId) forKey:@"messageId"];
+            [dic setObject:@(SentStatus_SENT) forKey:@"status"];
+            [dic setObject:@(0) forKey:@"code"];
+            if (timestamp > 0) {
+                [dic setObject:@(timestamp) forKey:@"timestamp"];
+            }
+            [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
+        } errorBlock:^(RCErrorCode nErrorCode, RCMessage *errorMessage) {
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:@(errorMessage.messageId) forKey:@"messageId"];
+            [dic setObject:@(SentStatus_FAILED) forKey:@"status"];
+            [dic setObject:@(nErrorCode) forKey:@"code"];
+            if (timestamp > 0) {
+                [dic setObject:@(timestamp) forKey:@"timestamp"];
+            }
+            [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
+        } cancel:^(RCMessage *cancelMessage) {
+            
+        }];
+        message.senderUserId = [RCIMClient sharedRCIMClient].currentUserInfo.userId ?: @"";
+        NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:jsonString forKey:@"message"];
+        [dic setObject:@(SentStatus_SENDING) forKey:@"status"];
+        result(dic);
+        [dic setObject:@(message.messageId) forKey:@"messageId"];
+        [dic setObject:@(-1) forKey:@"code"];
+        [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
     } else {
         RCMessage *message =  [[RCIMClient sharedRCIMClient] sendMediaMessage:type targetId:targetId content:content pushContent:pushContent pushData:pushData progress:^(int progress, long messageId) {
             NSMutableDictionary *dic = [NSMutableDictionary new];
