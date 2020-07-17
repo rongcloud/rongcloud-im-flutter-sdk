@@ -73,6 +73,11 @@
     }
     [dic setObject:readReceiptDict forKey:@"readReceiptInfo"];
     
+//    RCMessageConfig *messageConfig = message.messageConfig;
+//    NSMutableDictionary *messageConfigDict = [NSMutableDictionary new];
+//    [messageConfigDict setObject:@(messageConfig.disableNotification) forKey:@"disableNotification"];
+//    [dic setObject:messageConfig forKey:@"messageConfig"];
+    
     RCMessageContent *content = message.content;
     content = [self convertLocalPathIfNeed:content];
     if ([content isKindOfClass:[RCFileMessage class]]) {
