@@ -41,6 +41,7 @@ import io.rong.imlib.model.ChatRoomInfo;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.MentionedInfo;
 import io.rong.imlib.model.Message;
+import io.rong.imlib.model.MessageConfig;
 import io.rong.imlib.model.MessageContent;
 import io.rong.imlib.model.SearchConversationResult;
 import io.rong.imlib.model.UnknownMessage;
@@ -583,6 +584,7 @@ public class RCIMFlutterWrapper {
             String targetId = (String) map.get("targetId");
             String pushContent = (String) map.get("pushContent");
             final Number timestamp = (Number) map.get("timestamp");
+            final boolean disableNotification = (boolean) map.get("disableNotification");
 
             if (pushContent.length() <= 0) {
                 pushContent = null;
@@ -618,7 +620,10 @@ public class RCIMFlutterWrapper {
                 result.success(null);
                 return;
             }
-            RongIMClient.getInstance().sendMessage(type, targetId, content, pushContent, pushData,
+            Message message = Message.obtain(targetId,type,content);
+            message.setMessageConfig(new MessageConfig.Builder().setDisableNotification(disableNotification).build());
+
+            RongIMClient.getInstance().sendMessage(message, pushContent, pushData,
                     new IRongCallback.ISendMessageCallback() {
                         @Override
                         public void onAttached(Message message) {
@@ -847,8 +852,9 @@ public class RCIMFlutterWrapper {
                     return;
                 }
             }
-
+            final boolean disableNotification = (boolean) map.get("disableNotification");
             Message message = Message.obtain(targetId, type, content);
+            message.setMessageConfig(new MessageConfig.Builder().setDisableNotification(disableNotification).build());
             RongIMClient.getInstance().sendMediaMessage(message, pushContent, pushData,
                     new IRongCallback.ISendMediaMessageCallback() {
                         @Override

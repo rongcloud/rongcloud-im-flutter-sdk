@@ -12,6 +12,7 @@ import io.rong.imlib.model.ChatRoomInfo;
 import io.rong.imlib.model.ChatRoomMemberInfo;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
+import io.rong.imlib.model.MessageConfig;
 import io.rong.imlib.model.MessageContent;
 import io.rong.imlib.model.ReadReceiptInfo;
 import io.rong.imlib.model.SearchConversationResult;
@@ -58,6 +59,12 @@ public class MessageFactory {
             readReceiptMap.put("hasRespond", readInfo.hasRespond());
             readReceiptMap.put("userIdList", readInfo.getRespondUserIdList());
             map.put("readReceiptInfo", readReceiptMap);
+        }
+        MessageConfig messageConfig = message.getMessageConfig();
+        if (messageConfig != null) {
+            HashMap messageConfigMap = new HashMap();
+            messageConfigMap.put("disableNotification", messageConfig.isDisableNotification());
+            map.put("messageConfig", messageConfigMap);
         }
         map.put("sentTime", message.getSentTime());
         map.put("objectName", message.getObjectName());
