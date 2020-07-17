@@ -68,6 +68,13 @@ class MessageFactory extends Object {
     message.objectName = map["objectName"];
     message.messageUId = map["messageUId"];
     message.extra = map["extra"];
+    Map messageConfigMap = map["messageConfig"];
+    if (messageConfigMap != null) {
+      MessageConfig messageConfig = MessageConfig();
+      messageConfig.disableNotification=
+          messageConfigMap["disableNotification"];
+      message.messageConfig = messageConfig;
+    }
     Map readReceiptMap = map["readReceiptInfo"];
     if (readReceiptMap != null) {
       ReadReceiptInfo readReceiptInfo = ReadReceiptInfo();

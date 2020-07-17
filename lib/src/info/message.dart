@@ -15,6 +15,7 @@ class Message extends Object {
   String extra; // 扩展信息
 
   ReadReceiptInfo readReceiptInfo; //阅读回执状态
+  MessageConfig messageConfig; // 消息配置
 
   //如果 content 为 null ，说明消息内容本身未被 flutter 层正确解析，则消息内容会保存到该 map 中
   Map originContentMap;
@@ -28,4 +29,8 @@ class ReadReceiptInfo extends Object {
   bool isReceiptRequestMessage; //是否需要回执消息
   bool hasRespond; //是否已经发送回执
   Map userIdList; //发送回执的用户ID列表
+}
+
+class MessageConfig extends Object {
+  bool disableNotification; //是否关闭通知，true 为关闭通知，false 为打开通知，默认为 false
 }

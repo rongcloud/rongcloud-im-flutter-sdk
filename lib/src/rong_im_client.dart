@@ -87,8 +87,10 @@ class RongIMClient {
   ///
   ///[content] 消息内容 参见 [MessageContent]
   static Future<Message> sendMessage(
-      int conversationType, String targetId, MessageContent content) async {
-    return sendMessageCarriesPush(conversationType, targetId, content, "", "");
+      int conversationType, String targetId, MessageContent content,
+      {bool disableNotification = false}) async {
+    return sendMessageCarriesPush(conversationType, targetId, content, "", "",
+        disableNotification: disableNotification);
   }
 
   ///发送消息
@@ -109,9 +111,11 @@ class RongIMClient {
       String targetId,
       MessageContent content,
       String pushContent,
-      String pushData) async {
+      String pushData,
+      {bool disableNotification = false}) async {
     return sendMessageWithCallBack(
-        conversationType, targetId, content, pushContent, pushData, null);
+        conversationType, targetId, content, pushContent, pushData, null,
+        disableNotification: disableNotification);
   }
 
   ///发送消息
@@ -139,7 +143,8 @@ class RongIMClient {
       MessageContent content,
       String pushContent,
       String pushData,
-      Function(int messageId, int status, int code) finished) async {
+      Function(int messageId, int status, int code) finished,
+      {bool disableNotification = false}) async {
     if (conversationType == null || targetId == null || content == null) {
       developer.log(
           "send message fail: conversationType or targetId or content is null",
@@ -166,7 +171,8 @@ class RongIMClient {
       "objectName": objName,
       "pushContent": pushContent,
       "pushData": pushData,
-      "timestamp": timestamp
+      "timestamp": timestamp,
+      "disableNotification": disableNotification
     };
 
     if (finished != null) {
