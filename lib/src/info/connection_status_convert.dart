@@ -32,6 +32,10 @@ class ConnectionStatusConvert {
       return RCConnectionStatus.UserBlocked;
     } else if (originCode == 12) {
       return RCConnectionStatus.DisConnected;
+    } else if (originCode == 13) {
+      return RCConnectionStatus.Suspend;
+    } else if (originCode == 14) {
+      return RCConnectionStatus.Timeout;
     }
     return originCode;
   }
@@ -51,6 +55,10 @@ class ConnectionStatusConvert {
       return RCConnectionStatus.TokenIncorrect;
     } else if (originCode == 6) {
       return RCConnectionStatus.UserBlocked;
+    } else if (originCode == 13) {
+      return RCConnectionStatus.Suspend;
+    } else if (originCode == 14) {
+      return RCConnectionStatus.Timeout;
     }
     return originCode;
   }
