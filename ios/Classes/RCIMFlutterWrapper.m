@@ -398,7 +398,7 @@
             BOOL disableNotification = [param[@"disableNotification"] boolValue];
             RCMessage *message = [[RCMessage alloc] initWithType:type targetId:targetId direction:MessageDirection_SEND messageId:0 content:content];
             message.messageConfig.disableNotification = disableNotification;
-            [[RCIMClient sharedRCIMClient] sendMessage:message pushContent:pushContent pushData:pushData successBlock:^(RCMessage *successMessage) {
+            message = [[RCIMClient sharedRCIMClient] sendMessage:message pushContent:pushContent pushData:pushData successBlock:^(RCMessage *successMessage) {
                 [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
                 NSMutableDictionary *dic = [NSMutableDictionary new];
                 [dic setObject:@(successMessage.messageId) forKey:@"messageId"];
@@ -598,7 +598,7 @@
         BOOL disableNotification = [param[@"disableNotification"] boolValue];
         RCMessage *message = [[RCMessage alloc] initWithType:type targetId:targetId direction:MessageDirection_SEND messageId:0 content:content];
         message.messageConfig.disableNotification = disableNotification;
-        [[RCIMClient sharedRCIMClient] sendMediaMessage:message pushContent:pushContent pushData:pushData progress:^(int progress, RCMessage *progressMessage) {
+        message = [[RCIMClient sharedRCIMClient] sendMediaMessage:message pushContent:pushContent pushData:pushData progress:^(int progress, RCMessage *progressMessage) {
             NSMutableDictionary *dic = [NSMutableDictionary new];
             [dic setObject:@(progressMessage.messageId) forKey:@"messageId"];
             [dic setObject:@(progress) forKey:@"progress"];
