@@ -424,9 +424,9 @@
             NSMutableDictionary *dic = [NSMutableDictionary new];
             [dic setObject:jsonString forKey:@"message"];
             [dic setObject:@(SentStatus_SENDING) forKey:@"status"];
-            result(dic);
             [dic setObject:@(message.messageId) forKey:@"messageId"];
             [dic setObject:@(-1) forKey:@"code"];
+            result(dic);
             [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
         } else {
             RCMessage *message = [[RCIMClient sharedRCIMClient] sendMessage:type targetId:targetId content:content pushContent:pushContent pushData:pushData success:^(long messageId) {
@@ -454,9 +454,9 @@
             NSMutableDictionary *dic = [NSMutableDictionary new];
             [dic setObject:jsonString forKey:@"message"];
             [dic setObject:@(SentStatus_SENDING) forKey:@"status"];
-            result(dic);
             [dic setObject:@(message.messageId) forKey:@"messageId"];
             [dic setObject:@(-1) forKey:@"code"];
+            result(dic);
             [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
         }
     }
@@ -629,9 +629,9 @@
         NSMutableDictionary *dic = [NSMutableDictionary new];
         [dic setObject:jsonString forKey:@"message"];
         [dic setObject:@(SentStatus_SENDING) forKey:@"status"];
-        result(dic);
         [dic setObject:@(message.messageId) forKey:@"messageId"];
         [dic setObject:@(-1) forKey:@"code"];
+        result(dic);
         [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
     } else {
         RCMessage *message =  [[RCIMClient sharedRCIMClient] sendMediaMessage:type targetId:targetId content:content pushContent:pushContent pushData:pushData progress:^(int progress, long messageId) {
@@ -664,9 +664,9 @@
         NSMutableDictionary *dic = [NSMutableDictionary new];
         [dic setObject:jsonString forKey:@"message"];
         [dic setObject:@(SentStatus_SENDING) forKey:@"status"];
-        result(dic);
         [dic setObject:@(message.messageId) forKey:@"messageId"];
         [dic setObject:@(-1) forKey:@"code"];
+        result(dic);
         [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
     }
 }
