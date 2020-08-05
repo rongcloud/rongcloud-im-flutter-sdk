@@ -1321,9 +1321,7 @@
     [[RCIMClient sharedRCIMClient] getNotificationQuietHours:^(NSString *startTime, int spansMin) {
         NSMutableDictionary *dict = [NSMutableDictionary new];
         [dict setObject:@(0) forKey:@"code"];
-        if (startTime) {
-            [dict setObject:startTime forKey:@"startTime"];
-        }
+        [dict setObject:startTime?:@"" forKey:@"startTime"];
         [dict setObject:@(spansMin) forKey:@"spansMin"];
         result(dict);
     } error:^(RCErrorCode status) {
