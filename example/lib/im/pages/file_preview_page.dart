@@ -155,17 +155,26 @@ class _FilePreviewState extends State<FilePreviewPage> {
   }
 
   void _openFile() {
-    OpenFile.open(fileMessage.localPath);
+    String path = handlePath(fileMessage.localPath);
+    OpenFile.open(path);
   }
 
   bool _isFileNeedDowload() {
     if (fileMessage != null) {
       String localPath = fileMessage.localPath;
       if (localPath != null && localPath.isNotEmpty) {
-        File localFile = File(localPath);
-        return localFile.existsSync();
+        File localFile = File(handlePath(localPath));
+        bool isExists = localFile.existsSync();
+        return isExists;
       }
     }
     return false;
+  }
+
+  String handlePath(String path) {
+    if (path.startsWith("file://")) {
+      return path.replaceAll("file://", "");
+    }
+    return path;
   }
 }
