@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:rongcloud_im_plugin_example/im/util/db_manager.dart';
-import 'package:rongcloud_im_plugin_example/im/util/user_info_datesource.dart';
+import '../im/util/db_manager.dart';
+import '../im/util/user_info_datesource.dart';
 import '../im/pages/conversation_list_page.dart';
 import 'contacts_page.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
@@ -56,12 +56,10 @@ class _HomePageState extends State<HomePage> {
     if (token != null && token.length > 0) {
       // int rc = await RongIMClient.connect(token);
       RongIMClient.connect(token, (int code, String userId) {
-        developer.log("connect result " + code.toString(),
-            name: pageName);
+        developer.log("connect result " + code.toString(), name: pageName);
         EventBus.instance.commit(EventKeys.UpdateNotificationQuietStatus, {});
         if (code == 31004 || code == 12) {
-          developer.log("connect result " + code.toString(),
-              name: pageName);
+          developer.log("connect result " + code.toString(), name: pageName);
           Navigator.of(context).pushAndRemoveUntil(
               new MaterialPageRoute(builder: (context) => new LoginPage()),
               (route) => route == null);

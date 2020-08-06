@@ -1,6 +1,6 @@
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:flutter/material.dart';
-import 'package:rongcloud_im_plugin_example/im/util/bloc/message_bloc.dart';
+import '../../util/bloc/message_bloc.dart';
 
 import '../../util/time.dart';
 import 'conversation_item.dart';

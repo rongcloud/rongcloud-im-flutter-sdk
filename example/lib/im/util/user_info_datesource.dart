@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:rongcloud_im_plugin_example/im/util/db_manager.dart';
+import 'db_manager.dart';
 
 class BaseInfo {
   String id;

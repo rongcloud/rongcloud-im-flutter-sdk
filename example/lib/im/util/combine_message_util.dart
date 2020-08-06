@@ -8,8 +8,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:rongcloud_im_plugin_example/im/util/http_util.dart';
-import 'package:rongcloud_im_plugin_example/main.dart';
+import 'http_util.dart';
+import '../../main.dart';
 
 import 'file.dart';
 import 'style.dart';

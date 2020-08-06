@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:rongcloud_im_plugin_example/im/util/combine_message_util.dart';
+import '../util/combine_message_util.dart';
 import 'item/bottom_tool_bar.dart';
 import 'package:path/path.dart' as path;
 
@@ -277,8 +277,8 @@ class _ConversationPageState extends State<ConversationPage>
   onGetHistoryMessages() async {
     developer.log("get history message", name: pageName);
 
-    List msgs =
-        await RongIMClient.getHistoryMessage(conversationType, targetId, -1, 20);
+    List msgs = await RongIMClient.getHistoryMessage(
+        conversationType, targetId, -1, 20);
     if (msgs != null) {
       msgs.sort((a, b) => b.sentTime.compareTo(a.sentTime));
       messageDataSource = msgs;

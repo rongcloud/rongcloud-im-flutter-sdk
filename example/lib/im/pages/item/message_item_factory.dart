@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:rongcloud_im_plugin_example/im/util/combine_message_util.dart';
-import 'package:rongcloud_im_plugin_example/im/widget/cachImage/cached_image_widget.dart';
+import '../../util/combine_message_util.dart';
+import '../../widget/cachImage/cached_image_widget.dart';
 import '../../util/file.dart';
 import '../../util/media_util.dart';
 import 'dart:convert';

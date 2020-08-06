@@ -3,8 +3,8 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:rongcloud_im_plugin_example/im/pages/item/widget_util.dart';
-import 'package:rongcloud_im_plugin_example/im/widget/cachImage/cached_image_widget.dart';
+import 'widget_util.dart';
+import '../../widget/cachImage/cached_image_widget.dart';
 
 import '../../util/media_util.dart';
 import '../../util/style.dart';

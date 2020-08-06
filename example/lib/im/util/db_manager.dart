@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:path/path.dart';
-import 'package:rongcloud_im_plugin_example/im/util/user_info_datesource.dart';
+import 'user_info_datesource.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DbManager {

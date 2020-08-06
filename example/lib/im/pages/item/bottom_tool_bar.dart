@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rongcloud_im_plugin_example/im/util/style.dart';
+import '../../util/style.dart';
 import 'dart:developer' as developer;
 
 class BottomToolBar extends StatefulWidget {

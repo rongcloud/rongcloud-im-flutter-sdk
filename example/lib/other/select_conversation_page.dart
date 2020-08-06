@@ -4,9 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'package:rongcloud_im_plugin_example/im/util/combine_message_util.dart';
-import 'package:rongcloud_im_plugin_example/im/util/dialog_util.dart';
-import 'package:rongcloud_im_plugin_example/im/util/style.dart';
+import '../im/util/combine_message_util.dart';
+import '../im/util/dialog_util.dart';
+import '../im/util/style.dart';
 import '../im/util/event_bus.dart';
 import 'dart:developer' as developer;
 

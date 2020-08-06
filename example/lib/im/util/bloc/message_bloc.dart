@@ -1,4 +1,4 @@
-import 'package:rongcloud_im_plugin_example/im/util/bloc/bloc_provider.dart';
+import 'bloc_provider.dart';
 import 'package:rxdart/subjects.dart';
 
 class MessageBloc extends BlocBase {

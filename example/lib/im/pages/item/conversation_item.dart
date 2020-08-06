@@ -106,9 +106,8 @@ class _ConversationItemState extends State<ConversationItem> {
     // setState(() {
     this.message = msg;
     // 撤回消息的时候因为是替换之前的消息 UI ，需要整个刷新 item
-    if(msg.content is prefix.RecallNotificationMessage){
-      setState(() {
-      });
+    if (msg.content is prefix.RecallNotificationMessage) {
+      setState(() {});
     }
     // });
   }
