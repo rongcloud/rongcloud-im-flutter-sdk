@@ -72,6 +72,7 @@ public class RCMethodList {
     static String MethodKeyCancelDownloadMediaMessage = "cancelDownloadMediaMessage";
     static String MethodKeyGetRemoteChatRoomHistoryMessages = "getRemoteChatRoomHistoryMessages";
     static String MethodKeyGetMessageByUId = "getMessageByUId";
+    static String MethodKeyGetFirstUnreadMessage = "getFirstUnreadMessage";
 
 
 

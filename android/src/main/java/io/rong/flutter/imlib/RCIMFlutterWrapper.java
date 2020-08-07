@@ -295,6 +295,8 @@ public class RCIMFlutterWrapper {
             getRemoteChatRoomHistoryMessages(call.arguments, result);
         } else if (RCMethodList.MethodKeyGetMessageByUId.equalsIgnoreCase(call.method)) {
             getMessageByUId(call.arguments, result);
+        } else if (RCMethodList.MethodKeyGetFirstUnreadMessage.equalsIgnoreCase(call.method)) {
+            getFirstUnreadMessage(call.arguments, result);
         } else {
             result.notImplemented();
         }
@@ -620,7 +622,7 @@ public class RCIMFlutterWrapper {
                 result.success(null);
                 return;
             }
-            Message message = Message.obtain(targetId,type,content);
+            Message message = Message.obtain(targetId, type, content);
             message.setMessageConfig(new MessageConfig.Builder().setDisableNotification(disableNotification).build());
 
             RongIMClient.getInstance().sendMessage(message, pushContent, pushData,
@@ -3154,6 +3156,26 @@ public class RCIMFlutterWrapper {
             });
         }
     }
+
+    private void getFirstUnreadMessage(Object arg, final Result result){
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            int conversationType = (int) paramMap.get("conversationType");
+            String targetId = (String) paramMap.get("targetId");
+            RongIMClient.getInstance().getTheFirstUnreadMessage(Conversation.ConversationType.setValue(conversationType),targetId, new RongIMClient.ResultCallback<Message>() {
+                @Override
+                public void onSuccess(Message message) {
+                    result.success(MessageFactory.getInstance().message2String(message));
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    result.success(null);
+                }
+            });
+        }
+    }
+
 
 
     private Message map2Message(Map messageMap) {
