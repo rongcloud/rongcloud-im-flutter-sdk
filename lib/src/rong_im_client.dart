@@ -700,6 +700,22 @@ class RongIMClient {
     }
   }
 
+  /// 获取会话里第一条未读消息。
+  ///
+  /// [conversationType] 会话类型
+  /// [targetId] 会话 ID
+  static Future<Message> getFirstUnreadMessage(
+      int conversationType, String targetId) async {
+    Map map = {"conversationType": conversationType, "targetId": targetId};
+    String msgStr =
+        await _channel.invokeMethod(RCMethodKey.GetFirstUnreadMessage, map);
+    if (msgStr == null) {
+      return null;
+    }
+    Message msg = MessageFactory.instance.string2Message(msgStr);
+    return msg;
+  }
+
   /// 获取所有的未读数
   ///
   /// [finished] 回调结果，code 为 0 代表正常

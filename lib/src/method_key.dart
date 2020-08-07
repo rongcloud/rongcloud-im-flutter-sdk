@@ -75,6 +75,7 @@ class RCMethodKey {
   static const String GetRemoteChatRoomHistoryMessages =
       'getRemoteChatRoomHistoryMessages';
   static const String GetMessageByUId = 'getMessageByUId';
+  static const String GetFirstUnreadMessage = 'getFirstUnreadMessage';
 
   // 聊天室状态存储
   static const String SetChatRoomEntry = 'SetChatRoomEntry';
