@@ -72,6 +72,7 @@ static NSString *RCMethodKeyClearConversations = @"clearConversations";
 static NSString *RCMethodKeyGetDeltaTime = @"getDeltaTime";
 static NSString *RCMethodKeySetOfflineMessageDuration = @"setOfflineMessageDuration";
 static NSString *RCMethodKeyGetOfflineMessageDuration = @"getOfflineMessageDuration";
+static NSString *RCMethodKeyGetFirstUnreadMessage = @"getFirstUnreadMessage";
 
 // 聊天室状态存储
 static NSString *RCMethodKeySetChatRoomEntry = @"SetChatRoomEntry";

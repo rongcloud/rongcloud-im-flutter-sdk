@@ -231,6 +231,8 @@
         [self setOfflineMessageDuration:call.arguments result:result];
     }else if([RCMethodKeyGetOfflineMessageDuration isEqualToString:call.method]) {
         [self getOfflineMessageDuration:call.arguments result:result];
+    }else if([RCMethodKeyGetFirstUnreadMessage isEqualToString:call.method]) {
+        [self getFirstUnreadMessage:call.arguments result:result];
     }
     else {
         result(FlutterMethodNotImplemented);
@@ -1434,6 +1436,19 @@
     if([arg isKindOfClass:[NSString class]]) {
         NSString *messageUId = (NSString *)arg;
         RCMessage *message = [[RCIMClient sharedRCIMClient] getMessageByUId:messageUId];
+        NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+        result(jsonString);
+    }
+}
+
+- (void)getFirstUnreadMessage:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"getFirstUnreadMessage";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+         NSDictionary *param = (NSDictionary *)arg;
+        RCConversationType type = [param[@"conversationType"] integerValue];
+        NSString *targetId = param[@"targetId"]?:@"";
+        RCMessage *message = [[RCIMClient sharedRCIMClient] getFirstUnreadMessage:type targetId:targetId];
         NSString *jsonString = [RCFlutterMessageFactory message2String:message];
         result(jsonString);
     }
