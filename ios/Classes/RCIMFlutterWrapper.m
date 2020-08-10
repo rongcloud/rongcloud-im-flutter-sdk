@@ -376,8 +376,27 @@
         if([objName isEqualToString:RCVoiceMessageTypeIdentifier]) {
             content = [self getVoiceMessage:data];
         } else if ([objName isEqualToString:RCLocationMessageTypeIdentifier]) {
+            RCUserInfo *sendUserInfo = nil;
+            RCMentionedInfo *mentionedInfo = nil;
             NSDictionary *msgDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
-            NSString *thumbnailBase64String = [msgDic valueForKey:@"content"];
+            if ([msgDic valueForKey:@"user"]) {
+                NSDictionary *userDict = [msgDic valueForKey:@"user"];
+                NSString *userId = [userDict valueForKey:@"id"] ?: @"";
+                NSString *name = [userDict valueForKey:@"name"] ?: @"";
+                NSString *portraitUri = [userDict valueForKey:@"portrait"] ?: @"";
+                NSString *extra = [userDict valueForKey:@"extra"] ?: @"";
+                sendUserInfo = [[RCUserInfo alloc] initWithUserId:userId name:name portrait:portraitUri];
+                sendUserInfo.extra = extra;
+            }
+            
+            if ([msgDic valueForKey:@"mentionedInfo"]) {
+                NSDictionary *mentionedInfoDict = [msgDic valueForKey:@"mentionedInfo"];
+                RCMentionedType type = [[mentionedInfoDict valueForKey:@"type"] intValue] ?: 1;
+                NSArray *userIdList = [mentionedInfoDict valueForKey:@"userIdList"] ?: @[];
+                NSString *mentionedContent = [mentionedInfoDict valueForKey:@"mentionedContent"] ?: @"";
+                mentionedInfo = [[RCMentionedInfo alloc] initWithMentionedType:type userIdList:userIdList mentionedContent:mentionedContent];
+            }
+//            NSString *thumbnailBase64String = [msgDic valueForKey:@"content"];
             double latitude = [[msgDic valueForKey:@"latitude"] doubleValue];
             double longitude = [[msgDic valueForKey:@"longitude"] doubleValue];
             NSString *imageUri = [msgDic valueForKey:@"mImgUri"];
@@ -385,6 +404,8 @@
             CLLocationCoordinate2D location = CLLocationCoordinate2DMake(latitude, longitude);
             NSString *poi = [msgDic valueForKey:@"poi"];
             RCLocationMessage *locationMessage = [RCLocationMessage messageWithLocationImage:image location:location locationName:poi];
+            locationMessage.senderUserInfo = sendUserInfo;
+            locationMessage.mentionedInfo = mentionedInfo;
             content = locationMessage;
         } else {
             content = [[RCMessageMapper sharedMapper] messageContentWithClass:clazz fromData:data];
@@ -489,7 +510,9 @@
         NSString *userId = [userDict valueForKey:@"id"] ?: @"";
         NSString *name = [userDict valueForKey:@"name"] ?: @"";
         NSString *portraitUri = [userDict valueForKey:@"portrait"] ?: @"";
+        NSString *extra = [userDict valueForKey:@"extra"] ?: @"";
         sendUserInfo = [[RCUserInfo alloc] initWithUserId:userId name:name portrait:portraitUri];
+        sendUserInfo.extra = extra;
     }
     
     if ([msgDic valueForKey:@"mentionedInfo"]) {
@@ -2038,6 +2061,25 @@
 
 - (RCMessageContent *)getVoiceMessage:(NSData *)data {
     NSDictionary *contentDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+    RCUserInfo *sendUserInfo = nil;
+    RCMentionedInfo *mentionedInfo = nil;
+    if ([contentDic valueForKey:@"user"]) {
+        NSDictionary *userDict = [contentDic valueForKey:@"user"];
+        NSString *userId = [userDict valueForKey:@"id"] ?: @"";
+        NSString *name = [userDict valueForKey:@"name"] ?: @"";
+        NSString *portraitUri = [userDict valueForKey:@"portrait"] ?: @"";
+        NSString *extra = [userDict valueForKey:@"extra"] ?: @"";
+        sendUserInfo = [[RCUserInfo alloc] initWithUserId:userId name:name portrait:portraitUri];
+        sendUserInfo.extra = extra;
+    }
+    
+    if ([contentDic valueForKey:@"mentionedInfo"]) {
+        NSDictionary *mentionedInfoDict = [contentDic valueForKey:@"mentionedInfo"];
+        RCMentionedType type = [[mentionedInfoDict valueForKey:@"type"] intValue] ?: 1;
+        NSArray *userIdList = [mentionedInfoDict valueForKey:@"userIdList"] ?: @[];
+        NSString *mentionedContent = [mentionedInfoDict valueForKey:@"mentionedContent"] ?: @"";
+        mentionedInfo = [[RCMentionedInfo alloc] initWithMentionedType:type userIdList:userIdList mentionedContent:mentionedContent];
+    }
     NSString *localPath = contentDic[@"localPath"];
     int duration = [contentDic[@"duration"] intValue];
     if(![[NSFileManager defaultManager] fileExistsAtPath:localPath]) {
@@ -2046,6 +2088,8 @@
     }
     NSData *voiceData= [NSData dataWithContentsOfFile:localPath];
     RCVoiceMessage *msg = [RCVoiceMessage messageWithAudio:voiceData duration:duration];
+    msg.senderUserInfo = sendUserInfo;
+    msg.mentionedInfo = mentionedInfo;
     return msg;
 }
 
