@@ -292,13 +292,11 @@ class RongIMClient {
   ///
   ///[targetId] 会话 id
   ///
-  ///[objName] 消息的 objectName，如果传有效的 objectName，那么只会获取该类型的消息；如果传 null，则会获取全部的消息类型
+  ///[sentTime] 消息的发送时间
   ///
-  ///[messageId] 消息 id，基于该消息获取更多的消息
+  ///[beforeCount] 指定消息的前部分消息数量
   ///
-  ///[historyMsgDirection] 历史消息的方向，����于 messageId 获取之前的消息还是之后的消息，参见枚举 [RCHistoryMessageDirection]，非法值按 Behind 处理
-  ///
-  ///[count] 需要获取的消息数
+  ///[afterCount] 指定消息的后部分消息数量
   ///
   ///[return] 获取到的消息列表
   static Future<List> getHistoryMessages(int conversationType, String targetId,
