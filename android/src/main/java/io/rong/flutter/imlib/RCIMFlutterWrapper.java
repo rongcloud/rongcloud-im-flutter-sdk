@@ -610,7 +610,7 @@ public class RCIMFlutterWrapper {
                     // do nothing
                 }
             } else {
-                content = newMessageContent(objectName, bytes);
+                content = newMessageContent(objectName, bytes, contentStr);
                 if (objectName.equalsIgnoreCase("RC:ReferenceMsg")) {
                     makeReferenceMessage(content, contentStr);
                 }
@@ -1469,7 +1469,7 @@ public class RCIMFlutterWrapper {
 
                 }
             } else {
-                content = newMessageContent(objectName, bytes);
+                content = newMessageContent(objectName, bytes, contentStr);
             }
 
             if (content == null) {
@@ -1533,7 +1533,7 @@ public class RCIMFlutterWrapper {
 
                 }
             } else {
-                content = newMessageContent(objectName, bytes);
+                content = newMessageContent(objectName, bytes, contentStr);
             }
 
             if (content == null) {
@@ -2162,7 +2162,7 @@ public class RCIMFlutterWrapper {
             }
             byte[] bytes = contentStr.getBytes();
             MessageContent content = null;
-            content = newMessageContent((String) messageMap.get("objectName"), bytes);
+            content = newMessageContent((String) messageMap.get("objectName"), bytes, contentStr);
             if (content == null) {
                 RCLog.e(LOG_TAG + " message content is nil");
                 return;
@@ -2701,7 +2701,7 @@ public class RCIMFlutterWrapper {
             if (bytes.length <= 0) {
                 return;
             }
-            MessageContent messageContent = newMessageContent(objectName, bytes);
+            MessageContent messageContent = newMessageContent(objectName, bytes, content);
             if (userIdList == null) {
                 return;
             }
@@ -3157,12 +3157,12 @@ public class RCIMFlutterWrapper {
         }
     }
 
-    private void getFirstUnreadMessage(Object arg, final Result result){
+    private void getFirstUnreadMessage(Object arg, final Result result) {
         if (arg instanceof Map) {
             Map paramMap = (Map) arg;
             int conversationType = (int) paramMap.get("conversationType");
             String targetId = (String) paramMap.get("targetId");
-            RongIMClient.getInstance().getTheFirstUnreadMessage(Conversation.ConversationType.setValue(conversationType),targetId, new RongIMClient.ResultCallback<Message>() {
+            RongIMClient.getInstance().getTheFirstUnreadMessage(Conversation.ConversationType.setValue(conversationType), targetId, new RongIMClient.ResultCallback<Message>() {
                 @Override
                 public void onSuccess(Message message) {
                     result.success(MessageFactory.getInstance().message2String(message));
@@ -3175,7 +3175,6 @@ public class RCIMFlutterWrapper {
             });
         }
     }
-
 
 
     private Message map2Message(Map messageMap) {
@@ -3201,7 +3200,7 @@ public class RCIMFlutterWrapper {
         }
         byte[] bytes = contentStr.getBytes();
         MessageContent content = null;
-        content = newMessageContent((String) messageMap.get("objectName"), bytes);
+        content = newMessageContent((String) messageMap.get("objectName"), bytes, contentStr);
 
         if (content == null) {
             RCLog.e("Map2Message:  message content is nil");
@@ -3228,7 +3227,7 @@ public class RCIMFlutterWrapper {
         return message;
     }
 
-    private MessageContent newMessageContent(String objectName, byte[] content) {
+    private MessageContent newMessageContent(String objectName, byte[] content, String contentStr) {
         Constructor<? extends MessageContent> constructor = messageContentConstructorMap.get(objectName);
         MessageContent result = null;
 
@@ -3272,6 +3271,7 @@ public class RCIMFlutterWrapper {
             result = new UnknownMessage(content);
             FwLog.write(FwLog.F, FwLog.IM, "L-decode_msg-E", "msg_type|stacks", objectName, FwLog.stackToString(e));
         }
+        setCommonInfo(contentStr, result);
 //        }
         return result;
     }
