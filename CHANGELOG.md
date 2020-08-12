@@ -2,6 +2,7 @@
 * SDK:
 * 1.新增 getFirstUnreadMessage 接口，用于获取会话第一条未读消息
 * 2.iOS sendUserInfo extra 未携带问题
+* 3.Android sendUserInfo 文本消息未携带问题
 
 ## 4.0.1+3
 * SDK:
