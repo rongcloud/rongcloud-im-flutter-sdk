@@ -1,3 +1,8 @@
+## 4.0.1+4
+* SDK:
+* 1.新增 getFirstUnreadMessage 接口，用于获取会话第一条未读消息
+* 2.iOS sendUserInfo extra 未携带问题
+
 ## 4.0.1+3
 * SDK:
 * 1.指定 iOS 和 Android IM SDK 版本为 4.0.1.1 版本
