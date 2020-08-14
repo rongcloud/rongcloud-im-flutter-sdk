@@ -1642,8 +1642,12 @@
         NSArray *typeArray = param[@"conversationTypeList"];
         
         NSArray *conversationArray = [[RCIMClient sharedRCIMClient] getBlockedConversationList:typeArray];
-        
-        result(@{@"conversationList":conversationArray,@"code":@(0)});
+        NSMutableArray *arr = [NSMutableArray new];
+        for(RCConversation *con in conversationArray) {
+            NSString *conStr = [RCFlutterMessageFactory conversation2String:con];
+            [arr addObject:conStr];
+        }
+        result(@{@"conversationList":arr,@"code":@(0)});
     }
 }
 
@@ -1671,7 +1675,12 @@
         NSArray *typeArray = param[@"conversationTypeList"];
         
         NSArray *conversationArray = [[RCIMClient sharedRCIMClient] getTopConversationList:typeArray];
-        result(@{@"conversationList":conversationArray,@"code":@(0)});
+        NSMutableArray *arr = [NSMutableArray new];
+        for(RCConversation *con in conversationArray) {
+            NSString *conStr = [RCFlutterMessageFactory conversation2String:con];
+            [arr addObject:conStr];
+        }
+        result(@{@"conversationList":arr,@"code":@(0)});
     }
 }
 
