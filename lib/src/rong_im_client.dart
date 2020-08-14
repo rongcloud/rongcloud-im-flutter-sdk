@@ -861,7 +861,7 @@ class RongIMClient {
 //    };
 //    Map conversationMap = await _channel.invokeMethod(RCMethodKey.GetTopConversationList, map);
 //
-//    List conversationList = conversationMap["conversationMap"];
+//    List conversationList = conversationMap["conversationTypeList"];
 //    List conList = new List();
 //    for (String conStr in conversationList) {
 //      Conversation con = MessageFactory.instance.string2Conversation(conStr);
