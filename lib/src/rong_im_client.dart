@@ -809,12 +809,12 @@ class RongIMClient {
   ///
   /// [finished] 回调结果，code 为 0 代表正常
   static void getBlockedConversationList(List<int> conversationTypeList,
-      Function(List<Conversation> convertionList, int code) finished) async {
+      Function(List/*<Conversation>*/ convertionList, int code) finished) async {
     Map map = {"conversationTypeList": conversationTypeList};
     Map conversationMap = await _channel.invokeMethod(
         RCMethodKey.GetBlockedConversationList, map);
 
-    List conversationList = conversationMap["conversationMap"];
+    List conversationList = conversationMap["conversationList"];
     if (conversationList == null) {
       if (finished != null) {
         finished(null, conversationMap["code"]);

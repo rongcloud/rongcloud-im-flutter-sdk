@@ -1684,7 +1684,6 @@ public class RCIMFlutterWrapper {
 
     private void getBlockedConversationList(Object arg, final Result result) {
         final String LOG_TAG = "getBlockedConversationList";
-//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             List conversationTypeList = (List) map.get("conversationTypeList");
@@ -1724,7 +1723,7 @@ public class RCIMFlutterWrapper {
                             resultMap.put("code", errorCode.getValue());
                             result.success(resultMap);
                         }
-                    });
+                    },types);
         }
     }
 

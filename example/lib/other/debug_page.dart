@@ -20,6 +20,7 @@ class _DebugPageState extends State<DebugPage> {
     "分页获取会话",
     "消息携带用户信息",
     "聊天室状态存储测试",
+    "获取免打扰的会话列表",
   ];
 
   void _didTap(int index, BuildContext context) {
@@ -48,6 +49,9 @@ class _DebugPageState extends State<DebugPage> {
         break;
       case 7:
         _pushToChatRoomDebug(context);
+        break;
+      case 8:
+        _getBlockedConversationList();
         break;
     }
   }
@@ -205,6 +209,18 @@ class _DebugPageState extends State<DebugPage> {
 
   void _pushToChatRoomDebug(BuildContext context) {
     Navigator.pushNamed(context, "/chatroom_debug");
+  }
+
+  void _getBlockedConversationList() {
+    prefix.RongIMClient.getBlockedConversationList(
+        [prefix.RCConversationType.Private, prefix.RCConversationType.Group],
+        (List convertionList, int code) {
+      String toast = "消息免打扰会话数量:\n ${convertionList.length}";
+      // for (prefix.Conversation conversation in convertionList) {
+      //   toast = toast + conversation.toString();
+      // }
+      DialogUtil.showAlertDiaLog(context, toast);
+    });
   }
 
   @override
