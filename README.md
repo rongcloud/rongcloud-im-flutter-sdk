@@ -4,9 +4,9 @@
 
 [Flutter 官网](https://flutter.dev/)
 
-[融云 iOS 文档集成](https://docs.rongcloud.cn/im/imkit/ios/quick-start/import/)
+[融云 iOS 文档集成](https://docs.rongcloud.cn/v4/views/im/noui/guide/private/connection/connect/ios.html)
 
-[融云 Android 文档集成](https://docs.rongcloud.cn/im/imkit/android/quick-start/creatapp/)
+[融云 Android 文档集成](https://docs.rongcloud.cn/v4/views/im/noui/guide/private/connection/connect/android.html)
 
 源码地址 [Github](https://github.com/rongcloud/rongcloud-im-flutter-sdk)，任何问题可以通过 Github Issues 提问
 
