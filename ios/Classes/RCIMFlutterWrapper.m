@@ -55,7 +55,7 @@
                                content:(NSString *)content;
 @end
 
-@interface RCIMFlutterWrapper ()<RCIMClientReceiveMessageDelegate,RCConnectionStatusChangeDelegate,RCTypingStatusDelegate, RCMessageDestructDelegate>
+@interface RCIMFlutterWrapper ()<RCIMClientReceiveMessageDelegate,RCConnectionStatusChangeDelegate,RCTypingStatusDelegate, RCMessageDestructDelegate, RCChatRoomKVStatusChangeDelegate>
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 @property (nonatomic, strong) RCFlutterConfig *config;
 @end
@@ -258,6 +258,7 @@
         [[RCIMClient sharedRCIMClient] setRCConnectionStatusChangeDelegate:self];
         [[RCIMClient sharedRCIMClient] setRCTypingStatusDelegate:self];
         [[RCIMClient sharedRCIMClient] setRCMessageDestructDelegate:self];
+        [[RCIMClient sharedRCIMClient] setRCChatRoomKVStatusChangeDelegate:self];
     }else {
         NSLog(@"init 非法参数类型");
     }
@@ -1592,6 +1593,32 @@
         } error:^(RCErrorCode nErrorCode) {
             result(@(nErrorCode));
         }];
+    }
+}
+
+- (void)chatRoomKVDidSync:(NSString *)roomId {
+    if (roomId) {
+        NSDictionary *statusDic =
+        @{ @"roomId" : roomId };
+        [self.channel invokeMethod:RCMethodCallBackKeyChatRoomKVDidSync arguments:statusDic];
+    }
+}
+
+- (void)chatRoomKVDidUpdate:(NSString *)roomId entry:(NSDictionary<NSString *,NSString *> *)entry {
+    if (roomId && entry) {
+        NSDictionary *statusDic =
+        @{ @"roomId" : roomId,
+           @"entry" : entry };
+        [self.channel invokeMethod:RCMethodCallBackKeyChatRoomKVDidUpdate arguments:statusDic];
+    }
+}
+
+- (void)chatRoomKVDidRemove:(NSString *)roomId entry:(NSDictionary<NSString *,NSString *> *)entry {
+    if (roomId && entry) {
+        NSDictionary *statusDic =
+        @{ @"roomId" : roomId,
+           @"entry" : entry };
+        [self.channel invokeMethod:RCMethodCallBackKeyChatRoomKVDidRemove arguments:statusDic];
     }
 }
 
