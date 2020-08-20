@@ -42,6 +42,18 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
           msg: "退出聊天室 $targetId " + (status == 0 ? "成功" : "失败"),
           timeInSecForIos: 2);
     };
+
+    RongIMClient.chatRoomKVDidSync = (String roomId) {
+      DialogUtil.showAlertDiaLog(context, "chatRoomKVDidSync $roomId ");
+    };
+
+    RongIMClient.chatRoomKVDidUpdate = (String roomId, Map entry) {
+      DialogUtil.showAlertDiaLog(context, "chatRoomKVDidUpdate $roomId $entry");
+    };
+
+    RongIMClient.chatRoomKVDidRemove = (String roomId, Map entry) {
+      DialogUtil.showAlertDiaLog(context, "chatRoomKVDidRemove $roomId $entry");
+    };
   }
 
   void _didTap(int index) {
