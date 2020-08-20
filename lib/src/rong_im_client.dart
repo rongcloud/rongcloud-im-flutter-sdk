@@ -1770,6 +1770,25 @@ class RongIMClient {
   ///[status] 参见枚举 [RCOperationStatus]
   static Function(String targetId, int status) onQuitChatRoom;
 
+  ///刚加入聊天室时 KV 同步完成的回调
+  ///
+  ///[roomId] 聊天室 id
+  static Function(String roomId) chatRoomKVDidSync;
+
+  ///聊天室 KV 变化的回调
+  ///
+  ///[roomId] 聊天室 id
+  ///
+  ///[entry] KV 字典，如果刚进入聊天室时存在  KV，会通过此回调将所有 KV 返回，再次回调时为其他人设置或者修改 KV
+  static Function(String roomId, Map entry) chatRoomKVDidUpdate;
+
+  ///聊天室 KV 被删除的回调
+  ///
+  ///[roomId] 聊天室 id
+  ///
+  ///[entry] KV 字典
+  static Function(String roomId, Map entry) chatRoomKVDidRemove;
+
   ///发送媒体消息（图片/语音消息）的媒体上传进度
   ///
   ///[messageId] 消息 id
@@ -1894,6 +1913,32 @@ class RongIMClient {
             String targetId = map["targetId"];
             int status = map["status"];
             onQuitChatRoom(targetId, status);
+          }
+          break;
+
+        case RCMethodCallBackKey.ChatRoomKVDidSync:
+          if (chatRoomKVDidSync != null) {
+            Map map = call.arguments;
+            String roomId = map["roomId"];
+            chatRoomKVDidSync(roomId);
+          }
+          break;
+
+        case RCMethodCallBackKey.ChatRoomKVDidUpdate:
+          if (chatRoomKVDidUpdate != null) {
+            Map map = call.arguments;
+            String roomId = map["roomId"];
+            Map entry = map["entry"];
+            chatRoomKVDidUpdate(roomId, entry);
+          }
+          break;
+
+        case RCMethodCallBackKey.ChatRoomKVDidRemove:
+          if (chatRoomKVDidRemove != null) {
+            Map map = call.arguments;
+            String roomId = map["roomId"];
+            Map entry = map["entry"];
+            chatRoomKVDidRemove(roomId, entry);
           }
           break;
 
