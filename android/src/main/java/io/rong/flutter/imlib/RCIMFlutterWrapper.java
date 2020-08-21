@@ -453,6 +453,7 @@ public class RCIMFlutterWrapper {
             setTypingStatusListener();
             setOnRecallMessageListener();
             setOnReceiveDestructionMessageListener();
+            setKVStatusListener();
         } else {
             Log.e("RCIM flutter init", "非法参数");
         }
@@ -1723,7 +1724,7 @@ public class RCIMFlutterWrapper {
                             resultMap.put("code", errorCode.getValue());
                             result.success(resultMap);
                         }
-                    },types);
+                    }, types);
         }
     }
 
@@ -2017,6 +2018,49 @@ public class RCIMFlutterWrapper {
                     @Override
                     public void run() {
                         invokeMessageDestructCallBack(message.getUId(), 0);
+                    }
+                });
+            }
+        });
+    }
+
+    // 聊天室 kv 状态变化监听
+    private void setKVStatusListener() {
+        RongIMClient.getInstance().setKVStatusListener(new RongIMClient.KVStatusListener() {
+            @Override
+            public void onChatRoomKVSync(final String roomId) {
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        final Map resultMap = new HashMap();
+                        resultMap.put("roomId", roomId);
+                        mChannel.invokeMethod(RCMethodList.MethodCallBackChatRoomKVDidSync, resultMap);
+                    }
+                });
+            }
+
+            @Override
+            public void onChatRoomKVUpdate(final String roomId, final Map<String, String> map) {
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        final Map resultMap = new HashMap();
+                        resultMap.put("roomId", roomId);
+                        resultMap.put("entry", map);
+                        mChannel.invokeMethod(RCMethodList.MethodCallBackChatRoomKVDidUpdate, resultMap);
+                    }
+                });
+            }
+
+            @Override
+            public void onChatRoomKVRemove(final String roomId, final Map<String, String> map) {
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        final Map resultMap = new HashMap();
+                        resultMap.put("roomId", roomId);
+                        resultMap.put("entry", map);
+                        mChannel.invokeMethod(RCMethodList.MethodCallBackChatRoomKVDidRemove, resultMap);
                     }
                 });
             }

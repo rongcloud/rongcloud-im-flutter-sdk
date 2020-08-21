@@ -1,7 +1,6 @@
 library rongcloud_im_plugin;
 
 //核心类
-export 'src/rong_im_plugin.dart';
 export 'src/rong_im_client.dart';
 
 //消息体

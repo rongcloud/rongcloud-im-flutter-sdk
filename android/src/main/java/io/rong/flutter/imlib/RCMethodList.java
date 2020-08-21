@@ -103,5 +103,8 @@ public class RCMethodList {
     static String MethodCallBackKeyDownloadMediaMessage = "DownloadMediaMessageCallBack";
     static String MethodCallBackRecallMessage = "RecallMessageCallBack";
     static String MethodCallBackDestructMessage = "DestructMessageCallBack";
+    static String MethodCallBackChatRoomKVDidSync = "chatRoomKVDidSyncCallBack";
+    static String MethodCallBackChatRoomKVDidUpdate = "chatRoomKVDidUpdateCallBack";
+    static String MethodCallBackChatRoomKVDidRemove = "chatRoomKVDidRemoveCallBack";
 
 }
