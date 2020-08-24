@@ -1701,10 +1701,6 @@ public class RCIMFlutterWrapper {
                         @Override
                         public void onSuccess(List<Conversation> conversations) {
                             RCLog.i(LOG_TAG + " success");
-                            if (conversations == null) {
-                                result.success(null);
-                                return;
-                            }
                             List l = new ArrayList();
                             for (Conversation con : conversations) {
                                 String conStr = MessageFactory.getInstance().conversation2String(con);
@@ -2040,26 +2036,30 @@ public class RCIMFlutterWrapper {
             }
 
             @Override
-            public void onChatRoomKVUpdate(final String roomId, final Map<String, String> map) {
+            public void onChatRoomKVUpdate(final String roomId, Map<String, String> chatRoomKVMap) {
+                final Map<String, String> kvMap = new HashMap<>();
+                kvMap.putAll(chatRoomKVMap);
                 mMainHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         final Map resultMap = new HashMap();
                         resultMap.put("roomId", roomId);
-                        resultMap.put("entry", map);
+                        resultMap.put("entry", kvMap);
                         mChannel.invokeMethod(RCMethodList.MethodCallBackChatRoomKVDidUpdate, resultMap);
                     }
                 });
             }
 
             @Override
-            public void onChatRoomKVRemove(final String roomId, final Map<String, String> map) {
+            public void onChatRoomKVRemove(final String roomId, Map<String, String> map) {
+                final Map<String, String> kvMap = new HashMap<>();
+                kvMap.putAll(map);
                 mMainHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         final Map resultMap = new HashMap();
                         resultMap.put("roomId", roomId);
-                        resultMap.put("entry", map);
+                        resultMap.put("entry", kvMap);
                         mChannel.invokeMethod(RCMethodList.MethodCallBackChatRoomKVDidRemove, resultMap);
                     }
                 });
