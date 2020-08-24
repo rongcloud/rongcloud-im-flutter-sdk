@@ -71,7 +71,7 @@ class MessageFactory extends Object {
     Map messageConfigMap = map["messageConfig"];
     if (messageConfigMap != null) {
       MessageConfig messageConfig = MessageConfig();
-      messageConfig.disableNotification=
+      messageConfig.disableNotification =
           messageConfigMap["disableNotification"];
       message.messageConfig = messageConfig;
     }
@@ -144,7 +144,7 @@ class MessageFactory extends Object {
   }
 
   MessageContent string2MessageContent(String contentS, String objectName) {
-    MessageContent content = null;
+    MessageContent content;
     if (objectName == TextMessage.objectName) {
       content = new TextMessage();
       content.decode(contentS);
