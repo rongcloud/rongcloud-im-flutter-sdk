@@ -1,3 +1,10 @@
+## 4.0.2
+* SDK:
+* 1.指定 iOS 和 Android IM SDK 版本为 4.0.2 版本
+* 2.新增聊天室 KV 变化回调
+* 3.修复 Android 层 getBlockedConversationList 返回 null 的问题
+
+
 ## 4.0.1+5
 * SDK:
 * 1.修复获取免打扰会话列表获取不到的问题
