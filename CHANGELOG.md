@@ -1,3 +1,7 @@
+## 4.0.2+1
+* SDK:
+* 1.完善修复 Android 层 getBlockedConversationList 返回 null 的问题
+
 ## 4.0.2
 * SDK:
 * 1.指定 iOS 和 Android IM SDK 版本为 4.0.2 版本
