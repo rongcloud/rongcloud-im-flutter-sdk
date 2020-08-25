@@ -1701,14 +1701,15 @@ public class RCIMFlutterWrapper {
                         @Override
                         public void onSuccess(List<Conversation> conversations) {
                             RCLog.i(LOG_TAG + " success");
-                            List l = new ArrayList();
-                            for (Conversation con : conversations) {
-                                String conStr = MessageFactory.getInstance().conversation2String(con);
-                                l.add(conStr);
+                            List conversationList = new ArrayList();
+                            if (conversations != null) {
+                                for (Conversation con : conversations) {
+                                    String conStr = MessageFactory.getInstance().conversation2String(con);
+                                    conversationList.add(conStr);
+                                }
                             }
-
                             Map resultMap = new HashMap();
-                            resultMap.put("conversationList", l);
+                            resultMap.put("conversationList", conversationList);
                             resultMap.put("code", 0);
                             result.success(resultMap);
                         }
