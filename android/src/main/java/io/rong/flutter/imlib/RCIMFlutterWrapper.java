@@ -501,7 +501,11 @@ public class RCIMFlutterWrapper {
                             Map resultMap = new HashMap();
                             resultMap.put("userId", userId);
                             resultMap.put("code", 0);
-                            result.success(resultMap);
+                            try {
+                                result.success(resultMap);   
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                     });
                 }
@@ -516,8 +520,11 @@ public class RCIMFlutterWrapper {
                             Map resultMap = new HashMap();
                             resultMap.put("userId", "");
                             resultMap.put("code", code.getValue());
-                            result.success(resultMap);
-
+                            try {
+                                result.success(resultMap);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                     });
                 }
