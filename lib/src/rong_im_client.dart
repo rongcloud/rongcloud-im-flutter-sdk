@@ -508,7 +508,7 @@ class RongIMClient {
   ///
   ///[memberOrder] 获取的成员加入聊天室的顺序，参见枚举 [RCChatRoomMemberOrder]
   ///
-  static Future getChatRoomInfo(
+  static Future/*ChatRoomInfo*/ getChatRoomInfo(
       String targetId, int memeberCount, int memberOrder) async {
     if (memeberCount > 20) {
       memeberCount = 20;
