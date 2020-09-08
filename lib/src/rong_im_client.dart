@@ -327,6 +327,19 @@ class RongIMClient {
     return msgList;
   }
 
+  ///清除历史消息
+  ///
+  ///[conversationType] 会话类型，参见枚举 [RCConversationType]
+  ///
+  ///[targetId] 会话 id
+  ///
+  ///[recordTime] 清除消息时间戳，【0 <= recordTime <= 当前会话最后一条消息的 sentTime,0 清除所有消息，其他值清除小于等于 recordTime 的消息】
+  ///
+  ///[clearRemote] 是否同时删除服务端消息
+  ///
+  ///[finished] 回调结果
+  ///
+  /// 此方法可以清除服务器端历史消息和本地消息，如果清除服务器端消息必须先开通历史消息云存储功能。例如，您不想从服务器上获取更多的历史消息，通过指定 recordTime 并设置 clearRemote 为 YES 清除消息，成功后只能获取该时间戳之后的历史消息。如果 clearRemote 传 NO，只会清除本地消息。
   static clearHistoryMessages(int conversationType, String targetId,
       int recordTime, bool clearRemote, Function(int code) finished) async {
     if (conversationType == null || targetId == null) {
