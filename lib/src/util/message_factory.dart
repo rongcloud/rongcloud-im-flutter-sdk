@@ -68,6 +68,8 @@ class MessageFactory extends Object {
     message.objectName = map["objectName"];
     message.messageUId = map["messageUId"];
     message.extra = map["extra"];
+    message.canIncludeExpansion = map["canIncludeExpansion"];
+    message.expansionDic = map["expansionDic"];
     Map messageConfigMap = map["messageConfig"];
     if (messageConfigMap != null) {
       MessageConfig messageConfig = MessageConfig();
@@ -205,6 +207,24 @@ class MessageFactory extends Object {
     if (message.content != null) {
       map["content"] = message.content.encode();
     }
+    map["extra"] = message.extra ?? "";
+    map["canIncludeExpansion"] = message.canIncludeExpansion;
+    map["expansionDic"] = message.expansionDic;
+    if (message.messageConfig != null) {
+      Map messageConfig = Map();
+      messageConfig["disableNotification"] =
+          message.messageConfig.disableNotification;
+      map["messageConfig"] = messageConfig;
+    }
+    if (message.readReceiptInfo != null) {
+      Map readReceiptMap = Map();
+      readReceiptMap["isReceiptRequestMessage"] =
+          message.readReceiptInfo.isReceiptRequestMessage;
+      readReceiptMap["hasRespond"] = message.readReceiptInfo.hasRespond;
+      readReceiptMap["userIdList"] = message.readReceiptInfo.userIdList;
+      map["readReceiptInfo"] = readReceiptMap;
+    }
+
     return map;
   }
 

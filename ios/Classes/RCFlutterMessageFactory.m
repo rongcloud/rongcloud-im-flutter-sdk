@@ -102,6 +102,8 @@
         NSString *contentStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
         [dic setObject:contentStr forKey:@"content"];
     }
+    [dic setObject:@(message.canIncludeExpansion) forKey:@"canIncludeExpansion"];
+    [dic setObject:message.expansionDic?:@{@"":@""} forKey:@"expansionDic"];
     return [dic copy];
 }
 
@@ -182,10 +184,27 @@
     RCMessageContent *content = nil;
     if([message.objectName isEqualToString:RCVoiceMessageTypeIdentifier]) {
         content = [self getVoiceMessage:data];
-    }else {
+    } else {
         content = [[RCMessageMapper sharedMapper] messageContentWithClass:clazz fromData:data];
     }
     message.content = content;
+    message.canIncludeExpansion = [msgDic[@"canIncludeExpansion"] boolValue];
+    message.expansionDic = msgDic[@"expansionDic"];
+    NSDictionary *messageConfig = msgDic[@"messageConfig"];
+    if (messageConfig[@"disableNotification"]) {
+        message.messageConfig.disableNotification = [messageConfig[@"disableNotification"] boolValue];
+    }
+    NSDictionary *readReceiptInfo = msgDic[@"readReceiptInfo"];
+    if (readReceiptInfo[@"isReceiptRequestMessage"]) {
+        message.readReceiptInfo.isReceiptRequestMessage = [messageConfig[@"isReceiptRequestMessage"] boolValue];
+    }
+    if (readReceiptInfo[@"hasRespond"]) {
+        message.readReceiptInfo.isReceiptRequestMessage = [messageConfig[@"hasRespond"] boolValue];
+    }
+    if (readReceiptInfo[@"userIdList"]) {
+        message.readReceiptInfo.userIdList = messageConfig[@"userIdList"];
+    }
+    
     return message;
 }
 

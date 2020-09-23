@@ -13,6 +13,8 @@ class Message extends Object {
   MessageContent content; //消息内容
   String messageUId; //消息 UID，全网唯一 Id
   String extra; // 扩展信息
+  bool canIncludeExpansion; // 消息是否可以包含扩展信息
+  Map expansionDic; // 消息扩展信息列表
 
   ReadReceiptInfo readReceiptInfo; //阅读回执状态
   MessageConfig messageConfig; // 消息配置

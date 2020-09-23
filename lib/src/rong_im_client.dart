@@ -188,6 +188,61 @@ class RongIMClient {
     return msg;
   }
 
+  ///发送消息
+  ///
+  ///[message] 将要发送的消息实体（需要保证 message 中的 conversationType，targetId，messageContent 是有效值)
+  ///
+  ///[finished] 回调结果，告知 messageId(消息 id)、status(消息发送状态，参见枚举 [RCSentStatus]) 和 code(具体的错误码，0 代表成功)
+  ///
+  /// 当接收方离线并允许远程推送时，会收到远程推送。
+  /// 远程推送中包含两部分内容，一是[pushContent]，用于显示；二是[pushData]，用于携带不显示的数据。
+  ///
+  /// SDK内置的消息类型，如果您将[pushContent]和[pushData]置为空或者为null，会使用默认的推送格式进行远程推送。
+  /// 自定义类型的消息，需要您自己设置pushContent和pushData来定义推送内容，否则将不会进行远程推送。
+  ///
+  ///
+  /// 发送消息之后有两种查看结果的方式：1、发送消息的 callback（消息插入数据库时会走一次 onMessageSend） 2、onMessageSend；推荐使用 callback 的方式
+  /// 如果未实现此方法的 callback，则会通过 onMessageSend 返回发送消息的结果
+  static Future<Message> sendIntactMessageWithCallBack(
+      Message message,
+      String pushContent,
+      String pushData,
+      Function(int messageId, int status, int code) finished) async {
+    if (message != null && message.conversationType == null ||
+        message.targetId == null ||
+        message.content == null) {
+      developer.log(
+          "send message fail: conversationType or targetId or content is null",
+          name: "RongIMClient");
+      return null;
+    }
+    if (pushContent == null) {
+      pushContent = "";
+    }
+    if (pushData == null) {
+      pushData = "";
+    }
+
+    // 此处获取当前时间戳传给原生方法，并且当做 sendMessageCallbacks 的 key 记录 finished
+    DateTime time = DateTime.now();
+    int timestamp = time.millisecondsSinceEpoch;
+
+    Map map = MessageFactory.instance.message2Map(message);
+
+    if (finished != null) {
+      sendMessageCallbacks[timestamp] = finished;
+    }
+
+    Map resultMap =
+        await _channel.invokeMethod(RCMethodKey.SendIntactMessage, map);
+    if (resultMap == null) {
+      return null;
+    }
+    String messageString = resultMap["message"];
+    Message msg = MessageFactory.instance.string2Message(messageString);
+    return msg;
+  }
+
   ///发送定向消息
   ///
   ///[conversationType] 会话类型，参见枚举 [RCConversationType]
@@ -521,7 +576,7 @@ class RongIMClient {
   ///
   ///[memberOrder] 获取的成员加入聊天室的顺序，参见枚举 [RCChatRoomMemberOrder]
   ///
-  static Future/*ChatRoomInfo*/ getChatRoomInfo(
+  static Future /*ChatRoomInfo*/ getChatRoomInfo(
       String targetId, int memeberCount, int memberOrder) async {
     if (memeberCount > 20) {
       memeberCount = 20;
