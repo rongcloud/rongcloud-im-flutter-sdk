@@ -1027,6 +1027,21 @@ class _ConversationPageState extends State<ConversationPage>
 
     Message message =
         await RongIMClient.sendMessage(conversationType, targetId, msg);
+    // Message message = Message();
+    // message.conversationType = conversationType;
+    // message.targetId = targetId;
+    // message.objectName = TextMessage.objectName;
+    // message.content = msg;
+    // message.canIncludeExpansion = true;
+    // message.expansionDic = {
+    //   "1": "1",
+    //   "2": "2",
+    //   "3": "3",
+    //   "4": "4",
+    // };
+    // await RongIMClient.sendIntactMessageWithCallBack(message, "", "",(int messageId, int status, int code){
+    //   String result = "messageId:$messageId status:$status code:$code";
+    // });
     userIdList.clear();
     bottomInputBar.clearReferenceMessage();
     _insertOrReplaceMessage(message);

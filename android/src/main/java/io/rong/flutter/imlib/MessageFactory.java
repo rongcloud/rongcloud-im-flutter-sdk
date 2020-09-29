@@ -69,6 +69,8 @@ public class MessageFactory {
         map.put("sentTime", message.getSentTime());
         map.put("objectName", message.getObjectName());
         map.put("extra", message.getExtra());
+        map.put("canIncludeExpansion",message.isCanIncludeExpansion());
+        map.put("expansionDic",message.getExpansion());
         String uid = message.getUId();
         if (uid == null || uid.length() <= 0) {
             uid = "";

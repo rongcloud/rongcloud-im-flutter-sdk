@@ -73,6 +73,8 @@ public class RCMethodList {
     static String MethodKeyGetRemoteChatRoomHistoryMessages = "getRemoteChatRoomHistoryMessages";
     static String MethodKeyGetMessageByUId = "getMessageByUId";
     static String MethodKeyGetFirstUnreadMessage = "getFirstUnreadMessage";
+    static String MethodKeySendIntactMessage = "sendIntactMessage";
+
 
 
 

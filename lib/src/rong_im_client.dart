@@ -228,6 +228,9 @@ class RongIMClient {
     int timestamp = time.millisecondsSinceEpoch;
 
     Map map = MessageFactory.instance.message2Map(message);
+    map['pushContent'] = pushContent;
+    map['pushData'] = pushData;
+    map['timestamp'] = timestamp;
 
     if (finished != null) {
       sendMessageCallbacks[timestamp] = finished;

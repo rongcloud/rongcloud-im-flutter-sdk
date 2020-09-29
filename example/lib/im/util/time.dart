@@ -32,6 +32,9 @@ class TimeUtil {
 
   ///是否需要显示时间，相差 5 分钟
   static bool needShowTime(int sentTime1, int sentTime2) {
+    if(sentTime1 == null || sentTime2 == null){
+      return false;
+    }
     return (sentTime1 - sentTime2).abs() > 5 * 60 * 1000;
   }
 

@@ -297,6 +297,8 @@ public class RCIMFlutterWrapper {
             getMessageByUId(call.arguments, result);
         } else if (RCMethodList.MethodKeyGetFirstUnreadMessage.equalsIgnoreCase(call.method)) {
             getFirstUnreadMessage(call.arguments, result);
+        } else if (RCMethodList.MethodKeySendIntactMessage.equalsIgnoreCase(call.method)) {
+            sendIntactMessage(call.arguments, result);
         } else {
             result.notImplemented();
         }
@@ -502,7 +504,7 @@ public class RCIMFlutterWrapper {
                             resultMap.put("userId", userId);
                             resultMap.put("code", 0);
                             try {
-                                result.success(resultMap);   
+                                result.success(resultMap);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -575,6 +577,76 @@ public class RCIMFlutterWrapper {
             String name = (String) map.get("name");
             String portraitUri = (String) map.get("portraitUrl");
             UserInfo userInfo = new UserInfo(userId, name, Uri.parse(portraitUri));
+        }
+    }
+
+    private void sendIntactMessage(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map map = (Map) arg;
+            final Number timestamp = (Number) map.get("timestamp");
+            String objectName = (String) map.get("objectName");
+            if (isMediaMessage(objectName)) {
+                sendMediaMessage(arg, result);
+                return;
+            }
+            final String LOG_TAG = "sendIntactMessage";
+            String pushContent = (String) map.get("pushContent");
+
+            if (pushContent.length() <= 0) {
+                pushContent = null;
+            }
+            String pushData = (String) map.get("pushData");
+            if (pushData.length() <= 0) {
+                pushData = null;
+            }
+
+            Message message = map2Message(map);
+            RongIMClient.getInstance().sendMessage(message, pushContent, pushData,
+                    new IRongCallback.ISendMessageCallback() {
+                        @Override
+                        public void onAttached(Message message) {
+                            String messageS = MessageFactory.getInstance().message2String(message);
+                            Map msgMap = new HashMap();
+                            msgMap.put("message", messageS);
+                            msgMap.put("status", 10);
+                            result.success(msgMap);
+                            msgMap.put("code", -1);
+                            msgMap.put("messageId", message.getMessageId());
+                            mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, msgMap);
+                        }
+
+                        @Override
+                        public void onSuccess(Message message) {
+                            RCLog.i(LOG_TAG + " success");
+                            if (message == null) {
+                                RCLog.e(LOG_TAG + " message is nil");
+                                result.success(null);
+                                return;
+                            }
+                            Map resultMap = new HashMap();
+                            resultMap.put("messageId", message.getMessageId());
+                            resultMap.put("status", 30);
+                            resultMap.put("code", 0);
+                            if (timestamp != null && timestamp.longValue() > 0) {
+                                resultMap.put("timestamp", timestamp);
+                            }
+                            mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
+                        }
+
+                        @Override
+                        public void onError(Message message, RongIMClient.ErrorCode errorCode) {
+                            RCLog.e(LOG_TAG + " content is nil");
+                            Map resultMap = new HashMap();
+                            resultMap.put("messageId", message.getMessageId());
+                            resultMap.put("status", 20);
+                            resultMap.put("code", errorCode.getValue());
+                            if (timestamp != null && timestamp.longValue() > 0) {
+                                resultMap.put("timestamp", timestamp);
+                            }
+                            mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
+                        }
+
+                    });
         }
     }
 
@@ -865,6 +937,13 @@ public class RCIMFlutterWrapper {
             final boolean disableNotification = (boolean) map.get("disableNotification");
             Message message = Message.obtain(targetId, type, content);
             message.setMessageConfig(new MessageConfig.Builder().setDisableNotification(disableNotification).build());
+            if (map.get("canIncludeExpansion") != null) {
+                message.setCanIncludeExpansion((Boolean) map.get("canIncludeExpansion"));
+            }
+            Map<String, String> expansionDic = (Map) map.get("expansionDic");
+            HashMap<String, String> expansionDicMap = new HashMap<>();
+            expansionDicMap.putAll(expansionDic);
+            message.setExpansion(expansionDicMap);
             RongIMClient.getInstance().sendMediaMessage(message, pushContent, pushData,
                     new IRongCallback.ISendMediaMessageCallback() {
                         @Override
@@ -3235,14 +3314,42 @@ public class RCIMFlutterWrapper {
             message.setConversationType(
                     Conversation.ConversationType.setValue((int) messageMap.get("conversationType")));
             message.setTargetId((String) messageMap.get("targetId"));
-            message.setMessageId((int) messageMap.get("messageId"));
-            message.setMessageDirection(Message.MessageDirection.setValue((int) messageMap.get("messageDirection")));
-            message.setSenderUserId((String) messageMap.get("senderUserId"));
-            message.setReceivedStatus(new Message.ReceivedStatus((int) messageMap.get("receivedStatus")));
-            message.setSentStatus(Message.SentStatus.setValue((int) messageMap.get("sentStatus")));
-            message.setSentTime((long) messageMap.get("sentTime"));
-            message.setObjectName((String) messageMap.get("objectName"));
-            message.setUId((String) messageMap.get("messageUId"));
+            if (messageMap.get("messageId") != null) {
+                message.setMessageId((int) messageMap.get("messageId"));
+            }
+            if (messageMap.get("messageDirection") != null) {
+                message.setMessageDirection(Message.MessageDirection.setValue((int) messageMap.get("messageDirection")));
+            }
+            if (messageMap.get("senderUserId") != null) {
+                message.setSenderUserId((String) messageMap.get("senderUserId"));
+            }
+            if (messageMap.get("receivedStatus") != null) {
+                message.setReceivedStatus(new Message.ReceivedStatus((int) messageMap.get("receivedStatus")));
+            }
+            if (messageMap.get("sentStatus") != null) {
+                message.setSentStatus(Message.SentStatus.setValue((int) messageMap.get("sentStatus")));
+            }
+            if (messageMap.get("sentTime") != null) {
+                message.setSentTime((long) messageMap.get("sentTime"));
+            }
+            if (messageMap.get("objectName") != null) {
+                message.setObjectName((String) messageMap.get("objectName"));
+            }
+            if (messageMap.get("messageUId") != null) {
+                message.setUId((String) messageMap.get("messageUId"));
+            }
+            if (messageMap.get("disableNotification") != null) {
+                message.setMessageConfig(new MessageConfig.Builder().setDisableNotification((boolean) messageMap.get("disableNotification")).build());
+            }
+            if (messageMap.get("canIncludeExpansion") != null) {
+                message.setCanIncludeExpansion((Boolean) messageMap.get("canIncludeExpansion"));
+            }
+            Map<String, String> expansionDic = (Map<String, String>) messageMap.get("expansionDic");
+            if (expansionDic != null) {
+                HashMap<String, String> expansionDicMap = new HashMap<>();
+                expansionDicMap.putAll(expansionDic);
+                message.setExpansion(expansionDicMap);
+            }
             contentStr = (String) messageMap.get("content");
         }
         if (contentStr == null) {
@@ -3273,6 +3380,19 @@ public class RCIMFlutterWrapper {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        } else if (isVoiceMessage(objectName)) {
+            JSONObject jsonObject = null;
+            try {
+                jsonObject = new JSONObject(contentStr);
+                String localPath = jsonObject.getString("localPath");
+                int duration = jsonObject.getInt("duration");
+                Uri uri = Uri.parse(localPath);
+                content = VoiceMessage.obtain(uri, duration);
+            } catch (JSONException e) {
+                // do nothing
+            }
+        } else if (objectName.equalsIgnoreCase("RC:ReferenceMsg")) {
+            makeReferenceMessage(content, contentStr);
         }
         message.setContent(content);
         return message;
