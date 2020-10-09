@@ -168,12 +168,22 @@
     RCMessage *message = [[RCMessage alloc] init];
     message.conversationType = [msgDic[@"conversationType"] integerValue];
     message.targetId = msgDic[@"targetId"];
-    message.messageId = [msgDic[@"messageId"] integerValue];
-    message.messageDirection = [msgDic[@"messageDirection"] integerValue];
+    if (msgDic[@"messageId"] && ![msgDic[@"messageId"] isKindOfClass:[NSNull class]]) {
+        message.messageId = [msgDic[@"messageId"] integerValue];
+    }
+    if (msgDic[@"messageDirection"] && ![msgDic[@"messageDirection"] isKindOfClass:[NSNull class]]) {
+        message.messageDirection = [msgDic[@"messageDirection"] integerValue];
+    }
     message.senderUserId = msgDic[@"senderUserId"];
-    message.receivedStatus = [msgDic[@"receivedStatus"] integerValue];
-    message.sentStatus = [msgDic[@"sentStatus"] integerValue];
-    message.sentTime = [msgDic[@"sentTime"] integerValue];
+    if (msgDic[@"receivedStatus"] && ![msgDic[@"receivedStatus"] isKindOfClass:[NSNull class]]) {
+        message.receivedStatus = [msgDic[@"receivedStatus"] integerValue];
+    }
+    if (msgDic[@"sentStatus"] && ![msgDic[@"sentStatus"] isKindOfClass:[NSNull class]]) {
+        message.sentStatus = [msgDic[@"sentStatus"] integerValue];
+    }
+    if (msgDic[@"sentTime"] && ![msgDic[@"sentTime"] isKindOfClass:[NSNull class]]) {
+        message.sentTime = [msgDic[@"sentTime"] integerValue];
+    }
     message.objectName = msgDic[@"objectName"];
     message.messageUId = msgDic[@"messageUId"];
     
