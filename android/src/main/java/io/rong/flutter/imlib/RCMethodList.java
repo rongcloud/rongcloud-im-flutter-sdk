@@ -74,6 +74,9 @@ public class RCMethodList {
     static String MethodKeyGetMessageByUId = "getMessageByUId";
     static String MethodKeyGetFirstUnreadMessage = "getFirstUnreadMessage";
     static String MethodKeySendIntactMessage = "sendIntactMessage";
+    // 消息扩展
+    static String MethodKeyUpdateMessageExpansion = "updateMessageExpansion";
+    static String MethodKeyRemoveMessageExpansionForKey = "removeMessageExpansionForKey";
 
 
 
@@ -108,5 +111,7 @@ public class RCMethodList {
     static String MethodCallBackChatRoomKVDidSync = "chatRoomKVDidSyncCallBack";
     static String MethodCallBackChatRoomKVDidUpdate = "chatRoomKVDidUpdateCallBack";
     static String MethodCallBackChatRoomKVDidRemove = "chatRoomKVDidRemoveCallBack";
+    static String MethodCallBackMessageExpansionDidUpdate = "MessageExpansionDidUpdateCallBack";
+    static String MethodCallBackMessageExpansionDidRemove = "MessageExpansionDidRemoveCallBack";
 
 }

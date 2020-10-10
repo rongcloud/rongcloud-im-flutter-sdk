@@ -105,8 +105,8 @@ static NSString *RCMethodCallBackKeyTypingStatusChanged = @"TypingStatusChangedC
 static NSString *RCMethodCallBackKeyDownloadMediaMessage = @"DownloadMediaMessageCallBack";
 static NSString *RCMethodCallBackKeyRecallMessage = @"RecallMessageCallBack";
 static NSString *RCMethodCallBackKeyDestructMessage = @"DestructMessageCallBack";
-static NSString *RCMethodCallBackKeyMessageExpansionDidUpdate = @"MessageExpansionDidUpdate";
-static NSString *RCMethodCallBackKeyMessageExpansionDidRemove = @"MessageExpansionDidRemove";
+static NSString *RCMethodCallBackKeyMessageExpansionDidUpdate = @"MessageExpansionDidUpdateCallBack";
+static NSString *RCMethodCallBackKeyMessageExpansionDidRemove = @"MessageExpansionDidRemoveCallBack";
 
 
 

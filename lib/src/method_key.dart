@@ -114,6 +114,6 @@ class RCMethodCallBackKey {
   static const String DownloadMediaMessage = 'DownloadMediaMessageCallBack';
   static const String RecallMessage = 'RecallMessageCallBack';
   static const String DestructMessage = 'DestructMessageCallBack';
-  static const String MessageExpansionDidUpdate = 'MessageExpansionDidUpdate';
-  static const String MessageExpansionDidRemove = 'MessageExpansionDidRemove';
+  static const String MessageExpansionDidUpdate = 'MessageExpansionDidUpdateCallBack';
+  static const String MessageExpansionDidRemove = 'MessageExpansionDidRemoveCallBack';
 }

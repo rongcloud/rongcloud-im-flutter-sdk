@@ -299,6 +299,10 @@ public class RCIMFlutterWrapper {
             getFirstUnreadMessage(call.arguments, result);
         } else if (RCMethodList.MethodKeySendIntactMessage.equalsIgnoreCase(call.method)) {
             sendIntactMessage(call.arguments, result);
+        } else if (RCMethodList.MethodKeyUpdateMessageExpansion.equalsIgnoreCase(call.method)) {
+            updateMessageExpansion(call.arguments, result);
+        } else if (RCMethodList.MethodKeyRemoveMessageExpansionForKey.equalsIgnoreCase(call.method)) {
+            removeMessageExpansion(call.arguments, result);
         } else {
             result.notImplemented();
         }
@@ -456,6 +460,7 @@ public class RCIMFlutterWrapper {
             setOnRecallMessageListener();
             setOnReceiveDestructionMessageListener();
             setKVStatusListener();
+            setMessageExpansionListener();
         } else {
             Log.e("RCIM flutter init", "非法参数");
         }
@@ -2156,6 +2161,36 @@ public class RCIMFlutterWrapper {
         });
     }
 
+    private void setMessageExpansionListener(){
+        RongIMClient.getInstance().setMessageExpansionListener(new RongIMClient.MessageExpansionListener() {
+            @Override
+            public void onMessageExpansionUpdate(final Map<String, String> map, final Message message) {
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        final Map resultMap = new HashMap();
+                        resultMap.put("expansionDic", map);
+                        resultMap.put("message", MessageFactory.getInstance().message2String(message));
+                        mChannel.invokeMethod(RCMethodList.MethodCallBackMessageExpansionDidUpdate, resultMap);
+                    }
+                });
+            }
+
+            @Override
+            public void onMessageExpansionRemove(final List<String> list, final Message message) {
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        final Map resultMap = new HashMap();
+                        resultMap.put("keyArray", list);
+                        resultMap.put("message", MessageFactory.getInstance().message2String(message));
+                        mChannel.invokeMethod(RCMethodList.MethodCallBackMessageExpansionDidRemove, resultMap);
+                    }
+                });
+            }
+        });
+    }
+
     /*
      * 输入状态的监听
      */
@@ -3303,6 +3338,47 @@ public class RCIMFlutterWrapper {
                 @Override
                 public void onError(RongIMClient.ErrorCode errorCode) {
                     result.success(null);
+                }
+            });
+        }
+    }
+
+    private void updateMessageExpansion(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            String messageUId = (String) paramMap.get("messageUId");
+            Map<String, String> expansion = (Map<String, String>) paramMap.get("expansionDic");
+            if (expansion == null) {
+                return;
+            }
+            RongIMClient.getInstance().updateMessageExpansion(expansion, messageUId, new RongIMClient.OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    result.success(0);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    result.success(errorCode.getValue());
+                }
+            });
+        }
+    }
+
+    private void removeMessageExpansion(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            List<String> keyArray = (List<String>) paramMap.get("keyArray");
+            String messageUId = (String) paramMap.get("messageUId");
+            RongIMClient.getInstance().removeMessageExpansion(keyArray, messageUId, new RongIMClient.OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    result.success(0);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    result.success(errorCode.getValue());
                 }
             });
         }

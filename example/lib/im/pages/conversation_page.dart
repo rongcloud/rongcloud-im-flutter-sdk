@@ -818,6 +818,14 @@ class _ConversationPageState extends State<ConversationPage>
     //     "getConnectionStatus: ${await RongIMClient.getConnectionStatus()}",
     //     name: pageName);
     // RongIMClient.setReconnectKickEnable(true);
+    // RongIMClient.updateMessageExpansion(
+    //     {'1': '1', '2': '2'}, message.messageUId, (int code) {
+    //   developer.log("updateMessageExpansion $code" , name: pageName);
+    // });
+    // RongIMClient.removeMessageExpansionForKey(
+    //     ['1', '2'], message.messageUId, (int code) {
+    //   developer.log("updateMessageExpansion $code" , name: pageName);
+    // });
     if (message.messageDirection == RCMessageDirection.Receive &&
         message.content.destructDuration != null &&
         message.content.destructDuration > 0 &&
