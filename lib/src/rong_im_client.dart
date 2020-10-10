@@ -1827,9 +1827,6 @@ class RongIMClient {
   ///扩展信息只支持单聊和群组，其它会话类型不能设置扩展信息
   static Future removeMessageExpansionForKey(
       List keyArray, String messageUId, Function(int code) finished) async {
-    // if (memeberCount > 20) {
-    //   memeberCount = 20;
-    // }
     Map map = {"keyArray": keyArray, "messageUId": messageUId};
     int resultMap = await _channel.invokeMethod(
         RCMethodKey.RemoveMessageExpansionForKey, map);
