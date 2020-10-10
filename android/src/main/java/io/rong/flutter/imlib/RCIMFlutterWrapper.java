@@ -941,9 +941,11 @@ public class RCIMFlutterWrapper {
                 message.setCanIncludeExpansion((Boolean) map.get("canIncludeExpansion"));
             }
             Map<String, String> expansionDic = (Map) map.get("expansionDic");
-            HashMap<String, String> expansionDicMap = new HashMap<>();
-            expansionDicMap.putAll(expansionDic);
-            message.setExpansion(expansionDicMap);
+            if (expansionDic != null) {
+                HashMap<String, String> expansionDicMap = new HashMap<>();
+                expansionDicMap.putAll(expansionDic);
+                message.setExpansion(expansionDicMap);
+            }
             RongIMClient.getInstance().sendMediaMessage(message, pushContent, pushData,
                     new IRongCallback.ISendMediaMessageCallback() {
                         @Override
