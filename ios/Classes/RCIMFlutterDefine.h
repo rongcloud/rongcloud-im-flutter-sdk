@@ -74,6 +74,8 @@ static NSString *RCMethodKeySetOfflineMessageDuration = @"setOfflineMessageDurat
 static NSString *RCMethodKeyGetOfflineMessageDuration = @"getOfflineMessageDuration";
 static NSString *RCMethodKeyGetFirstUnreadMessage = @"getFirstUnreadMessage";
 static NSString *RCMethodKeySendIntactMessage = @"sendIntactMessage";
+static NSString *RCMethodKeyUpdateMessageExpansion = @"updateMessageExpansion";
+static NSString *RCMethodKeyRemoveMessageExpansionForKey = @"removeMessageExpansionForKey";
 
 // 聊天室状态存储
 static NSString *RCMethodKeySetChatRoomEntry = @"SetChatRoomEntry";
@@ -99,10 +101,12 @@ static NSString *RCMethodCallBackKeySendDataToFlutter = @"SendDataToFlutterCallB
 static NSString *RCMethodCallBackKeyReceiveReadReceipt = @"ReceiveReadReceiptCallBack";
 static NSString *RCMethodCallBackKeyReceiptRequest = @"ReceiptRequestCallBack";
 static NSString *RCMethodCallBackKeyReceiptResponse = @"ReceiptResponseCallBack";
-static NSString *RCMethodCallBackKeyTypingStatusChangedCallBack = @"TypingStatusChangedCallBack";
-static NSString *RCMethodCallBackKeyDownloadMediaMessageCallBack = @"DownloadMediaMessageCallBack";
-static NSString *RCMethodCallBackKeyRecallMessageCallBack = @"RecallMessageCallBack";
-static NSString *RCMethodCallBackKeyDestructMessageCallBack = @"DestructMessageCallBack";
+static NSString *RCMethodCallBackKeyTypingStatusChanged = @"TypingStatusChangedCallBack";
+static NSString *RCMethodCallBackKeyDownloadMediaMessage = @"DownloadMediaMessageCallBack";
+static NSString *RCMethodCallBackKeyRecallMessage = @"RecallMessageCallBack";
+static NSString *RCMethodCallBackKeyDestructMessage = @"DestructMessageCallBack";
+static NSString *RCMethodCallBackKeyMessageExpansionDidUpdate = @"MessageExpansionDidUpdate";
+static NSString *RCMethodCallBackKeyMessageExpansionDidRemove = @"MessageExpansionDidRemove";
 
 
 

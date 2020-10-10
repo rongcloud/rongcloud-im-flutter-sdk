@@ -85,6 +85,11 @@ class RCMethodKey {
   static const String GetAllChatRoomEntries = 'GetAllChatRoomEntries';
   static const String RemoveChatRoomEntry = 'RemoveChatRoomEntry';
   static const String ForceRemoveChatRoomEntry = 'ForceRemoveChatRoomEntry';
+
+  // 消息扩展
+  static const String UpdateMessageExpansion = 'updateMessageExpansion';
+  static const String RemoveMessageExpansionForKey =
+      'removeMessageExpansionForKey';
 }
 
 //callback list //native 会触发此方法
@@ -109,4 +114,6 @@ class RCMethodCallBackKey {
   static const String DownloadMediaMessage = 'DownloadMediaMessageCallBack';
   static const String RecallMessage = 'RecallMessageCallBack';
   static const String DestructMessage = 'DestructMessageCallBack';
+  static const String MessageExpansionDidUpdate = 'MessageExpansionDidUpdate';
+  static const String MessageExpansionDidRemove = 'MessageExpansionDidRemove';
 }

@@ -1790,10 +1790,76 @@ class RongIMClient {
     return msg;
   }
 
+  ///更新消息扩展信息
+  ///
+  ///[expansionDic] 要更新的消息扩展信息键值对
+  ///
+  ///[messageUId] 消息 messageUId
+  ///
+  ///[finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
+  ///
+  ///消息扩展信息是以字典形式存在。设置的时候从 expansionDic 中读取 key，如果原有的扩展信息中 key 不存在则添加新的 KV 对，如果 key 存在则替换成新的 value。
+  ///
+  ///扩展信息只支持单聊和群组，其它会话类型不能设置扩展信息
+  ///
+  ///扩展信息字典中的 Key 支持大小写英文字母、数字、部分特殊符号 + = - _ 的组合方式，最大长度 32；Value 最长长度，单次设置扩展数量最大为 20，消息的扩展总数不能超过 300
+  static Future updateMessageExpansion(
+      Map expansionDic, String messageUId, Function(int code) finished) async {
+    // if (memeberCount > 20) {
+    //   memeberCount = 20;
+    // }
+    Map map = {"expansionDic": expansionDic, "messageUId": messageUId};
+    int resultMap =
+        await _channel.invokeMethod(RCMethodKey.UpdateMessageExpansion, map);
+    if (finished != null) {
+      finished(resultMap);
+    }
+  }
+
+  ///删除消息扩展信息中特定的键值对
+  ///
+  ///[keyArray] 消息扩展信息中待删除的 key 的列表
+  ///
+  ///[messageUId] 消息 messageUId
+  ///
+  ///[finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
+  ///
+  ///扩展信息只支持单聊和群组，其它会话类型不能设置扩展信息
+  static Future removeMessageExpansionForKey(
+      List keyArray, String messageUId, Function(int code) finished) async {
+    // if (memeberCount > 20) {
+    //   memeberCount = 20;
+    // }
+    Map map = {"keyArray": keyArray, "messageUId": messageUId};
+    int resultMap = await _channel.invokeMethod(
+        RCMethodKey.RemoveMessageExpansionForKey, map);
+    if (finished != null) {
+      finished(resultMap);
+    }
+  }
+
   ///连接状态发生变更
   ///
   /// [connectionStatus] 连接状态，具体参见枚举 [RCConnectionStatus]
   static Function(int connectionStatus) onConnectionStatusChange;
+
+  ///消息扩展信息更改的回调
+  ///
+  /// [expansionDic] 消息扩展信息中更新的键值对
+  ///
+  /// [message] 消息
+  ///
+  /// expansionDic 只包含更新的键值对，不是全部的数据。如果想获取全部的键值对，请使用 message 的 expansionDic 属性。
+  static Function(Map expansionDic, Message message) messageExpansionDidUpdate;
+
+  ///消息扩展信息删除的回调
+  ///
+  /// [keyArray] 消息扩展信息中删除的键值对 key 列表
+  ///
+  /// [message] 消息
+  ///
+  /// expansionDic 只包含更新的键值对，不是全部的数据。如果想获取全部的键值对，请使用 message 的 expansionDic 属性。
+  static Function(List keyArray, Message message) messageExpansionDidRemove;
 
   ///调用发送消息接口 [sendMessage] 结果的回调
   ///
@@ -2100,6 +2166,26 @@ class RongIMClient {
             Message message =
                 MessageFactory.instance.string2Message(messageString);
             onMessageDestructing(message, remainDuration);
+          }
+          break;
+        case RCMethodCallBackKey.MessageExpansionDidUpdate:
+          if (messageExpansionDidUpdate != null) {
+            Map map = call.arguments;
+            Map expansionDic = map["expansionDic"];
+            String messageString = map["message"];
+            Message message =
+                MessageFactory.instance.string2Message(messageString);
+            messageExpansionDidUpdate(expansionDic, message);
+          }
+          break;
+        case RCMethodCallBackKey.MessageExpansionDidRemove:
+          if (messageExpansionDidRemove != null) {
+            Map map = call.arguments;
+            List keyArray = map["keyArray"];
+            String messageString = map["message"];
+            Message message =
+                MessageFactory.instance.string2Message(messageString);
+            messageExpansionDidRemove(keyArray, message);
           }
           break;
       }

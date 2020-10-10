@@ -55,7 +55,7 @@
                                content:(NSString *)content;
 @end
 
-@interface RCIMFlutterWrapper ()<RCIMClientReceiveMessageDelegate,RCConnectionStatusChangeDelegate,RCTypingStatusDelegate, RCMessageDestructDelegate, RCChatRoomKVStatusChangeDelegate>
+@interface RCIMFlutterWrapper ()<RCIMClientReceiveMessageDelegate,RCConnectionStatusChangeDelegate,RCTypingStatusDelegate, RCMessageDestructDelegate, RCChatRoomKVStatusChangeDelegate, RCMessageExpansionDelegate>
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 @property (nonatomic, strong) RCFlutterConfig *config;
 @end
@@ -235,6 +235,10 @@
         [self getFirstUnreadMessage:call.arguments result:result];
     }else if([RCMethodKeySendIntactMessage isEqualToString:call.method]) {
         [self sendIntactMessage:call.arguments result:result];
+    }else if([RCMethodKeyUpdateMessageExpansion isEqualToString:call.method]) {
+        [self updateMessageExpansion:call.arguments result:result];
+    }else if([RCMethodKeyRemoveMessageExpansionForKey isEqualToString:call.method]) {
+        [self removeMessageExpansionForKey:call.arguments result:result];
     }
     else {
         result(FlutterMethodNotImplemented);
@@ -261,6 +265,7 @@
         [[RCIMClient sharedRCIMClient] setRCTypingStatusDelegate:self];
         [[RCIMClient sharedRCIMClient] setRCMessageDestructDelegate:self];
         [[RCIMClient sharedRCIMClient] setRCChatRoomKVStatusChangeDelegate:self];
+        [[RCIMClient sharedRCIMClient] setMessageExpansionDelegate:self];
     }else {
         NSLog(@"init 非法参数类型");
     }
@@ -1423,18 +1428,18 @@
         
         [[RCIMClient sharedRCIMClient] downloadMediaMessage:message.messageId progress:^(int progress) {
             NSDictionary *callbackDic = @{@"messageId": @(message.messageId), @"progress": @(progress), @"code": @(10)};
-            [self.channel invokeMethod:RCMethodCallBackKeyDownloadMediaMessageCallBack arguments:callbackDic];
+            [self.channel invokeMethod:RCMethodCallBackKeyDownloadMediaMessage arguments:callbackDic];
         } success:^(NSString *mediaPath) {
             RCMessage *tempMessage = [[RCIMClient sharedRCIMClient] getMessage:message.messageId];
             NSString *messageString = [RCFlutterMessageFactory message2String:tempMessage];
             NSDictionary *callbackDic = @{@"messageId": @(tempMessage.messageId), @"message": messageString, @"code": @(0)};
-            [self.channel invokeMethod:RCMethodCallBackKeyDownloadMediaMessageCallBack arguments:callbackDic];
+            [self.channel invokeMethod:RCMethodCallBackKeyDownloadMediaMessage arguments:callbackDic];
         } error:^(RCErrorCode errorCode) {
             NSDictionary *callbackDic = @{@"messageId": @(message.messageId), @"code": @(errorCode)};
-            [self.channel invokeMethod:RCMethodCallBackKeyDownloadMediaMessageCallBack arguments:callbackDic];
+            [self.channel invokeMethod:RCMethodCallBackKeyDownloadMediaMessage arguments:callbackDic];
         } cancel:^{
             NSDictionary *callbackDic = @{@"messageId": @(message.messageId), @"code": @(20)};
-            [self.channel invokeMethod:RCMethodCallBackKeyDownloadMediaMessageCallBack arguments:callbackDic];
+            [self.channel invokeMethod:RCMethodCallBackKeyDownloadMediaMessage arguments:callbackDic];
         }];
     }
 }
@@ -1837,6 +1842,41 @@
     }
 }
 
+#pragma mark - 消息扩展
+- (void)updateMessageExpansion:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"updateMessageExpansion";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        NSDictionary *expansionDic = param[@"expansionDic"];
+        NSString *messageUId = param[@"messageUId"];
+        [[RCIMClient sharedRCIMClient] updateMessageExpansion:expansionDic messageUId:messageUId success:^{
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            result(@(0));
+        } error:^(RCErrorCode status) {
+            [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(status)]];
+            result(@(status));
+        }];
+    }
+}
+
+- (void)removeMessageExpansionForKey:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"removeMessageExpansionForKey";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        NSArray *keyArray = param[@"keyArray"];
+        NSString *messageUId = param[@"messageUId"];
+        [[RCIMClient sharedRCIMClient] removeMessageExpansionForKey:keyArray messageUId:messageUId success:^{
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            result(@(0));
+        } error:^(RCErrorCode status) {
+            [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(status)]];
+            result(@(status));
+        }];
+    }
+}
+
 #pragma mark - 黑名单
 - (void)addToBlackList:(id)arg result:(FlutterResult)result {
     NSString *LOG_TAG =  @"addToBlackList";
@@ -2178,7 +2218,7 @@
     RCMessage *recalledMsg = [[RCIMClient sharedRCIMClient] getMessage:messageId];
     NSString *jsonString = [RCFlutterMessageFactory message2String:recalledMsg];
     NSDictionary *dict = @{@"message": jsonString};
-    [self.channel invokeMethod:RCMethodCallBackKeyRecallMessageCallBack arguments:dict];
+    [self.channel invokeMethod:RCMethodCallBackKeyRecallMessage arguments:dict];
 }
 
 #pragma mark - RCConnectionStatusChangeDelegate
@@ -2204,7 +2244,7 @@
         @"typingStatus" : [statusArray copy]
     };
     
-    [self.channel invokeMethod:RCMethodCallBackKeyTypingStatusChangedCallBack arguments:statusDic];
+    [self.channel invokeMethod:RCMethodCallBackKeyTypingStatusChanged arguments:statusDic];
 }
 
 #pragma mark - RCMessageDestructDelegate
@@ -2213,8 +2253,27 @@
     [RCLog i:[NSString stringWithFormat:@"%@",LOG_TAG]];
     NSString *jsonString = [RCFlutterMessageFactory message2String:message];
     NSDictionary *dic = @{@"message": jsonString, @"remainDuration": @(remainDuration)};
-    [self.channel invokeMethod:RCMethodCallBackKeyDestructMessageCallBack arguments:dic];
+    [self.channel invokeMethod:RCMethodCallBackKeyDestructMessage arguments:dic];
 }
+
+#pragma mark - RCMessageExpansionDelegate
+
+- (void)messageExpansionDidUpdate:(NSDictionary<NSString *,NSString *> *)expansionDic message:(RCMessage *)message{
+    NSString *LOG_TAG = @"messageExpansionDidUpdate";
+    [RCLog i:[NSString stringWithFormat:@"%@",LOG_TAG]];
+    NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+    NSDictionary *dic = @{@"expansionDic": expansionDic, @"message": jsonString};
+    [self.channel invokeMethod:RCMethodCallBackKeyMessageExpansionDidUpdate arguments:dic];
+}
+
+- (void)messageExpansionDidRemove:(NSArray<NSString *> *)keyArray message:(RCMessage *)message{
+    NSString *LOG_TAG = @"messageExpansionDidRemove";
+    [RCLog i:[NSString stringWithFormat:@"%@",LOG_TAG]];
+    NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+    NSDictionary *dic = @{@"keyArray": keyArray, @"message": jsonString};
+    [self.channel invokeMethod:RCMethodCallBackKeyMessageExpansionDidRemove arguments:dic];
+}
+
 
 #pragma mark - util
 - (void)updateIMConfig {
