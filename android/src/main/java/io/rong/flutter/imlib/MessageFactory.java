@@ -1,7 +1,6 @@
 package io.rong.flutter.imlib;
 
 
-
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -13,12 +12,15 @@ import io.rong.imlib.model.ChatRoomInfo;
 import io.rong.imlib.model.ChatRoomMemberInfo;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
+import io.rong.imlib.model.MessageConfig;
 import io.rong.imlib.model.MessageContent;
 import io.rong.imlib.model.ReadReceiptInfo;
 import io.rong.imlib.model.SearchConversationResult;
 import io.rong.imlib.typingmessage.TypingStatus;
 import io.rong.message.GIFMessage;
 import io.rong.message.ImageMessage;
+import io.rong.message.LocationMessage;
+import io.rong.message.ReferenceMessage;
 import io.rong.message.SightMessage;
 import io.rong.message.TextMessage;
 
@@ -58,8 +60,17 @@ public class MessageFactory {
             readReceiptMap.put("userIdList", readInfo.getRespondUserIdList());
             map.put("readReceiptInfo", readReceiptMap);
         }
+        MessageConfig messageConfig = message.getMessageConfig();
+        if (messageConfig != null) {
+            HashMap messageConfigMap = new HashMap();
+            messageConfigMap.put("disableNotification", messageConfig.isDisableNotification());
+            map.put("messageConfig", messageConfigMap);
+        }
         map.put("sentTime", message.getSentTime());
         map.put("objectName", message.getObjectName());
+        map.put("extra", message.getExtra());
+        map.put("canIncludeExpansion",message.isCanIncludeExpansion());
+        map.put("expansionDic",message.getExpansion());
         String uid = message.getUId();
         if (uid == null || uid.length() <= 0) {
             uid = "";
@@ -73,6 +84,11 @@ public class MessageFactory {
             RCMessageHandler.encodeSightMessage(message);
         } else if (message.getContent() instanceof GIFMessage) {
             RCMessageHandler.encodeGifMessage(message);
+        } else if (message.getContent() instanceof LocationMessage) {
+            RCMessageHandler.encodeLocationMessage(message);
+        } else if (message.getContent() instanceof ReferenceMessage) {
+            // 引用消息的引用内容的类型需要判断
+            RCMessageHandler.encodeReferenceMessage(message);
         }
         // 判断 TextMessage 内容不能为 null
         if (content instanceof TextMessage) {
@@ -87,7 +103,7 @@ public class MessageFactory {
             data = RCMessageHandler.encodeImageContent((ImageMessage) content);
         } else if (content instanceof SightMessage) {
             data = RCMessageHandler.encodeSightContent((SightMessage) content);
-        } else {
+        } else if (content != null) {
             data = content.encode();
         }
 

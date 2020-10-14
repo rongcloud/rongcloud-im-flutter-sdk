@@ -2,4 +2,21 @@
     <string name="app_name">IMDemo</string>
     <!--设置输入状态监听 -->
     <bool name="rc_typing_status">true</bool>
+
+    <!--合并消息-->
+    <string name="rc_message_content_image">[图片]</string>
+    <string name="rc_message_content_voice">[语音]</string>
+    <string name="rc_message_content_rich_text">[图文]</string>
+    <string name="rc_message_content_location">[位置]</string>
+    <string name="rc_message_content_draft">[草稿]</string>
+    <string name="rc_message_content_mentioned">[有人@我]</string>
+    <string name="rc_message_content_file">[文件]</string>
+    <string name="rc_message_content_sight">[小视频]</string>
+    <string name="rc_message_content_burn">[阅后即焚]</string>
+    <string name="rc_message_content_combine">[聊天记录]</string>
+    <string name="rc_message_content_card">[个人名片]</string>
+    <string name="rc_message_content_sticker">[动态表情]</string>
+    <string name="rc_message_content_rp">[红包]</string>
+    <string name="rc_message_content_vst">[音视频通话]</string>
+    <string name="rc_combine_chat_history">聊天记录</string>
 </resources>

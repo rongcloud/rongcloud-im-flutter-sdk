@@ -7,7 +7,7 @@ public class RCMethodList {
     static String MethodKeyConnect = "connect";
     static String MethodKeyDisconnect = "disconnect";
     static String MethodKeySendMessage = "sendMessage";
-    static String MethodKeyRefrechUserInfo = "refreshUserInfo";
+    static String MethodKeyRefreshUserInfo = "refreshUserInfo";
     static String MethodKeyJoinChatRoom = "joinChatRoom";
     static String MethodKeyQuitChatRoom = "quitChatRoom";
     static String MethodKeyGetHistoryMessage ="getHistoryMessage";
@@ -56,6 +56,30 @@ public class RCMethodList {
     static String MethodKeySendDirectionalMessage = "sendDirectionalMessage";
     static String MethodKeySaveMediaToPublicDir = "saveMediaToPublicDir";
     static String MethodKeyForwardMessageByStep = "forwardMessageByStep";
+    static String MethodKeyMessageBeginDestruct = "messageBeginDestruct";
+    static String MethodKeyMessageStopDestruct = "messageStopDestruct";
+    static String MethodKeyDeleteRemoteMessages = "deleteRemoteMessages";
+    static String MethodKeyClearMessages = "clearMessages";
+    static String MethodKeySetMessageExtra = "setMessageExtra";
+    static String MethodKeySetMessageReceivedStatus = "setMessageReceivedStatus";
+    static String MethodKeySetMessageSentStatus = "setMessageSentStatus";
+    static String MethodKeyClearConversations = "clearConversations";
+    static String MethodKeyGetDeltaTime = "getDeltaTime";
+    static String MethodKeySetOfflineMessageDuration = "setOfflineMessageDuration";
+    static String MethodKeyGetOfflineMessageDuration = "getOfflineMessageDuration";
+    static String MethodKeySetReconnectKickEnable = "setReconnectKickEnable";
+    static String MethodKeyGetConnectionStatus = "getConnectionStatus";
+    static String MethodKeyCancelDownloadMediaMessage = "cancelDownloadMediaMessage";
+    static String MethodKeyGetRemoteChatRoomHistoryMessages = "getRemoteChatRoomHistoryMessages";
+    static String MethodKeyGetMessageByUId = "getMessageByUId";
+    static String MethodKeyGetFirstUnreadMessage = "getFirstUnreadMessage";
+    static String MethodKeySendIntactMessage = "sendIntactMessage";
+    // 消息扩展
+    static String MethodKeyUpdateMessageExpansion = "updateMessageExpansion";
+    static String MethodKeyRemoveMessageExpansionForKey = "removeMessageExpansionForKey";
+
+
+
 
     //聊天室存储
     static String MethodKeySetChatRoomEntry = "SetChatRoomEntry";
@@ -69,7 +93,7 @@ public class RCMethodList {
 
     //callback method list，以下方法是有 native 代码触发，有 flutter 处理
     static String MethodCallBackKeySendMessage = "sendMessageCallBack";
-    static String MethodCallBackKeyRefrechUserInfo = "refreshUserInfoCallBack";
+    static String MethodCallBackKeyRefreshUserInfo = "refreshUserInfoCallBack";
     static String MethodCallBackKeyReceiveMessage = "receiveMessageCallBack";
     static String MethodCallBackKeyJoinChatRoom = "joinChatRoomCallBack";
     static String MethodCallBackKeyQuitChatRoom = "quitChatRoomCallBack";
@@ -83,5 +107,11 @@ public class RCMethodList {
     static String MethodCallBackKeyTypingStatus ="TypingStatusChangedCallBack";
     static String MethodCallBackKeyDownloadMediaMessage = "DownloadMediaMessageCallBack";
     static String MethodCallBackRecallMessage = "RecallMessageCallBack";
+    static String MethodCallBackDestructMessage = "DestructMessageCallBack";
+    static String MethodCallBackChatRoomKVDidSync = "chatRoomKVDidSyncCallBack";
+    static String MethodCallBackChatRoomKVDidUpdate = "chatRoomKVDidUpdateCallBack";
+    static String MethodCallBackChatRoomKVDidRemove = "chatRoomKVDidRemoveCallBack";
+    static String MethodCallBackMessageExpansionDidUpdate = "MessageExpansionDidUpdateCallBack";
+    static String MethodCallBackMessageExpansionDidRemove = "MessageExpansionDidRemoveCallBack";
 
 }

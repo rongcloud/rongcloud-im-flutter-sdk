@@ -36,5 +36,19 @@ android {
 }
 
 dependencies {
-    api 'cn.rongcloud.sdk:im_lib:2.10.4'
+    implementation 'com.alibaba:fastjson:1.1.71.android'
+
+    def localPropertiesFile = new File(rootProject.projectDir, "local.properties")
+    def properties = new Properties()
+
+    assert localPropertiesFile.exists()
+    localPropertiesFile.withReader("UTF-8") { reader -> properties.load(reader) }
+
+    def remote = properties.getProperty("rongcloud.flutter.demo.use_remote_rtc_lib")
+    assert remote != null, "Make sure you has run pre_build.py first!"
+
+    if (remote == "true")
+        implementation 'cn.rongcloud.sdk:im_lib:4.0.3'
+    else
+        implementation project(':kit')
 }

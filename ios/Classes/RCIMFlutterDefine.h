@@ -56,6 +56,26 @@ static NSString *RCMethodKeyRemoveNotificationQuietHours = @"removeNotificationQ
 static NSString *RCMethodKeyGetNotificationQuietHours = @"getNotificationQuietHours";
 static NSString *RCMethodKeyGetUnreadMentionedMessages = @"getUnreadMentionedMessages";
 static NSString *RCMethodKeySendDirectionalMessage = @"sendDirectionalMessage";
+static NSString *RCMethodKeyMessageBeginDestruct = @"messageBeginDestruct";
+static NSString *RCMethodKeyMessageStopDestruct = @"messageStopDestruct";
+static NSString *RCMethodKeySetReconnectKickEnable = @"setReconnectKickEnable";
+static NSString *RCMethodKeyGetConnectionStatus = @"getConnectionStatus";
+static NSString *RCMethodKeyCancelDownloadMediaMessage = @"cancelDownloadMediaMessage";
+static NSString *RCMethodKeyGetRemoteChatRoomHistoryMessages = @"getRemoteChatRoomHistoryMessages";
+static NSString *RCMethodKeyGetMessageByUId = @"getMessageByUId";
+static NSString *RCMethodKeyDeleteRemoteMessages = @"deleteRemoteMessages";
+static NSString *RCMethodKeyClearMessages = @"clearMessages";
+static NSString *RCMethodKeySetMessageExtra = @"setMessageExtra";
+static NSString *RCMethodKeySetMessageReceivedStatus = @"setMessageReceivedStatus";
+static NSString *RCMethodKeySetMessageSentStatus = @"setMessageSentStatus";
+static NSString *RCMethodKeyClearConversations = @"clearConversations";
+static NSString *RCMethodKeyGetDeltaTime = @"getDeltaTime";
+static NSString *RCMethodKeySetOfflineMessageDuration = @"setOfflineMessageDuration";
+static NSString *RCMethodKeyGetOfflineMessageDuration = @"getOfflineMessageDuration";
+static NSString *RCMethodKeyGetFirstUnreadMessage = @"getFirstUnreadMessage";
+static NSString *RCMethodKeySendIntactMessage = @"sendIntactMessage";
+static NSString *RCMethodKeyUpdateMessageExpansion = @"updateMessageExpansion";
+static NSString *RCMethodKeyRemoveMessageExpansionForKey = @"removeMessageExpansionForKey";
 
 // 聊天室状态存储
 static NSString *RCMethodKeySetChatRoomEntry = @"SetChatRoomEntry";
@@ -71,6 +91,9 @@ static NSString *RCMethodCallBackKeyRefreshUserInfo = @"refreshUserInfoCallBack"
 static NSString *RCMethodCallBackKeyReceiveMessage = @"receiveMessageCallBack";
 static NSString *RCMethodCallBackKeyJoinChatRoom = @"joinChatRoomCallBack";
 static NSString *RCMethodCallBackKeyQuitChatRoom = @"quitChatRoomCallBack";
+static NSString *RCMethodCallBackKeyChatRoomKVDidSync = @"chatRoomKVDidSyncCallBack";
+static NSString *RCMethodCallBackKeyChatRoomKVDidUpdate = @"chatRoomKVDidUpdateCallBack";
+static NSString *RCMethodCallBackKeyChatRoomKVDidRemove = @"chatRoomKVDidRemoveCallBack";
 static NSString *RCMethodCallBackKeyUploadMediaProgress = @"uploadMediaProgressCallBack";
 static NSString *RCMethodCallBackKeyGetRemoteHistoryMessages = @"getRemoteHistoryMessagesCallBack";
 static NSString *RCMethodCallBackKeyConnectionStatusChange = @"ConnectionStatusChangeCallBack";
@@ -78,9 +101,12 @@ static NSString *RCMethodCallBackKeySendDataToFlutter = @"SendDataToFlutterCallB
 static NSString *RCMethodCallBackKeyReceiveReadReceipt = @"ReceiveReadReceiptCallBack";
 static NSString *RCMethodCallBackKeyReceiptRequest = @"ReceiptRequestCallBack";
 static NSString *RCMethodCallBackKeyReceiptResponse = @"ReceiptResponseCallBack";
-static NSString *RCMethodCallBackKeyTypingStatusChangedCallBack = @"TypingStatusChangedCallBack";
-static NSString *RCMethodCallBackKeyDownloadMediaMessageCallBack = @"DownloadMediaMessageCallBack";
-static NSString *RCMethodCallBackKeyRecallMessageCallBack = @"RecallMessageCallBack";
+static NSString *RCMethodCallBackKeyTypingStatusChanged = @"TypingStatusChangedCallBack";
+static NSString *RCMethodCallBackKeyDownloadMediaMessage = @"DownloadMediaMessageCallBack";
+static NSString *RCMethodCallBackKeyRecallMessage = @"RecallMessageCallBack";
+static NSString *RCMethodCallBackKeyDestructMessage = @"DestructMessageCallBack";
+static NSString *RCMethodCallBackKeyMessageExpansionDidUpdate = @"MessageExpansionDidUpdateCallBack";
+static NSString *RCMethodCallBackKeyMessageExpansionDidRemove = @"MessageExpansionDidRemoveCallBack";
 
 
 

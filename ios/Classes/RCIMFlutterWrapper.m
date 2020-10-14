@@ -18,7 +18,44 @@
 - (RCMessageContent *)messageContentWithClass:(Class)messageClass fromData:(NSData *)jsonData;
 @end
 
-@interface RCIMFlutterWrapper ()<RCIMClientReceiveMessageDelegate,RCConnectionStatusChangeDelegate,RCTypingStatusDelegate>
+@interface RCCombineMessage : RCMediaMessageContent
+/*!
+ 转发的消息展示的缩略内容列表 (格式是发送者 ：缩略内容)
+ */
+@property (nonatomic, strong) NSArray *summaryList;
+
+/*!
+ 转发的全部消息的发送者名称列表 （单聊是经过排重的，群聊是群组名称）
+ */
+@property (nonatomic, strong) NSArray *nameList;
+
+/*!
+ 转发的消息会话类型 （目前仅支持单聊和群聊）
+ */
+@property (nonatomic, assign) RCConversationType conversationType;
+
+/*!
+ 转发的消息 消息的附加信息
+ */
+@property (nonatomic, copy) NSString *extra;
+
+/*!
+ 初始化 RCCombineMessage 消息
+ 
+ @param summaryList         转发的消息展示的缩略内容列表
+ @param nameList            转发的全部消息的发送者名称列表 （单聊是经过排重的，群聊是群组名称）
+ @param conversationType    转发的消息会话类型
+ @param content             转发的内容
+ 
+ @return                    消息对象
+ */
++ (instancetype)messageWithSummaryList:(NSArray *)summaryList
+                              nameList:(NSArray *)nameList
+                      conversationType:(RCConversationType)conversationType
+                               content:(NSString *)content;
+@end
+
+@interface RCIMFlutterWrapper ()<RCIMClientReceiveMessageDelegate,RCConnectionStatusChangeDelegate,RCTypingStatusDelegate, RCMessageDestructDelegate, RCChatRoomKVStatusChangeDelegate, RCMessageExpansionDelegate>
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 @property (nonatomic, strong) RCFlutterConfig *config;
 @end
@@ -162,6 +199,46 @@
         [self getUnreadMentionedMessages:call.arguments result:result];
     }else if([RCMethodKeySendDirectionalMessage isEqualToString:call.method]) {
         [self sendDirectionalMessage:call.arguments result:result];
+    }else if([RCMethodKeyMessageBeginDestruct isEqualToString:call.method]) {
+        [self messageBeginDestruct:call.arguments result:result];
+    }else if([RCMethodKeyMessageStopDestruct isEqualToString:call.method]) {
+        [self messageStopDestruct:call.arguments result:result];
+    }else if([RCMethodKeySetReconnectKickEnable isEqualToString:call.method]) {
+        [self setReconnectKickEnable:call.arguments result:result];
+    }else if([RCMethodKeyGetConnectionStatus isEqualToString:call.method]) {
+        [self getConnectionStatus:call.arguments result:result];
+    }else if([RCMethodKeyCancelDownloadMediaMessage isEqualToString:call.method]) {
+        [self cancelDownloadMediaMessage:call.arguments result:result];
+    }else if([RCMethodKeyGetRemoteChatRoomHistoryMessages isEqualToString:call.method]) {
+        [self getRemoteChatroomHistoryMessages:call.arguments result:result];
+    }else if([RCMethodKeyGetMessageByUId isEqualToString:call.method]) {
+        [self getMessageByUId:call.arguments result:result];
+    }else if([RCMethodKeyDeleteRemoteMessages isEqualToString:call.method]) {
+        [self deleteRemoteMessages:call.arguments result:result];
+    }else if([RCMethodKeyClearMessages isEqualToString:call.method]) {
+        [self clearMessages:call.arguments result:result];
+    }else if([RCMethodKeySetMessageExtra isEqualToString:call.method]) {
+        [self setMessageExtra:call.arguments result:result];
+    }else if([RCMethodKeySetMessageReceivedStatus isEqualToString:call.method]) {
+        [self setMessageReceivedStatus:call.arguments result:result];
+    }else if([RCMethodKeySetMessageSentStatus isEqualToString:call.method]) {
+        [self setMessageSentStatus:call.arguments result:result];
+    }else if([RCMethodKeyClearConversations isEqualToString:call.method]) {
+        [self clearConversations:call.arguments result:result];
+    }else if([RCMethodKeyGetDeltaTime isEqualToString:call.method]) {
+        [self getDeltaTime:call.arguments result:result];
+    }else if([RCMethodKeySetOfflineMessageDuration isEqualToString:call.method]) {
+        [self setOfflineMessageDuration:call.arguments result:result];
+    }else if([RCMethodKeyGetOfflineMessageDuration isEqualToString:call.method]) {
+        [self getOfflineMessageDuration:call.arguments result:result];
+    }else if([RCMethodKeyGetFirstUnreadMessage isEqualToString:call.method]) {
+        [self getFirstUnreadMessage:call.arguments result:result];
+    }else if([RCMethodKeySendIntactMessage isEqualToString:call.method]) {
+        [self sendIntactMessage:call.arguments result:result];
+    }else if([RCMethodKeyUpdateMessageExpansion isEqualToString:call.method]) {
+        [self updateMessageExpansion:call.arguments result:result];
+    }else if([RCMethodKeyRemoveMessageExpansionForKey isEqualToString:call.method]) {
+        [self removeMessageExpansionForKey:call.arguments result:result];
     }
     else {
         result(FlutterMethodNotImplemented);
@@ -174,8 +251,8 @@
 
 #pragma mark - selector
 - (void)initWithRCIMAppKey:(id)arg {
-    NSString *LOG_TAG =  @"init";
-    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+//    NSString *LOG_TAG =  @"init";
+//    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSString class]]) {
         NSString *appkey = (NSString *)arg;
         [[RCIMClient sharedRCIMClient] initWithAppKey:appkey];
@@ -186,6 +263,9 @@
         [[RCIMClient sharedRCIMClient] setReceiveMessageDelegate:self object:nil];
         [[RCIMClient sharedRCIMClient] setRCConnectionStatusChangeDelegate:self];
         [[RCIMClient sharedRCIMClient] setRCTypingStatusDelegate:self];
+        [[RCIMClient sharedRCIMClient] setRCMessageDestructDelegate:self];
+        [[RCIMClient sharedRCIMClient] setRCChatRoomKVStatusChangeDelegate:self];
+        [[RCIMClient sharedRCIMClient] setMessageExpansionDelegate:self];
     }else {
         NSLog(@"init 非法参数类型");
     }
@@ -220,18 +300,20 @@
 
 - (void)connectWithToken:(id)arg result:(FlutterResult)result {
     NSString *LOG_TAG =  @"connect";
-    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+//    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSString class]]) {
         NSString *token = (NSString *)arg;
-        [[RCIMClient sharedRCIMClient] connectWithToken:token success:^(NSString *userId) {
+        [[RCIMClient sharedRCIMClient] connectWithToken:token dbOpened:^(RCDBErrorCode code) {
+            [RCLog i:[NSString stringWithFormat:@"%@ dbOpened，code: %@",LOG_TAG, @(code)]];
+        } success:^(NSString *userId) {
             [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
-            result(@(0));
-        } error:^(RCConnectErrorCode status) {
-            [RCLog i:[NSString stringWithFormat:@"%@ fail %@",LOG_TAG,@(status)]];
-            result(@(status));
-        } tokenIncorrect:^{
-            [RCLog i:[NSString stringWithFormat:@"%@ fail %@",LOG_TAG,@(RC_CONN_TOKEN_INCORRECT)]];
-            result(@(RC_CONN_TOKEN_INCORRECT));
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:userId forKey:@"userId"];
+            [dic setObject:@(0) forKey:@"code"];
+            result(dic);
+        } error:^(RCConnectErrorCode errorCode) {
+            [RCLog i:[NSString stringWithFormat:@"%@ fail %@",LOG_TAG,@(errorCode)]];
+            result(@{@"code":@(errorCode), @"userId":@""});
         }];
     }
 }
@@ -301,7 +383,39 @@
         RCMessageContent *content = nil;
         if([objName isEqualToString:RCVoiceMessageTypeIdentifier]) {
             content = [self getVoiceMessage:data];
-        }else {
+        } else if ([objName isEqualToString:RCLocationMessageTypeIdentifier]) {
+            RCUserInfo *sendUserInfo = nil;
+            RCMentionedInfo *mentionedInfo = nil;
+            NSDictionary *msgDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+            if ([msgDic valueForKey:@"user"]) {
+                NSDictionary *userDict = [msgDic valueForKey:@"user"];
+                NSString *userId = [userDict valueForKey:@"id"] ?: @"";
+                NSString *name = [userDict valueForKey:@"name"] ?: @"";
+                NSString *portraitUri = [userDict valueForKey:@"portrait"] ?: @"";
+                NSString *extra = [userDict valueForKey:@"extra"] ?: @"";
+                sendUserInfo = [[RCUserInfo alloc] initWithUserId:userId name:name portrait:portraitUri];
+                sendUserInfo.extra = extra;
+            }
+            
+            if ([msgDic valueForKey:@"mentionedInfo"]) {
+                NSDictionary *mentionedInfoDict = [msgDic valueForKey:@"mentionedInfo"];
+                RCMentionedType type = [[mentionedInfoDict valueForKey:@"type"] intValue] ?: 1;
+                NSArray *userIdList = [mentionedInfoDict valueForKey:@"userIdList"] ?: @[];
+                NSString *mentionedContent = [mentionedInfoDict valueForKey:@"mentionedContent"] ?: @"";
+                mentionedInfo = [[RCMentionedInfo alloc] initWithMentionedType:type userIdList:userIdList mentionedContent:mentionedContent];
+            }
+//            NSString *thumbnailBase64String = [msgDic valueForKey:@"content"];
+            double latitude = [[msgDic valueForKey:@"latitude"] doubleValue];
+            double longitude = [[msgDic valueForKey:@"longitude"] doubleValue];
+            NSString *imageUri = [msgDic valueForKey:@"mImgUri"];
+            UIImage *image = [UIImage imageWithContentsOfFile:imageUri];
+            CLLocationCoordinate2D location = CLLocationCoordinate2DMake(latitude, longitude);
+            NSString *poi = [msgDic valueForKey:@"poi"];
+            RCLocationMessage *locationMessage = [RCLocationMessage messageWithLocationImage:image location:location locationName:poi];
+            locationMessage.senderUserInfo = sendUserInfo;
+            locationMessage.mentionedInfo = mentionedInfo;
+            content = locationMessage;
+        } else {
             content = [[RCMessageMapper sharedMapper] messageContentWithClass:clazz fromData:data];
         }
         if(content == nil) {
@@ -311,20 +425,113 @@
         }
         
         __weak typeof(self) ws = self;
-        RCMessage *message = [[RCIMClient sharedRCIMClient] sendMessage:type targetId:targetId content:content pushContent:pushContent pushData:pushData success:^(long messageId) {
+        if (param[@"disableNotification"]) {
+            BOOL disableNotification = [param[@"disableNotification"] boolValue];
+            RCMessage *message = [[RCMessage alloc] initWithType:type targetId:targetId direction:MessageDirection_SEND messageId:0 content:content];
+            message.messageConfig.disableNotification = disableNotification;
+            message = [[RCIMClient sharedRCIMClient] sendMessage:message pushContent:pushContent pushData:pushData successBlock:^(RCMessage *successMessage) {
+                [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+                NSMutableDictionary *dic = [NSMutableDictionary new];
+                [dic setObject:@(successMessage.messageId) forKey:@"messageId"];
+                [dic setObject:@(SentStatus_SENT) forKey:@"status"];
+                [dic setObject:@(0) forKey:@"code"];
+                if (timestamp > 0) {
+                    [dic setObject:@(timestamp) forKey:@"timestamp"];
+                }
+                [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
+            } errorBlock:^(RCErrorCode nErrorCode, RCMessage *errorMessage) {
+                [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(nErrorCode)]];
+                NSMutableDictionary *dic = [NSMutableDictionary new];
+                [dic setObject:@(errorMessage.messageId) forKey:@"messageId"];
+                [dic setObject:@(SentStatus_FAILED) forKey:@"status"];
+                [dic setObject:@(nErrorCode) forKey:@"code"];
+                if (timestamp > 0) {
+                    [dic setObject:@(timestamp) forKey:@"timestamp"];
+                }
+                [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
+            }];
+            message.senderUserId = [RCIMClient sharedRCIMClient].currentUserInfo.userId ?: @"";
+            NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:jsonString forKey:@"message"];
+            [dic setObject:@(SentStatus_SENDING) forKey:@"status"];
+            [dic setObject:@(message.messageId) forKey:@"messageId"];
+            [dic setObject:@(-1) forKey:@"code"];
+            result(dic);
+            [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
+        } else {
+            RCMessage *message = [[RCIMClient sharedRCIMClient] sendMessage:type targetId:targetId content:content pushContent:pushContent pushData:pushData success:^(long messageId) {
+                [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+                NSMutableDictionary *dic = [NSMutableDictionary new];
+                [dic setObject:@(messageId) forKey:@"messageId"];
+                [dic setObject:@(SentStatus_SENT) forKey:@"status"];
+                [dic setObject:@(0) forKey:@"code"];
+                if (timestamp > 0) {
+                    [dic setObject:@(timestamp) forKey:@"timestamp"];
+                }
+                [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
+            } error:^(RCErrorCode nErrorCode, long messageId) {
+                [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(nErrorCode)]];
+                NSMutableDictionary *dic = [NSMutableDictionary new];
+                [dic setObject:@(messageId) forKey:@"messageId"];
+                [dic setObject:@(SentStatus_FAILED) forKey:@"status"];
+                [dic setObject:@(nErrorCode) forKey:@"code"];
+                if (timestamp > 0) {
+                    [dic setObject:@(timestamp) forKey:@"timestamp"];
+                }
+                [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
+            }];
+            NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:jsonString forKey:@"message"];
+            [dic setObject:@(SentStatus_SENDING) forKey:@"status"];
+            [dic setObject:@(message.messageId) forKey:@"messageId"];
+            [dic setObject:@(-1) forKey:@"code"];
+            result(dic);
+            [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
+        }
+    }
+}
+
+- (void)sendIntactMessage:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"sendIntactMessage";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        RCMessage *message = [RCFlutterMessageFactory dic2Message:param];
+        NSString *objName = param[@"objectName"];
+        NSString *contentStr = param[@"content"];
+        long long timestamp = [param[@"timestamp"] longLongValue];
+        // 如果 remoteUrl 不为空，走 sendMessage
+        if(![self isForwardMessage:contentStr objName:objName] && [self isMediaMessage:objName]) {
+            [self sendMediaMessageWithMessage:arg result:result];
+            return;
+        }
+        
+        NSString *pushContent = param[@"pushContent"];
+        if(pushContent.length <= 0) {
+            pushContent = nil;
+        }
+        NSString *pushData = param[@"pushData"];
+        if(pushData.length <= 0) {
+            pushData = nil;
+        }
+        
+        __weak typeof(self) ws = self;
+        message = [[RCIMClient sharedRCIMClient] sendMessage:message pushContent:pushContent pushData:pushData successBlock:^(RCMessage *successMessage) {
             [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
             NSMutableDictionary *dic = [NSMutableDictionary new];
-            [dic setObject:@(messageId) forKey:@"messageId"];
+            [dic setObject:@(successMessage.messageId) forKey:@"messageId"];
             [dic setObject:@(SentStatus_SENT) forKey:@"status"];
             [dic setObject:@(0) forKey:@"code"];
             if (timestamp > 0) {
                 [dic setObject:@(timestamp) forKey:@"timestamp"];
             }
             [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
-        } error:^(RCErrorCode nErrorCode, long messageId) {
+        } errorBlock:^(RCErrorCode nErrorCode, RCMessage *errorMessage) {
             [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(nErrorCode)]];
             NSMutableDictionary *dic = [NSMutableDictionary new];
-            [dic setObject:@(messageId) forKey:@"messageId"];
+            [dic setObject:@(errorMessage.messageId) forKey:@"messageId"];
             [dic setObject:@(SentStatus_FAILED) forKey:@"status"];
             [dic setObject:@(nErrorCode) forKey:@"code"];
             if (timestamp > 0) {
@@ -336,8 +543,78 @@
         NSMutableDictionary *dic = [NSMutableDictionary new];
         [dic setObject:jsonString forKey:@"message"];
         [dic setObject:@(SentStatus_SENDING) forKey:@"status"];
+        [dic setObject:@(message.messageId) forKey:@"messageId"];
+        [dic setObject:@(-1) forKey:@"code"];
         result(dic);
+        [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
     }
+}
+
+- (void)sendMediaMessageWithMessage:(id)arg result:(FlutterResult)result {
+    NSDictionary *param = (NSDictionary *)arg;
+    RCMessage *message = [RCFlutterMessageFactory dic2Message:param];
+    long long timestamp = [param[@"timestamp"] longLongValue];
+    NSString *pushContent = param[@"pushContent"];
+    if(pushContent.length <= 0) {
+        pushContent = nil;
+    }
+    NSString *pushData = param[@"pushData"];
+    if(pushData.length <= 0) {
+        pushData = nil;
+    }
+    
+    if([message.content isKindOfClass:[RCSightMessage class]]) {
+        RCSightMessage *sightMsg = (RCSightMessage *)message.content;
+        if(sightMsg.duration > 10) {
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:@(-1) forKey:@"messageId"];
+            [dic setObject:@(SentStatus_FAILED) forKey:@"status"];
+            [dic setObject:@(RC_SIGHT_MSG_DURATION_LIMIT_EXCEED) forKey:@"code"];
+            if (timestamp > 0) {
+                [dic setObject:@(timestamp) forKey:@"timestamp"];
+            }
+            NSLog(@"%s 小视频时间超限",__func__);
+            [self.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
+            return;
+        }
+    }
+    
+    __weak typeof(self) ws = self;
+    message = [[RCIMClient sharedRCIMClient] sendMediaMessage:message pushContent:pushContent pushData:pushData progress:^(int progress, RCMessage *progressMessage) {
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:@(progressMessage.messageId) forKey:@"messageId"];
+        [dic setObject:@(progress) forKey:@"progress"];
+        [ws.channel invokeMethod:RCMethodCallBackKeyUploadMediaProgress arguments:dic];
+    } successBlock:^(RCMessage *successMessage) {
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:@(successMessage.messageId) forKey:@"messageId"];
+        [dic setObject:@(SentStatus_SENT) forKey:@"status"];
+        [dic setObject:@(0) forKey:@"code"];
+        if (timestamp > 0) {
+            [dic setObject:@(timestamp) forKey:@"timestamp"];
+        }
+        [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
+    } errorBlock:^(RCErrorCode nErrorCode, RCMessage *errorMessage) {
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:@(errorMessage.messageId) forKey:@"messageId"];
+        [dic setObject:@(SentStatus_FAILED) forKey:@"status"];
+        [dic setObject:@(nErrorCode) forKey:@"code"];
+        if (timestamp > 0) {
+            [dic setObject:@(timestamp) forKey:@"timestamp"];
+        }
+        [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
+    } cancel:^(RCMessage *cancelMessage) {
+        
+    }];
+    message.senderUserId = [RCIMClient sharedRCIMClient].currentUserInfo.userId ?: @"";
+    NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+    NSMutableDictionary *dic = [NSMutableDictionary new];
+    [dic setObject:jsonString forKey:@"message"];
+    [dic setObject:@(SentStatus_SENDING) forKey:@"status"];
+    [dic setObject:@(message.messageId) forKey:@"messageId"];
+    [dic setObject:@(-1) forKey:@"code"];
+    result(dic);
+    [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
 }
 
 - (void)sendMediaMessage:(id)arg result:(FlutterResult)result {
@@ -365,7 +642,9 @@
         NSString *userId = [userDict valueForKey:@"id"] ?: @"";
         NSString *name = [userDict valueForKey:@"name"] ?: @"";
         NSString *portraitUri = [userDict valueForKey:@"portrait"] ?: @"";
+        NSString *extra = [userDict valueForKey:@"extra"] ?: @"";
         sendUserInfo = [[RCUserInfo alloc] initWithUserId:userId name:name portrait:portraitUri];
+        sendUserInfo.extra = extra;
     }
     
     if ([msgDic valueForKey:@"mentionedInfo"]) {
@@ -382,6 +661,7 @@
     }
     localPath = [self getCorrectLocalPath:localPath];
     
+    NSInteger burnDuration = [[msgDic valueForKey:@"burnDuration"] integerValue];
     if([objName isEqualToString:@"RC:ImgMsg"]) {
         NSString *extra = [msgDic valueForKey:@"extra"];
         content = [RCImageMessage messageWithImageURI:localPath];
@@ -406,10 +686,8 @@
         sightMsg.extra = extra;
     } else if ([objName isEqualToString:@"RC:FileMsg"]) {
         NSString *extra = [msgDic valueForKey:@"extra"] ?: @"";
-        NSString *name = [msgDic valueForKey:@"name"] ?: @"";
         content = [RCFileMessage messageWithFile:localPath];
         RCFileMessage *fileMsg = (RCFileMessage *)content;
-        fileMsg.name = name;
         fileMsg.extra = extra;
     } else if ([objName isEqualToString:@"RC:GIFMsg"]) {
         NSString *extra = [msgDic valueForKey:@"extra"];
@@ -423,12 +701,21 @@
         content = [RCGIFMessage messageWithGIFURI:localPath width:width height:height];
         RCGIFMessage *gifMsg = (RCGIFMessage *)content;
         gifMsg.extra = extra;
-        if (sendUserInfo) {
-            gifMsg.senderUserInfo = sendUserInfo;
+    } else if ([objName isEqualToString:@"RC:CombineMsg"]) {
+        NSString *localPath = [msgDic valueForKey:@"localPath"];
+        localPath = [self getCorrectLocalPath:localPath];
+        NSString *extra = [msgDic valueForKey:@"extra"];
+        NSArray * nameList = @[];
+        if (![[msgDic valueForKey:@"nameList"] isKindOfClass:[NSNull class]]) {
+            nameList = [msgDic valueForKey:@"nameList"];
         }
-        if (mentionedInfo) {
-            gifMsg.mentionedInfo = mentionedInfo;
-        }
+        NSArray * summaryList = [msgDic valueForKey:@"summaryList"] ?: @[];
+        RCConversationType type = [param[@"conversationType"] integerValue];
+        
+        content = [RCCombineMessage messageWithSummaryList:summaryList nameList:nameList conversationType:type content:@""];
+        RCCombineMessage *combineMsg = (RCCombineMessage *)content;
+        combineMsg.localPath = localPath;
+        combineMsg.extra = extra;
     } else {
         NSLog(@"%s 非法的媒体消息类型",__func__);
         return;
@@ -439,6 +726,12 @@
     }
     if (mentionedInfo) {
         content.mentionedInfo = mentionedInfo;
+    }
+    
+    if (burnDuration > 0) {
+        content.destructDuration = burnDuration;
+    } else {
+        content.destructDuration = 0;
     }
     
     if([content isKindOfClass:[RCSightMessage class]]) {
@@ -458,37 +751,81 @@
     }
     
     __weak typeof(self) ws = self;
-    RCMessage *message =  [[RCIMClient sharedRCIMClient] sendMediaMessage:type targetId:targetId content:content pushContent:pushContent pushData:pushData progress:^(int progress, long messageId) {
+    if (param[@"disableNotification"]) {
+        BOOL disableNotification = [param[@"disableNotification"] boolValue];
+        RCMessage *message = [[RCMessage alloc] initWithType:type targetId:targetId direction:MessageDirection_SEND messageId:0 content:content];
+        message.messageConfig.disableNotification = disableNotification;
+        message = [[RCIMClient sharedRCIMClient] sendMediaMessage:message pushContent:pushContent pushData:pushData progress:^(int progress, RCMessage *progressMessage) {
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:@(progressMessage.messageId) forKey:@"messageId"];
+            [dic setObject:@(progress) forKey:@"progress"];
+            [ws.channel invokeMethod:RCMethodCallBackKeyUploadMediaProgress arguments:dic];
+        } successBlock:^(RCMessage *successMessage) {
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:@(successMessage.messageId) forKey:@"messageId"];
+            [dic setObject:@(SentStatus_SENT) forKey:@"status"];
+            [dic setObject:@(0) forKey:@"code"];
+            if (timestamp > 0) {
+                [dic setObject:@(timestamp) forKey:@"timestamp"];
+            }
+            [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
+        } errorBlock:^(RCErrorCode nErrorCode, RCMessage *errorMessage) {
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:@(errorMessage.messageId) forKey:@"messageId"];
+            [dic setObject:@(SentStatus_FAILED) forKey:@"status"];
+            [dic setObject:@(nErrorCode) forKey:@"code"];
+            if (timestamp > 0) {
+                [dic setObject:@(timestamp) forKey:@"timestamp"];
+            }
+            [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
+        } cancel:^(RCMessage *cancelMessage) {
+            
+        }];
+        message.senderUserId = [RCIMClient sharedRCIMClient].currentUserInfo.userId ?: @"";
+        NSString *jsonString = [RCFlutterMessageFactory message2String:message];
         NSMutableDictionary *dic = [NSMutableDictionary new];
-        [dic setObject:@(messageId) forKey:@"messageId"];
-        [dic setObject:@(progress) forKey:@"progress"];
-        [ws.channel invokeMethod:RCMethodCallBackKeyUploadMediaProgress arguments:dic];
-    } success:^(long messageId) {
-        NSMutableDictionary *dic = [NSMutableDictionary new];
-        [dic setObject:@(messageId) forKey:@"messageId"];
-        [dic setObject:@(SentStatus_SENT) forKey:@"status"];
-        [dic setObject:@(0) forKey:@"code"];
-        if (timestamp > 0) {
-            [dic setObject:@(timestamp) forKey:@"timestamp"];
-        }
+        [dic setObject:jsonString forKey:@"message"];
+        [dic setObject:@(SentStatus_SENDING) forKey:@"status"];
+        [dic setObject:@(message.messageId) forKey:@"messageId"];
+        [dic setObject:@(-1) forKey:@"code"];
+        result(dic);
         [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
-    } error:^(RCErrorCode errorCode, long messageId) {
+    } else {
+        RCMessage *message =  [[RCIMClient sharedRCIMClient] sendMediaMessage:type targetId:targetId content:content pushContent:pushContent pushData:pushData progress:^(int progress, long messageId) {
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:@(messageId) forKey:@"messageId"];
+            [dic setObject:@(progress) forKey:@"progress"];
+            [ws.channel invokeMethod:RCMethodCallBackKeyUploadMediaProgress arguments:dic];
+        } success:^(long messageId) {
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:@(messageId) forKey:@"messageId"];
+            [dic setObject:@(SentStatus_SENT) forKey:@"status"];
+            [dic setObject:@(0) forKey:@"code"];
+            if (timestamp > 0) {
+                [dic setObject:@(timestamp) forKey:@"timestamp"];
+            }
+            [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
+        } error:^(RCErrorCode errorCode, long messageId) {
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:@(messageId) forKey:@"messageId"];
+            [dic setObject:@(SentStatus_FAILED) forKey:@"status"];
+            [dic setObject:@(errorCode) forKey:@"code"];
+            if (timestamp > 0) {
+                [dic setObject:@(timestamp) forKey:@"timestamp"];
+            }
+            [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
+        } cancel:^(long messageId) {
+            
+        }];
+        NSString *jsonString = [RCFlutterMessageFactory message2String:message];
         NSMutableDictionary *dic = [NSMutableDictionary new];
-        [dic setObject:@(messageId) forKey:@"messageId"];
-        [dic setObject:@(SentStatus_FAILED) forKey:@"status"];
-        [dic setObject:@(errorCode) forKey:@"code"];
-        if (timestamp > 0) {
-            [dic setObject:@(timestamp) forKey:@"timestamp"];
-        }
+        [dic setObject:jsonString forKey:@"message"];
+        [dic setObject:@(SentStatus_SENDING) forKey:@"status"];
+        [dic setObject:@(message.messageId) forKey:@"messageId"];
+        [dic setObject:@(-1) forKey:@"code"];
+        result(dic);
         [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
-    } cancel:^(long messageId) {
-        
-    }];
-    NSString *jsonString = [RCFlutterMessageFactory message2String:message];
-    NSMutableDictionary *dic = [NSMutableDictionary new];
-    [dic setObject:jsonString forKey:@"message"];
-    [dic setObject:@(SentStatus_SENDING) forKey:@"status"];
-    result(dic);
+    }
 }
 
 - (void)sendDirectionalMessage:(id)arg result:(FlutterResult)result{
@@ -506,6 +843,7 @@
         NSArray *userIdList = param[@"userIdList"];
         NSString *contentStr = param[@"content"];
         NSString *pushContent = param[@"pushContent"];
+        long long timestamp = [param[@"timestamp"] longLongValue];
         if(pushContent.length <= 0) {
             pushContent = nil;
         }
@@ -535,6 +873,9 @@
             [dic setObject:@(messageId) forKey:@"messageId"];
             [dic setObject:@(SentStatus_SENT) forKey:@"status"];
             [dic setObject:@(0) forKey:@"code"];
+            if (timestamp > 0) {
+                [dic setObject:@(timestamp) forKey:@"timestamp"];
+            }
             [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
         } error:^(RCErrorCode nErrorCode, long messageId) {
             [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(nErrorCode)]];
@@ -542,6 +883,9 @@
             [dic setObject:@(messageId) forKey:@"messageId"];
             [dic setObject:@(SentStatus_FAILED) forKey:@"status"];
             [dic setObject:@(nErrorCode) forKey:@"code"];
+            if (timestamp > 0) {
+                [dic setObject:@(timestamp) forKey:@"timestamp"];
+            }
             [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
         }];
         NSString *jsonString = [RCFlutterMessageFactory message2String:message];
@@ -1084,18 +1428,18 @@
         
         [[RCIMClient sharedRCIMClient] downloadMediaMessage:message.messageId progress:^(int progress) {
             NSDictionary *callbackDic = @{@"messageId": @(message.messageId), @"progress": @(progress), @"code": @(10)};
-            [self.channel invokeMethod:RCMethodCallBackKeyDownloadMediaMessageCallBack arguments:callbackDic];
+            [self.channel invokeMethod:RCMethodCallBackKeyDownloadMediaMessage arguments:callbackDic];
         } success:^(NSString *mediaPath) {
             RCMessage *tempMessage = [[RCIMClient sharedRCIMClient] getMessage:message.messageId];
             NSString *messageString = [RCFlutterMessageFactory message2String:tempMessage];
             NSDictionary *callbackDic = @{@"messageId": @(tempMessage.messageId), @"message": messageString, @"code": @(0)};
-            [self.channel invokeMethod:RCMethodCallBackKeyDownloadMediaMessageCallBack arguments:callbackDic];
+            [self.channel invokeMethod:RCMethodCallBackKeyDownloadMediaMessage arguments:callbackDic];
         } error:^(RCErrorCode errorCode) {
             NSDictionary *callbackDic = @{@"messageId": @(message.messageId), @"code": @(errorCode)};
-            [self.channel invokeMethod:RCMethodCallBackKeyDownloadMediaMessageCallBack arguments:callbackDic];
+            [self.channel invokeMethod:RCMethodCallBackKeyDownloadMediaMessage arguments:callbackDic];
         } cancel:^{
             NSDictionary *callbackDic = @{@"messageId": @(message.messageId), @"code": @(20)};
-            [self.channel invokeMethod:RCMethodCallBackKeyDownloadMediaMessageCallBack arguments:callbackDic];
+            [self.channel invokeMethod:RCMethodCallBackKeyDownloadMediaMessage arguments:callbackDic];
         }];
     }
 }
@@ -1134,7 +1478,7 @@
     [[RCIMClient sharedRCIMClient] getNotificationQuietHours:^(NSString *startTime, int spansMin) {
         NSMutableDictionary *dict = [NSMutableDictionary new];
         [dict setObject:@(0) forKey:@"code"];
-        [dict setObject:startTime forKey:@"startTime"];
+        [dict setObject:startTime?:@"" forKey:@"startTime"];
         [dict setObject:@(spansMin) forKey:@"spansMin"];
         result(dict);
     } error:^(RCErrorCode status) {
@@ -1157,6 +1501,111 @@
             [arr addObject:msgStr];
         }
         result(arr);
+    }
+}
+
+#pragma mark - 阅后即焚
+- (void)messageBeginDestruct:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"messageBeginDestruct";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        
+        NSDictionary *messageDic = param[@"message"];
+        RCMessage *message = [RCFlutterMessageFactory dic2Message:messageDic];
+        
+        [[RCIMClient sharedRCIMClient] messageBeginDestruct:message];
+    }
+}
+
+- (void)messageStopDestruct:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"downloadMediaMessage";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        
+        NSDictionary *messageDic = param[@"message"];
+        RCMessage *message = [RCFlutterMessageFactory dic2Message:messageDic];
+        
+        [[RCIMClient sharedRCIMClient] messageStopDestruct:message];;
+    }
+}
+
+- (void)setReconnectKickEnable:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"setReconnectKickEnable";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    BOOL enable = (BOOL)arg;
+    [[RCIMClient sharedRCIMClient] setReconnectKickEnable:enable];
+}
+
+- (void)getConnectionStatus:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"getConnectionStatus";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    
+    RCConnectionStatus status = [[RCIMClient sharedRCIMClient] getConnectionStatus];
+    result(@(status));
+}
+
+- (void)cancelDownloadMediaMessage:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"cancelDownloadMediaMessage";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    long messageId = (long)arg;
+    [[RCIMClient sharedRCIMClient] cancelDownloadMediaMessage:messageId];
+}
+
+- (void)getRemoteChatroomHistoryMessages:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"getRemoteChatroomHistoryMessages";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        NSString *targetId = param[@"targetId"];
+        long long recordTime = [param[@"recordTime"] longLongValue];
+        int count = [param[@"count"] intValue];
+        RCTimestampOrder order = [param[@"order"] intValue];
+        
+        [[RCIMClient sharedRCIMClient] getRemoteChatroomHistoryMessages:targetId recordTime:recordTime count:count order:order success:^(NSArray *messages, long long syncTime) {
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            NSMutableArray *msgsArray = [NSMutableArray new];
+            for(RCMessage *message in messages) {
+                NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+                [msgsArray addObject:jsonString];
+            }
+            NSMutableDictionary *callbackDic = [NSMutableDictionary new];
+            [callbackDic setObject:@(0) forKey:@"code"];
+            [callbackDic setObject:msgsArray forKey:@"messages"];
+            [callbackDic setObject:@(syncTime) forKey:@"syncTime"];
+            result(callbackDic);
+        } error:^(RCErrorCode status) {
+            [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(status)]];
+            NSMutableDictionary *callbackDic = [NSMutableDictionary new];
+            [callbackDic setObject:@(status) forKey:@"code"];
+            [callbackDic setObject:@(-1) forKey:@"syncTime"];
+            result(callbackDic);
+        }];
+    }
+}
+
+- (void)getMessageByUId:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"getMessageByUId";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSString class]]) {
+        NSString *messageUId = (NSString *)arg;
+        RCMessage *message = [[RCIMClient sharedRCIMClient] getMessageByUId:messageUId];
+        NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+        result(jsonString);
+    }
+}
+
+- (void)getFirstUnreadMessage:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"getFirstUnreadMessage";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+         NSDictionary *param = (NSDictionary *)arg;
+        RCConversationType type = [param[@"conversationType"] integerValue];
+        NSString *targetId = param[@"targetId"]?:@"";
+        RCMessage *message = [[RCIMClient sharedRCIMClient] getFirstUnreadMessage:type targetId:targetId];
+        NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+        result(jsonString);
     }
 }
 
@@ -1278,6 +1727,32 @@
     }
 }
 
+- (void)chatRoomKVDidSync:(NSString *)roomId {
+    if (roomId) {
+        NSDictionary *statusDic =
+        @{ @"roomId" : roomId };
+        [self.channel invokeMethod:RCMethodCallBackKeyChatRoomKVDidSync arguments:statusDic];
+    }
+}
+
+- (void)chatRoomKVDidUpdate:(NSString *)roomId entry:(NSDictionary<NSString *,NSString *> *)entry {
+    if (roomId && entry) {
+        NSDictionary *statusDic =
+        @{ @"roomId" : roomId,
+           @"entry" : entry };
+        [self.channel invokeMethod:RCMethodCallBackKeyChatRoomKVDidUpdate arguments:statusDic];
+    }
+}
+
+- (void)chatRoomKVDidRemove:(NSString *)roomId entry:(NSDictionary<NSString *,NSString *> *)entry {
+    if (roomId && entry) {
+        NSDictionary *statusDic =
+        @{ @"roomId" : roomId,
+           @"entry" : entry };
+        [self.channel invokeMethod:RCMethodCallBackKeyChatRoomKVDidRemove arguments:statusDic];
+    }
+}
+
 #pragma mark - 会话提醒
 
 - (void)setConversationNotificationStatus:(id)arg result:(FlutterResult)result {
@@ -1325,8 +1800,12 @@
         NSArray *typeArray = param[@"conversationTypeList"];
         
         NSArray *conversationArray = [[RCIMClient sharedRCIMClient] getBlockedConversationList:typeArray];
-        
-        result(@{@"conversationList":conversationArray,@"code":@(0)});
+        NSMutableArray *arr = [NSMutableArray new];
+        for(RCConversation *con in conversationArray) {
+            NSString *conStr = [RCFlutterMessageFactory conversation2String:con];
+            [arr addObject:conStr];
+        }
+        result(@{@"conversationList":arr,@"code":@(0)});
     }
 }
 
@@ -1354,7 +1833,47 @@
         NSArray *typeArray = param[@"conversationTypeList"];
         
         NSArray *conversationArray = [[RCIMClient sharedRCIMClient] getTopConversationList:typeArray];
-        result(@{@"conversationList":conversationArray,@"code":@(0)});
+        NSMutableArray *arr = [NSMutableArray new];
+        for(RCConversation *con in conversationArray) {
+            NSString *conStr = [RCFlutterMessageFactory conversation2String:con];
+            [arr addObject:conStr];
+        }
+        result(@{@"conversationList":arr,@"code":@(0)});
+    }
+}
+
+#pragma mark - 消息扩展
+- (void)updateMessageExpansion:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"updateMessageExpansion";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        NSDictionary *expansionDic = param[@"expansionDic"];
+        NSString *messageUId = param[@"messageUId"];
+        [[RCIMClient sharedRCIMClient] updateMessageExpansion:expansionDic messageUId:messageUId success:^{
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            result(@(0));
+        } error:^(RCErrorCode status) {
+            [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(status)]];
+            result(@(status));
+        }];
+    }
+}
+
+- (void)removeMessageExpansionForKey:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"removeMessageExpansionForKey";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        NSArray *keyArray = param[@"keyArray"];
+        NSString *messageUId = param[@"messageUId"];
+        [[RCIMClient sharedRCIMClient] removeMessageExpansionForKey:keyArray messageUId:messageUId success:^{
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            result(@(0));
+        } error:^(RCErrorCode status) {
+            [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(status)]];
+            result(@(status));
+        }];
     }
 }
 
@@ -1485,6 +2004,154 @@
     }
 }
 
+- (void)deleteRemoteMessages:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"deleteRemoteMessages";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        RCConversationType type = [param[@"conversationType"] integerValue];
+        NSString *targetId = param[@"targetId"];
+        NSArray *messageMapList = param[@"messages"];
+        NSMutableArray *messageList = [NSMutableArray arrayWithCapacity:messageMapList.count];
+        for (NSDictionary *messageDic in messageMapList) {
+            RCMessage *message = [RCFlutterMessageFactory dic2Message:messageDic];
+            [messageList addObject:message];
+        }
+        
+        [[RCIMClient sharedRCIMClient] deleteRemoteMessage:type targetId:targetId messages:messageList success:^{
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            result(@(0));
+        } error:^(RCErrorCode status) {
+            [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(status)]];
+            result(@(status));
+        }];
+    }
+}
+
+- (void)clearMessages:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"clearMessages";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        RCConversationType type = [param[@"conversationType"] integerValue];
+        NSString *targetId = param[@"targetId"];
+        BOOL success = [[RCIMClient sharedRCIMClient] clearMessages:type targetId:targetId];
+        if (success) {
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            result(@(0));
+        } else {
+            [RCLog i:[NSString stringWithFormat:@"%@ error",LOG_TAG]];
+            result(@(-1));
+        }
+    }
+}
+
+- (void)setMessageExtra:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"setMessageExtra";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        long messageId = [param[@"messageId"] longValue];
+        NSString *value = param[@"value"];
+        
+        BOOL success = [[RCIMClient sharedRCIMClient] setMessageExtra:messageId value:value];
+        if (success) {
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            result(@(0));
+        } else {
+            [RCLog i:[NSString stringWithFormat:@"%@ error",LOG_TAG]];
+            result(@(-1));
+        }
+    }
+}
+
+- (void)setMessageReceivedStatus:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"setMessageReceivedStatus";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        long messageId = [param[@"messageId"] longValue];
+        RCReceivedStatus receivedStatus = [param[@"receivedStatus"] intValue];
+        
+        BOOL success = [[RCIMClient sharedRCIMClient] setMessageReceivedStatus:messageId receivedStatus:receivedStatus];
+        if (success) {
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            result(@(0));
+        } else {
+            [RCLog i:[NSString stringWithFormat:@"%@ error",LOG_TAG]];
+            result(@(-1));
+        }
+    }
+}
+
+- (void)setMessageSentStatus:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"setMessageSentStatus";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        long messageId = [param[@"messageId"] longValue];
+        RCSentStatus receivedStatus = [param[@"sentStatus"] intValue];
+        
+        BOOL success = [[RCIMClient sharedRCIMClient] setMessageSentStatus:messageId sentStatus:receivedStatus];
+        if (success) {
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            result(@(0));
+        } else {
+            [RCLog i:[NSString stringWithFormat:@"%@ error",LOG_TAG]];
+            result(@(-1));
+        }
+    }
+}
+
+- (void)clearConversations:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"clearConversations";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        NSArray *conversationType = param[@"conversationTypes"];
+        BOOL success = [[RCIMClient sharedRCIMClient] clearConversations:conversationType];
+        if (success) {
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            result(@(0));
+        } else {
+            [RCLog i:[NSString stringWithFormat:@"%@ error",LOG_TAG]];
+            result(@(-1));
+        }
+    }
+}
+
+- (void)getDeltaTime:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"getDeltaTime";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    
+    long long deltaTime = [[RCIMClient sharedRCIMClient] getDeltaTime];
+    result(@(deltaTime));
+}
+
+- (void)setOfflineMessageDuration:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"setOfflineMessageDuration";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        int duration = [param[@"duration"] intValue];
+        
+        [[RCIMClient sharedRCIMClient] setOfflineMessageDuration:duration success:^{
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            result(@{@"code":@(0)});
+        } failure:^(RCErrorCode nErrorCode) {
+            [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(nErrorCode)]];
+            result(@{@"code":@(nErrorCode)});
+        }];
+    }
+}
+
+- (void)getOfflineMessageDuration:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"getOfflineMessageDuration";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    int duration = [[RCIMClient sharedRCIMClient] getOfflineMessageDuration];
+    result(@(duration));
+}
+
 - (void)receiveMessageHasReadNotification:(NSNotification *)notification {
     
     NSDictionary *dict = @{@"cType":[notification.userInfo objectForKey:@"cType"],
@@ -1551,7 +2218,7 @@
     RCMessage *recalledMsg = [[RCIMClient sharedRCIMClient] getMessage:messageId];
     NSString *jsonString = [RCFlutterMessageFactory message2String:recalledMsg];
     NSDictionary *dict = @{@"message": jsonString};
-    [self.channel invokeMethod:RCMethodCallBackKeyRecallMessageCallBack arguments:dict];
+    [self.channel invokeMethod:RCMethodCallBackKeyRecallMessage arguments:dict];
 }
 
 #pragma mark - RCConnectionStatusChangeDelegate
@@ -1577,8 +2244,36 @@
         @"typingStatus" : [statusArray copy]
     };
     
-    [self.channel invokeMethod:RCMethodCallBackKeyTypingStatusChangedCallBack arguments:statusDic];
+    [self.channel invokeMethod:RCMethodCallBackKeyTypingStatusChanged arguments:statusDic];
 }
+
+#pragma mark - RCMessageDestructDelegate
+- (void)onMessageDestructing:(RCMessage *)message remainDuration:(long long)remainDuration {
+    NSString *LOG_TAG = @"onMessageDestructing";
+    [RCLog i:[NSString stringWithFormat:@"%@",LOG_TAG]];
+    NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+    NSDictionary *dic = @{@"message": jsonString, @"remainDuration": @(remainDuration)};
+    [self.channel invokeMethod:RCMethodCallBackKeyDestructMessage arguments:dic];
+}
+
+#pragma mark - RCMessageExpansionDelegate
+
+- (void)messageExpansionDidUpdate:(NSDictionary<NSString *,NSString *> *)expansionDic message:(RCMessage *)message{
+    NSString *LOG_TAG = @"messageExpansionDidUpdate";
+    [RCLog i:[NSString stringWithFormat:@"%@",LOG_TAG]];
+    NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+    NSDictionary *dic = @{@"expansionDic": expansionDic, @"message": jsonString};
+    [self.channel invokeMethod:RCMethodCallBackKeyMessageExpansionDidUpdate arguments:dic];
+}
+
+- (void)messageExpansionDidRemove:(NSArray<NSString *> *)keyArray message:(RCMessage *)message{
+    NSString *LOG_TAG = @"messageExpansionDidRemove";
+    [RCLog i:[NSString stringWithFormat:@"%@",LOG_TAG]];
+    NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+    NSDictionary *dic = @{@"keyArray": keyArray, @"message": jsonString};
+    [self.channel invokeMethod:RCMethodCallBackKeyMessageExpansionDidRemove arguments:dic];
+}
+
 
 #pragma mark - util
 - (void)updateIMConfig {
@@ -1587,6 +2282,25 @@
 
 - (RCMessageContent *)getVoiceMessage:(NSData *)data {
     NSDictionary *contentDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+    RCUserInfo *sendUserInfo = nil;
+    RCMentionedInfo *mentionedInfo = nil;
+    if ([contentDic valueForKey:@"user"]) {
+        NSDictionary *userDict = [contentDic valueForKey:@"user"];
+        NSString *userId = [userDict valueForKey:@"id"] ?: @"";
+        NSString *name = [userDict valueForKey:@"name"] ?: @"";
+        NSString *portraitUri = [userDict valueForKey:@"portrait"] ?: @"";
+        NSString *extra = [userDict valueForKey:@"extra"] ?: @"";
+        sendUserInfo = [[RCUserInfo alloc] initWithUserId:userId name:name portrait:portraitUri];
+        sendUserInfo.extra = extra;
+    }
+    
+    if ([contentDic valueForKey:@"mentionedInfo"]) {
+        NSDictionary *mentionedInfoDict = [contentDic valueForKey:@"mentionedInfo"];
+        RCMentionedType type = [[mentionedInfoDict valueForKey:@"type"] intValue] ?: 1;
+        NSArray *userIdList = [mentionedInfoDict valueForKey:@"userIdList"] ?: @[];
+        NSString *mentionedContent = [mentionedInfoDict valueForKey:@"mentionedContent"] ?: @"";
+        mentionedInfo = [[RCMentionedInfo alloc] initWithMentionedType:type userIdList:userIdList mentionedContent:mentionedContent];
+    }
     NSString *localPath = contentDic[@"localPath"];
     int duration = [contentDic[@"duration"] intValue];
     if(![[NSFileManager defaultManager] fileExistsAtPath:localPath]) {
@@ -1595,13 +2309,15 @@
     }
     NSData *voiceData= [NSData dataWithContentsOfFile:localPath];
     RCVoiceMessage *msg = [RCVoiceMessage messageWithAudio:voiceData duration:duration];
+    msg.senderUserInfo = sendUserInfo;
+    msg.mentionedInfo = mentionedInfo;
     return msg;
 }
 
 #pragma mark - private method
 
 - (BOOL)isMediaMessage:(NSString *)objName {
-    if([objName isEqualToString:@"RC:ImgMsg"] || [objName isEqualToString:@"RC:HQVCMsg"] || [objName isEqualToString:@"RC:SightMsg"] || [objName isEqualToString:@"RC:FileMsg"] || [objName isEqualToString:@"RC:GIFMsg"]) {
+    if([objName isEqualToString:@"RC:ImgMsg"] || [objName isEqualToString:@"RC:HQVCMsg"] || [objName isEqualToString:@"RC:SightMsg"] || [objName isEqualToString:@"RC:FileMsg"] || [objName isEqualToString:@"RC:GIFMsg"] || [objName isEqualToString:@"RC:CombineMsg"]) {
         return YES;
     }
     return NO;

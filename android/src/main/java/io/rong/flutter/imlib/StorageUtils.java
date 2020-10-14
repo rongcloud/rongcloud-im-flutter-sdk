@@ -10,9 +10,6 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
-import android.text.TextUtils;
-
-import androidx.annotation.StringRes;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,9 +21,6 @@ import java.nio.channels.FileChannel;
 
 import io.rong.common.LibStorageUtils;
 import io.rong.common.RLog;
-import io.rong.imlib.common.SavePathUtils;
-
-import static android.os.Environment.DIRECTORY_DOWNLOADS;
 
 public class StorageUtils {
     private static final String TAG = "LibStorageUtils";
