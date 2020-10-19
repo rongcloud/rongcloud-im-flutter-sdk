@@ -17,11 +17,10 @@ A new flutter plugin project.
   s.static_framework = true
   s.dependency 'Flutter'
   
-  local = ENV['IM_SDK_USE_LOCAL']
-  if local and local == 'true'
-    #s.ios.vendored_frameworks = '*/RongIMLib.framework'
-    #s.vendored_frameworks = "*/RongIMLib.framework"
-    #s.dependency 'RongCloudIM/IMLib', '4.0.3'
+  path = ENV['IM_SDK_PATH']
+  if path
+    #s.vendored_frameworks = "RongIMLib.framework"
+    s.dependency 'RongCloudIM/IMLib', '4.0.3'
   else
     s.dependency 'RongCloudIM/IMLib', '4.0.3'
   end
@@ -29,7 +28,6 @@ A new flutter plugin project.
   s.ios.deployment_target = '8.0'
   
   s.pod_target_xcconfig = {
-    'LIBRARY_SEARCH_PATHS' => '$(PROJECT_DIR)/RongIMLib/framework',
   }
 end
 
