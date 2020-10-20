@@ -17,13 +17,7 @@ A new flutter plugin project.
   s.static_framework = true
   s.dependency 'Flutter'
   
-  path = ENV['IM_SDK_PATH']
-  if path
-    #s.vendored_frameworks = "RongIMLib.framework"
-    s.dependency 'RongCloudIM/IMLib', '4.0.3'
-  else
-    s.dependency 'RongCloudIM/IMLib', '4.0.3'
-  end
+  s.dependency 'RongCloudIM/IMLib', '4.0.3'
 
   s.ios.deployment_target = '8.0'
   
