@@ -925,7 +925,7 @@ public class RCIMFlutterWrapper {
 
             if (content instanceof SightMessage) {
                 SightMessage sightMessage = (SightMessage) content;
-                if (sightMessage.getDuration() > 10) {
+                if (sightMessage.getDuration() > 120) {
                     RongIMClient.ErrorCode errorCode = RongIMClient.ErrorCode.RC_SIGHT_MSG_DURATION_LIMIT_EXCEED;
                     RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
                     Map resultMap = new HashMap();

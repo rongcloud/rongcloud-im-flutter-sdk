@@ -565,7 +565,7 @@
     
     if([message.content isKindOfClass:[RCSightMessage class]]) {
         RCSightMessage *sightMsg = (RCSightMessage *)message.content;
-        if(sightMsg.duration > 10) {
+        if(sightMsg.duration > 120) {
             NSMutableDictionary *dic = [NSMutableDictionary new];
             [dic setObject:@(-1) forKey:@"messageId"];
             [dic setObject:@(SentStatus_FAILED) forKey:@"status"];
@@ -736,7 +736,7 @@
     
     if([content isKindOfClass:[RCSightMessage class]]) {
         RCSightMessage *sightMsg = (RCSightMessage *)content;
-        if(sightMsg.duration > 10) {
+        if(sightMsg.duration > 120) {
             NSMutableDictionary *dic = [NSMutableDictionary new];
             [dic setObject:@(-1) forKey:@"messageId"];
             [dic setObject:@(SentStatus_FAILED) forKey:@"status"];
