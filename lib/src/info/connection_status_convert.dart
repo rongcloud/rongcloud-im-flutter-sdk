@@ -45,7 +45,7 @@ class ConnectionStatusConvert {
       return RCConnectionStatus.Connected;
     } else if (originCode == 1) {
       return RCConnectionStatus.Connecting;
-    } else if (originCode == 2) {
+    } else if (originCode == 12) {
       return RCConnectionStatus.DisConnected;
     } else if (originCode == 3) {
       return RCConnectionStatus.KickedByOtherClient;
