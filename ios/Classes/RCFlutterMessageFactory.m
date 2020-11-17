@@ -77,6 +77,33 @@
     [messageConfigDict setObject:@(messageConfig.disableNotification) forKey:@"disableNotification"];
     [dic setObject:messageConfigDict forKey:@"messageConfig"];
     
+    RCMessagePushConfig *messagePushConfig = message.messagePushConfig;
+    if (messagePushConfig) {
+        NSMutableDictionary *messagePushConfigDict = [NSMutableDictionary new];
+        [messagePushConfigDict setObject:messagePushConfig.pushTitle?:@"" forKey:@"pushTitle"];
+        [messagePushConfigDict setObject:messagePushConfig.pushContent?:@"" forKey:@"pushContent"];
+        [messagePushConfigDict setObject:messagePushConfig.pushData?:@"" forKey:@"pushData"];
+        [messagePushConfigDict setObject:@(messagePushConfig.forceShowDetailContent) forKey:@"forceShowDetailContent"];
+        
+        if (messagePushConfig.iOSConfig) {
+            NSMutableDictionary *iOSConfigDict = [NSMutableDictionary new];
+            [iOSConfigDict setObject:messagePushConfig.iOSConfig.threadId?:@"" forKey:@"thread_id"];
+            [iOSConfigDict setObject:messagePushConfig.iOSConfig.apnsCollapseId?:@"" forKey:@"apns_collapse_id"];
+            [messagePushConfigDict setObject:iOSConfigDict forKey:@"iOSConfig"];
+        }
+        
+        if (messagePushConfig.androidConfig) {
+            NSMutableDictionary *androidConfigDict = [NSMutableDictionary new];
+            [androidConfigDict setObject:messagePushConfig.androidConfig.notificationId?:@"" forKey:@"notificationId"];
+            [androidConfigDict setObject:messagePushConfig.androidConfig.channelIdMi?:@"" forKey:@"channelIdMi"];
+            [androidConfigDict setObject:messagePushConfig.androidConfig.channelIdHW?:@"" forKey:@"channelIdHW"];
+            [androidConfigDict setObject:messagePushConfig.androidConfig.channelIdOPPO?:@"" forKey:@"channelIdOPPO"];
+            [androidConfigDict setObject:messagePushConfig.androidConfig.typeVivo?:@"" forKey:@"typeVivo"];
+            [messagePushConfigDict setObject:androidConfigDict forKey:@"androidConfig"];
+        }
+        [dic setObject:messagePushConfigDict forKey:@"messagePushConfig"];
+    }
+    
     RCMessageContent *content = message.content;
     content = [self convertLocalPathIfNeed:content];
     if ([content isKindOfClass:[RCFileMessage class]]) {
@@ -204,6 +231,27 @@
     if (messageConfig[@"disableNotification"]) {
         message.messageConfig.disableNotification = [messageConfig[@"disableNotification"] boolValue];
     }
+    NSDictionary *messagePushConfig = msgDic[@"messagePushConfig"];
+    if (messagePushConfig) {
+        message.messagePushConfig.pushTitle = messagePushConfig[@"pushTitle"];
+        message.messagePushConfig.pushContent = messagePushConfig[@"pushContent"];
+        message.messagePushConfig.pushData = messagePushConfig[@"pushData"];
+        message.messagePushConfig.forceShowDetailContent = messagePushConfig[@"forceShowDetailContent"];
+        if (messagePushConfig[@"iOSConfig"]) {
+            NSDictionary *iOSConfigDict = messagePushConfig[@"iOSConfig"];
+            message.messagePushConfig.iOSConfig.threadId = iOSConfigDict[@"thread_id"];
+            message.messagePushConfig.iOSConfig.apnsCollapseId = iOSConfigDict[@"apns_collapse_id"];
+        }
+        if (messagePushConfig[@"androidConfig"]) {
+            NSDictionary *androidConfigDict = messagePushConfig[@"androidConfig"];
+            message.messagePushConfig.androidConfig.notificationId = androidConfigDict[@"notificationId"];
+            message.messagePushConfig.androidConfig.channelIdMi = androidConfigDict[@"channelIdMi"];
+            message.messagePushConfig.androidConfig.channelIdHW = androidConfigDict[@"channelIdHW"];
+            message.messagePushConfig.androidConfig.channelIdOPPO = androidConfigDict[@"channelIdOPPO"];
+            message.messagePushConfig.androidConfig.typeVivo = androidConfigDict[@"typeVivo"];
+        }
+    }
+    
     NSDictionary *readReceiptInfo = msgDic[@"readReceiptInfo"];
     if (readReceiptInfo[@"isReceiptRequestMessage"]) {
         message.readReceiptInfo.isReceiptRequestMessage = [messageConfig[@"isReceiptRequestMessage"] boolValue];
