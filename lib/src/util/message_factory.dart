@@ -77,6 +77,31 @@ class MessageFactory extends Object {
           messageConfigMap["disableNotification"];
       message.messageConfig = messageConfig;
     }
+    Map messagePushConfigMap = map["messagePushConfig"];
+    if(messagePushConfigMap != null){
+      message.messagePushConfig = MessagePushConfig();
+      message.messagePushConfig.pushTitle = messagePushConfigMap["pushTitle"];
+      message.messagePushConfig.pushContent = messagePushConfigMap["pushContent"];
+      message.messagePushConfig.pushData = messagePushConfigMap["pushData"];
+      message.messagePushConfig.forceShowDetailContent = messagePushConfigMap["forceShowDetailContent"];
+      Map androidConfigMap = map["androidConfig"];
+      if(androidConfigMap != null){
+        AndroidConfig androidConfig = AndroidConfig();
+        androidConfig.notificationId = androidConfigMap["notificationId"];
+        androidConfig.channelIdMi = androidConfigMap["channelIdMi"];
+        androidConfig.channelIdHW = androidConfigMap["channelIdHW"];
+        androidConfig.channelIdOPPO = androidConfigMap["channelIdOPPO"];
+        androidConfig.typeVivo = androidConfigMap["typeVivo"];
+        message.messagePushConfig.androidConfig = androidConfig;
+      }
+      Map iOSConfigMap = map["iOSConfig"];
+      if(iOSConfigMap!= null){
+        IOSConfig iosConfig = IOSConfig();
+        iosConfig.thread_id = iOSConfigMap["thread_id"];
+        iosConfig.apns_collapse_id = iOSConfigMap["apns_collapse_id"];
+        message.messagePushConfig.iOSConfig = iosConfig;
+      }
+    }
     Map readReceiptMap = map["readReceiptInfo"];
     if (readReceiptMap != null) {
       ReadReceiptInfo readReceiptInfo = ReadReceiptInfo();
@@ -215,6 +240,29 @@ class MessageFactory extends Object {
       messageConfig["disableNotification"] =
           message.messageConfig.disableNotification;
       map["messageConfig"] = messageConfig;
+    }
+    if(message.messagePushConfig != null){
+      Map messagePushConfig = Map();
+      messagePushConfig["pushTitle"] = message.messagePushConfig.pushTitle;
+      messagePushConfig["pushContent"] = message.messagePushConfig.pushContent;
+      messagePushConfig["pushData"] = message.messagePushConfig.pushData;
+      messagePushConfig["forceShowDetailContent"] = message.messagePushConfig.forceShowDetailContent;
+      if(message.messagePushConfig.androidConfig != null){
+        Map androidConfig = Map();
+        androidConfig["notificationId"] = message.messagePushConfig.androidConfig.notificationId;
+        androidConfig["channelIdMi"] = message.messagePushConfig.androidConfig.channelIdMi;
+        androidConfig["channelIdHW"] = message.messagePushConfig.androidConfig.channelIdHW;
+        androidConfig["channelIdOPPO"] = message.messagePushConfig.androidConfig.channelIdOPPO;
+        androidConfig["typeVivo"] = message.messagePushConfig.androidConfig.typeVivo;
+        messagePushConfig["androidConfig"] = androidConfig;
+      }
+      if(message.messagePushConfig.iOSConfig != null){
+        Map iOSConfig = Map();
+        iOSConfig["thread_id"] = message.messagePushConfig.iOSConfig.thread_id;
+        iOSConfig["apns_collapse_id"] = message.messagePushConfig.iOSConfig.apns_collapse_id;
+        messagePushConfig["iOSConfig"] = iOSConfig;
+      }
+      map["messagePushConfig"] = messagePushConfig;
     }
     if (message.readReceiptInfo != null) {
       Map readReceiptMap = Map();
