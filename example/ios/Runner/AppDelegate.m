@@ -9,12 +9,8 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [GeneratedPluginRegistrant registerWithRegistry:self];
     // Override point for customization after application launch.
-    //注册自定义消息流程
-    //1.初始化 SDK，2.注册自定义的消息
-//    [[RCIMClient sharedRCIMClient] initWithAppKey:@"pvxdm17jxjaor"];
-//    [[RCIMClient sharedRCIMClient] registerMessageType:[RCDTestMessage class]];
-    
-    
+    // 注册自定义 MethodChannel，欲注册自定义消息，请查看 channel 具体实现
+    [self addRongCloudCustomChannel];
     /**
      * 推送处理1 (申请推送权限)
      */
@@ -68,7 +64,20 @@
 //    [[RCIMFlutterWrapper sharedWrapper] sendDataToFlutter:userInfo];
 }
 
-
-
+- (void)addRongCloudCustomChannel {
+    FlutterViewController* controller = (FlutterViewController*)self.window.rootViewController;
+    FlutterMethodChannel *channel =
+        [FlutterMethodChannel methodChannelWithName:@"com.example.rongcloud_im_plugin_example/exampleChannel"
+                                    binaryMessenger:controller.binaryMessenger];
+    [channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
+        if ([@"registerCustomMessages" isEqualToString:call.method]) {
+            //注册自定义的消息。该方法紧跟 Flutter 侧的 RongIMClient.init 调用。
+            [[RCIMClient sharedRCIMClient] registerMessageType:[RCDTestMessage class]];
+            result(nil);
+        } else {
+            result(FlutterMethodNotImplemented);
+        }
+    }];
+}
 
 @end
