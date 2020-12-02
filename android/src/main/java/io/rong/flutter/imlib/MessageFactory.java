@@ -14,6 +14,7 @@ import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageConfig;
 import io.rong.imlib.model.MessageContent;
+import io.rong.imlib.model.MessagePushConfig;
 import io.rong.imlib.model.ReadReceiptInfo;
 import io.rong.imlib.model.SearchConversationResult;
 import io.rong.imlib.typingmessage.TypingStatus;
@@ -66,11 +67,35 @@ public class MessageFactory {
             messageConfigMap.put("disableNotification", messageConfig.isDisableNotification());
             map.put("messageConfig", messageConfigMap);
         }
+        MessagePushConfig messagePushConfig = message.getMessagePushConfig();
+        if (messagePushConfig != null) {
+            HashMap messagePushConfigMap = new HashMap();
+            messagePushConfigMap.put("pushTitle",messagePushConfig.getPushTitle());
+            messagePushConfigMap.put("pushContent",messagePushConfig.getPushContent());
+            messagePushConfigMap.put("pushData",messagePushConfig.getPushData());
+            messagePushConfigMap.put("forceShowDetailContent",messagePushConfig.isForceShowDetailContent());
+            if (messagePushConfig.getAndroidConfig() != null){
+                HashMap androidConfigMap = new HashMap();
+                androidConfigMap.put("notificationId",messagePushConfig.getAndroidConfig().getNotificationId());
+                androidConfigMap.put("channelIdMi",messagePushConfig.getAndroidConfig().getChannelIdMi());
+                androidConfigMap.put("channelIdHW",messagePushConfig.getAndroidConfig().getChannelIdHW());
+                androidConfigMap.put("channelIdOPPO",messagePushConfig.getAndroidConfig().getChannelIdOPPO());
+                androidConfigMap.put("typeVivo",messagePushConfig.getAndroidConfig().getTypeVivo());
+                messagePushConfigMap.put("androidConfig",androidConfigMap);
+            }
+            if (messagePushConfig.getIOSConfig() != null){
+                HashMap iosConfigMap = new HashMap();
+                iosConfigMap.put("thread_id",messagePushConfig.getIOSConfig().getThread_id());
+                iosConfigMap.put("apns_collapse_id",messagePushConfig.getIOSConfig().getApns_collapse_id());
+                messagePushConfigMap.put("iOSConfig",iosConfigMap);
+            }
+            map.put("messagePushConfig",messagePushConfigMap);
+        }
         map.put("sentTime", message.getSentTime());
         map.put("objectName", message.getObjectName());
         map.put("extra", message.getExtra());
-        map.put("canIncludeExpansion",message.isCanIncludeExpansion());
-        map.put("expansionDic",message.getExpansion());
+        map.put("canIncludeExpansion", message.isCanIncludeExpansion());
+        map.put("expansionDic", message.getExpansion());
         String uid = message.getUId();
         if (uid == null || uid.length() <= 0) {
             uid = "";

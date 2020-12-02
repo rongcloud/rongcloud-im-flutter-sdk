@@ -1047,6 +1047,23 @@ class _ConversationPageState extends State<ConversationPage>
     //   "3": "3",
     //   "4": "4",
     // };
+    // MessagePushConfig messagePushConfing = MessagePushConfig();
+    // messagePushConfing.pushTitle = "1";
+    // messagePushConfing.pushContent = "2";
+    // messagePushConfing.pushData = "3";
+    // messagePushConfing.forceShowDetailContent = true;
+    // AndroidConfig androidConfig = AndroidConfig();
+    // androidConfig.notificationId = "4";
+    // androidConfig.channelIdMi = "5";
+    // androidConfig.channelIdHW = "6";
+    // androidConfig.channelIdOPPO = "7";
+    // androidConfig.typeVivo = "8";
+    // messagePushConfing.androidConfig = androidConfig;
+    // IOSConfig iosConfig = IOSConfig();
+    // iosConfig.thread_id = "9";
+    // iosConfig.apns_collapse_id = "10";
+    // messagePushConfing.iOSConfig = iosConfig;
+    // message.messagePushConfig = messagePushConfing;
     // await RongIMClient.sendIntactMessageWithCallBack(message, "", "",(int messageId, int status, int code){
     //   String result = "messageId:$messageId status:$status code:$code";
     // });

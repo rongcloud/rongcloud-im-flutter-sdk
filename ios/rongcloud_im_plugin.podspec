@@ -16,12 +16,8 @@ A new flutter plugin project.
   s.public_header_files = 'Classes/**/*.h'
   s.static_framework = true
   s.dependency 'Flutter'
-  
   s.dependency 'RongCloudIM/IMLib', '4.0.4'
 
   s.ios.deployment_target = '8.0'
-  
-  s.pod_target_xcconfig = {
-  }
 end
 

@@ -37,12 +37,15 @@ import io.rong.imlib.IOperationCallback;
 import io.rong.imlib.IRongCallback;
 import io.rong.imlib.MessageTag;
 import io.rong.imlib.RongIMClient;
+import io.rong.imlib.model.AndroidConfig;
 import io.rong.imlib.model.ChatRoomInfo;
 import io.rong.imlib.model.Conversation;
+import io.rong.imlib.model.IOSConfig;
 import io.rong.imlib.model.MentionedInfo;
 import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageConfig;
 import io.rong.imlib.model.MessageContent;
+import io.rong.imlib.model.MessagePushConfig;
 import io.rong.imlib.model.SearchConversationResult;
 import io.rong.imlib.model.UnknownMessage;
 import io.rong.imlib.model.UserInfo;
@@ -925,7 +928,7 @@ public class RCIMFlutterWrapper {
 
             if (content instanceof SightMessage) {
                 SightMessage sightMessage = (SightMessage) content;
-                if (sightMessage.getDuration() > 10) {
+                if (sightMessage.getDuration() > 120) {
                     RongIMClient.ErrorCode errorCode = RongIMClient.ErrorCode.RC_SIGHT_MSG_DURATION_LIMIT_EXCEED;
                     RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
                     Map resultMap = new HashMap();
@@ -939,18 +942,8 @@ public class RCIMFlutterWrapper {
                     return;
                 }
             }
-            final boolean disableNotification = (boolean) map.get("disableNotification");
             Message message = Message.obtain(targetId, type, content);
-            message.setMessageConfig(new MessageConfig.Builder().setDisableNotification(disableNotification).build());
-            if (map.get("canIncludeExpansion") != null) {
-                message.setCanIncludeExpansion((Boolean) map.get("canIncludeExpansion"));
-            }
-            Map<String, String> expansionDic = (Map) map.get("expansionDic");
-            if (expansionDic != null) {
-                HashMap<String, String> expansionDicMap = new HashMap<>();
-                expansionDicMap.putAll(expansionDic);
-                message.setExpansion(expansionDicMap);
-            }
+            setExtraValue(map,message);
             RongIMClient.getInstance().sendMediaMessage(message, pushContent, pushData,
                     new IRongCallback.ISendMediaMessageCallback() {
                         @Override
@@ -3416,18 +3409,7 @@ public class RCIMFlutterWrapper {
             if (messageMap.get("messageUId") != null) {
                 message.setUId((String) messageMap.get("messageUId"));
             }
-            if (messageMap.get("disableNotification") != null) {
-                message.setMessageConfig(new MessageConfig.Builder().setDisableNotification((boolean) messageMap.get("disableNotification")).build());
-            }
-            if (messageMap.get("canIncludeExpansion") != null) {
-                message.setCanIncludeExpansion((Boolean) messageMap.get("canIncludeExpansion"));
-            }
-            Map<String, String> expansionDic = (Map<String, String>) messageMap.get("expansionDic");
-            if (expansionDic != null) {
-                HashMap<String, String> expansionDicMap = new HashMap<>();
-                expansionDicMap.putAll(expansionDic);
-                message.setExpansion(expansionDicMap);
-            }
+            setExtraValue(messageMap,message);
             contentStr = (String) messageMap.get("content");
         }
         if (contentStr == null) {
@@ -3467,13 +3449,78 @@ public class RCIMFlutterWrapper {
                 Uri uri = Uri.parse(localPath);
                 content = VoiceMessage.obtain(uri, duration);
             } catch (JSONException e) {
-                // do nothing
             }
         } else if (objectName.equalsIgnoreCase("RC:ReferenceMsg")) {
             makeReferenceMessage(content, contentStr);
         }
         message.setContent(content);
         return message;
+    }
+
+    private void setExtraValue(Map messageMap,Message message){
+        if (messageMap.get("messageConfig") != null) {
+            Map messageConfigMap = (Map) messageMap.get("messageConfig");
+            if (messageConfigMap.get("disableNotification") != null) {
+                message.setMessageConfig(new MessageConfig.Builder().setDisableNotification((boolean) messageConfigMap.get("disableNotification")).build());
+            }
+        }
+        if (messageMap.get("messagePushConfig") != null) {
+            Map messagePushConfigMap = (Map) messageMap.get("messagePushConfig");
+            MessagePushConfig.Builder builder = new MessagePushConfig.Builder();
+            if (messagePushConfigMap.get("pushTitle") != null) {
+                builder.setPushTitle((String) messagePushConfigMap.get("pushTitle"));
+            }
+            if (messagePushConfigMap.get("pushContent") != null) {
+                builder.setPushContent((String) messagePushConfigMap.get("pushContent"));
+            }
+            if (messagePushConfigMap.get("pushData") != null) {
+                builder.setPushData((String) messagePushConfigMap.get("pushData"));
+            }
+            if (messagePushConfigMap.get("forceShowDetailContent") != null) {
+                builder.setForceShowDetailContent((boolean) messagePushConfigMap.get("forceShowDetailContent"));
+            }
+            if (messagePushConfigMap.get("androidConfig") != null) {
+                AndroidConfig.Builder androidBuilder = new AndroidConfig.Builder();
+                Map androidConfig = (Map) messagePushConfigMap.get("androidConfig");
+                if (androidConfig.get("notificationId") != null) {
+                    androidBuilder.setNotificationId((String) androidConfig.get("notificationId"));
+                }
+                if (androidConfig.get("channelIdMi") != null) {
+                    androidBuilder.setChannelIdMi((String) androidConfig.get("channelIdMi"));
+                }
+                if (androidConfig.get("channelIdHW") != null) {
+                    androidBuilder.setChannelIdHW((String) androidConfig.get("channelIdHW"));
+                }
+                if (androidConfig.get("channelIdOPPO") != null) {
+                    androidBuilder.setChannelIdOPPO((String) androidConfig.get("channelIdOPPO"));
+                }
+                if (androidConfig.get("typeVivo") != null) {
+                    androidBuilder.setTypeVivo((String) androidConfig.get("typeVivo"));
+                }
+                builder.setAndroidConfig(androidBuilder.build());
+            }
+            if (messagePushConfigMap.get("iOSConfig") != null) {
+                IOSConfig iosBuilder = new IOSConfig();
+                Map iOSConfig = (Map) messagePushConfigMap.get("iOSConfig");
+                if (iOSConfig.get("thread_id") != null) {
+                    iosBuilder.setThread_id((String) iOSConfig.get("thread_id"));
+                }
+                if (iOSConfig.get("apns_collapse_id") != null) {
+                    iosBuilder.setApns_collapse_id((String) iOSConfig.get("apns_collapse_id"));
+                }
+                builder.setIOSConfig(iosBuilder);
+            }
+            message.setMessagePushConfig(builder.build());
+        }
+        if (messageMap.get("canIncludeExpansion") != null) {
+            message.setCanIncludeExpansion((Boolean) messageMap.get("canIncludeExpansion"));
+        }
+        Map<String, String> expansionDic = (Map<String, String>) messageMap.get("expansionDic");
+        if (expansionDic != null) {
+            HashMap<String, String> expansionDicMap = new HashMap<>();
+            expansionDicMap.putAll(expansionDic);
+            message.setExpansion(expansionDicMap);
+        }
     }
 
     private MessageContent newMessageContent(String objectName, byte[] content, String contentStr) {
