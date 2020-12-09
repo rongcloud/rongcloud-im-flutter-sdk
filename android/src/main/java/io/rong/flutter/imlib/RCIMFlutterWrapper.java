@@ -448,14 +448,10 @@ public class RCIMFlutterWrapper {
             this.appkey = appkey;
             RongIMClient.init(mContext, appkey);
 
-            try {
-                // IMLib 默认检测到小视频 SDK 才会注册小视频消息，所以此处需要手动注册
-                RongIMClient.registerMessageType(SightMessage.class);
-                // 因为合并消息 定义和注册都写在 kit 里面
-                RongIMClient.registerMessageType(CombineMessage.class);
-            } catch (AnnotationNotFoundException e) {
-                e.printStackTrace();
-            }
+            // IMLib 默认检测到小视频 SDK 才会注册小视频消息，所以此处需要手动注册
+            RongIMClient.registerMessageType(SightMessage.class);
+            // 因为合并消息 定义和注册都写在 kit 里面
+            RongIMClient.registerMessageType(CombineMessage.class);
 
             setReceiveMessageListener();
             setConnectStatusListener();
@@ -943,7 +939,7 @@ public class RCIMFlutterWrapper {
                 }
             }
             Message message = Message.obtain(targetId, type, content);
-            setExtraValue(map,message);
+            setExtraValue(map, message);
             RongIMClient.getInstance().sendMediaMessage(message, pushContent, pushData,
                     new IRongCallback.ISendMediaMessageCallback() {
                         @Override
@@ -2154,7 +2150,7 @@ public class RCIMFlutterWrapper {
         });
     }
 
-    private void setMessageExpansionListener(){
+    private void setMessageExpansionListener() {
         RongIMClient.getInstance().setMessageExpansionListener(new RongIMClient.MessageExpansionListener() {
             @Override
             public void onMessageExpansionUpdate(final Map<String, String> map, final Message message) {
@@ -3409,7 +3405,7 @@ public class RCIMFlutterWrapper {
             if (messageMap.get("messageUId") != null) {
                 message.setUId((String) messageMap.get("messageUId"));
             }
-            setExtraValue(messageMap,message);
+            setExtraValue(messageMap, message);
             contentStr = (String) messageMap.get("content");
         }
         if (contentStr == null) {
@@ -3457,7 +3453,7 @@ public class RCIMFlutterWrapper {
         return message;
     }
 
-    private void setExtraValue(Map messageMap,Message message){
+    private void setExtraValue(Map messageMap, Message message) {
         if (messageMap.get("messageConfig") != null) {
             Map messageConfigMap = (Map) messageMap.get("messageConfig");
             if (messageConfigMap.get("disableNotification") != null) {
