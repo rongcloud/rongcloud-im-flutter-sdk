@@ -7,8 +7,6 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 
-import androidx.core.app.ActivityCompat;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,7 +31,6 @@ import io.rong.common.RLog;
 import io.rong.common.fwlog.FwLog;
 import io.rong.flutter.imlib.forward.CombineMessage;
 import io.rong.imlib.AnnotationNotFoundException;
-import io.rong.imlib.IOperationCallback;
 import io.rong.imlib.IRongCallback;
 import io.rong.imlib.MessageTag;
 import io.rong.imlib.RongIMClient;
