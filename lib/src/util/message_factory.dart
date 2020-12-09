@@ -222,53 +222,56 @@ class MessageFactory extends Object {
   Map message2Map(Message message) {
     Map map = new Map();
     map["conversationType"] = message.conversationType;
-    map["targetId"] = message.targetId;
+    map["targetId"] = message.targetId ?? "";
     map["messageId"] = message.messageId;
     map["messageDirection"] = message.messageDirection;
-    map["senderUserId"] = message.senderUserId;
+    map["senderUserId"] = message.senderUserId ?? "";
     map["receivedStatus"] = message.receivedStatus;
     map["sentStatus"] = message.sentStatus;
-    map["sentTime"] = message.sentTime;
-    map["objectName"] = message.objectName;
-    map["messageUId"] = message.messageUId;
+    map["sentTime"] = message.sentTime ?? 0;
+    map["objectName"] = message.objectName ?? "";
+    map["messageUId"] = message.messageUId ?? "";
     if (message.content != null) {
       map["content"] = message.content.encode();
     }
     map["extra"] = message.extra ?? "";
-    map["canIncludeExpansion"] = message.canIncludeExpansion;
+    map["canIncludeExpansion"] = message.canIncludeExpansion ?? false;
     map["expansionDic"] = message.expansionDic;
     if (message.messageConfig != null) {
       Map messageConfig = Map();
       messageConfig["disableNotification"] =
-          message.messageConfig.disableNotification;
+          message.messageConfig.disableNotification ?? false;
       map["messageConfig"] = messageConfig;
     }
     if (message.messagePushConfig != null) {
       Map messagePushConfig = Map();
-      messagePushConfig["pushTitle"] = message.messagePushConfig.pushTitle;
-      messagePushConfig["pushContent"] = message.messagePushConfig.pushContent;
-      messagePushConfig["pushData"] = message.messagePushConfig.pushData;
+      messagePushConfig["pushTitle"] =
+          message.messagePushConfig.pushTitle ?? "";
+      messagePushConfig["pushContent"] =
+          message.messagePushConfig.pushContent ?? "";
+      messagePushConfig["pushData"] = message.messagePushConfig.pushData ?? "";
       messagePushConfig["forceShowDetailContent"] =
-          message.messagePushConfig.forceShowDetailContent;
+          message.messagePushConfig.forceShowDetailContent ?? false;
       if (message.messagePushConfig.androidConfig != null) {
         Map androidConfig = Map();
         androidConfig["notificationId"] =
-            message.messagePushConfig.androidConfig.notificationId;
+            message.messagePushConfig.androidConfig.notificationId ?? "";
         androidConfig["channelIdMi"] =
-            message.messagePushConfig.androidConfig.channelIdMi;
+            message.messagePushConfig.androidConfig.channelIdMi ?? "";
         androidConfig["channelIdHW"] =
-            message.messagePushConfig.androidConfig.channelIdHW;
+            message.messagePushConfig.androidConfig.channelIdHW ?? "";
         androidConfig["channelIdOPPO"] =
-            message.messagePushConfig.androidConfig.channelIdOPPO;
+            message.messagePushConfig.androidConfig.channelIdOPPO ?? "";
         androidConfig["typeVivo"] =
-            message.messagePushConfig.androidConfig.typeVivo;
+            message.messagePushConfig.androidConfig.typeVivo ?? "";
         messagePushConfig["androidConfig"] = androidConfig;
       }
       if (message.messagePushConfig.iOSConfig != null) {
         Map iOSConfig = Map();
-        iOSConfig["thread_id"] = message.messagePushConfig.iOSConfig.thread_id;
+        iOSConfig["thread_id"] =
+            message.messagePushConfig.iOSConfig.thread_id ?? "";
         iOSConfig["apns_collapse_id"] =
-            message.messagePushConfig.iOSConfig.apns_collapse_id;
+            message.messagePushConfig.iOSConfig.apns_collapse_id ?? "";
         messagePushConfig["iOSConfig"] = iOSConfig;
       }
       map["messagePushConfig"] = messagePushConfig;
