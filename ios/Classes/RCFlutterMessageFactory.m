@@ -130,7 +130,9 @@
         [dic setObject:contentStr forKey:@"content"];
     }
     [dic setObject:@(message.canIncludeExpansion) forKey:@"canIncludeExpansion"];
-    [dic setObject:message.expansionDic?:@{@"":@""} forKey:@"expansionDic"];
+    if (message.expansionDic) {
+        [dic setObject:message.expansionDic forKey:@"expansionDic"];
+    }
     return [dic copy];
 }
 
@@ -225,8 +227,12 @@
         content = [[RCMessageMapper sharedMapper] messageContentWithClass:clazz fromData:data];
     }
     message.content = content;
-    message.canIncludeExpansion = [msgDic[@"canIncludeExpansion"] boolValue];
-    message.expansionDic = msgDic[@"expansionDic"];
+    if (msgDic[@"canIncludeExpansion"] && ![msgDic[@"canIncludeExpansion"] isKindOfClass:[NSNull class]]) {
+        message.canIncludeExpansion = [msgDic[@"canIncludeExpansion"] boolValue];
+    }
+    if (msgDic[@"expansionDic"] && ![msgDic[@"expansionDic"] isKindOfClass:[NSNull class]]) {
+        message.expansionDic = msgDic[@"expansionDic"];
+    }
     NSDictionary *messageConfig = msgDic[@"messageConfig"];
     if (messageConfig[@"disableNotification"]) {
         message.messageConfig.disableNotification = [messageConfig[@"disableNotification"] boolValue];
