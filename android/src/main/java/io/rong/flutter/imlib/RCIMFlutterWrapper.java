@@ -2307,7 +2307,9 @@ public class RCIMFlutterWrapper {
                 message.setSenderUserId((String) messageMap.get("senderUserId"));
                 message.setReceivedStatus(new Message.ReceivedStatus((int) messageMap.get("receivedStatus")));
                 message.setSentStatus(Message.SentStatus.setValue((int) messageMap.get("sentStatus")));
-                message.setSentTime((long) messageMap.get("sentTime"));
+                if (messageMap.get("sentTime") != null) {
+                    message.setSentTime(((Number) messageMap.get("sentTime")).longValue());
+                }
                 message.setObjectName((String) messageMap.get("objectName"));
                 message.setUId((String) messageMap.get("messageUId"));
                 contentStr = (String) messageMap.get("content");
@@ -3397,7 +3399,7 @@ public class RCIMFlutterWrapper {
                 message.setSentStatus(Message.SentStatus.setValue((int) messageMap.get("sentStatus")));
             }
             if (messageMap.get("sentTime") != null) {
-                message.setSentTime((long) messageMap.get("sentTime"));
+                message.setSentTime(((Number) messageMap.get("sentTime")).longValue());
             }
             if (messageMap.get("objectName") != null) {
                 message.setObjectName((String) messageMap.get("objectName"));
