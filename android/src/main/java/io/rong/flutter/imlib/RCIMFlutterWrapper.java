@@ -2027,7 +2027,8 @@ public class RCIMFlutterWrapper {
         try {
             field = client.getClass().getDeclaredField("mRegCache");
             field.setAccessible(true);
-            List<String> mRegCache = (List) field.get(client);
+//            List<String> mRegCache = (List) field.get(client)
+            List<String> mRegCache = new ArrayList<>((List) field.get(client));
             for (String className : mRegCache) {
                 registerMessageType(className);
             }
@@ -2237,6 +2238,9 @@ public class RCIMFlutterWrapper {
     }
 
     private boolean isMediaMessage(String objName) {
+        if (TextUtils.isEmpty(objName)) {
+            return false;
+        }
         if (objName.equalsIgnoreCase("RC:ImgMsg") || objName.equalsIgnoreCase("RC:HQVCMsg")
                 || objName.equalsIgnoreCase("RC:SightMsg") || objName.equalsIgnoreCase("RC:FileMsg")
                 || objName.equalsIgnoreCase("RC:GIFMsg") || objName.equalsIgnoreCase("RC:CombineMsg")) {
@@ -2246,6 +2250,9 @@ public class RCIMFlutterWrapper {
     }
 
     private boolean isVoiceMessage(String objName) {
+        if (TextUtils.isEmpty(objName)) {
+            return false;
+        }
         if (objName.equalsIgnoreCase("RC:VcMsg")) {
             return true;
         }
@@ -3424,32 +3431,34 @@ public class RCIMFlutterWrapper {
         }
         // 主动赋予值 thumUri 防止在 flutter 互相传递时丢失
         String objectName = (String) messageMap.get("objectName");
-        if (objectName.equalsIgnoreCase("RC:ImgMsg") || objectName.equalsIgnoreCase("RC:SightMsg")) {
-            try {
-                JSONObject jsonObject = new JSONObject(contentStr);
-                if (jsonObject.has("thumbUri")) {
-                    String thumbUriStr = (String) jsonObject.get("thumbUri");
-                    if (content instanceof ImageMessage) {
-                        ((ImageMessage) content).setThumUri(Uri.parse(thumbUriStr));
-                    } else if (content instanceof SightMessage) {
-                        ((SightMessage) content).setThumbUri(Uri.parse(thumbUriStr));
+        if (!TextUtils.isEmpty(objectName)) {
+            if (objectName.equalsIgnoreCase("RC:ImgMsg") || objectName.equalsIgnoreCase("RC:SightMsg")) {
+                try {
+                    JSONObject jsonObject = new JSONObject(contentStr);
+                    if (jsonObject.has("thumbUri")) {
+                        String thumbUriStr = (String) jsonObject.get("thumbUri");
+                        if (content instanceof ImageMessage) {
+                            ((ImageMessage) content).setThumUri(Uri.parse(thumbUriStr));
+                        } else if (content instanceof SightMessage) {
+                            ((SightMessage) content).setThumbUri(Uri.parse(thumbUriStr));
+                        }
                     }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
+            } else if (isVoiceMessage(objectName)) {
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(contentStr);
+                    String localPath = jsonObject.getString("localPath");
+                    int duration = jsonObject.getInt("duration");
+                    Uri uri = Uri.parse(localPath);
+                    content = VoiceMessage.obtain(uri, duration);
+                } catch (JSONException e) {
+                }
+            } else if (objectName!=null && objectName.equalsIgnoreCase("RC:ReferenceMsg")) {
+                makeReferenceMessage(content, contentStr);
             }
-        } else if (isVoiceMessage(objectName)) {
-            JSONObject jsonObject = null;
-            try {
-                jsonObject = new JSONObject(contentStr);
-                String localPath = jsonObject.getString("localPath");
-                int duration = jsonObject.getInt("duration");
-                Uri uri = Uri.parse(localPath);
-                content = VoiceMessage.obtain(uri, duration);
-            } catch (JSONException e) {
-            }
-        } else if (objectName.equalsIgnoreCase("RC:ReferenceMsg")) {
-            makeReferenceMessage(content, contentStr);
         }
         message.setContent(content);
         return message;
@@ -3563,7 +3572,9 @@ public class RCIMFlutterWrapper {
         } catch (Exception e) {
             // FwLog TBC.
             result = new UnknownMessage(content);
-            FwLog.write(FwLog.F, FwLog.IM, "L-decode_msg-E", "msg_type|stacks", objectName, FwLog.stackToString(e));
+            if (objectName != null) {
+                FwLog.write(FwLog.F, FwLog.IM, "L-decode_msg-E", "msg_type|stacks", objectName, FwLog.stackToString(e));
+            }
         }
         setCommonInfo(contentStr, result);
 //        }
