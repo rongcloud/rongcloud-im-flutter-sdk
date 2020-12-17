@@ -130,7 +130,9 @@
         [dic setObject:contentStr forKey:@"content"];
     }
     [dic setObject:@(message.canIncludeExpansion) forKey:@"canIncludeExpansion"];
-    [dic setObject:message.expansionDic?:@{@"":@""} forKey:@"expansionDic"];
+    if (message.expansionDic) {
+        [dic setObject:message.expansionDic forKey:@"expansionDic"];
+    }
     return [dic copy];
 }
 
@@ -225,10 +227,14 @@
         content = [[RCMessageMapper sharedMapper] messageContentWithClass:clazz fromData:data];
     }
     message.content = content;
-    message.canIncludeExpansion = [msgDic[@"canIncludeExpansion"] boolValue];
-    message.expansionDic = msgDic[@"expansionDic"];
+    if (msgDic[@"canIncludeExpansion"] && ![msgDic[@"canIncludeExpansion"] isKindOfClass:[NSNull class]]) {
+        message.canIncludeExpansion = [msgDic[@"canIncludeExpansion"] boolValue];
+    }
+    if (msgDic[@"expansionDic"] && ![msgDic[@"expansionDic"] isKindOfClass:[NSNull class]]) {
+        message.expansionDic = msgDic[@"expansionDic"];
+    }
     NSDictionary *messageConfig = msgDic[@"messageConfig"];
-    if (messageConfig[@"disableNotification"]) {
+    if (messageConfig[@"disableNotification"] && ![messageConfig[@"disableNotification"] isKindOfClass:[NSNull class]]) {
         message.messageConfig.disableNotification = [messageConfig[@"disableNotification"] boolValue];
     }
     NSDictionary *messagePushConfig = msgDic[@"messagePushConfig"];
@@ -236,7 +242,9 @@
         message.messagePushConfig.pushTitle = messagePushConfig[@"pushTitle"];
         message.messagePushConfig.pushContent = messagePushConfig[@"pushContent"];
         message.messagePushConfig.pushData = messagePushConfig[@"pushData"];
-        message.messagePushConfig.forceShowDetailContent = messagePushConfig[@"forceShowDetailContent"];
+        if (messagePushConfig[@"forceShowDetailContent"] && ![messagePushConfig[@"forceShowDetailContent"] isKindOfClass:[NSNull class]]) {
+            message.messagePushConfig.forceShowDetailContent = [messagePushConfig[@"forceShowDetailContent"] boolValue];
+        }
         if (messagePushConfig[@"iOSConfig"]) {
             NSDictionary *iOSConfigDict = messagePushConfig[@"iOSConfig"];
             message.messagePushConfig.iOSConfig.threadId = iOSConfigDict[@"thread_id"];
@@ -253,14 +261,14 @@
     }
     
     NSDictionary *readReceiptInfo = msgDic[@"readReceiptInfo"];
-    if (readReceiptInfo[@"isReceiptRequestMessage"]) {
-        message.readReceiptInfo.isReceiptRequestMessage = [messageConfig[@"isReceiptRequestMessage"] boolValue];
+    if (readReceiptInfo[@"isReceiptRequestMessage"] && ![readReceiptInfo[@"isReceiptRequestMessage"] isKindOfClass:[NSNull class]]) {
+        message.readReceiptInfo.isReceiptRequestMessage = [readReceiptInfo[@"isReceiptRequestMessage"] boolValue];
     }
-    if (readReceiptInfo[@"hasRespond"]) {
-        message.readReceiptInfo.isReceiptRequestMessage = [messageConfig[@"hasRespond"] boolValue];
+    if (readReceiptInfo[@"hasRespond"] && ![readReceiptInfo[@"hasRespond"] isKindOfClass:[NSNull class]]) {
+        message.readReceiptInfo.isReceiptRequestMessage = [readReceiptInfo[@"hasRespond"] boolValue];
     }
-    if (readReceiptInfo[@"userIdList"]) {
-        message.readReceiptInfo.userIdList = messageConfig[@"userIdList"];
+    if (readReceiptInfo[@"userIdList"] && ![readReceiptInfo[@"userIdList"] isKindOfClass:[NSNull class]]) {
+        message.readReceiptInfo.userIdList = readReceiptInfo[@"userIdList"];
     }
     
     return message;

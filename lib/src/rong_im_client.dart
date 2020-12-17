@@ -402,7 +402,7 @@ class RongIMClient {
       int recordTime, bool clearRemote, Function(int code) finished) async {
     if (conversationType == null || targetId == null) {
       developer.log(
-          "getHistoryMessages error: conversationType or targetId null",
+          "clearHistoryMessages error: conversationType or targetId null",
           name: "RongIMClient");
       return null;
     }

@@ -1064,6 +1064,24 @@ class _ConversationPageState extends State<ConversationPage>
     // iosConfig.apns_collapse_id = "10";
     // messagePushConfing.iOSConfig = iosConfig;
     // message.messagePushConfig = messagePushConfing;
+
+    // // 传 null 测试开始
+    // message.messageId = null;
+    // message.messageUId = null;
+    // message.messageDirection = null;
+    // message.senderUserId = null;
+    // message.receivedStatus = null;
+    // message.sentStatus = null;
+    // message.sentTime = null;
+    // message.extra = null;
+    // message.canIncludeExpansion = null;
+    // message.expansionDic = null;
+    // message.readReceiptInfo = null;
+    // message.originContentMap = null;
+    // message.messageConfig = MessageConfig();
+    // message.messagePushConfig = MessagePushConfig();
+    // // 传 null 测试结束
+
     // await RongIMClient.sendIntactMessageWithCallBack(message, "", "",(int messageId, int status, int code){
     //   String result = "messageId:$messageId status:$status code:$code";
     // });
