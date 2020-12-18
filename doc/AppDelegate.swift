@@ -47,8 +47,7 @@ import rongcloud_im_plugin
     
     // 推送处理 3 (上传DeviceToken)
     override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        let token = NSData(data: deviceToken).description.replacingOccurrences(of: "<", with: "").replacingOccurrences(of: ">", with: "").replacingOccurrences(of: " ", with: "")
-        RCIMClient.shared()?.setDeviceToken(token)
+        RCIMClient.shared()?.setDeviceTokenData(deviceToken)
     }
     
     override func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) {
