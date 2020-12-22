@@ -147,6 +147,11 @@ class MessageFactory extends Object {
     con.latestMessageId = map["latestMessageId"];
     con.mentionedCount = map["mentionedCount"];
     con.draft = map["draft"];
+    con.blockStatus = map["blockStatus"];
+    con.receivedTime = map["receivedTime"];
+    con.lastestMessageDirection = map["lastestMessageDirection"];
+    con.lastestMessageUId = map["lastestMessageUId"];
+    con.hasUnreadMentioned = map["hasUnreadMentioned"];
 
     String contenStr = map["content"];
     MessageContent content = string2MessageContent(contenStr, con.objectName);

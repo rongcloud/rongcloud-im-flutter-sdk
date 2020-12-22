@@ -180,6 +180,12 @@
     [dic setObject:@(conversation.lastestMessageId) forKey:@"latestMessageId"];
     [dic setObject:@(conversation.mentionedCount) forKey:@"mentionedCount"];
     [dic setObject:conversation.draft forKey:@"draft"];
+    [dic setObject:@(conversation.blockStatus) forKey:@"blockStatus"];
+    [dic setObject:@(conversation.receivedTime) forKey:@"receivedTime"];
+    [dic setObject:@(conversation.lastestMessageDirection) forKey:@"lastestMessageDirection"];
+    [dic setObject:conversation.lastestMessageUId forKey:@"lastestMessageUId"];
+    [dic setObject:@(conversation.hasUnreadMentioned) forKey:@"hasUnreadMentioned"];
+
     RCMessageContent *content = conversation.lastestMessage;
     content = [self convertLocalPathIfNeed:content];
     if ([content isKindOfClass:[RCFileMessage class]]) {
