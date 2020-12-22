@@ -99,6 +99,8 @@
         [self sendMessage:call.arguments result:result];
     }else if([RCMethodKeyJoinChatRoom isEqualToString:call.method]) {
         [self joinChatRoom:call.arguments];
+    }else if([RCMethodKeyJoinExistChatRoom isEqualToString:call.method]) {
+        [self joinExistChatRoom:call.arguments];
     }else if([RCMethodKeyQuitChatRoom isEqualToString:call.method]) {
         [self quitChatRoom:call.arguments];
     }else if([RCMethodKeyGetHistoryMessage isEqualToString:call.method]) {
@@ -906,6 +908,36 @@
         
         __weak typeof(self) ws = self;
         [[RCIMClient sharedRCIMClient] joinChatRoom:targetId messageCount:msgCount success:^{
+            [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
+            NSMutableDictionary *callbackDic = [NSMutableDictionary new];
+            [callbackDic setValue:targetId forKey:@"targetId"];
+            [callbackDic setValue:@(0) forKey:@"status"];
+            [ws.channel invokeMethod:RCMethodCallBackKeyJoinChatRoom arguments:callbackDic];
+        } error:^(RCErrorCode status) {
+            [RCLog e:[NSString stringWithFormat:@"%@ %@",LOG_TAG,@(status)]];
+            NSMutableDictionary *callbackDic = [NSMutableDictionary new];
+            [callbackDic setValue:targetId forKey:@"targetId"];
+            [callbackDic setValue:@(status) forKey:@"status"];
+            [ws.channel invokeMethod:RCMethodCallBackKeyJoinChatRoom arguments:callbackDic];
+        }];
+    }
+}
+
+- (void)joinExistChatRoom:(id)arg {
+    NSString *LOG_TAG =  @"joinExistChatRoom";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *dic = (NSDictionary *)arg;
+        NSString *targetId = dic[@"targetId"];
+        int msgCount = [dic[@"messageCount"] intValue];
+        
+        if ([targetId isKindOfClass:[NSNull class]]) {
+            [RCLog e:[NSString stringWithFormat:@"%@ targetId is nil",LOG_TAG]];
+            return;
+        }
+        
+        __weak typeof(self) ws = self;
+        [[RCIMClient sharedRCIMClient] joinExistChatRoom:targetId messageCount:msgCount success:^{
             [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
             NSMutableDictionary *callbackDic = [NSMutableDictionary new];
             [callbackDic setValue:targetId forKey:@"targetId"];

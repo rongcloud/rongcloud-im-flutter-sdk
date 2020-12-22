@@ -561,6 +561,25 @@ class RongIMClient {
     _channel.invokeMethod(RCMethodKey.JoinChatRoom, map);
   }
 
+  ///加入已存在的聊天室
+  ///
+  ///[targetId] 聊天室 id
+  ///
+  ///[messageCount] 需要获取的聊天室历史消息数量 0<=messageCount<=50
+  /// -1 代表不获取历史消息
+  /// 0 代表默认 10 条
+  ///
+  /// 会通过 [onJoinChatRoom] 回调加入的结果
+  static void joinExistChatRoom(String targetId, int messageCount) {
+    if (targetId == null || messageCount == null) {
+      developer.log("send message fail: targetId or messageCount is null",
+          name: "RongIMClient");
+      return;
+    }
+    Map map = {"targetId": targetId, "messageCount": messageCount};
+    _channel.invokeMethod(RCMethodKey.JoinExistChatRoom, map);
+  }
+
   ///退出聊天室
   ///
   ///[targetId] 聊天室 id

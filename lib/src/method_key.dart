@@ -7,6 +7,7 @@ class RCMethodKey {
   static const String SendMessage = 'sendMessage';
   static const String RefreshUserInfo = 'refreshUserInfo';
   static const String JoinChatRoom = 'joinChatRoom';
+  static const String JoinExistChatRoom = 'joinExistChatRoom';
   static const String QuitChatRoom = 'quitChatRoom';
   static const String GetHistoryMessage = 'getHistoryMessage';
   static const String GetHistoryMessages = 'getHistoryMessages';
@@ -114,6 +115,8 @@ class RCMethodCallBackKey {
   static const String DownloadMediaMessage = 'DownloadMediaMessageCallBack';
   static const String RecallMessage = 'RecallMessageCallBack';
   static const String DestructMessage = 'DestructMessageCallBack';
-  static const String MessageExpansionDidUpdate = 'MessageExpansionDidUpdateCallBack';
-  static const String MessageExpansionDidRemove = 'MessageExpansionDidRemoveCallBack';
+  static const String MessageExpansionDidUpdate =
+      'MessageExpansionDidUpdateCallBack';
+  static const String MessageExpansionDidRemove =
+      'MessageExpansionDidRemoveCallBack';
 }
