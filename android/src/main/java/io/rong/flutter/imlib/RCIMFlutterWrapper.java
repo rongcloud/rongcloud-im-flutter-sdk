@@ -160,6 +160,8 @@ public class RCIMFlutterWrapper {
             sendMessage(call.arguments, result);
         } else if (RCMethodList.MethodKeyJoinChatRoom.equalsIgnoreCase(call.method)) {
             joinChatRoom(call.arguments);
+        } else if (RCMethodList.MethodKeyJoinExistChatRoom.equalsIgnoreCase(call.method)) {
+            joinExitChatRoom(call.arguments);
         } else if (RCMethodList.MethodKeyQuitChatRoom.equalsIgnoreCase(call.method)) {
             quitChatRoom(call.arguments);
         } else if (RCMethodList.MethodKeyGetHistoryMessage.equalsIgnoreCase(call.method)) {
@@ -1106,12 +1108,42 @@ public class RCIMFlutterWrapper {
 
     private void joinChatRoom(Object arg) {
         final String LOG_TAG = "joinChatRoom";
-//        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
             Map map = (Map) arg;
             final String targetId = (String) map.get("targetId");
             int msgCount = (int) map.get("messageCount");
             RongIMClient.getInstance().joinChatRoom(targetId, msgCount, new RongIMClient.OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    RCLog.i(LOG_TAG + " success ");
+                    Map callBackMap = new HashMap();
+                    callBackMap.put("targetId", targetId);
+                    callBackMap.put("status", 0);
+                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeyJoinChatRoom, callBackMap);
+                }
+
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
+                    Map callBackMap = new HashMap();
+                    callBackMap.put("targetId", targetId);
+                    callBackMap.put("status", 1);
+                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeyJoinChatRoom, callBackMap);
+                }
+            });
+        }
+    }
+
+    private void joinExitChatRoom(Object arg) {
+        final String LOG_TAG = "joinExitChatRoom";
+        if (arg instanceof Map) {
+            Map map = (Map) arg;
+            final String targetId = (String) map.get("targetId");
+            int msgCount = 0;
+            if (map.get("messageCount") != null) {
+                msgCount = (int) map.get("messageCount");
+            }
+            RongIMClient.getInstance().joinExistChatRoom(targetId, msgCount, new RongIMClient.OperationCallback() {
                 @Override
                 public void onSuccess() {
                     RCLog.i(LOG_TAG + " success ");
@@ -3456,7 +3488,7 @@ public class RCIMFlutterWrapper {
                     content = VoiceMessage.obtain(uri, duration);
                 } catch (JSONException e) {
                 }
-            } else if (objectName!=null && objectName.equalsIgnoreCase("RC:ReferenceMsg")) {
+            } else if (objectName != null && objectName.equalsIgnoreCase("RC:ReferenceMsg")) {
                 makeReferenceMessage(content, contentStr);
             }
         }
