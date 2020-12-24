@@ -79,7 +79,6 @@ class _MessageContentListState extends State<MessageContentList>
     this.messageDataSource = messageDataSource;
     this.multiSelect = multiSelect;
     this.selectedMessageIds = selectedMessageIds;
-    setState(() {});
   }
 
   @override
@@ -163,12 +162,13 @@ class _MessageContentListState extends State<MessageContentList>
 
   void _addScroolListener() {
     _scrollController.addListener(() {
+      mPosition = _scrollController.position.pixels;
       //此处要用 == 而不是 >= 否则会触发多次
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         delegate.willpullMoreHistoryMessage();
+        setState(() {});
       }
-      mPosition = _scrollController.position.pixels;
     });
   }
 

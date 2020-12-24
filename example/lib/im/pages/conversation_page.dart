@@ -316,7 +316,7 @@ class _ConversationPageState extends State<ConversationPage>
       if (code == 0 && msgList != null) {
         msgList.sort((a, b) => b.sentTime.compareTo(a.sentTime));
         messageDataSource += msgList;
-        if (msgList.length == 20) {
+        if (msgList.length > 0) {
           _refreshMessageContentListUI();
         }
       }
