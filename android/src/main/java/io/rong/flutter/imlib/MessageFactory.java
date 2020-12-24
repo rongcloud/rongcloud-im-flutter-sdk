@@ -167,6 +167,10 @@ public class MessageFactory {
         map.put("latestMessageId", conversation.getLatestMessageId());
         map.put("mentionedCount", conversation.getMentionedCount());
         map.put("draft", conversation.getDraft());
+        if (conversation.getNotificationStatus()!= null){
+            map.put("blockStatus",conversation.getNotificationStatus().getValue());
+        }
+        map.put("receivedTime", conversation.getReceivedTime());
 
         MessageContent content = conversation.getLatestMessage();
         if (content != null) {
