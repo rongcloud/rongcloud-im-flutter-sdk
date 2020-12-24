@@ -634,11 +634,16 @@
     if(pushData.length <= 0) {
         pushData = nil;
     }
-    RCMessageContent *content = nil;
+    RCMediaMessageContent *content = nil;
     RCUserInfo *sendUserInfo = nil;
     RCMentionedInfo *mentionedInfo = nil;
+    NSString *remoteUrl = @"";
     NSData *data = [contentStr dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *msgDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+    if ([msgDic valueForKey:@"remoteUrl"]) {
+        remoteUrl = msgDic[@"remoteUrl"];
+    }
+    
     if ([msgDic valueForKey:@"user"]) {
         NSDictionary *userDict = [msgDic valueForKey:@"user"];
         NSString *userId = [userDict valueForKey:@"id"] ?: @"";
@@ -735,6 +740,8 @@
     } else {
         content.destructDuration = 0;
     }
+    
+    content.remoteUrl = remoteUrl;
     
     if([content isKindOfClass:[RCSightMessage class]]) {
         RCSightMessage *sightMsg = (RCSightMessage *)content;
