@@ -671,6 +671,9 @@
     NSInteger burnDuration = [[msgDic valueForKey:@"burnDuration"] integerValue];
     if([objName isEqualToString:@"RC:ImgMsg"]) {
         NSString *extra = [msgDic valueForKey:@"extra"];
+        if ([msgDic objectForKey:@"imageUri"]) {
+            remoteUrl = msgDic[@"imageUri"];
+        }
         content = [RCImageMessage messageWithImageURI:localPath];
         RCImageMessage *imgMsg = (RCImageMessage *)content;
         imgMsg.extra = extra;
@@ -682,6 +685,9 @@
         hqVoiceMsg.extra = extra;
     } else if ([objName isEqualToString:@"RC:SightMsg"]) {
         long duration = [[msgDic valueForKey:@"duration"] longValue];
+        if ([msgDic objectForKey:@"sightUrl"]) {
+            remoteUrl = msgDic[@"sightUrl"];
+        }
         NSString *extra = [msgDic valueForKey:@"extra"];
         NSString *thumbnailBase64String = [msgDic valueForKey:@"content"];
         UIImage *thumbImg = [RCFlutterUtil getVideoPreViewImage:localPath];
@@ -692,6 +698,9 @@
         RCSightMessage *sightMsg = (RCSightMessage *)content;
         sightMsg.extra = extra;
     } else if ([objName isEqualToString:@"RC:FileMsg"]) {
+        if ([msgDic objectForKey:@"fileUrl"]) {
+            remoteUrl = msgDic[@"fileUrl"];
+        }
         NSString *extra = [msgDic valueForKey:@"extra"] ?: @"";
         content = [RCFileMessage messageWithFile:localPath];
         RCFileMessage *fileMsg = (RCFileMessage *)content;
