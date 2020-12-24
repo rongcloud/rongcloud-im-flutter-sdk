@@ -79,6 +79,7 @@ class _MessageContentListState extends State<MessageContentList>
     this.messageDataSource = messageDataSource;
     this.multiSelect = multiSelect;
     this.selectedMessageIds = selectedMessageIds;
+    setState(() {});
   }
 
   @override
@@ -103,6 +104,7 @@ class _MessageContentListState extends State<MessageContentList>
 
   @override
   Widget build(BuildContext context) {
+    // mPosition 不是特别准确，可能导致有偏移
     this._scrollController = ScrollController(initialScrollOffset: mPosition);
     _addScroolListener();
     return StreamBuilder<MessageInfoWrapState>(
