@@ -54,6 +54,7 @@ import io.rong.message.FileMessage;
 import io.rong.message.GIFMessage;
 import io.rong.message.HQVoiceMessage;
 import io.rong.message.ImageMessage;
+import io.rong.message.MediaMessageContent;
 import io.rong.message.MessageHandler;
 import io.rong.message.ReadReceiptMessage;
 import io.rong.message.RecallNotificationMessage;
@@ -819,6 +820,10 @@ public class RCIMFlutterWrapper {
                     localPath = getCorrectLocalPath(localPath);
                     Uri uri = Uri.parse(localPath);
                     content = ImageMessage.obtain(uri, uri, true);
+                    String imageUri = (String) jsonObject.get("imageUri");
+                    if (!TextUtils.isEmpty(imageUri)) {
+                        ((ImageMessage) content).setRemoteUri(Uri.parse(imageUri));
+                    }
 
                     Object o = jsonObject.get("extra");// 设置 extra
                     if (o instanceof String) {
@@ -841,6 +846,10 @@ public class RCIMFlutterWrapper {
                         String extra = (String) o;
                         ((GIFMessage) content).setExtra(extra);
                     }
+                    String remoteUrl = (String) jsonObject.get("remoteUrl");
+                    if (!TextUtils.isEmpty(remoteUrl)) {
+                        ((GIFMessage) content).setRemoteUri(Uri.parse(remoteUrl));
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -859,6 +868,10 @@ public class RCIMFlutterWrapper {
                         String extra = (String) o;
                         ((HQVoiceMessage) content).setExtra(extra);
                     }
+                    String remoteUrl = (String) jsonObject.get("remoteUrl");
+                    if (!TextUtils.isEmpty(remoteUrl)) {
+                        ((HQVoiceMessage) content).setMediaUrl(Uri.parse(remoteUrl));
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -875,7 +888,10 @@ public class RCIMFlutterWrapper {
                         String extra = (String) o;
                         ((SightMessage) content).setExtra(extra);
                     }
-
+                    String sightUrl = (String) jsonObject.get("sightUrl");
+                    if (!TextUtils.isEmpty(sightUrl)) {
+                        ((SightMessage) content).setMediaUrl(Uri.parse(sightUrl));
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -894,7 +910,10 @@ public class RCIMFlutterWrapper {
                         String extra = (String) o;
                         ((FileMessage) content).setExtra(extra);
                     }
-
+                    String fileUrl = (String) jsonObject.get("fileUrl");
+                    if (!TextUtils.isEmpty(fileUrl)) {
+                        ((FileMessage) content).setMediaUrl(Uri.parse(fileUrl));
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -911,7 +930,10 @@ public class RCIMFlutterWrapper {
                         String extra = (String) o;
                         ((CombineMessage) content).setExtra(extra);
                     }
-
+                    String remoteUrl = (String) jsonObject.get("remoteUrl");
+                    if (!TextUtils.isEmpty(remoteUrl)) {
+                        ((CombineMessage) content).setMediaUrl(Uri.parse(remoteUrl));
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
