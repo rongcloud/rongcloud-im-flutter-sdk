@@ -29,6 +29,7 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
       "获取所有 KV",
       "退出聊天室 1",
       "获取聊天室历史消息",
+      "加入已存在的聊天室 1",
     ];
 
     RongIMClient.onJoinChatRoom = (String targetId, int status) {
@@ -86,11 +87,18 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
       case 8:
         _getChatRoomHistoryMessage();
         break;
+      case 9:
+        _joinExistChatRoom();
+        break;
     }
   }
 
   void _joinChatRoom() {
     RongIMClient.joinChatRoom(targetId, 10);
+  }
+
+  void _joinExistChatRoom() {
+    RongIMClient.joinExistChatRoom(targetId, 10);
   }
 
   void _setEntry() {
