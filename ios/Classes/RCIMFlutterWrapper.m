@@ -750,7 +750,11 @@
         content.destructDuration = 0;
     }
     
-    content.remoteUrl = remoteUrl;
+    if (!remoteUrl || [remoteUrl isKindOfClass:[NSNull class]]) {
+        content.remoteUrl = @"";
+    } else {
+        content.remoteUrl = remoteUrl;
+    }
     
     if([content isKindOfClass:[RCSightMessage class]]) {
         RCSightMessage *sightMsg = (RCSightMessage *)content;
