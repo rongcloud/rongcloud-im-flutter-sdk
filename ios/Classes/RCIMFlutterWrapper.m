@@ -563,6 +563,14 @@
         pushData = nil;
     }
     
+    RCMessageContent *content = [self converMessageContent:param];
+    if (content) {
+        message.content = content;
+    } else {
+        NSLog(@"%s content is nil",__func__);
+        return;
+    }
+    
     if([message.content isKindOfClass:[RCSightMessage class]]) {
         RCSightMessage *sightMsg = (RCSightMessage *)message.content;
         if(sightMsg.duration > 120) {
@@ -619,10 +627,8 @@
 
 - (void)sendMediaMessage:(id)arg result:(FlutterResult)result {
     NSDictionary *param = (NSDictionary *)arg;
-    NSString *objName = param[@"objectName"];
     RCConversationType type = [param[@"conversationType"] integerValue];
     NSString *targetId = param[@"targetId"];
-    NSString *contentStr = param[@"content"];
     NSString *pushContent = param[@"pushContent"];
     long long timestamp = [param[@"timestamp"] longLongValue];
     if(pushContent.length <= 0) {
@@ -632,107 +638,7 @@
     if(pushData.length <= 0) {
         pushData = nil;
     }
-    RCMessageContent *content = nil;
-    RCUserInfo *sendUserInfo = nil;
-    RCMentionedInfo *mentionedInfo = nil;
-    NSData *data = [contentStr dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *msgDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
-    if ([msgDic valueForKey:@"user"]) {
-        NSDictionary *userDict = [msgDic valueForKey:@"user"];
-        NSString *userId = [userDict valueForKey:@"id"] ?: @"";
-        NSString *name = [userDict valueForKey:@"name"] ?: @"";
-        NSString *portraitUri = [userDict valueForKey:@"portrait"] ?: @"";
-        NSString *extra = [userDict valueForKey:@"extra"] ?: @"";
-        sendUserInfo = [[RCUserInfo alloc] initWithUserId:userId name:name portrait:portraitUri];
-        sendUserInfo.extra = extra;
-    }
-    
-    if ([msgDic valueForKey:@"mentionedInfo"]) {
-        NSDictionary *mentionedInfoDict = [msgDic valueForKey:@"mentionedInfo"];
-        RCMentionedType type = [[mentionedInfoDict valueForKey:@"type"] intValue] ?: 1;
-        NSArray *userIdList = [mentionedInfoDict valueForKey:@"userIdList"] ?: @[];
-        NSString *mentionedContent = [mentionedInfoDict valueForKey:@"mentionedContent"] ?: @"";
-        mentionedInfo = [[RCMentionedInfo alloc] initWithMentionedType:type userIdList:userIdList mentionedContent:mentionedContent];
-    }
-    
-    NSString *localPath = [msgDic valueForKey:@"localPath"] ?: @"";
-    if (!localPath || [localPath isKindOfClass:[NSNull class]]) {
-        localPath = @"";
-    }
-    localPath = [self getCorrectLocalPath:localPath];
-    
-    NSInteger burnDuration = [[msgDic valueForKey:@"burnDuration"] integerValue];
-    if([objName isEqualToString:@"RC:ImgMsg"]) {
-        NSString *extra = [msgDic valueForKey:@"extra"];
-        content = [RCImageMessage messageWithImageURI:localPath];
-        RCImageMessage *imgMsg = (RCImageMessage *)content;
-        imgMsg.extra = extra;
-    } else if ([objName isEqualToString:@"RC:HQVCMsg"]) {
-        long duration = [[msgDic valueForKey:@"duration"] longValue];
-        NSString *extra = [msgDic valueForKey:@"extra"];
-        content = [RCHQVoiceMessage messageWithPath:localPath duration:duration];
-        RCHQVoiceMessage *hqVoiceMsg = (RCHQVoiceMessage *)content;
-        hqVoiceMsg.extra = extra;
-    } else if ([objName isEqualToString:@"RC:SightMsg"]) {
-        long duration = [[msgDic valueForKey:@"duration"] longValue];
-        NSString *extra = [msgDic valueForKey:@"extra"];
-        NSString *thumbnailBase64String = [msgDic valueForKey:@"content"];
-        UIImage *thumbImg = [RCFlutterUtil getVideoPreViewImage:localPath];
-        if (!thumbImg) {
-            thumbImg = [RCFlutterUtil getThumbnailImage:thumbnailBase64String];
-        }
-        content = [RCSightMessage messageWithLocalPath:localPath thumbnail:thumbImg duration:duration];
-        RCSightMessage *sightMsg = (RCSightMessage *)content;
-        sightMsg.extra = extra;
-    } else if ([objName isEqualToString:@"RC:FileMsg"]) {
-        NSString *extra = [msgDic valueForKey:@"extra"] ?: @"";
-        content = [RCFileMessage messageWithFile:localPath];
-        RCFileMessage *fileMsg = (RCFileMessage *)content;
-        fileMsg.extra = extra;
-    } else if ([objName isEqualToString:@"RC:GIFMsg"]) {
-        NSString *extra = [msgDic valueForKey:@"extra"];
-        long width = [[msgDic valueForKey:@"width"] longValue];
-        long height = [[msgDic valueForKey:@"height"] longValue];
-        if (width <= 0 || height <= 0) {
-            UIImage *image = [UIImage imageWithContentsOfFile:localPath];
-            width = image.size.width;
-            height = image.size.height;
-        }
-        content = [RCGIFMessage messageWithGIFURI:localPath width:width height:height];
-        RCGIFMessage *gifMsg = (RCGIFMessage *)content;
-        gifMsg.extra = extra;
-    } else if ([objName isEqualToString:@"RC:CombineMsg"]) {
-        NSString *localPath = [msgDic valueForKey:@"localPath"];
-        localPath = [self getCorrectLocalPath:localPath];
-        NSString *extra = [msgDic valueForKey:@"extra"];
-        NSArray * nameList = @[];
-        if (![[msgDic valueForKey:@"nameList"] isKindOfClass:[NSNull class]]) {
-            nameList = [msgDic valueForKey:@"nameList"];
-        }
-        NSArray * summaryList = [msgDic valueForKey:@"summaryList"] ?: @[];
-        RCConversationType type = [param[@"conversationType"] integerValue];
-        
-        content = [RCCombineMessage messageWithSummaryList:summaryList nameList:nameList conversationType:type content:@""];
-        RCCombineMessage *combineMsg = (RCCombineMessage *)content;
-        combineMsg.localPath = localPath;
-        combineMsg.extra = extra;
-    } else {
-        NSLog(@"%s 非法的媒体消息类型",__func__);
-        return;
-    }
-    
-    if (sendUserInfo) {
-        content.senderUserInfo = sendUserInfo;
-    }
-    if (mentionedInfo) {
-        content.mentionedInfo = mentionedInfo;
-    }
-    
-    if (burnDuration > 0) {
-        content.destructDuration = burnDuration;
-    } else {
-        content.destructDuration = 0;
-    }
+    RCMediaMessageContent *content = [self converMessageContent:param];
     
     if([content isKindOfClass:[RCSightMessage class]]) {
         RCSightMessage *sightMsg = (RCSightMessage *)content;
@@ -2354,5 +2260,135 @@
     }
     return NO;
 }
+
+- (RCMediaMessageContent *)converMessageContent:(NSDictionary *)param {
+    NSString *contentStr = param[@"content"];
+    NSString *objName = param[@"objectName"];
+    NSData *data = [contentStr dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *msgDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+    
+    RCMediaMessageContent *content = nil;
+    RCUserInfo *sendUserInfo = nil;
+    RCMentionedInfo *mentionedInfo = nil;
+    NSString *remoteUrl = @"";
+    
+    if ([msgDic valueForKey:@"remoteUrl"]) {
+        remoteUrl = msgDic[@"remoteUrl"];
+    }
+    if ([msgDic valueForKey:@"user"]) {
+        NSDictionary *userDict = [msgDic valueForKey:@"user"];
+        NSString *userId = [userDict valueForKey:@"id"] ?: @"";
+        NSString *name = [userDict valueForKey:@"name"] ?: @"";
+        NSString *portraitUri = [userDict valueForKey:@"portrait"] ?: @"";
+        NSString *extra = [userDict valueForKey:@"extra"] ?: @"";
+        sendUserInfo = [[RCUserInfo alloc] initWithUserId:userId name:name portrait:portraitUri];
+        sendUserInfo.extra = extra;
+    }
+    
+    if ([msgDic valueForKey:@"mentionedInfo"]) {
+        NSDictionary *mentionedInfoDict = [msgDic valueForKey:@"mentionedInfo"];
+        RCMentionedType type = [[mentionedInfoDict valueForKey:@"type"] intValue] ?: 1;
+        NSArray *userIdList = [mentionedInfoDict valueForKey:@"userIdList"] ?: @[];
+        NSString *mentionedContent = [mentionedInfoDict valueForKey:@"mentionedContent"] ?: @"";
+        mentionedInfo = [[RCMentionedInfo alloc] initWithMentionedType:type userIdList:userIdList mentionedContent:mentionedContent];
+    }
+    
+    NSString *localPath = [msgDic valueForKey:@"localPath"] ?: @"";
+    if (!localPath || [localPath isKindOfClass:[NSNull class]]) {
+        localPath = @"";
+    }
+    localPath = [self getCorrectLocalPath:localPath];
+    
+    NSInteger burnDuration = [[msgDic valueForKey:@"burnDuration"] integerValue];
+    if([objName isEqualToString:@"RC:ImgMsg"]) {
+        NSString *extra = [msgDic valueForKey:@"extra"];
+        if ([msgDic objectForKey:@"imageUri"]) {
+            remoteUrl = msgDic[@"imageUri"];
+        }
+        content = [RCImageMessage messageWithImageURI:localPath];
+        RCImageMessage *imgMsg = (RCImageMessage *)content;
+        imgMsg.extra = extra;
+    } else if ([objName isEqualToString:@"RC:HQVCMsg"]) {
+        long duration = [[msgDic valueForKey:@"duration"] longValue];
+        NSString *extra = [msgDic valueForKey:@"extra"];
+        content = [RCHQVoiceMessage messageWithPath:localPath duration:duration];
+        RCHQVoiceMessage *hqVoiceMsg = (RCHQVoiceMessage *)content;
+        hqVoiceMsg.extra = extra;
+    } else if ([objName isEqualToString:@"RC:SightMsg"]) {
+        long duration = [[msgDic valueForKey:@"duration"] longValue];
+        if ([msgDic objectForKey:@"sightUrl"]) {
+            remoteUrl = msgDic[@"sightUrl"];
+        }
+        NSString *extra = [msgDic valueForKey:@"extra"];
+        NSString *thumbnailBase64String = [msgDic valueForKey:@"content"];
+        UIImage *thumbImg = [RCFlutterUtil getVideoPreViewImage:localPath];
+        if (!thumbImg) {
+            thumbImg = [RCFlutterUtil getThumbnailImage:thumbnailBase64String];
+        }
+        content = [RCSightMessage messageWithLocalPath:localPath thumbnail:thumbImg duration:duration];
+        RCSightMessage *sightMsg = (RCSightMessage *)content;
+        sightMsg.extra = extra;
+    } else if ([objName isEqualToString:@"RC:FileMsg"]) {
+        if ([msgDic objectForKey:@"fileUrl"]) {
+            remoteUrl = msgDic[@"fileUrl"];
+        }
+        NSString *extra = [msgDic valueForKey:@"extra"] ?: @"";
+        content = [RCFileMessage messageWithFile:localPath];
+        RCFileMessage *fileMsg = (RCFileMessage *)content;
+        fileMsg.extra = extra;
+    } else if ([objName isEqualToString:@"RC:GIFMsg"]) {
+        NSString *extra = [msgDic valueForKey:@"extra"];
+        long width = [[msgDic valueForKey:@"width"] longValue];
+        long height = [[msgDic valueForKey:@"height"] longValue];
+        if (width <= 0 || height <= 0) {
+            UIImage *image = [UIImage imageWithContentsOfFile:localPath];
+            width = image.size.width;
+            height = image.size.height;
+        }
+        content = [RCGIFMessage messageWithGIFURI:localPath width:width height:height];
+        RCGIFMessage *gifMsg = (RCGIFMessage *)content;
+        gifMsg.extra = extra;
+    } else if ([objName isEqualToString:@"RC:CombineMsg"]) {
+        NSString *localPath = [msgDic valueForKey:@"localPath"];
+        localPath = [self getCorrectLocalPath:localPath];
+        NSString *extra = [msgDic valueForKey:@"extra"];
+        NSArray * nameList = @[];
+        if (![[msgDic valueForKey:@"nameList"] isKindOfClass:[NSNull class]]) {
+            nameList = [msgDic valueForKey:@"nameList"];
+        }
+        NSArray * summaryList = [msgDic valueForKey:@"summaryList"] ?: @[];
+        RCConversationType type = [param[@"conversationType"] integerValue];
+        
+        content = [RCCombineMessage messageWithSummaryList:summaryList nameList:nameList conversationType:type content:@""];
+        RCCombineMessage *combineMsg = (RCCombineMessage *)content;
+        combineMsg.localPath = localPath;
+        combineMsg.extra = extra;
+    } else {
+        NSLog(@"%s 非法的媒体消息类型",__func__);
+        return nil;
+    }
+    
+    if (sendUserInfo) {
+        content.senderUserInfo = sendUserInfo;
+    }
+    if (mentionedInfo) {
+        content.mentionedInfo = mentionedInfo;
+    }
+    
+    if (burnDuration > 0) {
+        content.destructDuration = burnDuration;
+    } else {
+        content.destructDuration = 0;
+    }
+    
+    if (!remoteUrl || [remoteUrl isKindOfClass:[NSNull class]]) {
+        content.remoteUrl = @"";
+    } else {
+        content.remoteUrl = remoteUrl;
+    }
+    
+    return content;
+}
+
 
 @end
