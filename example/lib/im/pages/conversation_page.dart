@@ -544,6 +544,16 @@ class _ConversationPageState extends State<ConversationPage>
         // imgMsg.mentionedInfo = mentionedInfo;
         // // ImageMessage 测试阅后即焚携带时间
         // imgMsg.destructDuration = 10;
+
+        // Message message = Message();
+        // message.conversationType = conversationType;
+        // message.targetId = targetId;
+        // message.objectName = ImageMessage.objectName;
+        // message.content = imgMsg;
+        // Message msg = await RongIMClient.sendIntactMessageWithCallBack(
+        //     message, "", "", (int messageId, int status, int code) {
+        //   String result = "messageId:$messageId status:$status code:$code";
+        // });
         Message msg =
             await RongIMClient.sendMessage(conversationType, targetId, imgMsg);
         _insertOrReplaceMessage(msg);
@@ -591,6 +601,15 @@ class _ConversationPageState extends State<ConversationPage>
           int lastDotIndex = name.lastIndexOf(".");
           FileMessage fileMessage = FileMessage.obtain(localPaht);
           fileMessage.mType = name.substring(lastDotIndex + 1);
+          // Message message = Message();
+          // message.conversationType = conversationType;
+          // message.targetId = targetId;
+          // message.objectName = FileMessage.objectName;
+          // message.content = fileMessage;
+          // Message msg = await RongIMClient.sendIntactMessageWithCallBack(
+          //     message, "", "", (int messageId, int status, int code) {
+          //   String result = "messageId:$messageId status:$status code:$code";
+          // });
           Message msg = await RongIMClient.sendMessage(
               conversationType, targetId, fileMessage);
           _insertOrReplaceMessage(msg);
