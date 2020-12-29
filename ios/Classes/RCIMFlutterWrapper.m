@@ -565,6 +565,14 @@
         pushData = nil;
     }
     
+    RCMessageContent *content = [self converMessageContent:param];
+    if (content) {
+        message.content = content;
+    } else {
+        NSLog(@"%s content is nil",__func__);
+        return;
+    }
+    
     if([message.content isKindOfClass:[RCSightMessage class]]) {
         RCSightMessage *sightMsg = (RCSightMessage *)message.content;
         if(sightMsg.duration > 120) {
@@ -619,31 +627,20 @@
     [ws.channel invokeMethod:RCMethodCallBackKeySendMessage arguments:dic];
 }
 
-- (void)sendMediaMessage:(id)arg result:(FlutterResult)result {
-    NSDictionary *param = (NSDictionary *)arg;
-    NSString *objName = param[@"objectName"];
-    RCConversationType type = [param[@"conversationType"] integerValue];
-    NSString *targetId = param[@"targetId"];
+- (RCMediaMessageContent *)converMessageContent:(NSDictionary *)param {
     NSString *contentStr = param[@"content"];
-    NSString *pushContent = param[@"pushContent"];
-    long long timestamp = [param[@"timestamp"] longLongValue];
-    if(pushContent.length <= 0) {
-        pushContent = nil;
-    }
-    NSString *pushData = param[@"pushData"];
-    if(pushData.length <= 0) {
-        pushData = nil;
-    }
+    NSString *objName = param[@"objectName"];
+    NSData *data = [contentStr dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *msgDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+    
     RCMediaMessageContent *content = nil;
     RCUserInfo *sendUserInfo = nil;
     RCMentionedInfo *mentionedInfo = nil;
     NSString *remoteUrl = @"";
-    NSData *data = [contentStr dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *msgDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+    
     if ([msgDic valueForKey:@"remoteUrl"]) {
         remoteUrl = msgDic[@"remoteUrl"];
     }
-    
     if ([msgDic valueForKey:@"user"]) {
         NSDictionary *userDict = [msgDic valueForKey:@"user"];
         NSString *userId = [userDict valueForKey:@"id"] ?: @"";
@@ -734,7 +731,7 @@
         combineMsg.extra = extra;
     } else {
         NSLog(@"%s 非法的媒体消息类型",__func__);
-        return;
+        return nil;
     }
     
     if (sendUserInfo) {
@@ -755,6 +752,25 @@
     } else {
         content.remoteUrl = remoteUrl;
     }
+    
+    return content;
+}
+
+- (void)sendMediaMessage:(id)arg result:(FlutterResult)result {
+    NSDictionary *param = (NSDictionary *)arg;
+    RCConversationType type = [param[@"conversationType"] integerValue];
+    NSString *targetId = param[@"targetId"];
+//    NSString *contentStr = param[@"content"];
+    NSString *pushContent = param[@"pushContent"];
+    long long timestamp = [param[@"timestamp"] longLongValue];
+    if(pushContent.length <= 0) {
+        pushContent = nil;
+    }
+    NSString *pushData = param[@"pushData"];
+    if(pushData.length <= 0) {
+        pushData = nil;
+    }
+    RCMediaMessageContent *content = [self converMessageContent:param];
     
     if([content isKindOfClass:[RCSightMessage class]]) {
         RCSightMessage *sightMsg = (RCSightMessage *)content;
