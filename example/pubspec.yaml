@@ -3,7 +3,12 @@ description: Demonstrates how to use the rongcloud_im_plugin plugin.
 publish_to: 'none'
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+#  sdk: ">=2.1.0 <3.0.0"   # flutter
+#  sdk: ">=2.7.2 <3.0.0"   # flutter 1.12
+#  sdk: ">=2.8.4 <3.0.0"   # flutter 1.17
+#  sdk: ">=2.9.2 <3.0.0"   # flutter 1.20
+  sdk: ">=2.10.3 <3.0.0"  # flutter 1.22
+  flutter: ">=1.10.0"
 
 dependencies:
   flutter:
