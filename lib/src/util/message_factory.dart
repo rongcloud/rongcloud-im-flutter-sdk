@@ -213,6 +213,9 @@ class MessageFactory extends Object {
       content = new LocationMessage();
       content.decode(contentS);
     }
+    if(RongIMClient.messageDecoders!=null && RongIMClient.messageDecoders.isNotEmpty && RongIMClient.messageDecoders.containsKey(objectName)){
+      return RongIMClient.messageDecoders[objectName](contentS);
+    }
     return content;
   }
 

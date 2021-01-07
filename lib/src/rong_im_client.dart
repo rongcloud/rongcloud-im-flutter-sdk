@@ -7,11 +7,20 @@ import 'method_key.dart';
 import 'info/connection_status_convert.dart';
 import 'dart:developer' as developer;
 
+
+///消息解析函数
+///[content] 待解析消息json字符串
+///@return 实现MessageContent的自定义消息类
+typedef MessageContent MessageDecoder(String content);
+
 class RongIMClient {
   static final MethodChannel _channel =
       const MethodChannel('rongcloud_im_plugin');
 
   static Map sendMessageCallbacks = Map();
+
+  static Map<String,MessageDecoder> messageDecoders = Map<String,MessageDecoder>();
+
 
   ///初始化 SDK
   ///
@@ -244,6 +253,12 @@ class RongIMClient {
     String messageString = resultMap["message"];
     Message msg = MessageFactory.instance.string2Message(messageString);
     return msg;
+  }
+  ///注册Flutter端自定义消息
+  ///[objectName] 希望注册的新消息类型,例如:RC:TxtMsg。
+  ///[messageDecoder] 消息加息函数
+  static void addMessageDecoder(String objectName,MessageDecoder messageDecoder){
+    messageDecoders[objectName] = messageDecoder;
   }
 
   ///发送定向消息
