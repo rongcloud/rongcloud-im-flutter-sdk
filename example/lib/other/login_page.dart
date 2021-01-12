@@ -38,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
     map["phone"] = int.parse(_assount.text);
     map["password"] = _password.text;
 
-    HttpUtil.post("http://api.sealtalk.im/user/login", (data) {
+    HttpUtil.post("https://api.sealtalk.im/user/login", (data) {
       if (data != null) {
         Map body = data;
         int errorCode = body["code"];
