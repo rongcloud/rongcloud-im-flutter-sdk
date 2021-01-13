@@ -820,15 +820,18 @@ public class RCIMFlutterWrapper {
                     localPath = getCorrectLocalPath(localPath);
                     Uri uri = Uri.parse(localPath);
                     content = ImageMessage.obtain(uri, uri, true);
-                    String imageUri = (String) jsonObject.get("imageUri");
-                    if (!TextUtils.isEmpty(imageUri)) {
-                        ((ImageMessage) content).setRemoteUri(Uri.parse(imageUri));
+                    if (jsonObject.has("imageUri")) {
+                        String imageUri = (String) jsonObject.get("imageUri");
+                        if (!TextUtils.isEmpty(imageUri)) {
+                            ((ImageMessage) content).setRemoteUri(Uri.parse(imageUri));
+                        }
                     }
-
-                    Object o = jsonObject.get("extra");// 设置 extra
-                    if (o instanceof String) {
-                        String extra = (String) o;
-                        ((ImageMessage) content).setExtra(extra);
+                    if (jsonObject.has("extra")) {
+                        Object o = jsonObject.get("extra");// 设置 extra
+                        if (o instanceof String) {
+                            String extra = (String) o;
+                            ((ImageMessage) content).setExtra(extra);
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -841,14 +844,18 @@ public class RCIMFlutterWrapper {
                     Uri uri = Uri.parse(localPath);
                     content = GIFMessage.obtain(uri);
 
-                    Object o = jsonObject.get("extra");// 设置 extra
-                    if (o instanceof String) {
-                        String extra = (String) o;
-                        ((GIFMessage) content).setExtra(extra);
+                    if (jsonObject.has("extra")) {
+                        Object o = jsonObject.get("extra");// 设置 extra
+                        if (o instanceof String) {
+                            String extra = (String) o;
+                            ((GIFMessage) content).setExtra(extra);
+                        }
                     }
-                    String remoteUrl = (String) jsonObject.get("remoteUrl");
-                    if (!TextUtils.isEmpty(remoteUrl)) {
-                        ((GIFMessage) content).setRemoteUri(Uri.parse(remoteUrl));
+                    if (jsonObject.has("remoteUrl")) {
+                        String remoteUrl = (String) jsonObject.get("remoteUrl");
+                        if (!TextUtils.isEmpty(remoteUrl)) {
+                            ((GIFMessage) content).setRemoteUri(Uri.parse(remoteUrl));
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -863,10 +870,12 @@ public class RCIMFlutterWrapper {
                     int duration = (Integer) jsonObject.get("duration");
                     content = HQVoiceMessage.obtain(uri, duration);
 
-                    Object o = jsonObject.get("extra");// 设置 extra
-                    if (o instanceof String) {
-                        String extra = (String) o;
-                        ((HQVoiceMessage) content).setExtra(extra);
+                    if (jsonObject.has("extra")) {
+                        Object o = jsonObject.get("extra");// 设置 extra
+                        if (o instanceof String) {
+                            String extra = (String) o;
+                            ((HQVoiceMessage) content).setExtra(extra);
+                        }
                     }
                     String remoteUrl = (String) jsonObject.get("remoteUrl");
                     if (!TextUtils.isEmpty(remoteUrl)) {
@@ -883,10 +892,12 @@ public class RCIMFlutterWrapper {
                     Uri uri = Uri.parse(localPath);
                     int duration = (Integer) jsonObject.get("duration");
                     content = SightMessage.obtain(uri, duration);
-                    Object o = jsonObject.get("extra");// 设置 extra
-                    if (o instanceof String) {
-                        String extra = (String) o;
-                        ((SightMessage) content).setExtra(extra);
+                    if (jsonObject.has("extra")) {
+                        Object o = jsonObject.get("extra");// 设置 extra
+                        if (o instanceof String) {
+                            String extra = (String) o;
+                            ((SightMessage) content).setExtra(extra);
+                        }
                     }
                     String sightUrl = (String) jsonObject.get("sightUrl");
                     if (!TextUtils.isEmpty(sightUrl)) {
@@ -900,19 +911,25 @@ public class RCIMFlutterWrapper {
                 try {
                     JSONObject jsonObject = new JSONObject(contentStr);
                     String localPath = (String) jsonObject.get("localPath");
-                    String mType = (String) jsonObject.get("type");
                     localPath = getCorrectLocalPath(localPath);
                     Uri uri = Uri.parse(localPath);
                     content = FileMessage.obtain(uri);
-                    ((FileMessage) content).setType(mType);
-                    Object o = jsonObject.get("extra");// 设置 extra
-                    if (o instanceof String) {
-                        String extra = (String) o;
-                        ((FileMessage) content).setExtra(extra);
+                    if (jsonObject.has("type")) {
+                        String mType = (String) jsonObject.get("type");
+                        ((FileMessage) content).setType(mType);
                     }
-                    String fileUrl = (String) jsonObject.get("fileUrl");
-                    if (!TextUtils.isEmpty(fileUrl)) {
-                        ((FileMessage) content).setMediaUrl(Uri.parse(fileUrl));
+                    if (jsonObject.has("extra")) {
+                        Object o = jsonObject.get("extra");// 设置 extra
+                        if (o instanceof String) {
+                            String extra = (String) o;
+                            ((FileMessage) content).setExtra(extra);
+                        }
+                    }
+                    if (jsonObject.has("fileUrl")) {
+                        String fileUrl = (String) jsonObject.get("fileUrl");
+                        if (!TextUtils.isEmpty(fileUrl)) {
+                            ((FileMessage) content).setMediaUrl(Uri.parse(fileUrl));
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -925,14 +942,18 @@ public class RCIMFlutterWrapper {
                     Uri uri = Uri.parse(localPath);
                     content = CombineMessage.obtain(uri);
                     setInfoToCombineMessage(contentStr, content);
-                    Object o = jsonObject.get("extra");// 设置 extra
-                    if (o instanceof String) {
-                        String extra = (String) o;
-                        ((CombineMessage) content).setExtra(extra);
+                    if (jsonObject.has("extra")) {
+                        Object o = jsonObject.get("extra");// 设置 extra
+                        if (o instanceof String) {
+                            String extra = (String) o;
+                            ((CombineMessage) content).setExtra(extra);
+                        }
                     }
-                    String remoteUrl = (String) jsonObject.get("remoteUrl");
-                    if (!TextUtils.isEmpty(remoteUrl)) {
-                        ((CombineMessage) content).setMediaUrl(Uri.parse(remoteUrl));
+                    if (jsonObject.has("remoteUrl")) {
+                        String remoteUrl = (String) jsonObject.get("remoteUrl");
+                        if (!TextUtils.isEmpty(remoteUrl)) {
+                            ((CombineMessage) content).setMediaUrl(Uri.parse(remoteUrl));
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
