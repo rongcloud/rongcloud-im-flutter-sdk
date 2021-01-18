@@ -3540,7 +3540,9 @@ public class RCIMFlutterWrapper {
     }
 
     private void setExtraValue(Map messageMap, Message message) {
-        if (messageMap.get("messageConfig") != null) {
+        if (messageMap.get("disableNotification") != null && (boolean) messageMap.get("disableNotification")) {
+            message.setMessageConfig(new MessageConfig.Builder().setDisableNotification(true).build());
+        } else {
             Map messageConfigMap = (Map) messageMap.get("messageConfig");
             if (messageConfigMap != null && messageConfigMap.get("disableNotification") != null) {
                 message.setMessageConfig(new MessageConfig.Builder().setDisableNotification((boolean) messageConfigMap.get("disableNotification")).build());
