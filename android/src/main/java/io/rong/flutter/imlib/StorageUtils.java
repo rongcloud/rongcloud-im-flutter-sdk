@@ -30,9 +30,8 @@ public class StorageUtils {
         public static final String VIDEO = "video";
     }
 
-
-    public static boolean isScopedStorageMode(Context context) {
-        return LibStorageUtils.isScopedStorageMode(context);
+    public static boolean isQMode(Context context) {
+        return LibStorageUtils.isQMode(context);
     }
 
     public static boolean isBuildAndTargetForQ(Context context) {
