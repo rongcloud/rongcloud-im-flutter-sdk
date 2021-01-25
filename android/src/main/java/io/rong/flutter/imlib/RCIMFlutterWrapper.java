@@ -2482,7 +2482,10 @@ public class RCIMFlutterWrapper {
             Map paramMap = (Map) arg;
             int conversationType = (int) paramMap.get("conversationType");
             String targetId = (String) paramMap.get("targetId");
-            long recordTime = (long) paramMap.get("recordTime");
+            long recordTime = 0;
+            if (paramMap.get("recordTime") != null) {
+                recordTime = ((Number) paramMap.get("recordTime")).longValue();
+            }
             boolean clearRemote = (boolean) paramMap.get("clearRemote");
             RongIMClient.getInstance().cleanHistoryMessages(Conversation.ConversationType.setValue(conversationType),
                     targetId, recordTime, clearRemote, new RongIMClient.OperationCallback() {
