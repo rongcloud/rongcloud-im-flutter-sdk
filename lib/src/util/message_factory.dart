@@ -103,6 +103,8 @@ class MessageFactory extends Object {
         iosConfig.apns_collapse_id = iOSConfigMap["apns_collapse_id"];
         message.messagePushConfig.iOSConfig = iosConfig;
       }
+      message.messagePushConfig.disablePushTitle = messagePushConfigMap["disablePushTitle"];
+      message.messagePushConfig.templateId = messagePushConfigMap["templateId"];
     }
     Map readReceiptMap = map["readReceiptInfo"];
     if (readReceiptMap != null) {
@@ -254,6 +256,8 @@ class MessageFactory extends Object {
       messagePushConfig["pushData"] = message.messagePushConfig.pushData ?? "";
       messagePushConfig["forceShowDetailContent"] =
           message.messagePushConfig.forceShowDetailContent ?? false;
+      messagePushConfig["disablePushTitle"] = message.messagePushConfig.disablePushTitle ?? false;
+      messagePushConfig["templateId"] = message.messagePushConfig.templateId ?? "";
       if (message.messagePushConfig.androidConfig != null) {
         Map androidConfig = Map();
         androidConfig["notificationId"] =
