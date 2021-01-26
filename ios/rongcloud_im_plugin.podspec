@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.public_header_files = 'Classes/**/*.h'
   s.static_framework = true
   s.dependency 'Flutter'
-  
+
 #  local = ENV['USE_LOCAL_SDK']
 #  if local and local == 'true'
 #    im_framework = '../../ios-imsdk/imlib/bin/RongIMLib.framework'
@@ -24,4 +24,3 @@ Pod::Spec.new do |s|
 
   s.ios.deployment_target = '8.0'
 end
-

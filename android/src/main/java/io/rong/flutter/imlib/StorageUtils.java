@@ -30,6 +30,7 @@ public class StorageUtils {
         public static final String VIDEO = "video";
     }
 
+
     public static boolean isQMode(Context context) {
         return LibStorageUtils.isQMode(context);
     }
