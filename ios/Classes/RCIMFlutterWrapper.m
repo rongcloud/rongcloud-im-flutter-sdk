@@ -307,7 +307,6 @@
         NSString *token = (NSString *)arg;
         [[RCIMClient sharedRCIMClient] connectWithToken:token dbOpened:^(RCDBErrorCode code) {
             [RCLog i:[NSString stringWithFormat:@"%@ dbOpened，code: %@",LOG_TAG, @(code)]];
-            result(@{@"code":@(code), @"userId":@""});
         } success:^(NSString *userId) {
             [RCLog i:[NSString stringWithFormat:@"%@ success",LOG_TAG]];
             NSMutableDictionary *dic = [NSMutableDictionary new];
