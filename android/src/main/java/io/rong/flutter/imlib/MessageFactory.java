@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.rong.imlib.location.message.LocationMessage;
 import io.rong.imlib.model.ChatRoomInfo;
 import io.rong.imlib.model.ChatRoomMemberInfo;
 import io.rong.imlib.model.Conversation;
@@ -20,7 +21,6 @@ import io.rong.imlib.model.SearchConversationResult;
 import io.rong.imlib.typingmessage.TypingStatus;
 import io.rong.message.GIFMessage;
 import io.rong.message.ImageMessage;
-import io.rong.message.LocationMessage;
 import io.rong.message.ReferenceMessage;
 import io.rong.message.SightMessage;
 import io.rong.message.TextMessage;
@@ -74,6 +74,8 @@ public class MessageFactory {
             messagePushConfigMap.put("pushContent",messagePushConfig.getPushContent());
             messagePushConfigMap.put("pushData",messagePushConfig.getPushData());
             messagePushConfigMap.put("forceShowDetailContent",messagePushConfig.isForceShowDetailContent());
+            messagePushConfigMap.put("disablePushTitle",messagePushConfig.isDisablePushTitle());
+            messagePushConfigMap.put("templateId",messagePushConfig.getTemplateId());
             if (messagePushConfig.getAndroidConfig() != null){
                 HashMap androidConfigMap = new HashMap();
                 androidConfigMap.put("notificationId",messagePushConfig.getAndroidConfig().getNotificationId());

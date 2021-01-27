@@ -32,7 +32,7 @@ public class StorageUtils {
 
 
     public static boolean isQMode(Context context) {
-        return LibStorageUtils.isQMode(context);
+        return LibStorageUtils.isScopedStorageMode(context);
     }
 
     public static boolean isBuildAndTargetForQ(Context context) {
