@@ -173,6 +173,9 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   void _getMessageByUId() async {
     List msgs =
         await RongIMClient.getHistoryMessage(conversationType, targetId, 0, 20);
+        if (msgs.length <= 0) {
+          return;
+        }
     Message message = msgs[(Random().nextInt(msgs.length - 1))];
     String uId = message.messageUId;
     Message msg = await RongIMClient.getMessageByUId(uId);
