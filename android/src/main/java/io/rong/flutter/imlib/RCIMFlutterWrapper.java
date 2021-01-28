@@ -36,6 +36,7 @@ import io.rong.imlib.AnnotationNotFoundException;
 import io.rong.imlib.IOperationCallback;
 import io.rong.imlib.IRongCallback;
 import io.rong.imlib.MessageTag;
+import io.rong.imlib.RongCoreClient;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.AndroidConfig;
 import io.rong.imlib.model.ChatRoomInfo;
@@ -60,6 +61,7 @@ import io.rong.message.ReadReceiptMessage;
 import io.rong.message.RecallNotificationMessage;
 import io.rong.message.ReferenceMessage;
 import io.rong.message.SightMessage;
+import io.rong.message.TextMessage;
 import io.rong.message.VoiceMessage;
 
 public class RCIMFlutterWrapper {
@@ -455,7 +457,6 @@ public class RCIMFlutterWrapper {
             RongIMClient.registerMessageType(SightMessage.class);
             // 因为合并消息 定义和注册都写在 kit 里面
             RongIMClient.registerMessageType(CombineMessage.class);
-
             setReceiveMessageListener();
             setConnectStatusListener();
             setTypingStatusListener();
@@ -2097,7 +2098,7 @@ public class RCIMFlutterWrapper {
     // util
     private void fetchAllMessageMapper() {
 
-        RongIMClient client = RongIMClient.getInstance();
+        RongCoreClient client = RongCoreClient.getInstance();
         Field field = null;
         try {
             field = client.getClass().getDeclaredField("mRegCache");

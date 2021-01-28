@@ -7,18 +7,102 @@ import 'method_key.dart';
 import 'info/connection_status_convert.dart';
 import 'dart:developer' as developer;
 
+///消息解析函数
+///[content] 待解析消息json字符串
+///@return 实现MessageContent的自定义消息类
+typedef MessageContent MessageDecoder(String content);
+
 class RongIMClient {
   static final MethodChannel _channel =
       const MethodChannel('rongcloud_im_plugin');
 
   static Map sendMessageCallbacks = Map();
 
+  static Map<String, MessageDecoder> messageDecoders =
+      Map<String, MessageDecoder>();
+
+
   ///初始化 SDK
   ///
   ///[appkey] appkey
   static void init(String appkey) {
+    _registerMessage();
     _channel.invokeMethod(RCMethodKey.Init, appkey);
     _addNativeMethodCallHandler();
+  }
+
+
+  ///注册Flutter端自定义消息
+  ///[objectName] 希望注册的新消息类型,例如:RC:TxtMsg。
+  ///[messageDecoder] 消息加息函数
+  ///在 init 之后，connect 之前进行注册
+  static void addMessageDecoder(
+      String objectName, MessageDecoder messageDecoder) {
+    messageDecoders[objectName] = messageDecoder;
+  }
+
+  /// 注册默认支持的消息
+  static void _registerMessage() {
+    addMessageDecoder(TextMessage.objectName, (content) {
+      TextMessage msg = new TextMessage();
+      msg.decode(content);
+      return msg;
+    });
+    addMessageDecoder(ImageMessage.objectName, (content) {
+      ImageMessage msg = new ImageMessage();
+      msg.decode(content);
+      return msg;
+    });
+    addMessageDecoder(VoiceMessage.objectName, (content) {
+      VoiceMessage msg = new VoiceMessage();
+      msg.decode(content);
+      return msg;
+    });
+    addMessageDecoder(SightMessage.objectName, (content) {
+      SightMessage msg = new SightMessage();
+      msg.decode(content);
+      return msg;
+    });
+    addMessageDecoder(RecallNotificationMessage.objectName, (content) {
+      RecallNotificationMessage msg = new RecallNotificationMessage();
+      msg.decode(content);
+      return msg;
+    });
+    addMessageDecoder(ChatroomKVNotificationMessage.objectName, (content) {
+      ChatroomKVNotificationMessage msg = new ChatroomKVNotificationMessage();
+      msg.decode(content);
+      return msg;
+    });
+    addMessageDecoder(FileMessage.objectName, (content) {
+      FileMessage msg = new FileMessage();
+      msg.decode(content);
+      return msg;
+    });
+    addMessageDecoder(RichContentMessage.objectName, (content) {
+      RichContentMessage msg = new RichContentMessage();
+      msg.decode(content);
+      return msg;
+    });
+    addMessageDecoder(GifMessage.objectName, (content) {
+      GifMessage msg = new GifMessage();
+      msg.decode(content);
+      return msg;
+    });
+    addMessageDecoder(CombineMessage.objectName, (content) {
+      CombineMessage msg = new CombineMessage();
+      msg.decode(content);
+      return msg;
+    });
+    addMessageDecoder(ReferenceMessage.objectName, (content) {
+      ReferenceMessage msg = new ReferenceMessage();
+      msg.decode(content);
+      return msg;
+    });
+    addMessageDecoder(LocationMessage.objectName, (content) {
+      LocationMessage msg = new LocationMessage();
+      msg.decode(content);
+      return msg;
+    });
   }
 
   ///配置 SDK

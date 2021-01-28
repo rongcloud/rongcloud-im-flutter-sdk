@@ -178,43 +178,46 @@ class MessageFactory extends Object {
 
   MessageContent string2MessageContent(String contentS, String objectName) {
     MessageContent content;
-    if (objectName == TextMessage.objectName) {
-      content = new TextMessage();
-      content.decode(contentS);
-    } else if (objectName == ImageMessage.objectName) {
-      content = new ImageMessage();
-      content.decode(contentS);
-    } else if (objectName == VoiceMessage.objectName) {
-      content = new VoiceMessage();
-      content.decode(contentS);
-    } else if (objectName == SightMessage.objectName) {
-      content = new SightMessage();
-      content.decode(contentS);
-    } else if (objectName == RecallNotificationMessage.objectName) {
-      content = new RecallNotificationMessage();
-      content.decode(contentS);
-    } else if (objectName == ChatroomKVNotificationMessage.objectName) {
-      content = new ChatroomKVNotificationMessage();
-      content.decode(contentS);
-    } else if (objectName == FileMessage.objectName) {
-      content = new FileMessage();
-      content.decode(contentS);
-    } else if (objectName == RichContentMessage.objectName) {
-      content = new RichContentMessage();
-      content.decode(contentS);
-    } else if (objectName == GifMessage.objectName) {
-      content = new GifMessage();
-      content.decode(contentS);
-    } else if (objectName == CombineMessage.objectName) {
-      content = new CombineMessage();
-      content.decode(contentS);
-    } else if (objectName == ReferenceMessage.objectName) {
-      content = new ReferenceMessage();
-      content.decode(contentS);
-    } else if (objectName == LocationMessage.objectName) {
-      content = new LocationMessage();
-      content.decode(contentS);
-    }
+    // if (objectName == TextMessage.objectName) {
+    //   content = new TextMessage();
+    //   content.decode(contentS);
+    // } else if (objectName == ImageMessage.objectName) {
+    //   content = new ImageMessage();
+    //   content.decode(contentS);
+    // } else if (objectName == VoiceMessage.objectName) {
+    //   content = new VoiceMessage();
+    //   content.decode(contentS);
+    // } else if (objectName == SightMessage.objectName) {
+    //   content = new SightMessage();
+    //   content.decode(contentS);
+    // } else if (objectName == RecallNotificationMessage.objectName) {
+    //   content = new RecallNotificationMessage();
+    //   content.decode(contentS);
+    // } else if (objectName == ChatroomKVNotificationMessage.objectName) {
+    //   content = new ChatroomKVNotificationMessage();
+    //   content.decode(contentS);
+    // } else if (objectName == FileMessage.objectName) {
+    //   content = new FileMessage();
+    //   content.decode(contentS);
+    // } else if (objectName == RichContentMessage.objectName) {
+    //   content = new RichContentMessage();
+    //   content.decode(contentS);
+    // } else if (objectName == GifMessage.objectName) {
+    //   content = new GifMessage();
+    //   content.decode(contentS);
+    // } else if (objectName == CombineMessage.objectName) {
+    //   content = new CombineMessage();
+    //   content.decode(contentS);
+    // } else if (objectName == ReferenceMessage.objectName) {
+    //   content = new ReferenceMessage();
+    //   content.decode(contentS);
+    // } else if (objectName == LocationMessage.objectName) {
+    //   content = new LocationMessage();
+    //   content.decode(contentS);
+    // }
+    if(RongIMClient.messageDecoders!=null && RongIMClient.messageDecoders.isNotEmpty && RongIMClient.messageDecoders.containsKey(objectName)){
+       return RongIMClient.messageDecoders[objectName](contentS);
+     }
     return content;
   }
 
