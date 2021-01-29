@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:rongcloud_im_plugin/src/message/group_notification_message.dart';
 import 'package:rongcloud_im_plugin/src/util/type_util.dart';
 import '../rongcloud_im_plugin.dart';
 import 'common_define.dart';
@@ -100,6 +101,11 @@ class RongIMClient {
     });
     addMessageDecoder(LocationMessage.objectName, (content) {
       LocationMessage msg = new LocationMessage();
+      msg.decode(content);
+      return msg;
+    });
+    addMessageDecoder(GroupNotificationMessage.objectName, (content) {
+      GroupNotificationMessage msg = new GroupNotificationMessage();
       msg.decode(content);
       return msg;
     });

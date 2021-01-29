@@ -103,7 +103,8 @@ class MessageFactory extends Object {
         iosConfig.apns_collapse_id = iOSConfigMap["apns_collapse_id"];
         message.messagePushConfig.iOSConfig = iosConfig;
       }
-      message.messagePushConfig.disablePushTitle = messagePushConfigMap["disablePushTitle"];
+      message.messagePushConfig.disablePushTitle =
+          messagePushConfigMap["disablePushTitle"];
       message.messagePushConfig.templateId = messagePushConfigMap["templateId"];
     }
     Map readReceiptMap = map["readReceiptInfo"];
@@ -121,7 +122,7 @@ class MessageFactory extends Object {
     if (contenStr == null || contenStr == "") {
       developer.log(message.objectName + ":该消息内容为空，可能该消息没有在原生 SDK 中注册",
           name: "RongIMClient.MessageFactory");
-      return message;
+       return message;
     }
     if (content != null) {
       message.content = content;
@@ -178,46 +179,11 @@ class MessageFactory extends Object {
 
   MessageContent string2MessageContent(String contentS, String objectName) {
     MessageContent content;
-    // if (objectName == TextMessage.objectName) {
-    //   content = new TextMessage();
-    //   content.decode(contentS);
-    // } else if (objectName == ImageMessage.objectName) {
-    //   content = new ImageMessage();
-    //   content.decode(contentS);
-    // } else if (objectName == VoiceMessage.objectName) {
-    //   content = new VoiceMessage();
-    //   content.decode(contentS);
-    // } else if (objectName == SightMessage.objectName) {
-    //   content = new SightMessage();
-    //   content.decode(contentS);
-    // } else if (objectName == RecallNotificationMessage.objectName) {
-    //   content = new RecallNotificationMessage();
-    //   content.decode(contentS);
-    // } else if (objectName == ChatroomKVNotificationMessage.objectName) {
-    //   content = new ChatroomKVNotificationMessage();
-    //   content.decode(contentS);
-    // } else if (objectName == FileMessage.objectName) {
-    //   content = new FileMessage();
-    //   content.decode(contentS);
-    // } else if (objectName == RichContentMessage.objectName) {
-    //   content = new RichContentMessage();
-    //   content.decode(contentS);
-    // } else if (objectName == GifMessage.objectName) {
-    //   content = new GifMessage();
-    //   content.decode(contentS);
-    // } else if (objectName == CombineMessage.objectName) {
-    //   content = new CombineMessage();
-    //   content.decode(contentS);
-    // } else if (objectName == ReferenceMessage.objectName) {
-    //   content = new ReferenceMessage();
-    //   content.decode(contentS);
-    // } else if (objectName == LocationMessage.objectName) {
-    //   content = new LocationMessage();
-    //   content.decode(contentS);
-    // }
-    if(RongIMClient.messageDecoders!=null && RongIMClient.messageDecoders.isNotEmpty && RongIMClient.messageDecoders.containsKey(objectName)){
-       return RongIMClient.messageDecoders[objectName](contentS);
-     }
+    if (RongIMClient.messageDecoders != null &&
+        RongIMClient.messageDecoders.isNotEmpty &&
+        RongIMClient.messageDecoders.containsKey(objectName)) {
+      return RongIMClient.messageDecoders[objectName](contentS);
+    }
     return content;
   }
 
@@ -259,8 +225,10 @@ class MessageFactory extends Object {
       messagePushConfig["pushData"] = message.messagePushConfig.pushData ?? "";
       messagePushConfig["forceShowDetailContent"] =
           message.messagePushConfig.forceShowDetailContent ?? false;
-      messagePushConfig["disablePushTitle"] = message.messagePushConfig.disablePushTitle ?? false;
-      messagePushConfig["templateId"] = message.messagePushConfig.templateId ?? "";
+      messagePushConfig["disablePushTitle"] =
+          message.messagePushConfig.disablePushTitle ?? false;
+      messagePushConfig["templateId"] =
+          message.messagePushConfig.templateId ?? "";
       if (message.messagePushConfig.androidConfig != null) {
         Map androidConfig = Map();
         androidConfig["notificationId"] =
