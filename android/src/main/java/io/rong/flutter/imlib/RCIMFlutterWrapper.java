@@ -500,7 +500,7 @@ public class RCIMFlutterWrapper {
         String LOG_TAG = "connect";
 //        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof String) {
-            String token = String.valueOf(arg);
+            final String token = String.valueOf(arg);
             RongIMClient.connect(token, new RongIMClient.ConnectCallback() {
                 @Override
                 public void onSuccess(final String userId) {
@@ -540,8 +540,17 @@ public class RCIMFlutterWrapper {
                 }
 
                 @Override
-                public void onDatabaseOpened(RongIMClient.DatabaseOpenStatus databaseOpenStatus) {
-
+                public void onDatabaseOpened(final RongIMClient.DatabaseOpenStatus databaseOpenStatus) {
+                    mMainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (databaseOpenStatus != null) {
+                                Map resultMap = new HashMap();
+                                resultMap.put("status", databaseOpenStatus.getValue());
+                                mChannel.invokeMethod(RCMethodList.MethodCallBackDatabaseOpened, resultMap);
+                            }
+                        }
+                    });
                 }
             });
 

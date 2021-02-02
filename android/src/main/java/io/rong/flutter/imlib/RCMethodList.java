@@ -114,5 +114,6 @@ public class RCMethodList {
     static String MethodCallBackChatRoomKVDidRemove = "chatRoomKVDidRemoveCallBack";
     static String MethodCallBackMessageExpansionDidUpdate = "MessageExpansionDidUpdateCallBack";
     static String MethodCallBackMessageExpansionDidRemove = "MessageExpansionDidRemoveCallBack";
+    static String MethodCallBackDatabaseOpened = "DatabaseOpenedCallBack";
 
 }

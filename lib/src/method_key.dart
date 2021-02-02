@@ -119,4 +119,6 @@ class RCMethodCallBackKey {
       'MessageExpansionDidUpdateCallBack';
   static const String MessageExpansionDidRemove =
       'MessageExpansionDidRemoveCallBack';
+  static const String DatabaseOpened =
+      'DatabaseOpenedCallBack';
 }

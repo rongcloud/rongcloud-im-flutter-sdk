@@ -22,7 +22,6 @@ class RongIMClient {
   static Map<String, MessageDecoder> messageDecoders =
       Map<String, MessageDecoder>();
 
-
   ///初始化 SDK
   ///
   ///[appkey] appkey
@@ -31,7 +30,6 @@ class RongIMClient {
     _channel.invokeMethod(RCMethodKey.Init, appkey);
     _addNativeMethodCallHandler();
   }
-
 
   ///注册Flutter端自定义消息
   ///[objectName] 希望注册的新消息类型,例如:RC:TxtMsg。
@@ -2079,6 +2077,9 @@ class RongIMClient {
   //消息正在焚烧
   static Function(Message msg, int remainDuration) onMessageDestructing;
 
+  //数据库打开（调用 connect 之后回调）
+  static Function(int status) onDatabaseOpened;
+
   ///响应原生的事件
   ///
   static void _addNativeMethodCallHandler() {
@@ -2292,6 +2293,13 @@ class RongIMClient {
             Message message =
                 MessageFactory.instance.string2Message(messageString);
             messageExpansionDidRemove(keyArray, message);
+          }
+          break;
+        case RCMethodCallBackKey.DatabaseOpened:
+          if (onDatabaseOpened != null) {
+            Map map = call.arguments;
+            int status = map["status"];
+            onDatabaseOpened(status);
           }
           break;
       }
