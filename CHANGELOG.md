@@ -1,6 +1,14 @@
+## 4.1.1
+
+发布日期：2021/2/5
+
+**SDK：**
+* 1.修复 Android clearHistroyMessage 方法获取记录时间时类型转换异常
+* 2.增加 Android sdk 发送消息时日志记录
+
 ## 4.1.0+2
 
-发布日期：2020/1/19
+发布日期：2021/1/19
 
 **SDK：**
 * 1.修复 Android 发送媒体消息通过外部参数直接设置 disableNotification 不生效的问题
