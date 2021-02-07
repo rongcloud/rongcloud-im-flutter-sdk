@@ -84,6 +84,9 @@
         [messagePushConfigDict setObject:messagePushConfig.pushContent?:@"" forKey:@"pushContent"];
         [messagePushConfigDict setObject:messagePushConfig.pushData?:@"" forKey:@"pushData"];
         [messagePushConfigDict setObject:@(messagePushConfig.forceShowDetailContent) forKey:@"forceShowDetailContent"];
+        [messagePushConfigDict setObject:messagePushConfig.templateId?:@"" forKey:@"templateId"];
+        [messagePushConfigDict setObject:@(messagePushConfig.disablePushTitle) forKey:@"disablePushTitle"];
+
         
         if (messagePushConfig.iOSConfig) {
             NSMutableDictionary *iOSConfigDict = [NSMutableDictionary new];
@@ -248,6 +251,8 @@
         message.messagePushConfig.pushTitle = messagePushConfig[@"pushTitle"];
         message.messagePushConfig.pushContent = messagePushConfig[@"pushContent"];
         message.messagePushConfig.pushData = messagePushConfig[@"pushData"];
+        message.messagePushConfig.templateId = messagePushConfig[@"templateId"];
+        message.messagePushConfig.disablePushTitle = messagePushConfig[@"disablePushTitle"];
         if (messagePushConfig[@"forceShowDetailContent"] && ![messagePushConfig[@"forceShowDetailContent"] isKindOfClass:[NSNull class]]) {
             message.messagePushConfig.forceShowDetailContent = [messagePushConfig[@"forceShowDetailContent"] boolValue];
         }

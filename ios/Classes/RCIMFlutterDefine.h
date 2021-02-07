@@ -108,7 +108,4 @@ static NSString *RCMethodCallBackKeyRecallMessage = @"RecallMessageCallBack";
 static NSString *RCMethodCallBackKeyDestructMessage = @"DestructMessageCallBack";
 static NSString *RCMethodCallBackKeyMessageExpansionDidUpdate = @"MessageExpansionDidUpdateCallBack";
 static NSString *RCMethodCallBackKeyMessageExpansionDidRemove = @"MessageExpansionDidRemoveCallBack";
-
-
-
-
+static NSString *RCMethodCallBackDatabaseOpened = @"DatabaseOpenedCallBack";

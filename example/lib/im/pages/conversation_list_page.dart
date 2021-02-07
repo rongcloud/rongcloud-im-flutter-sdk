@@ -105,6 +105,10 @@ class _ConversationListPageState extends State<ConversationListPage>
     RongIMClient.onRecallMessageReceived = (Message message) {
       updateConversationList();
     };
+
+    RongIMClient.onDatabaseOpened = (int status) {
+            updateConversationList();
+    };
   }
 
   void _deleteConversation(Conversation conversation) {

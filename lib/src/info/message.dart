@@ -45,6 +45,8 @@ class MessagePushConfig extends Object {
   bool forceShowDetailContent; //是否强制显示通知详情
   IOSConfig iOSConfig; //iOS 平台相关配置
   AndroidConfig androidConfig; //Android 平台相关配置
+  bool disablePushTitle; //通知栏是否屏蔽通知标题
+  String templateId; //推送模板 ID
 }
 
 class IOSConfig extends Object{
