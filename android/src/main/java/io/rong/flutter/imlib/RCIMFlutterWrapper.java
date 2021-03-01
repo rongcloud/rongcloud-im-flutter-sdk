@@ -37,6 +37,7 @@ import io.rong.imlib.IOperationCallback;
 import io.rong.imlib.IRongCallback;
 import io.rong.imlib.MessageTag;
 import io.rong.imlib.RongIMClient;
+import io.rong.imlib.location.message.LocationMessage;
 import io.rong.imlib.model.AndroidConfig;
 import io.rong.imlib.model.ChatRoomInfo;
 import io.rong.imlib.model.Conversation;
@@ -3646,6 +3647,13 @@ public class RCIMFlutterWrapper {
 //        else {
         try {
             result = constructor.newInstance(content);
+            // 防止 LocationMessage encode 导致远端地址丢失
+            if ("RC:LBSMsg".equals(objectName)) {
+                JSONObject contentObject = new JSONObject(contentStr);
+                if (contentObject.has("mImgUri")) {
+                    ((LocationMessage) result).setImgUri(Uri.parse((String) contentObject.get("mImgUri")));
+                }
+            }
         } catch (Exception e) {
             // FwLog TBC.
             result = new UnknownMessage(content);
