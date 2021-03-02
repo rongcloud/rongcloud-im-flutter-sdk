@@ -22,7 +22,7 @@ class LocationMessage extends MessageContent {
 
   @override
   void decode(String jsonStr) {
-    if (jsonStr == null && jsonStr.isEmpty) {
+    if (jsonStr == null || jsonStr.isEmpty) {
       developer.log("Flutter LocationMessage deocde error: no content",
           name: "RongIMClient.LocationMessage");
       return;

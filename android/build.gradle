@@ -45,7 +45,8 @@ dependencies {
     def remote = properties.getProperty("rongcloud.flutter.demo.use_remote_rtc_lib", "true")
 
     if (remote == "true")
-        implementation 'cn.rongcloud.sdk:im_lib:4.1.0'
+        api 'cn.rongcloud.sdk:im_lib:5.0.0'
     else
-        implementation project(':kit')
+        api project(':kit')
 }
+

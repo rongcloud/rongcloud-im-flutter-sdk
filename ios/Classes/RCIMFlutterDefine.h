@@ -11,6 +11,7 @@ static NSString *RCMethodKeyConfig = @"config";
 static NSString *RCMethodKeySendMessage = @"sendMessage";
 static NSString *RCMethodKeyRefreshUserInfo = @"refreshUserInfo";
 static NSString *RCMethodKeyJoinChatRoom = @"joinChatRoom";
+static NSString *RCMethodKeyJoinExistChatRoom = @"joinExistChatRoom";
 static NSString *RCMethodKeyQuitChatRoom = @"quitChatRoom";
 static NSString *RCMethodKeyGetHistoryMessage = @"getHistoryMessage";
 static NSString *RCMethodKeyGetHistoryMessages = @"getHistoryMessages";
@@ -107,7 +108,4 @@ static NSString *RCMethodCallBackKeyRecallMessage = @"RecallMessageCallBack";
 static NSString *RCMethodCallBackKeyDestructMessage = @"DestructMessageCallBack";
 static NSString *RCMethodCallBackKeyMessageExpansionDidUpdate = @"MessageExpansionDidUpdateCallBack";
 static NSString *RCMethodCallBackKeyMessageExpansionDidRemove = @"MessageExpansionDidRemoveCallBack";
-
-
-
-
+static NSString *RCMethodCallBackDatabaseOpened = @"DatabaseOpenedCallBack";

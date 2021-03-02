@@ -1,3 +1,57 @@
+## 5.0.0
+
+发布日期：2021/2/7
+
+**SDK：**
+* 1.新增对 GroupNotificationMessage 消息的支持
+* 2.增加 flutter 层自定义消息逻辑，改原生消息也走此逻辑
+* 3.MessagePushConfig 增加 disablePushTitle 和 templateId 属性
+
+## 4.1.1
+
+发布日期：2021/2/5
+
+**SDK：**
+* 1.修复 Android clearHistroyMessage 方法获取记录时间时类型转换异常
+* 2.增加 Android sdk 发送消息时日志记录
+
+## 4.1.0+2
+
+发布日期：2021/1/19
+
+**SDK：**
+* 1.修复 Android 发送媒体消息通过外部参数直接设置 disableNotification 不生效的问题
+* 2.修复 Android 发送媒体消息，消息体内某个值 json 串中不含有报异常导致下面值拿不到的问题
+
+## 4.1.0+1
+
+发布日期：2020/12/29
+
+**SDK：**
+* 1.修复 iOS 层通过 sendIntactMessageWithCallBack 接口发送图片失败问题
+
+## 4.1.0
+
+发布日期：2020/12/29
+
+**SDK：**
+* 1.指定 iOS 和 Android IM SDK 版本为 4.1.0 版本
+* 2.新增加入已存在聊天室的接口
+* 3.conversation 添加会话免打扰状态属性
+* 4.修复 connect 时并发修改异常问题
+* 5.修复 objectName 为 null 时异常问题
+* 6.发送媒体消息时如果有远端 url 不再进行上传
+
+**Demo：**
+* 1.优化下拉加载历史消息时跳转到会话页面最下方问题
+
+## 4.0.4+4
+
+发布日期：2020/12/29
+
+**SDK：**
+* 1.修复 iOS 层通过 sendIntactMessageWithCallBack 接口发送图片失败问题
+
 ## 4.0.4+3
 
 发布日期：2020/12/10

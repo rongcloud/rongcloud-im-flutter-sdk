@@ -9,6 +9,7 @@ public class RCMethodList {
     static String MethodKeySendMessage = "sendMessage";
     static String MethodKeyRefreshUserInfo = "refreshUserInfo";
     static String MethodKeyJoinChatRoom = "joinChatRoom";
+    static String MethodKeyJoinExistChatRoom = "joinExistChatRoom";
     static String MethodKeyQuitChatRoom = "quitChatRoom";
     static String MethodKeyGetHistoryMessage ="getHistoryMessage";
     static String MethodKeyGetHistoryMessages ="getHistoryMessages";
@@ -113,5 +114,6 @@ public class RCMethodList {
     static String MethodCallBackChatRoomKVDidRemove = "chatRoomKVDidRemoveCallBack";
     static String MethodCallBackMessageExpansionDidUpdate = "MessageExpansionDidUpdateCallBack";
     static String MethodCallBackMessageExpansionDidRemove = "MessageExpansionDidRemoveCallBack";
+    static String MethodCallBackDatabaseOpened = "DatabaseOpenedCallBack";
 
 }

@@ -15,7 +15,7 @@ class RecallNotificationMessage extends MessageContent {
 
   @override
   void decode(String jsonStr) {
-    if (jsonStr == null && jsonStr.isEmpty) {
+    if (jsonStr == null || jsonStr.isEmpty) {
       developer.log(
           "Flutter RecallNotificationMessage deocde error: no content",
           name: "RongIMClient.RecallNotificationMessage");

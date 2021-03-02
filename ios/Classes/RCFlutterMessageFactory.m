@@ -84,6 +84,9 @@
         [messagePushConfigDict setObject:messagePushConfig.pushContent?:@"" forKey:@"pushContent"];
         [messagePushConfigDict setObject:messagePushConfig.pushData?:@"" forKey:@"pushData"];
         [messagePushConfigDict setObject:@(messagePushConfig.forceShowDetailContent) forKey:@"forceShowDetailContent"];
+        [messagePushConfigDict setObject:messagePushConfig.templateId?:@"" forKey:@"templateId"];
+        [messagePushConfigDict setObject:@(messagePushConfig.disablePushTitle) forKey:@"disablePushTitle"];
+
         
         if (messagePushConfig.iOSConfig) {
             NSMutableDictionary *iOSConfigDict = [NSMutableDictionary new];
@@ -180,6 +183,12 @@
     [dic setObject:@(conversation.lastestMessageId) forKey:@"latestMessageId"];
     [dic setObject:@(conversation.mentionedCount) forKey:@"mentionedCount"];
     [dic setObject:conversation.draft forKey:@"draft"];
+    [dic setObject:@(conversation.blockStatus) forKey:@"blockStatus"];
+    [dic setObject:@(conversation.receivedTime) forKey:@"receivedTime"];
+    [dic setObject:@(conversation.lastestMessageDirection) forKey:@"lastestMessageDirection"];
+    [dic setObject:conversation.lastestMessageUId forKey:@"lastestMessageUId"];
+    [dic setObject:@(conversation.hasUnreadMentioned) forKey:@"hasUnreadMentioned"];
+
     RCMessageContent *content = conversation.lastestMessage;
     content = [self convertLocalPathIfNeed:content];
     if ([content isKindOfClass:[RCFileMessage class]]) {
@@ -242,6 +251,8 @@
         message.messagePushConfig.pushTitle = messagePushConfig[@"pushTitle"];
         message.messagePushConfig.pushContent = messagePushConfig[@"pushContent"];
         message.messagePushConfig.pushData = messagePushConfig[@"pushData"];
+        message.messagePushConfig.templateId = messagePushConfig[@"templateId"];
+        message.messagePushConfig.disablePushTitle = messagePushConfig[@"disablePushTitle"];
         if (messagePushConfig[@"forceShowDetailContent"] && ![messagePushConfig[@"forceShowDetailContent"] isKindOfClass:[NSNull class]]) {
             message.messagePushConfig.forceShowDetailContent = [messagePushConfig[@"forceShowDetailContent"] boolValue];
         }

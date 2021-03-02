@@ -103,6 +103,7 @@ class _MessageContentListState extends State<MessageContentList>
 
   @override
   Widget build(BuildContext context) {
+    // mPosition 不是特别准确，可能导致有偏移
     this._scrollController = ScrollController(initialScrollOffset: mPosition);
     _addScroolListener();
     return StreamBuilder<MessageInfoWrapState>(
@@ -161,12 +162,13 @@ class _MessageContentListState extends State<MessageContentList>
 
   void _addScroolListener() {
     _scrollController.addListener(() {
+      mPosition = _scrollController.position.pixels;
       //此处要用 == 而不是 >= 否则会触发多次
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         delegate.willpullMoreHistoryMessage();
+        setState(() {});
       }
-      mPosition = _scrollController.position.pixels;
     });
   }
 

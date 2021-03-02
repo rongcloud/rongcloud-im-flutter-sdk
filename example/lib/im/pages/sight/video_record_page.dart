@@ -278,6 +278,15 @@ class _VideoRecordPageState extends State<VideoRecordPage>
               ? RCDuration.MediaMessageBurnDuration + recodeTime
               : 0;
         }
+        // Message message = Message();
+        // message.conversationType = conversationType;
+        // message.targetId = targetId;
+        // message.objectName = SightMessage.objectName;
+        // message.content = sightMessage;
+        // RongIMClient.sendIntactMessageWithCallBack(message, "", "",
+        //     (int messageId, int status, int code) {
+        //   String result = "messageId:$messageId status:$status code:$code";
+        // });
         RongIMClient.sendMessage(conversationType, targetId, sightMessage);
         _saveVideo(videoPath);
       } else {
