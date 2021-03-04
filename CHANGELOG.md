@@ -1,6 +1,7 @@
 
 ## 4.0.3+1
 **SDK：**
+1.: pull all kv while join chatroom   
 
 ## 4.0.3
 
