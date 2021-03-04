@@ -1,7 +1,10 @@
 
 ## 4.0.3+1
+
+发布日期：2021/03/04
+
 **SDK：**
-* 1.pull all kv while join chatroom   
+* 1.pull all kv while join chatroom
 
 ## 4.0.3
 
