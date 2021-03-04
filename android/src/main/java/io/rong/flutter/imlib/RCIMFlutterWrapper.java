@@ -445,14 +445,11 @@ public class RCIMFlutterWrapper {
             this.appkey = appkey;
             RongIMClient.init(mContext, appkey);
 
-            try {
-                // IMLib 默认检测到小视频 SDK 才会注册小视频消息，所以此处需要手动注册
-                RongIMClient.registerMessageType(SightMessage.class);
-                // 因为合并消息 定义和注册都写在 kit 里面
-                RongIMClient.registerMessageType(CombineMessage.class);
-            } catch (AnnotationNotFoundException e) {
-                e.printStackTrace();
-            }
+            // IMLib 默认检测到小视频 SDK 才会注册小视频消息，所以此处需要手动注册
+            RongIMClient.registerMessageType(SightMessage.class);
+            // 因为合并消息 定义和注册都写在 kit 里面
+            RongIMClient.registerMessageType(CombineMessage.class);
+
 
             setReceiveMessageListener();
             setConnectStatusListener();
@@ -2161,7 +2158,7 @@ public class RCIMFlutterWrapper {
         });
     }
 
-    private void setMessageExpansionListener(){
+    private void setMessageExpansionListener() {
         RongIMClient.getInstance().setMessageExpansionListener(new RongIMClient.MessageExpansionListener() {
             @Override
             public void onMessageExpansionUpdate(final Map<String, String> map, final Message message) {
