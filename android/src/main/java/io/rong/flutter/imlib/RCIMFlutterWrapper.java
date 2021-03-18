@@ -893,7 +893,7 @@ public class RCIMFlutterWrapper {
                             ((HQVoiceMessage) content).setExtra(extra);
                         }
                     }
-                    String remoteUrl = (String) jsonObject.get("remoteUrl");
+                    String remoteUrl = (String) jsonObject.optString("remoteUrl");
                     if (!TextUtils.isEmpty(remoteUrl)) {
                         ((HQVoiceMessage) content).setMediaUrl(Uri.parse(remoteUrl));
                     }
@@ -915,7 +915,7 @@ public class RCIMFlutterWrapper {
                             ((SightMessage) content).setExtra(extra);
                         }
                     }
-                    String sightUrl = (String) jsonObject.get("sightUrl");
+                    String sightUrl = (String) jsonObject.optString("sightUrl");
                     if (!TextUtils.isEmpty(sightUrl)) {
                         ((SightMessage) content).setMediaUrl(Uri.parse(sightUrl));
                     }
