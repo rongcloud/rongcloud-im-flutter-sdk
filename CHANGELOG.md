@@ -1,3 +1,11 @@
+## 5.1.0
+
+发布日期：2021/3/19
+
+**SDK：**
+* 1.修复 发送 LocationMessage 在 flutter 端传入 Android 端后 encode 导致 ImgUri 丢失的问题
+* 2.修复 Android 端发送媒体消息 remoteUri 传空导致异常问题
+
 ## 5.0.0
 
 发布日期：2021/2/7
