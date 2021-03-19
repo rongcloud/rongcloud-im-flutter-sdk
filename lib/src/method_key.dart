@@ -57,7 +57,6 @@ class RCMethodKey {
   static const String GetNotificationQuietHours = 'getNotificationQuietHours';
   static const String GetUnreadMentionedMessages = 'getUnreadMentionedMessages';
   static const String SendDirectionalMessage = 'sendDirectionalMessage';
-  static const String SaveMediaToPublicDir = 'saveMediaToPublicDir';
   static const String ForwardMessageByStep = 'forwardMessageByStep';
   static const String MessageBeginDestruct = 'messageBeginDestruct';
   static const String MessageStopDestruct = 'messageStopDestruct';
