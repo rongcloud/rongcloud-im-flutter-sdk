@@ -266,8 +266,6 @@ public class RCIMFlutterWrapper {
             getUnreadMentionedMessages(call.arguments, result);
         } else if (RCMethodList.MethodKeySendDirectionalMessage.equalsIgnoreCase(call.method)) {
             sendDirectionalMessage(call.arguments, result);
-        } else if (RCMethodList.MethodKeySaveMediaToPublicDir.equalsIgnoreCase(call.method)) {
-            saveMediaToPublicDir(call.arguments);
         } else if (RCMethodList.MethodKeyForwardMessageByStep.equalsIgnoreCase(call.method)) {
             forwardMessageByStep(call.arguments);
         } else if (RCMethodList.MethodKeyMessageBeginDestruct.equalsIgnoreCase(call.method)) {
@@ -3664,14 +3662,5 @@ public class RCIMFlutterWrapper {
         setCommonInfo(contentStr, result);
 //        }
         return result;
-    }
-
-    private void saveMediaToPublicDir(Object arg) {
-        if (arg instanceof Map) {
-            Map paramMap = (Map) arg;
-            String filePath = (String) paramMap.get("filePath");
-            String type = (String) paramMap.get("type");
-            StorageUtils.saveMediaToPublicDir(getMainContext(), new File(filePath), type);
-        }
     }
 }

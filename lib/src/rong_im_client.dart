@@ -1568,11 +1568,6 @@ class RongIMClient {
     await _channel.invokeMethod(RCMethodKey.DownloadMediaMessage, paramMap);
   }
 
-  static void saveMediaToPublicDir(String filePath, String type) async {
-    Map paramMap = {"filePath": filePath, "type": type};
-    await _channel.invokeMethod(RCMethodKey.SaveMediaToPublicDir, paramMap);
-  }
-
   static void forwardMessageByStep(
       int conversationType, String targetId, Message message,
       {Function(int messageId, int status, int code) finished}) async {
