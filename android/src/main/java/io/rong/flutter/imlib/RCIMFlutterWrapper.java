@@ -75,6 +75,7 @@ public class RCIMFlutterWrapper {
     private HashMap<String, Constructor<? extends MessageContent>> messageContentConstructorMap;
 
     private String appkey = null;
+    private static String sdkVersion = "";
 
     private RCIMFlutterWrapper() {
         messageContentConstructorMap = new HashMap<>();
@@ -453,9 +454,10 @@ public class RCIMFlutterWrapper {
     private void initRCIM(Object arg) {
         String LOG_TAG = "init";
 //        RCLog.i(LOG_TAG + " start param:" + arg.toString());
-        if (arg instanceof String) {
-            String appkey = String.valueOf(arg);
-            this.appkey = appkey;
+        if (arg instanceof Map) {
+            Map param = (Map) arg;
+            this.appkey = (String) param.get("appkey");
+            this.sdkVersion = (String) param.get("version");
             RongIMClient.init(mContext, appkey);
 
             // IMLib 默认检测到小视频 SDK 才会注册小视频消息，所以此处需要手动注册
@@ -3696,5 +3698,9 @@ public class RCIMFlutterWrapper {
             String type = (String) paramMap.get("type");
             StorageUtils.saveMediaToPublicDir(getMainContext(), new File(filePath), type);
         }
+    }
+
+    public static String getVersion() {
+        return sdkVersion;
     }
 }
