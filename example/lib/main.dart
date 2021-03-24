@@ -35,6 +35,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void initState() {
     super.initState();
 
+    prefix.RongIMClient.setServerInfo('navqa.cn.ronghub.com', 'up.qbox.me');   
     //1.初始化 im SDK
     prefix.RongIMClient.init(RongAppKey);
     //注册自定义消息
