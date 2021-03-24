@@ -37,8 +37,8 @@ class _LoginPageState extends State<LoginPage> {
     map["region"] = 86;
     map["phone"] = int.parse(_assount.text);
     map["password"] = _password.text;
-
-    HttpUtil.post("http://api.sealtalk.im/user/login", (data) {
+    //http://api.sealtalk.im
+    HttpUtil.post("http://sealtalk-server-java.rongcloud.net:8080/user/login", (data) {
       if (data != null) {
         Map body = data;
         int errorCode = body["code"];
