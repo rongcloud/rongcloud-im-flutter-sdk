@@ -2429,7 +2429,7 @@
     return NO;
 }
 
-- (NSString *)getVersion {
++ (NSString *)getVersion {
     return [RCIMFlutterWrapper sharedWrapper].sdkVersion;
 }
 

@@ -18,7 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)sendDataToFlutter:(NSDictionary *)userInfo;
 
-- (NSString *)getVersion;
++ (NSString *)getVersion;
+
 @end
 
 NS_ASSUME_NONNULL_END
