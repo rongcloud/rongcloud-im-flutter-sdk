@@ -58,6 +58,7 @@
 @interface RCIMFlutterWrapper ()<RCIMClientReceiveMessageDelegate,RCConnectionStatusChangeDelegate,RCTypingStatusDelegate, RCMessageDestructDelegate, RCChatRoomKVStatusChangeDelegate, RCMessageExpansionDelegate>
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 @property (nonatomic, strong) RCFlutterConfig *config;
+@property (nonatomic, strong) NSString *sdkVersion;
 @end
 
 @implementation RCIMFlutterWrapper
@@ -255,8 +256,9 @@
 - (void)initWithRCIMAppKey:(id)arg {
 //    NSString *LOG_TAG =  @"init";
 //    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
-    if([arg isKindOfClass:[NSString class]]) {
-        NSString *appkey = (NSString *)arg;
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *conf = (NSDictionary *)arg;
+        NSString *appkey = [conf objectForKey:@"appkey"];
         [[RCIMClient sharedRCIMClient] initWithAppKey:appkey];
         
         /// imlib 默认检测到小视频 SDK，才会注册小视频消息，但是这里没有小视频 SDK
@@ -268,6 +270,7 @@
         [[RCIMClient sharedRCIMClient] setRCMessageDestructDelegate:self];
         [[RCIMClient sharedRCIMClient] setRCChatRoomKVStatusChangeDelegate:self];
         [[RCIMClient sharedRCIMClient] setMessageExpansionDelegate:self];
+        self.sdkVersion = [conf objectForKey:@"version"];
     }else {
         NSLog(@"init 非法参数类型");
     }
@@ -2424,6 +2427,10 @@
         return YES;
     }
     return NO;
+}
+
++ (NSString *)getVersion {
+    return [RCIMFlutterWrapper sharedWrapper].sdkVersion;
 }
 
 @end
