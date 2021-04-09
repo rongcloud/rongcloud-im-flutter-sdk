@@ -13,7 +13,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="rongcloud_im_plugin_example"
+        android:label="RC_Flutter_Demo"
         android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher">
         <activity
