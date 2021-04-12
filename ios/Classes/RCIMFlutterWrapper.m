@@ -1663,7 +1663,8 @@
     NSString *LOG_TAG = @"getMessageByUId";
     [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
-        NSString *messageUId = (NSString *)arg;
+        NSDictionary *param = (NSDictionary *)arg;
+        NSString *messageUId = param[@"messageUId"];
         RCMessage *message = [[RCIMClient sharedRCIMClient] getMessageByUId:messageUId];
         NSString *jsonString = [RCFlutterMessageFactory message2String:message];
         result(jsonString);
