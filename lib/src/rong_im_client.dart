@@ -1910,14 +1910,19 @@ Function(int code) finished) async {
       }
     }
   }
-/*!
- 缩略图压缩配置
- maxSize:缩略图最大尺寸  minSize:缩略图最小尺寸  quality:缩略图质量压缩比
- @remarks 缩略图压缩配置，如果此处设置了配置就按照这个配置进行压缩。如果此处没有设置，会按照 RCConfig.plist 中的配置进行压缩。
- */
+
+//  缩略图压缩配置
+//  maxSize:缩略图最大尺寸  minSize:缩略图最小尺寸  quality:缩略图质量压缩比
+//  @remarks 缩略图压缩配置，如果此处设置了配置就按照这个配置进行压缩。如果此处没有设置，会按照 RCConfig.plist 中的配置进行压缩。
  static void imageCompressConfig(double maxSize, double minSize,double quality) {
    Map map = {"maxSize":maxSize,"minSize":minSize,"quality":quality};
      _channel.invokeMethod(RCMethodKey.ImageCompressConfig, map);
+ }
+
+  /// typing 状态更新的时间，默认是 6s
+ static void typingUpdateSeconds(int typingUpdateSeconds) {
+   Map map = {"typingUpdateSeconds":typingUpdateSeconds};
+     _channel.invokeMethod(RCMethodKey.TypingUpdateSeconds, map);
  }
 
   ///通过全局唯一 ID 获取消息实体
@@ -2218,11 +2223,11 @@ Function(int code) finished) async {
           break;
 
           case RCMethodCallBackKey.OnChatRoomDestroyed:
-          if (onQuitChatRoom != null) {
+          if (onChatRoomDestroyed != null) {
             Map map = call.arguments;
             String targetId = map["targetId"];
             int type = map["type"];
-            onQuitChatRoom(targetId, type);
+            onChatRoomDestroyed(targetId, type);
           }
           break;
 

@@ -246,8 +246,20 @@
         [self batchInsertMessage:call.arguments result:result];
     }else if([RCMethodKeyImageCompressConfig isEqualToString:call.method]) {
         [self imageCompressConfig:call.arguments result:result];
+    }else if([RCMethodKeyTypingUpdateSeconds isEqualToString:call.method]) {
+        [self typingUpdateSeconds:call.arguments result:result];
+    }else if([RCMethodKeyAddTag isEqualToString:call.method]) {
+        [self addTag:call.arguments result:result];
+    }else if([RCMethodKeyRemoveTag isEqualToString:call.method]) {
+        [self removeTag:call.arguments result:result];
+    }else if([RCMethodKeyUpdateTag isEqualToString:call.method]) {
+        [self updateTag:call.arguments result:result];
+    }else if([RCMethodKeyGetTags isEqualToString:call.method]) {
+        [self getTags:call.arguments result:result];
+    }else if([RCMethodKeyAddConversationsToTag isEqualToString:call.method]) {
+        [self addConversationsToTag:call.arguments result:result];
     }
-    
+
     else {
         result(FlutterMethodNotImplemented);
     }
@@ -1209,6 +1221,71 @@
         config.minSize= minSize;
         config.quality= quality;
         [RCIMClient sharedRCIMClient].imageCompressConfig = config;
+    }
+}
+
+- (void)typingUpdateSeconds:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"typingUpdateSeconds";
+    [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        NSInteger  typingUpdateSeconds = [param[@"typingUpdateSeconds"] integerValue];
+        [RCCoreClient sharedCoreClient].typingUpdateSeconds = typingUpdateSeconds;
+    }
+}
+
+#pragma mark - 会话标签
+- (void)addTag:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"addTag";
+    [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        NSString *tagId = param[@"tagId"];
+        NSString *tagName = param[@"tagId"];
+        NSInteger count = [param[@"count"] integerValue];
+        long long timestamp = [param[@"tagId"] longLongValue];
+        RCTagInfo *tagInfo = [[RCTagInfo alloc] init];
+        tagInfo.tagId = tagId;
+        tagInfo.tagName = tagName;
+        tagInfo.count = count;
+        tagInfo.timestamp = timestamp;
+        [[RCCoreClient sharedCoreClient] addTag:tagInfo success:^{
+                    
+                } error:^(RCErrorCode errorCode) {
+                    
+                }];
+    }
+}
+
+- (void)removeTag:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"removeTag";
+    [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+    }
+}
+
+- (void)updateTag:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"updateTag";
+    [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+    }
+}
+
+- (void)getTags:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"getTags";
+    [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+    }
+}
+
+- (void)addConversationsToTag:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"addConversationsToTag";
+    [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
     }
 }
 

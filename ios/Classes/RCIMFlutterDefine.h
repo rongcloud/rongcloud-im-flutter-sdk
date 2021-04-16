@@ -79,6 +79,12 @@ static NSString *RCMethodKeySendIntactMessage = @"sendIntactMessage";
 static NSString *RCMethodKeyUpdateMessageExpansion = @"updateMessageExpansion";
 static NSString *RCMethodKeyRemoveMessageExpansionForKey = @"removeMessageExpansionForKey";
 static NSString *RCMethodKeyImageCompressConfig = @"imageCompressConfig";
+static NSString *RCMethodKeyTypingUpdateSeconds = @"typingUpdateSeconds";
+static NSString *RCMethodKeyAddTag = @"addTag";
+static NSString *RCMethodKeyRemoveTag = @"removeTag";
+static NSString *RCMethodKeyUpdateTag = @"updateTag";
+static NSString *RCMethodKeyGetTags = @"getTags";
+static NSString *RCMethodKeyAddConversationsToTag = @"addConversationsToTag";
 
 
 // 聊天室状态存储
