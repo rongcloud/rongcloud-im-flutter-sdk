@@ -101,6 +101,8 @@ class RCMethodCallBackKey {
   static const String ReceiveMessage = 'receiveMessageCallBack';
   static const String JoinChatRoom = 'joinChatRoomCallBack';
   static const String QuitChatRoom = 'quitChatRoomCallBack';
+  static const String OnChatRoomReset = 'onChatRoomResetCallBack';
+  static const String OnChatRoomDestroyed = 'onChatRoomDestroyedCallBack';  
   static const String ChatRoomKVDidSync = 'chatRoomKVDidSyncCallBack';
   static const String ChatRoomKVDidUpdate = 'chatRoomKVDidUpdateCallBack';
   static const String ChatRoomKVDidRemove = 'chatRoomKVDidRemoveCallBack';

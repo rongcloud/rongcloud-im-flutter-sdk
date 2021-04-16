@@ -55,7 +55,7 @@
                                content:(NSString *)content;
 @end
 
-@interface RCIMFlutterWrapper ()<RCIMClientReceiveMessageDelegate,RCConnectionStatusChangeDelegate,RCTypingStatusDelegate, RCMessageDestructDelegate, RCChatRoomKVStatusChangeDelegate, RCMessageExpansionDelegate>
+@interface RCIMFlutterWrapper ()<RCIMClientReceiveMessageDelegate,RCConnectionStatusChangeDelegate,RCTypingStatusDelegate, RCMessageDestructDelegate, RCChatRoomKVStatusChangeDelegate, RCMessageExpansionDelegate, RCChatRoomStatusDelegate>
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 @property (nonatomic, strong) RCFlutterConfig *config;
 @property (nonatomic, strong) NSString *sdkVersion;
@@ -273,6 +273,7 @@
         [[RCIMClient sharedRCIMClient] setRCTypingStatusDelegate:self];
         [[RCIMClient sharedRCIMClient] setRCMessageDestructDelegate:self];
         [[RCIMClient sharedRCIMClient] setRCChatRoomKVStatusChangeDelegate:self];
+        [[RCChatRoomClient sharedChatRoomClient] setChatRoomStatusDelegate:self];
         [[RCIMClient sharedRCIMClient] setMessageExpansionDelegate:self];
         self.sdkVersion = [conf objectForKey:@"version"];
     }else {
@@ -1727,6 +1728,18 @@
         NSString *jsonString = [RCFlutterMessageFactory message2String:message];
         result(jsonString);
     }
+}
+
+
+#pragma mark - 聊天室状态回调
+- (void)onChatRoomDestroyed:(NSString *)chatroomId type:(RCChatRoomDestroyType)type {
+    NSDictionary *statusDic = @{ @"targetId" : chatroomId,@"type" : @"type" };
+    [self.channel invokeMethod:RCMethodCallBackKeyOnChatRoomDestroyed arguments:statusDic];
+}
+
+- (void)onChatRoomReset:(NSString *)chatroomId {
+    NSDictionary *statusDic = @{ @"targetId" : chatroomId };
+    [self.channel invokeMethod:RCMethodCallBackKeyOnChatRoomReset arguments:statusDic];
 }
 
 #pragma mark - 聊天室状态存储 (使用前必须先联系商务开通)

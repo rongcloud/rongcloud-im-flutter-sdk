@@ -2040,12 +2040,25 @@ Function(int code) finished) async {
   ///[status] 参见枚举 [RCOperationStatus]
   static Function(String targetId, int status) onJoinChatRoom;
 
-  ///退出聊天的回调
+  ///加入聊天室成功，但是聊天室被重置。接收到此回调后，还会收到 onChatRoomJoined 回调。
+  ///
+  ///[targetId] 聊天室 id
+  static Function(String targetId) onChatRoomReset;
+
+
+  ///聊天室被销毁的回调，用户在线的时候房间被销毁才会收到此回调。
+  ///
+  ///[targetId] 聊天室 id
+  ///[type] 参见枚举 [RCOperationStatus]
+  static Function(String targetId,int type) onChatRoomDestroyed;
+
+   ///退出聊天的回调
   ///
   ///[targetId] 聊天室 id
   ///
   ///[status] 参见枚举 [RCOperationStatus]
   static Function(String targetId, int status) onQuitChatRoom;
+
 
   ///刚加入聊天室时 KV 同步完成的回调
   ///
@@ -2193,6 +2206,23 @@ Function(int code) finished) async {
             String targetId = map["targetId"];
             int status = map["status"];
             onQuitChatRoom(targetId, status);
+          }
+          break;
+
+          case RCMethodCallBackKey.OnChatRoomReset:
+          if (onChatRoomReset != null) {
+            Map map = call.arguments;
+            String targetId = map["targetId"];
+            onChatRoomReset(targetId);
+          }
+          break;
+
+          case RCMethodCallBackKey.OnChatRoomDestroyed:
+          if (onQuitChatRoom != null) {
+            Map map = call.arguments;
+            String targetId = map["targetId"];
+            int type = map["type"];
+            onQuitChatRoom(targetId, type);
           }
           break;
 
