@@ -78,6 +78,8 @@ static NSString *RCMethodKeyGetFirstUnreadMessage = @"getFirstUnreadMessage";
 static NSString *RCMethodKeySendIntactMessage = @"sendIntactMessage";
 static NSString *RCMethodKeyUpdateMessageExpansion = @"updateMessageExpansion";
 static NSString *RCMethodKeyRemoveMessageExpansionForKey = @"removeMessageExpansionForKey";
+static NSString *RCMethodKeyImageCompressConfig = @"imageCompressConfig";
+
 
 // 聊天室状态存储
 static NSString *RCMethodKeySetChatRoomEntry = @"SetChatRoomEntry";

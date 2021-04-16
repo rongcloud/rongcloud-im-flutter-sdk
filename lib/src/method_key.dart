@@ -78,6 +78,7 @@ class RCMethodKey {
   static const String GetMessageByUId = 'getMessageByUId';
   static const String GetFirstUnreadMessage = 'getFirstUnreadMessage';
   static const String SendIntactMessage = 'sendIntactMessage';
+  static const String ImageCompressConfig = 'imageCompressConfig';
 
   // 聊天室状态存储
   static const String SetChatRoomEntry = 'SetChatRoomEntry';

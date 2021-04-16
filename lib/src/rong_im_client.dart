@@ -1910,6 +1910,15 @@ Function(int code) finished) async {
       }
     }
   }
+/*!
+ 缩略图压缩配置
+ maxSize:缩略图最大尺寸  minSize:缩略图最小尺寸  quality:缩略图质量压缩比
+ @remarks 缩略图压缩配置，如果此处设置了配置就按照这个配置进行压缩。如果此处没有设置，会按照 RCConfig.plist 中的配置进行压缩。
+ */
+ static void imageCompressConfig(double maxSize, double minSize,double quality) {
+   Map map = {"maxSize":maxSize,"minSize":minSize,"quality":quality};
+     _channel.invokeMethod(RCMethodKey.ImageCompressConfig, map);
+ }
 
   ///通过全局唯一 ID 获取消息实体
   ///发送 message 成功后，服务器会给每个 message 分配一个唯一 ID(messageUId)

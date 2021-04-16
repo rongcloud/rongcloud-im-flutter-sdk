@@ -244,7 +244,10 @@
         [self removeMessageExpansionForKey:call.arguments result:result];
     }else if([RCMethodKeyBatchInsertMessage isEqualToString:call.method]) {
         [self batchInsertMessage:call.arguments result:result];
+    }else if([RCMethodKeyImageCompressConfig isEqualToString:call.method]) {
+        [self imageCompressConfig:call.arguments result:result];
     }
+    
     else {
         result(FlutterMethodNotImplemented);
     }
@@ -1191,7 +1194,22 @@
         result([NSNumber numberWithBool:rc]);
     }
 }
-
+ 
+- (void)imageCompressConfig:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"imageCompressConfig";
+    [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        CGFloat maxSize = (CGFloat)[param[@"maxSize"] floatValue];
+        CGFloat minSize = (CGFloat)[param[@"minSize"] floatValue];
+        CGFloat quality = (CGFloat)[param[@"quality"] floatValue];
+        RCImageCompressConfig *config = [[RCImageCompressConfig alloc] init];
+        config.maxSize= maxSize;
+        config.minSize= minSize;
+        config.quality= quality;
+        [RCIMClient sharedRCIMClient].imageCompressConfig = config;
+    }
+}
 
 #pragma mark - 插入消息
 
@@ -1208,7 +1226,6 @@
         NSString *contentStr = param[@"content"];
         NSData *data = [contentStr dataUsingEncoding:NSUTF8StringEncoding];
         Class clazz = [[RCMessageMapper sharedMapper] messageClassWithTypeIdenfifier:objName];
-        
         RCMessageContent *content = nil;
         if([objName isEqualToString:RCVoiceMessageTypeIdentifier]) {
             content = [self getVoiceMessage:data];

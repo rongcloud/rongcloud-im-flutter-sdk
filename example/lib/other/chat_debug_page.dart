@@ -27,7 +27,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     super.initState();
     conversationType = arguments["coversationType"];
     targetId = arguments["targetId"];
-    titles = ["设置免打扰", "取消免打扰", "查看免打扰", "搜索会话消息记录", "通过UId获取消息","批量插入消息"];
+    titles = ["设置免打扰", "取消免打扰", "查看免打扰", "搜索会话消息记录", "通过UId获取消息","批量插入消息","设置缩略图配置"];
     if (conversationType == RCConversationType.Private) {
       List onlyPrivateTitles = [
         "加入黑名单",
@@ -76,6 +76,9 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
         break;
         case "批量插入消息":
         _batchInsertMessage();
+        break;
+      case "设置缩略图配置":
+        _imageCompressConfig();
         break;
       case "发送定向消息":
         _onSendDirectionalMessage();
@@ -207,6 +210,9 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
       print("sendDirectionalMessage $messageId, $status, $code");
     });
   }
+ void _imageCompressConfig () {
+   RongIMClient.imageCompressConfig(120,50,0.3);
+ }
 
   @override
   Widget build(BuildContext context) {
