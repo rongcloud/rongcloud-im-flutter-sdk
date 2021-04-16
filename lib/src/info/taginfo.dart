@@ -1,4 +1,4 @@
-class Conversation {
+class TagInfo {
   String tagId;
   String tagName;
   int count;
