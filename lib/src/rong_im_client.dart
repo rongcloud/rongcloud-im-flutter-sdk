@@ -856,6 +856,32 @@ class RongIMClient {
     }
   }
 
+  /*!
+ 批量插入接收的消息（该消息只插入本地数据库，实际不会发送给服务器和对方）
+ RCMessage 下列属性会被入库，其余属性会被抛弃
+ conversationType    会话类型
+ targetId            会话 ID
+ messageDirection    消息方向
+ senderUserId        发送者 ID
+ receivedStatus      接收状态；消息方向为接收方，并且 receivedStatus 为 ReceivedStatus_UNREAD 时，该条消息未读
+ sentStatus          发送状态
+ content             消息的内容
+ sentTime            消息发送的 Unix 时间戳，单位为毫秒 ，会影响消息排序
+ extra            RCMessage 的额外字段
+ 
+ @discussion 此方法不支持聊天室的会话类型。每批最多处理  500 条消息，超过 500 条返回 NO
+ @discussion 消息的未读会累加到回话的未读数上
+
+ @remarks 消息操作
+ */
+static void batchInsertMessage(List<Message> msgs,
+Function(int code) finished) async {
+  Map map = {"messageList":msgs};
+  int code = await _channel.invokeMethod(RCMethodKey.BatchInsertMessage,map);
+    if (finished != null) {
+      finished(code);
+    }
+}
   /// 删除特定会话的消息
   ///
   /// [conversationType] 会话类型，参见枚举 [RCConversationType]

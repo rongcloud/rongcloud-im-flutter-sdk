@@ -21,6 +21,7 @@ class RCMethodKey {
   static const String SetCurrentUserInfo = 'setCurrentUserInfo';
   static const String InsertIncomingMessage = 'insertIncomingMessage';
   static const String InsertOutgoingMessage = 'insertOutgoingMessage';
+  static const String BatchInsertMessage = 'BatchInsertMessage';
   static const String GetTotalUnreadCount = 'getTotalUnreadCount';
   static const String GetUnreadCountTargetId = 'getUnreadCountTargetId';
   static const String GetUnreadCountConversationTypeList =

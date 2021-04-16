@@ -25,6 +25,7 @@ static NSString *RCMethodKeySetServerInfo = @"setServerInfo";
 static NSString *RCMethodKeySetCurrentUserInfo = @"setCurrentUserInfo";
 static NSString *RCMethodKeyInsertIncomingMessage = @"insertIncomingMessage";
 static NSString *RCMethodKeyInsertOutgoingMessage = @"insertOutgoingMessage";
+static NSString *RCMethodKeyBatchInsertMessage = @"BatchInsertMessage";
 static NSString *RCMethodKeyGetTotalUnreadCount = @"getTotalUnreadCount";
 static NSString *RCMethodKeyGetUnreadCountTargetId = @"getUnreadCountTargetId";
 static NSString *RCMethodKeyGetUnreadCountConversationTypeList = @"getUnreadCountConversationTypeList";

@@ -242,6 +242,8 @@
         [self updateMessageExpansion:call.arguments result:result];
     }else if([RCMethodKeyRemoveMessageExpansionForKey isEqualToString:call.method]) {
         [self removeMessageExpansionForKey:call.arguments result:result];
+    }else if([RCMethodKeyBatchInsertMessage isEqualToString:call.method]) {
+        [self batchInsertMessage:call.arguments result:result];
     }
     else {
         result(FlutterMethodNotImplemented);
@@ -1266,6 +1268,19 @@
         }
         NSString *jsonString = [RCFlutterMessageFactory message2String:message];
         result(@{@"message":jsonString,@"code":@(0)});
+    }
+}
+
+- (void)batchInsertMessage:(id)arg result:(FlutterResult)result{
+    NSString *LOG_TAG =  @"batchInsertMessage";
+    [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
+    if ([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        NSArray *msgs = param[@"messageList"];
+        BOOL flag = [[RCIMClient sharedRCIMClient] batchInsertMessage:msgs];
+        result(@(flag));
+    }else{
+        result(@(0));
     }
 }
 

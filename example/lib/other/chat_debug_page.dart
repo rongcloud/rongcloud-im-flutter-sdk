@@ -5,11 +5,10 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import '../im/util/dialog_util.dart';
 import 'dart:developer' as developer;
 
+
 class ChatDebugPage extends StatefulWidget {
   final Map arguments;
-
   ChatDebugPage({Key key, this.arguments}) : super(key: key);
-
   @override
   State<StatefulWidget> createState() =>
       _ChatDebugPageState(arguments: this.arguments);
@@ -22,14 +21,13 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   int conversationType;
   String targetId;
   bool isPrivate;
-
   _ChatDebugPageState({this.arguments});
   @override
   void initState() {
     super.initState();
     conversationType = arguments["coversationType"];
     targetId = arguments["targetId"];
-    titles = ["设置免打扰", "取消免打扰", "查看免打扰", "搜索会话消息记录", "通过UId获取消息"];
+    titles = ["设置免打扰", "取消免打扰", "查看免打扰", "搜索会话消息记录", "通过UId获取消息","批量插入消息"];
     if (conversationType == RCConversationType.Private) {
       List onlyPrivateTitles = [
         "加入黑名单",
@@ -75,6 +73,9 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
         break;
       case "通过UId获取消息":
         _getMessageByUId();
+        break;
+        case "批量插入消息":
+        _batchInsertMessage();
         break;
       case "发送定向消息":
         _onSendDirectionalMessage();
@@ -182,6 +183,21 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     DialogUtil.showAlertDiaLog(context, "${msg.toString()}");
   }
 
+ void _batchInsertMessage() async{
+    List msgs =
+        await RongIMClient.getHistoryMessage(conversationType, targetId, 0, 20);
+        if (msgs.length <= 0) {
+          return;
+        }
+    Message message = msgs[(Random().nextInt(msgs.length - 1))];  
+    RongIMClient.batchInsertMessage( [message], (int code){
+    if(code != 0){
+    DialogUtil.showAlertDiaLog(context, "插入数据库消息成功");
+    }else{
+    DialogUtil.showAlertDiaLog(context, "插入数据库消息失败");
+    }
+  });
+}
   void _onSendDirectionalMessage() async {
     TextMessage txtMessage = new TextMessage();
     txtMessage.content = "这条消息来自 Flutter 的群定向消息";
