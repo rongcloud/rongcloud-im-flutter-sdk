@@ -234,7 +234,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     tagInfo.count = 10;
     DateTime time = DateTime.now();
     int timestamps = time.millisecondsSinceEpoch;
-    tagInfo.timestamp = timestamps.toString();
+    tagInfo.timestamp = timestamps
    RongIMClient.addTag(tagInfo,(int code){
     String toast = code == 0 ? "添加标签成功" : "添加标签失败， $code";
       developer.log(toast, name: pageName);
@@ -257,7 +257,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     tagInfo.count = 10;
     DateTime time = DateTime.now();
     int timestamp = time.millisecondsSinceEpoch;
-    tagInfo.timestamp = timestamp.toString();
+    tagInfo.timestamp = timestamp;
    RongIMClient.updateTag(tagInfo,(int code){
     String toast = code == 0 ? "更新标签成功" : "更新标签失败， $code";
       developer.log(toast, name: pageName);
