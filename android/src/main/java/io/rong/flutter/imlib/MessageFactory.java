@@ -12,12 +12,14 @@ import io.rong.imlib.location.message.LocationMessage;
 import io.rong.imlib.model.ChatRoomInfo;
 import io.rong.imlib.model.ChatRoomMemberInfo;
 import io.rong.imlib.model.Conversation;
+import io.rong.imlib.model.ConversationTagInfo;
 import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageConfig;
 import io.rong.imlib.model.MessageContent;
 import io.rong.imlib.model.MessagePushConfig;
 import io.rong.imlib.model.ReadReceiptInfo;
 import io.rong.imlib.model.SearchConversationResult;
+import io.rong.imlib.model.TagInfo;
 import io.rong.imlib.typingmessage.TypingStatus;
 import io.rong.message.GIFMessage;
 import io.rong.message.ImageMessage;
@@ -185,6 +187,35 @@ public class MessageFactory {
 //            map.put("content","");
         }
 
+
+        JSONObject jObj = new JSONObject(map);
+
+        String jStr = jObj.toString();
+        return jStr;
+    }
+
+    public String conversationTagInfo2String(ConversationTagInfo conversationTagInfo){
+        if (conversationTagInfo == null){
+            return "";
+        }
+        Map map = new HashMap();
+        map.put("tagInfo", tagInfo2String(conversationTagInfo.getTagInfo()));
+        map.put("isTop", conversationTagInfo.isTop());
+        JSONObject jObj = new JSONObject(map);
+
+        String jStr = jObj.toString();
+        return jStr;
+    }
+
+    private String tagInfo2String(TagInfo tagInfo){
+        if (tagInfo == null){
+            return "";
+        }
+        Map map = new HashMap();
+        map.put("tagId",tagInfo.getTagId());
+        map.put("tagName",tagInfo.getTagName());
+        map.put("count",tagInfo.getCount());
+        map.put("timestamp",tagInfo.getTimestamp());
 
         JSONObject jObj = new JSONObject(map);
 

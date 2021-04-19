@@ -79,6 +79,14 @@ public class RCMethodList {
     static String MethodKeyUpdateMessageExpansion = "updateMessageExpansion";
     static String MethodKeyRemoveMessageExpansionForKey = "removeMessageExpansionForKey";
 
+    //会话标签
+    static String MethodKeyGetConversationTopStatusInTag = "getConversationTopStatusInTag";
+    static String MethodKeySetConversationToTopInTag = "setConversationToTopInTag";
+    static String MethodKeyGetUnreadCountByTag = "getUnreadCountByTag";
+    static String MethodKeyGetConversationsFromTagByPage = "getConversationsFromTagByPage";
+    static String MethodKeyGetTagsFromConversation = "getTagsFromConversation";
+    static String MethodKeyRemoveTagsFromConversation = "removeTagsFromConversation";
+    static String MethodKeyRemoveConversationsFromTag = "removeConversationsFromTag";
 
 
 

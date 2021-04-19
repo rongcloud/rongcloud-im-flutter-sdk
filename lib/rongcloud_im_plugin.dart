@@ -25,6 +25,9 @@ export 'src/info/conversation.dart';
 export 'src/info/search_conversation_result.dart';
 export 'src/info/message.dart';
 export 'src/info/typing_status.dart';
+export 'src/info/conversation_tag_info.dart';
+export 'src/info/tag_info.dart';
+export 'src/info/conversation_identifier.dart';
 
 //宏定义
 export 'src/common_define.dart';

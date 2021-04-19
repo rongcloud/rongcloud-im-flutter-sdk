@@ -84,7 +84,6 @@ class RCMethodKey {
   static const String RemoveTag = 'removeTag';
   static const String UpdateTag = 'updateTag';
   static const String GetTags = 'getTags';
-  static const String AddConversationsToTag = 'addConversationsToTag';
 
   // 聊天室状态存储
   static const String SetChatRoomEntry = 'SetChatRoomEntry';
@@ -98,6 +97,16 @@ class RCMethodKey {
   static const String UpdateMessageExpansion = 'updateMessageExpansion';
   static const String RemoveMessageExpansionForKey =
       'removeMessageExpansionForKey';
+
+  // 会话标签
+  static const String GetConversationTopStatusInTag ='getConversationTopStatusInTag';
+  static const String SetConversationToTopInTag = 'setConversationToTopInTag';
+  static const String GetUnreadCountByTag = 'getUnreadCountByTag';
+  static const String GetConversationsFromTagByPage ='getConversationsFromTagByPage';
+  static const String GetTagsFromConversation = 'getTagsFromConversation';
+  static const String RemoveTagsFromConversation = 'removeTagsFromConversation';
+  static const String RemoveConversationsFromTag = 'removeConversationsFromTag';
+  static const String AddConversationsToTag = 'addConversationsToTag';
 }
 
 //callback list //native 会触发此方法
@@ -108,7 +117,7 @@ class RCMethodCallBackKey {
   static const String JoinChatRoom = 'joinChatRoomCallBack';
   static const String QuitChatRoom = 'quitChatRoomCallBack';
   static const String OnChatRoomReset = 'onChatRoomResetCallBack';
-  static const String OnChatRoomDestroyed = 'onChatRoomDestroyedCallBack';  
+  static const String OnChatRoomDestroyed = 'onChatRoomDestroyedCallBack';
   static const String ChatRoomKVDidSync = 'chatRoomKVDidSyncCallBack';
   static const String ChatRoomKVDidUpdate = 'chatRoomKVDidUpdateCallBack';
   static const String ChatRoomKVDidRemove = 'chatRoomKVDidRemoveCallBack';
@@ -128,8 +137,7 @@ class RCMethodCallBackKey {
       'MessageExpansionDidUpdateCallBack';
   static const String MessageExpansionDidRemove =
       'MessageExpansionDidRemoveCallBack';
-  static const String DatabaseOpened =
-      'DatabaseOpenedCallBack';
-      static const String OnConversationTagChanged =
-      'onConversationTagChanged';
+  static const String DatabaseOpened = 'DatabaseOpenedCallBack';
+
+  static const String ConversationTagChanged = 'ConversationTagChangedCallBack';
 }
