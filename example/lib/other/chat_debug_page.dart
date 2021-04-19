@@ -234,7 +234,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     tagInfo.count = 10;
     DateTime time = DateTime.now();
     int timestamps = time.millisecondsSinceEpoch;
-    tagInfo.timestamp = timestamps
+    tagInfo.timestamp = timestamps;
    RongIMClient.addTag(tagInfo,(int code){
     String toast = code == 0 ? "添加标签成功" : "添加标签失败， $code";
       developer.log(toast, name: pageName);
