@@ -2213,6 +2213,9 @@ static Future<List /*TagInfo*/ > getTags(Function(int code, List tags) finished)
   //数据库打开（调用 connect 之后回调）
   static Function(int status) onDatabaseOpened;
 
+  // 标签变化监听器
+  static Function() onConversationTagChanged;
+
   ///响应原生的事件
   ///
   static void _addNativeMethodCallHandler() {
@@ -2450,6 +2453,11 @@ static Future<List /*TagInfo*/ > getTags(Function(int code, List tags) finished)
             Map map = call.arguments;
             int status = map["status"];
             onDatabaseOpened(status);
+          }
+          break;
+         case RCMethodCallBackKey.OnConversationTagChanged:
+          if (onConversationTagChanged != null) {
+            onConversationTagChanged();
           }
           break;
       }

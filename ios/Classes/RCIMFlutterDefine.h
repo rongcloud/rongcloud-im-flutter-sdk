@@ -85,6 +85,13 @@ static NSString *RCMethodKeyRemoveTag = @"removeTag";
 static NSString *RCMethodKeyUpdateTag = @"updateTag";
 static NSString *RCMethodKeyGetTags = @"getTags";
 static NSString *RCMethodKeyAddConversationsToTag = @"addConversationsToTag";
+static NSString *RCMethodKeyRemoveConversationsFromTag = @"removeConversationsFromTag";
+static NSString *RCMethodKeyRemoveTagsFromConversation = @"removeTagsFromConversation";
+static NSString *RCMethodKeyGetTagsFromConversation = @"getTagsFromConversation";
+static NSString *RCMethodKeyGetConversationsFromTagByPage = @"getConversationsFromTagByPage";
+static NSString *RCMethodKeyGetUnreadCountByTag = @"getUnreadCountByTag";
+static NSString *RCMethodKeySetConversationToTopInTag = @"setConversationToTopInTag";
+static NSString *RCMethodKeyGetConversationTopStatusInTag = @"getConversationTopStatusInTag";
 
 
 // 聊天室状态存储
@@ -120,3 +127,4 @@ static NSString *RCMethodCallBackKeyDestructMessage = @"DestructMessageCallBack"
 static NSString *RCMethodCallBackKeyMessageExpansionDidUpdate = @"MessageExpansionDidUpdateCallBack";
 static NSString *RCMethodCallBackKeyMessageExpansionDidRemove = @"MessageExpansionDidRemoveCallBack";
 static NSString *RCMethodCallBackDatabaseOpened = @"DatabaseOpenedCallBack";
+static NSString *RCMethodCallBackOnConversationTagChanged = @"onConversationTagChanged";

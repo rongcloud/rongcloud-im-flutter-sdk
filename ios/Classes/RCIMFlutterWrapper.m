@@ -55,7 +55,7 @@
                                content:(NSString *)content;
 @end
 
-@interface RCIMFlutterWrapper ()<RCIMClientReceiveMessageDelegate,RCConnectionStatusChangeDelegate,RCTypingStatusDelegate, RCMessageDestructDelegate, RCChatRoomKVStatusChangeDelegate, RCMessageExpansionDelegate, RCChatRoomStatusDelegate>
+@interface RCIMFlutterWrapper ()<RCIMClientReceiveMessageDelegate,RCConnectionStatusChangeDelegate,RCTypingStatusDelegate, RCMessageDestructDelegate, RCChatRoomKVStatusChangeDelegate, RCMessageExpansionDelegate, RCChatRoomStatusDelegate,RCTagDelegate>
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 @property (nonatomic, strong) RCFlutterConfig *config;
 @property (nonatomic, strong) NSString *sdkVersion;
@@ -258,16 +258,26 @@
         [self getTags:call.arguments result:result];
     }else if([RCMethodKeyAddConversationsToTag isEqualToString:call.method]) {
         [self addConversationsToTag:call.arguments result:result];
+    }else if([RCMethodKeyRemoveConversationsFromTag isEqualToString:call.method]){
+        [self removeConversationsFromTag:call.arguments result:result];
+    }else if([RCMethodKeyRemoveTagsFromConversation isEqualToString:call.method]){
+        [self removeTagsFromConversation:call.arguments result:result];
+    }else if([RCMethodKeyGetTagsFromConversation isEqualToString:call.method]){
+        [self getTagsFromConversation:call.arguments result:result];
+    }else if([RCMethodKeyGetConversationsFromTagByPage isEqualToString:call.method]){
+        [self getConversationsFromTagByPage:call.arguments result:result];
+    }else if([RCMethodKeyGetUnreadCountByTag isEqualToString:call.method]){
+        [self getUnreadCountByTag:call.arguments result:result];
+    }else if([RCMethodKeySetConversationToTopInTag isEqualToString:call.method]){
+        [self setConversationToTopInTag:call.arguments result:result];
+    }else if([RCMethodKeyGetConversationTopStatusInTag isEqualToString:call.method]){
+        [self getConversationTopStatusInTag:call.arguments result:result];
     }
-
     else {
         result(FlutterMethodNotImplemented);
     }
     
 }
-
-
-
 
 #pragma mark - selector
 - (void)initWithRCIMAppKey:(id)arg {
@@ -287,6 +297,7 @@
         [[RCIMClient sharedRCIMClient] setRCChatRoomKVStatusChangeDelegate:self];
         [[RCChatRoomClient sharedChatRoomClient] setChatRoomStatusDelegate:self];
         [[RCIMClient sharedRCIMClient] setMessageExpansionDelegate:self];
+        [RCCoreClient sharedCoreClient].tagDelegate = self;
         self.sdkVersion = [conf objectForKey:@"version"];
     }else {
         [RCLog e:[NSString stringWithFormat:@"%@,非法参数",LOG_TAG]];
@@ -1234,6 +1245,11 @@
     }
 }
 
+#pragma mark -  标签变化监听器
+- (void)onConversationTagChanged {
+    [self.channel invokeMethod:RCMethodCallBackOnConversationTagChanged arguments:nil];
+}
+
 #pragma mark - 会话标签
 - (void)addTag:(id)arg result:(FlutterResult)result {
     NSString *LOG_TAG =  @"addTag";
@@ -1314,6 +1330,119 @@
     [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
+        NSString *tagId = param[@"tagId"];
+        NSArray *indentifers;
+        [[RCCoreClient sharedCoreClient] addConversationsToTag:tagId conversationIdentifiers:indentifers success:^{
+            
+        } error:^(RCErrorCode errorCode) {
+            
+        }];
+    }
+}
+
+- (void)removeConversationsFromTag:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"removeConversationsFromTag";
+    [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        NSString *tagId = param[@"tagId"];
+        NSArray *indentifers;
+        [[RCCoreClient sharedCoreClient] removeConversationsFromTag:tagId conversationIdentifiers:indentifers success:^{
+            
+        } error:^(RCErrorCode errorCode) {
+            
+        }];
+    }
+}
+
+- (void)removeTagsFromConversation:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"removeTagsFromConversation";
+    [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        RCConversationIdentifier *indentifer = [[RCConversationIdentifier alloc] init];
+        NSArray *tagIds;
+        [[RCCoreClient sharedCoreClient] removeTagsFromConversation:indentifer tagIds:tagIds success:^{
+            
+        } error:^(RCErrorCode errorCode) {
+            
+        }];
+    }
+}
+
+- (void)getTagsFromConversation:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"getTagsFromConversation";
+    [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        RCConversationIdentifier *indentifer = [[RCConversationIdentifier alloc] init];
+       NSArray *tagInfos = [[RCCoreClient sharedCoreClient] getTagsFromConversation:indentifer];
+        if (tagInfos.count > 0) {
+            NSMutableArray *arr = [NSMutableArray new];
+            for(RCTagInfo *info in tagInfos) {
+                NSString *conStr = [RCFlutterMessageFactory tagInfo2String:info];
+                [arr addObject:conStr];
+            }
+            result(@{@"code": @(0), @"getTagsFromConversation": [arr copy]});
+        }else {
+            result(@{@"code": @(0), @"getTagsFromConversation": @[]});
+        }
+    }
+}
+
+- (void)getConversationsFromTagByPage:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"getConversationsFromTagByPage";
+    [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        NSString *tagId = param[@"tagId"];
+        long long timestamp = [param[@"timestamp"] longLongValue];
+        int count = [param[@"count"] intValue];
+       NSArray *conversations = [[RCCoreClient sharedCoreClient] getConversationsFromTagByPage:tagId timestamp:timestamp count:count];
+        if (conversations.count > 0) {
+            NSMutableArray *arr = [NSMutableArray new];
+            for(RCConversation *conversation in conversations) {
+                NSString *conStr = [RCFlutterMessageFactory conversation2String:conversation];
+                [arr addObject:conStr];
+            }
+            result(@{@"code": @(0), @"getConversationsFromTagByPage": [arr copy]});
+        }else {
+            result(@{@"code": @(0), @"getConversationsFromTagByPage": @[]});
+        }
+    }
+}
+
+- (void)getUnreadCountByTag:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"getUnreadCountByTag";
+    [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        NSString *tagId = param[@"tagId"];
+        BOOL containBlocked = [param[@"containBlocked"] boolValue];
+       int count = [[RCCoreClient sharedCoreClient] getUnreadCountByTag:tagId containBlocked:containBlocked];
+    }
+}
+
+- (void)setConversationToTopInTag:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"setConversationToTopInTag";
+    [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        NSString *tagId = param[@"tagId"];
+        RCConversationType type = [param[@"conversationType"] integerValue];
+        BOOL isTop = [param[@"isTop"] boolValue];
+       BOOL flag = [[RCCoreClient sharedCoreClient] setConversationToTop:type targetId:tagId isTop:isTop];
+    }
+}
+
+- (void)getConversationTopStatusInTag:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"getConversationTopStatusInTag";
+    [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        NSString *tagId = param[@"tagId"];
+        RCConversationIdentifier *indentifer = [[RCConversationIdentifier alloc] init];
+       BOOL flag = [[RCCoreClient sharedCoreClient] getConversationTopStatusInTag:indentifer tagId:tagId];
     }
 }
 
