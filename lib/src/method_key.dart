@@ -80,10 +80,7 @@ class RCMethodKey {
   static const String SendIntactMessage = 'sendIntactMessage';
   static const String ImageCompressConfig = 'imageCompressConfig';
   static const String TypingUpdateSeconds = 'typingUpdateSeconds';
-  static const String AddTag = 'addTag';
-  static const String RemoveTag = 'removeTag';
-  static const String UpdateTag = 'updateTag';
-  static const String GetTags = 'getTags';
+  
 
   // 聊天室状态存储
   static const String SetChatRoomEntry = 'SetChatRoomEntry';
@@ -99,6 +96,10 @@ class RCMethodKey {
       'removeMessageExpansionForKey';
 
   // 会话标签
+  static const String AddTag = 'addTag';
+  static const String RemoveTag = 'removeTag';
+  static const String UpdateTag = 'updateTag';
+  static const String GetTags = 'getTags';
   static const String GetConversationTopStatusInTag ='getConversationTopStatusInTag';
   static const String SetConversationToTopInTag = 'setConversationToTopInTag';
   static const String GetUnreadCountByTag = 'getUnreadCountByTag';

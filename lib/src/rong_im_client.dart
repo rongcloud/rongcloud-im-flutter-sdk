@@ -1910,7 +1910,7 @@ class RongIMClient {
     }
   }
 
-//  缩略图压缩配置
+//  缩略图压缩配置(仅 ios 使用，Android 请在 rc_configuration.xml 文件进行配置)
 //  maxSize:缩略图最大尺寸  minSize:缩略图最小尺寸  quality:缩略图质量压缩比
 //  @remarks 缩略图压缩配置，如果此处设置了配置就按照这个配置进行压缩。如果此处没有设置，会按照 RCConfig.plist 中的配置进行压缩。
   static void imageCompressConfig(
@@ -1919,7 +1919,7 @@ class RongIMClient {
     _channel.invokeMethod(RCMethodKey.ImageCompressConfig, map);
   }
 
-  /// typing 状态更新的时间，默认是 6s
+  /// typing 状态更新的时间，默认是 6s (仅 ios 使用，Android 请在 rc_configuration.xml 文件进行配置)
   static void typingUpdateSeconds(int typingUpdateSeconds) {
     Map map = {"typingUpdateSeconds": typingUpdateSeconds};
     _channel.invokeMethod(RCMethodKey.TypingUpdateSeconds, map);
@@ -2051,7 +2051,7 @@ class RongIMClient {
  @return 标签列表
  @remarks 高级功能
  */
-  static Future<List /*TagInfo*/ > getTags(
+  static Future getTags(
       Function(int code, List tags) finished) async {
     Map result = await _channel.invokeMethod(RCMethodKey.GetTags, null);
     int code = result['code'];

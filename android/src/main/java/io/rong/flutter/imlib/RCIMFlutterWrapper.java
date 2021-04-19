@@ -49,6 +49,7 @@ import io.rong.imlib.model.MessageConfig;
 import io.rong.imlib.model.MessageContent;
 import io.rong.imlib.model.MessagePushConfig;
 import io.rong.imlib.model.SearchConversationResult;
+import io.rong.imlib.model.TagInfo;
 import io.rong.imlib.model.UnknownMessage;
 import io.rong.imlib.model.UserInfo;
 import io.rong.imlib.typingmessage.TypingStatus;
@@ -307,6 +308,16 @@ public class RCIMFlutterWrapper {
             updateMessageExpansion(call.arguments, result);
         } else if (RCMethodList.MethodKeyRemoveMessageExpansionForKey.equalsIgnoreCase(call.method)) {
             removeMessageExpansion(call.arguments, result);
+        } else if (RCMethodList.MethodKeyAddTag.equalsIgnoreCase(call.method)) {
+            addTag(call.arguments, result);
+        } else if (RCMethodList.MethodKeyRemoveTag.equalsIgnoreCase(call.method)) {
+            removeTag(call.arguments, result);
+        } else if (RCMethodList.MethodKeyUpdateTag.equalsIgnoreCase(call.method)) {
+            updateTag(call.arguments, result);
+        } else if (RCMethodList.MethodKeyGetTags.equalsIgnoreCase(call.method)) {
+            getTags(call.arguments, result);
+        } else if (RCMethodList.MethodKeyAddConversationsToTag.equalsIgnoreCase(call.method)) {
+            addConversationsToTag(call.arguments, result);
         } else if (RCMethodList.MethodKeyRemoveConversationsFromTag.equalsIgnoreCase(call.method)) {
             removeConversationsFromTag(call.arguments, result);
         } else if (RCMethodList.MethodKeyRemoveTagsFromConversation.equalsIgnoreCase(call.method)) {
@@ -3506,6 +3517,133 @@ public class RCIMFlutterWrapper {
                 }
             });
         }
+    }
+
+    private void addTag(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            String tagId = "";
+            if (paramMap.get("tagId") != null) {
+                tagId = (String) paramMap.get("tagId");
+            }
+            String tagName = "";
+            if (paramMap.get("tagName") != null) {
+                tagName = (String) paramMap.get("tagName");
+            }
+            int count = 0;
+            if (paramMap.get("count") != null) {
+                count = (int) paramMap.get("count");
+            }
+            long timestamp = 0;
+            if (paramMap.get("timestamp") != null) {
+                timestamp = (((Number) paramMap.get("timestamp")).longValue());
+            }
+            RongCoreClient.getInstance().addTag(new TagInfo(tagId, tagName, count, timestamp), new IRongCoreCallback.OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    Map resultMap = new HashMap();
+                    resultMap.put("code", 0);
+                    result.success(resultMap);
+                }
+
+                @Override
+                public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("code", coreErrorCode.getValue());
+                    result.success(resultMap);
+                }
+            });
+        }
+    }
+
+    private void removeTag(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            String tagId = "";
+            if (paramMap.get("count") != null) {
+                tagId = (String) paramMap.get("tagId");
+            }
+            RongCoreClient.getInstance().removeTag(tagId, new IRongCoreCallback.OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    Map resultMap = new HashMap();
+                    resultMap.put("code", 0);
+                    result.success(resultMap);
+                }
+
+                @Override
+                public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("code", coreErrorCode.getValue());
+                    result.success(resultMap);
+                }
+            });
+        }
+    }
+
+    private void updateTag(Object arg, final Result result) {
+        Map paramMap = (Map) arg;
+        String tagId = "";
+        if (paramMap.get("tagId") != null) {
+            tagId = (String) paramMap.get("tagId");
+        }
+        String tagName = "";
+        if (paramMap.get("tagName") != null) {
+            tagName = (String) paramMap.get("tagName");
+        }
+        int count = 0;
+        if (paramMap.get("count") != null) {
+            count = (int) paramMap.get("count");
+        }
+        long timestamp = 0;
+        if (paramMap.get("timestamp") != null) {
+            timestamp = (((Number) paramMap.get("timestamp")).longValue());
+        }
+        RongCoreClient.getInstance().updateTag(new TagInfo(tagId, tagName, count, timestamp), new IRongCoreCallback.OperationCallback() {
+            @Override
+            public void onSuccess() {
+                Map resultMap = new HashMap();
+                resultMap.put("code", 0);
+                result.success(resultMap);
+            }
+
+            @Override
+            public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
+                Map resultMap = new HashMap();
+                resultMap.put("code", coreErrorCode.getValue());
+                result.success(resultMap);
+            }
+        });
+    }
+
+    private void getTags(Object arg, final Result result) {
+        RongCoreClient.getInstance().getTags(new IRongCoreCallback.ResultCallback<List<TagInfo>>() {
+            @Override
+            public void onSuccess(List<TagInfo> tagInfos) {
+                Map resultMap = new HashMap();
+                if (tagInfos == null) {
+                    result.success(null);
+                    return;
+                }
+                List list = new ArrayList();
+                for (TagInfo info : tagInfos) {
+                    String conStr = MessageFactory.getInstance().tagInfo2String(info);
+                    list.add(conStr);
+                }
+                resultMap.put("getTags", list);
+                resultMap.put("code", 0);
+                result.success(resultMap);
+
+            }
+
+            @Override
+            public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
+                Map resultMap = new HashMap();
+                resultMap.put("getTags", null);
+                resultMap.put("code", coreErrorCode.getValue());
+                result.success(resultMap);
+            }
+        });
     }
 
     private void getUnreadCountByTag(Object arg, final Result result) {

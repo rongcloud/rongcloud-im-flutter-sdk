@@ -207,7 +207,7 @@ public class MessageFactory {
         return jStr;
     }
 
-    private String tagInfo2String(TagInfo tagInfo){
+    public String tagInfo2String(TagInfo tagInfo){
         if (tagInfo == null){
             return "";
         }
