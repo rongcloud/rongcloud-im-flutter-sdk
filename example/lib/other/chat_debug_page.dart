@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import '../im/util/dialog_util.dart';
 import 'dart:developer' as developer;
-
+import 'package:rongcloud_im_plugin/src/info/tag_info.dart';
+import 'dart:core';
 
 class ChatDebugPage extends StatefulWidget {
   final Map arguments;
@@ -27,7 +28,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     super.initState();
     conversationType = arguments["coversationType"];
     targetId = arguments["targetId"];
-    titles = ["设置免打扰", "取消免打扰", "查看免打扰", "搜索会话消息记录", "通过UId获取消息","批量插入消息","设置缩略图配置"];
+    titles = ["设置免打扰", "取消免打扰", "查看免打扰", "搜索会话消息记录", "通过UId获取消息","批量插入数据库消息","设置缩略图配置","添加标签","移除标签","更新标签","获取标签列表"];
     if (conversationType == RCConversationType.Private) {
       List onlyPrivateTitles = [
         "加入黑名单",
@@ -74,11 +75,23 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
       case "通过UId获取消息":
         _getMessageByUId();
         break;
-        case "批量插入消息":
+        case "批量插入数据库消息":
         _batchInsertMessage();
         break;
       case "设置缩略图配置":
         _imageCompressConfig();
+        break;
+      case "添加标签":
+        _addtag();
+        break;
+      case "移除标签":
+        _removeTag();
+        break;
+      case "更新标签":
+        _updateTag();
+        break;
+      case "获取标签列表":
+        _getTags();
         break;
       case "发送定向消息":
         _onSendDirectionalMessage();
@@ -213,6 +226,51 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
  void _imageCompressConfig () {
    RongIMClient.imageCompressConfig(120,50,0.3);
  }
+
+ void _addtag () {
+    TagInfo tagInfo = new TagInfo() ;
+    tagInfo.tagId = targetId;
+    tagInfo.tagName = 'flutter addtag test';
+    tagInfo.count = 10;
+    DateTime time = DateTime.now();
+    int timestamps = time.millisecondsSinceEpoch;
+    tagInfo.timestamp = timestamps.toString();
+   RongIMClient.addTag(tagInfo,(int code){
+    String toast = code == 0 ? "添加标签成功" : "添加标签失败， $code";
+      developer.log(toast, name: pageName);
+      DialogUtil.showAlertDiaLog(context, toast);
+         });
+}
+
+ void _removeTag () {
+   RongIMClient.removeTag(targetId,(int code){
+    String toast = code == 0 ? "删除标签成功" : "删除标签失败， $code";
+      developer.log(toast, name: pageName);
+      DialogUtil.showAlertDiaLog(context, toast);
+         });
+}
+
+ void _updateTag () {
+   TagInfo tagInfo = new TagInfo() ;
+    tagInfo.tagId = targetId;
+    tagInfo.tagName = 'flutter updatetag test';
+    tagInfo.count = 10;
+    DateTime time = DateTime.now();
+    int timestamp = time.millisecondsSinceEpoch;
+    tagInfo.timestamp = timestamp.toString();
+   RongIMClient.updateTag(tagInfo,(int code){
+    String toast = code == 0 ? "更新标签成功" : "更新标签失败， $code";
+      developer.log(toast, name: pageName);
+      DialogUtil.showAlertDiaLog(context, toast);
+         });
+}
+
+ void _getTags () async{
+   List tags =  await RongIMClient.getTags();
+     if (tags.length <= 0) {
+          return;
+      }
+}
 
   @override
   Widget build(BuildContext context) {

@@ -2010,8 +2010,8 @@ static addTag (TagInfo taginfo, Function(int code) finished) async {
  
  @remarks 高级功能
  */
-static removeTag (TagInfo taginfo, Function(int code) finished) async {
-    Map map = {"tagId": taginfo.tagId, "tagName": taginfo.tagName,"count": taginfo.count,"timestamp": taginfo.timestamp};
+static removeTag (String targetId, Function(int code) finished) async {
+   Map map = {"tagId": targetId};
  int result = await _channel.invokeMethod(
         RCMethodKey.RemoveTag, map);
     if (finished != null) {

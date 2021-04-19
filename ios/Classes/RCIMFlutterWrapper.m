@@ -1241,14 +1241,14 @@
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
         NSString *tagId = param[@"tagId"];
-        NSString *tagName = param[@"tagId"];
+        NSString *tagName = param[@"tagName"];
         NSInteger count = [param[@"count"] integerValue];
-        long long timestamp = [param[@"tagId"] longLongValue];
+        NSString *timestamp = param[@"timestamp"];
         RCTagInfo *tagInfo = [[RCTagInfo alloc] init];
         tagInfo.tagId = tagId;
         tagInfo.tagName = tagName;
         tagInfo.count = count;
-        tagInfo.timestamp = timestamp;
+        tagInfo.timestamp = [timestamp longLongValue];
         [[RCCoreClient sharedCoreClient] addTag:tagInfo success:^{
                     
                 } error:^(RCErrorCode errorCode) {
