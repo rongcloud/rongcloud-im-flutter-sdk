@@ -7,7 +7,7 @@ import 'util/message_factory.dart';
 import 'method_key.dart';
 import 'info/connection_status_convert.dart';
 import 'dart:developer' as developer;
-
+import 'package:rongcloud_im_plugin/src/info/tag_info.dart';
 
 ///消息解析函数
 ///[content] 待解析消息json字符串
@@ -1840,7 +1840,7 @@ Function(int code) finished) async {
   ///
   ///[targetId] 聊天室 id
   ///
-  /// 用户没有开通多设备登录功能的前提下，同一个账号在一台新设备上登录的时候，会把这个账号在之前登录的设备上踢出。
+  /// 用户���有开通多设备登录功能的前提下，同一个账号在一台新设备上登录的时候，会把这个账号在之前登录的设备上踢出。
   /// 由于 SDK 有断线重连功能，存在下面情况。
   /// 用户在 A 设备登录，A 设备网络不稳定，没有连接成功，SDK 启动重连机制。
   /// 用户此时又在 B 设备登录，B 设备连接成功。
@@ -1982,6 +1982,82 @@ Function(int code) finished) async {
       finished(resultMap);
     }
   }
+/*!
+ 添加标签
+ 
+ @param tagInfo 标签信息。只需要设置标签信息的 tagId 和 tagName。
+ @param successBlock 成功的回调
+ @param errorBlock 失败的回调
+ 
+ @discussion 最多支持添加 20 个标签
+ @remarks 高级功能
+ */
+static addTag (TagInfo taginfo, Function(int code) finished) async {
+    Map map = {"tagId": taginfo.tagId, "tagName": taginfo.tagName,"count": taginfo.count,"timestamp": taginfo.timestamp};
+ int result = await _channel.invokeMethod(
+        RCMethodKey.AddTag, map);
+    if (finished != null) {
+      finished(result);
+    }
+}
+
+/*!
+ 移除标签
+ 
+ @param tagId 标签 ID
+ @param successBlock 成功的回调
+ @param errorBlock 失败的回调
+ 
+ @remarks 高级功能
+ */
+static removeTag (TagInfo taginfo, Function(int code) finished) async {
+    Map map = {"tagId": taginfo.tagId, "tagName": taginfo.tagName,"count": taginfo.count,"timestamp": taginfo.timestamp};
+ int result = await _channel.invokeMethod(
+        RCMethodKey.RemoveTag, map);
+    if (finished != null) {
+      finished(result);
+    }
+}
+
+/*!
+ 更新标签信息
+ 
+ @param tagInfo 标签信息。只支持修改标签信息的 tagName
+ @param successBlock 成功的回调
+ @param errorBlock 失败的回调
+ 
+ @remarks 高级功能
+ */
+static updateTag (TagInfo taginfo, Function(int code) finished) async {
+    Map map = {"tagId": taginfo.tagId, "tagName": taginfo.tagName,"count": taginfo.count,"timestamp": taginfo.timestamp};
+ int result = await _channel.invokeMethod(
+        RCMethodKey.UpdateTag, map);
+    if (finished != null) {
+      finished(result);
+    }
+}
+
+/*!
+ 获取标签列表
+ 
+ @return 标签列表
+ @remarks 高级功能
+ */
+static Future<List /*TagInfo*/ > getTags() async {
+    List list = await _channel.invokeMethod(
+        RCMethodKey.GetTags,null);
+    if (list == null) {
+      return List();
+    }
+    List tagList = new List();
+    for (String conStr in list) {
+      TagInfo tagInfo = new TagInfo() ;
+      tagList.add(tagInfo);
+    }
+    return tagList;
+  }
+
+
 
   ///连接状态发生变更
   ///
