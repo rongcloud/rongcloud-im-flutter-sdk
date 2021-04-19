@@ -341,20 +341,4 @@ class MessageFactory extends Object {
     return result;
   }
 
-TagInfo string2TagInfo (String resultStr){
-   if (TypeUtil.isEmptyString(resultStr)) {
-      return null;
-    }
-    Map map = json.decode(resultStr);
-    return map2TagInfo(map);
-}
-
-TagInfo map2TagInfo(Map map) {
-    TagInfo result = new TagInfo();
-    result.tagId = map["tagId"];
-    result.tagName = map["tagName"];
-    result.count = map["count"];
-    result.timestamp = map["timestamp"];
-}
-
 }
