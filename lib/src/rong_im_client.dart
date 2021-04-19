@@ -1994,10 +1994,10 @@ Function(int code) finished) async {
  */
 static addTag (TagInfo taginfo, Function(int code) finished) async {
     Map map = {"tagId": taginfo.tagId, "tagName": taginfo.tagName,"count": taginfo.count,"timestamp": taginfo.timestamp};
- int result = await _channel.invokeMethod(
+ Map result = await _channel.invokeMethod(
         RCMethodKey.AddTag, map);
     if (finished != null) {
-      finished(result);
+      finished(result["code"]);
     }
 }
 
@@ -2012,10 +2012,10 @@ static addTag (TagInfo taginfo, Function(int code) finished) async {
  */
 static removeTag (String targetId, Function(int code) finished) async {
    Map map = {"tagId": targetId};
- int result = await _channel.invokeMethod(
+   Map result = await _channel.invokeMethod(
         RCMethodKey.RemoveTag, map);
     if (finished != null) {
-      finished(result);
+      finished(result["code"]);
     }
 }
 
@@ -2030,10 +2030,10 @@ static removeTag (String targetId, Function(int code) finished) async {
  */
 static updateTag (TagInfo taginfo, Function(int code) finished) async {
     Map map = {"tagId": taginfo.tagId, "tagName": taginfo.tagName,"count": taginfo.count,"timestamp": taginfo.timestamp};
- int result = await _channel.invokeMethod(
+ Map result = await _channel.invokeMethod(
         RCMethodKey.UpdateTag, map);
     if (finished != null) {
-      finished(result);
+      finished(result["code"]);
     }
 }
 
@@ -2043,18 +2043,21 @@ static updateTag (TagInfo taginfo, Function(int code) finished) async {
  @return 标签列表
  @remarks 高级功能
  */
-static Future<List /*TagInfo*/ > getTags() async {
-    List list = await _channel.invokeMethod(
+static Future<List /*TagInfo*/ > getTags(Function(int code, List tags) finished) async {
+   Map result = await _channel.invokeMethod(
         RCMethodKey.GetTags,null);
-    if (list == null) {
-      return List();
-    }
-    List tagList = new List();
-    for (String conStr in list) {
-      TagInfo tagInfo = new TagInfo() ;
-      tagList.add(tagInfo);
-    }
-    return tagList;
+   int code = result['code'];
+   List resultList = new List();
+  if (code == 0) {
+    List tags = result['getTags'];
+    for (String conStr in tags) {
+      TagInfo tagInfo = MessageFactory .instance.string2TagInfo(conStr);
+      resultList.add(tagInfo);
+              }
+  }
+ if (finished != null) {
+        finished(code, resultList);
+   }
   }
 
 

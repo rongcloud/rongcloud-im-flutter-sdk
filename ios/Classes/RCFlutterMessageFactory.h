@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)messageContent2String:(RCMessageContent *)content;
 + (NSString *)typingStatus2String:(RCUserTypingStatus *)status;
 + (NSString *)searchConversationResult2String:(RCSearchConversationResult *)result;
++ (NSString *)tagInfo2String:(RCTagInfo *)tagInfo;
 @end
 
 NS_ASSUME_NONNULL_END

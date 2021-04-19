@@ -230,7 +230,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
  void _addtag () {
     TagInfo tagInfo = new TagInfo() ;
     tagInfo.tagId = targetId;
-    tagInfo.tagName = 'flutter addtag test';
+    tagInfo.tagName = 'FAddtag';
     tagInfo.count = 10;
     DateTime time = DateTime.now();
     int timestamps = time.millisecondsSinceEpoch;
@@ -253,7 +253,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
  void _updateTag () {
    TagInfo tagInfo = new TagInfo() ;
     tagInfo.tagId = targetId;
-    tagInfo.tagName = 'flutter updatetag test';
+    tagInfo.tagName = 'FUpdatetag';
     tagInfo.count = 10;
     DateTime time = DateTime.now();
     int timestamp = time.millisecondsSinceEpoch;
@@ -266,10 +266,13 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
 }
 
  void _getTags () async{
-   List tags =  await RongIMClient.getTags();
-     if (tags.length <= 0) {
-          return;
-      }
+   List tags =  await RongIMClient.getTags((int code, List tags){
+    int count  = tags.length;
+    String toast =  "标签个数 :  $count";
+      developer.log(toast, name: pageName);
+      DialogUtil.showAlertDiaLog(context, toast);
+   });
+  
 }
 
   @override

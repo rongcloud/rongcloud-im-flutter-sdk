@@ -1250,10 +1250,10 @@
         tagInfo.count = count;
         tagInfo.timestamp = [timestamp longLongValue];
         [[RCCoreClient sharedCoreClient] addTag:tagInfo success:^{
-                    
-                } error:^(RCErrorCode errorCode) {
-                    
-                }];
+            result(@{@"code":@(0)});
+        } error:^(RCErrorCode errorCode) {
+            result(@{@"code":@(errorCode)});
+        }];
     }
 }
 
@@ -1262,6 +1262,12 @@
     [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
+        NSString *tagId = param[@"tagId"];
+        [[RCCoreClient sharedCoreClient] removeTag:tagId success:^{
+            result(@{@"code":@(0)});
+        } error:^(RCErrorCode errorCode) {
+            result(@{@"code":@(errorCode)});
+        }];
     }
 }
 
@@ -1270,14 +1276,36 @@
     [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
+        NSString *tagId = param[@"tagId"];
+        NSString *tagName = param[@"tagName"];
+        NSInteger count = [param[@"count"] integerValue];
+        NSString *timestamp = param[@"timestamp"];
+        RCTagInfo *tagInfo = [[RCTagInfo alloc] init];
+        tagInfo.tagId = tagId;
+        tagInfo.tagName = tagName;
+        tagInfo.count = count;
+        tagInfo.timestamp = [timestamp longLongValue];
+        [[RCCoreClient sharedCoreClient] updateTag:tagInfo success:^{
+            result(@{@"code":@(0)});
+        } error:^(RCErrorCode errorCode) {
+            result(@{@"code":@(errorCode)});
+        }];
     }
 }
 
 - (void)getTags:(id)arg result:(FlutterResult)result {
     NSString *LOG_TAG =  @"getTags";
     [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
-    if([arg isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *param = (NSDictionary *)arg;
+    NSArray *tags =  [RCCoreClient sharedCoreClient].getTags;
+    if (tags.count > 0) {
+        NSMutableArray *arr = [NSMutableArray new];
+        for(RCTagInfo *info in tags) {
+            NSString *conStr = [RCFlutterMessageFactory tagInfo2String:info];
+            [arr addObject:conStr];
+        }
+        result(@{@"code": @(0), @"getTags": [arr copy]});
+    }else {
+        result(@{@"code": @(0), @"getTags": @[]});
     }
 }
 

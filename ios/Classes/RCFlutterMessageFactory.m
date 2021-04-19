@@ -330,4 +330,15 @@
     RCVoiceMessage *msg = [RCVoiceMessage messageWithAudio:voiceData duration:duration];
     return msg;
 }
+
++ (NSString *)tagInfo2String:(RCTagInfo *)tagInfo {
+    NSMutableDictionary *dic = [NSMutableDictionary new];
+    [dic setObject:tagInfo.tagId forKey:@"tagId"];
+    [dic setObject:tagInfo.tagName forKey:@"tagName"];
+    [dic setObject:@(tagInfo.count) forKey:@"count"];
+    [dic setObject:@(tagInfo.timestamp) forKey:@"timestamp"];
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dic options:0 error:nil];
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    return jsonString;
+}
 @end

@@ -4,6 +4,8 @@ import 'dart:convert' show json;
 import '../../rongcloud_im_plugin.dart';
 import '../util/type_util.dart';
 import 'dart:developer' as developer;
+import 'package:rongcloud_im_plugin/src/info/tag_info.dart';
+
 
 class MessageFactory extends Object {
   factory MessageFactory() => _getInstance();
@@ -295,4 +297,21 @@ class MessageFactory extends Object {
     result.mMatchCount = map["mMatchCount"];
     return result;
   }
+
+TagInfo string2TagInfo (String resultStr){
+   if (TypeUtil.isEmptyString(resultStr)) {
+      return null;
+    }
+    Map map = json.decode(resultStr);
+    return map2TagInfo(map);
+}
+
+TagInfo map2TagInfo(Map map) {
+    TagInfo result = new TagInfo();
+    result.tagId = map["tagId"];
+    result.tagName = map["tagName"];
+    result.count = map["count"];
+    result.timestamp = map["timestamp"];
+}
+
 }
