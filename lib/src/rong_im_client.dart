@@ -2199,7 +2199,7 @@ class RongIMClient {
     }
   }
 
-  /// 按标签获取未读消息数
+  /// 分页获取本地指定标签下会话列表
   /// [tagId] 标签 id
   /// [ts] 会话中最后一条消息时间戳
   /// [count] 获取数量(20<= count <=100)
@@ -2229,7 +2229,7 @@ class RongIMClient {
 
   /// 按标签获取未读消息数
   /// [tagId] 标签 id
-  /// [isTop] containBlocked
+  /// [containBlocked] 是否包含免打扰
   /// result 大于等于 0 表示返回成功结果数量，等于 -1 表示获取错误，错误码为 code 的值
   static Future getUnreadCountByTag(String tagId, bool containBlocked,
       Function(int result, int code) finished) async {

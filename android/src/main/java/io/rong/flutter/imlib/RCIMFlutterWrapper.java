@@ -3560,7 +3560,7 @@ public class RCIMFlutterWrapper {
         if (arg instanceof Map) {
             Map paramMap = (Map) arg;
             String tagId = "";
-            if (paramMap.get("count") != null) {
+            if (paramMap.get("tagId") != null) {
                 tagId = (String) paramMap.get("tagId");
             }
             RongCoreClient.getInstance().removeTag(tagId, new IRongCoreCallback.OperationCallback() {
