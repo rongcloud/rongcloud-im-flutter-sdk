@@ -1340,7 +1340,7 @@
         [[RCCoreClient sharedCoreClient] addConversationsToTag:tagId conversationIdentifiers:[indentiferArr copy] success:^{
             result(@{@"code": @(0), @"result": @(YES)});
         } error:^(RCErrorCode errorCode) {
-            result(@{@"code": @(0), @"result": @(NO)});
+            result(@{@"code": @(errorCode), @"result": @(NO)});
         }];
     }
 }
@@ -1360,7 +1360,7 @@
         [[RCCoreClient sharedCoreClient] removeConversationsFromTag:tagId conversationIdentifiers:[indentiferArr copy] success:^{
             result(@{@"code": @(0), @"result": @(YES)});
         } error:^(RCErrorCode errorCode) {
-            result(@{@"code": @(0), @"result": @(NO)});
+            result(@{@"code": @(errorCode), @"result": @(NO)});
         }];
     }
 }
@@ -1370,7 +1370,7 @@
     [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
-        RCConversationType conversationType = (RCConversationType)param[@"conversationType"];
+        RCConversationType conversationType = [param[@"conversationType"] integerValue];
         NSString *targetId = param[@"targetId"];
         NSString *tagIds = param[@"tagIds"];
         RCConversationIdentifier *indentifer = [[RCConversationIdentifier alloc] init];
@@ -1379,7 +1379,7 @@
         [[RCCoreClient sharedCoreClient] removeTagsFromConversation:indentifer tagIds:tagIds success:^{
             result(@{@"code": @(0), @"result": @(YES)});
         } error:^(RCErrorCode errorCode) {
-            result(@{@"code": @(0), @"result": @(NO)});
+            result(@{@"code": @(errorCode), @"result": @(NO)});
         }];
     }
 }
@@ -1389,7 +1389,7 @@
     [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
-        RCConversationType conversationType = (RCConversationType)param[@"conversationType"];
+        RCConversationType conversationType = [param[@"conversationType"] integerValue];
         NSString *targetId = param[@"targetId"];
         RCConversationIdentifier *indentifer = [[RCConversationIdentifier alloc] init];
         indentifer.type = conversationType;
@@ -1449,7 +1449,7 @@
         NSDictionary *param = (NSDictionary *)arg;
         NSString *tagId = param[@"tagId"];
         NSString *targetId = param[@"targetId"];
-        RCConversationType conversationType = (RCConversationType)param[@"conversationType"];
+        RCConversationType conversationType = [param[@"conversationType"] integerValue];
         BOOL isTop = [param[@"isTop"] boolValue];
         RCConversationIdentifier *indentifer = [[RCConversationIdentifier alloc] init];
         indentifer.type = conversationType;
@@ -1457,7 +1457,7 @@
         [[RCCoreClient sharedCoreClient] setConversationToTopInTag:tagId conversationIdentifier:indentifer isTop:isTop success:^{
             result(@{@"code": @(0), @"result": @(YES)});
         } error:^(RCErrorCode errorCode) {
-            result(@{@"code": @(0), @"result": @(NO)});
+            result(@{@"code": @(errorCode), @"result": @(NO)});
         }];
     }
 }
@@ -1469,7 +1469,7 @@
         NSDictionary *param = (NSDictionary *)arg;
         NSString *tagId = param[@"tagId"];
         NSString *targetId = param[@"targetId"];
-        RCConversationType conversationType = (RCConversationType)param[@"conversationType"];
+        RCConversationType conversationType = [param[@"conversationType"] integerValue];
         RCConversationIdentifier *indentifer = [[RCConversationIdentifier alloc] init];
         indentifer.type = conversationType;
         indentifer.targetId = targetId;
