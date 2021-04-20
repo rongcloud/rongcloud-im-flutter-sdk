@@ -333,6 +333,8 @@ public class RCIMFlutterWrapper {
             setConversationToTopInTag(call.arguments, result);
         } else if (RCMethodList.MethodKeyGetConversationTopStatusInTag.equalsIgnoreCase(call.method)) {
             getConversationTopStatusInTag(call.arguments, result);
+        } else if (RCMethodList.MethodKeyBatchInsertMessage.equalsIgnoreCase(call.method)) {
+            batchInsertMessage(call.arguments, result);
         } else {
             result.notImplemented();
         }
@@ -3579,6 +3581,38 @@ public class RCIMFlutterWrapper {
                 public void onError(RongIMClient.ErrorCode errorCode) {
                     RCLog.e("[removeMessageExpansion] onError:" + errorCode.getValue());
                     result.success(errorCode.getValue());
+                }
+            });
+        }
+    }
+
+    private void batchInsertMessage(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            List<Map> messageMapList = (List<Map>) paramMap.get("messageMapList");
+            if (messageMapList == null || messageMapList.size() == 0) {
+                RCLog.e("[batchInsertMessage] message list is null ");
+                return;
+            }
+            List<Message> messageList = new ArrayList<>();
+            for (int i = 0; i < messageMapList.size(); i++) {
+                messageList.add(map2Message(messageMapList.get(i)));
+            }
+            RongCoreClient.getInstance().batchInsertMessage(messageList, new IRongCoreCallback.ResultCallback<Boolean>() {
+                @Override
+                public void onSuccess(Boolean aBoolean) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("result", aBoolean);
+                    resultMap.put("code", 0);
+                    result.success(resultMap);
+                }
+
+                @Override
+                public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("result", false);
+                    resultMap.put("code", coreErrorCode.getValue());
+                    result.success(resultMap);
                 }
             });
         }

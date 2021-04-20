@@ -873,16 +873,19 @@ class RongIMClient {
  @remarks 消息操作
  */
   static void batchInsertMessage(
-      List<Message> msgs, Function(int code) finished) async {
+      List<Message> msgs, Function(bool result, int code) finished) async {
     List messageMaps = List();
     for (Message message in msgs) {
       Map messageMap = MessageFactory.instance.message2Map(message);
       messageMaps.add(messageMap);
     }
     Map map = {"messageMapList": messageMaps};
-    int code = await _channel.invokeMethod(RCMethodKey.BatchInsertMessage, map);
+    Map resultMap =
+        await _channel.invokeMethod(RCMethodKey.BatchInsertMessage, map);
+    bool result = resultMap[resultMap["result"]];
+    int code = resultMap[resultMap["code"]];
     if (finished != null) {
-      finished(code);
+      finished(result, code);
     }
   }
 
@@ -1999,10 +2002,8 @@ class RongIMClient {
  @remarks 高级功能
  */
   static addTag(TagInfo taginfo, Function(int code) finished) async {
-    if (taginfo == null ) {
-      developer.log(
-          "addTag fail: taginfo is null",
-          name: "RongIMClient");
+    if (taginfo == null) {
+      developer.log("addTag fail: taginfo is null", name: "RongIMClient");
       return null;
     }
     Map map = {
@@ -2027,10 +2028,8 @@ class RongIMClient {
  @remarks 高级功能
  */
   static removeTag(String targetId, Function(int code) finished) async {
-     if (targetId == null ) {
-      developer.log(
-          "removeTag fail: targetId is null",
-          name: "RongIMClient");
+    if (targetId == null) {
+      developer.log("removeTag fail: targetId is null", name: "RongIMClient");
       return null;
     }
     Map map = {"tagId": targetId};
@@ -2050,10 +2049,8 @@ class RongIMClient {
  @remarks 高级功能
  */
   static updateTag(TagInfo taginfo, Function(int code) finished) async {
-      if (taginfo == null ) {
-      developer.log(
-          "updateTag fail: taginfo is null",
-          name: "RongIMClient");
+    if (taginfo == null) {
+      developer.log("updateTag fail: taginfo is null", name: "RongIMClient");
       return null;
     }
     Map map = {
@@ -2074,8 +2071,7 @@ class RongIMClient {
  @return 标签列表
  @remarks 高级功能
  */
-  static Future getTags(
-      Function(int code, List tags) finished) async {
+  static Future getTags(Function(int code, List tags) finished) async {
     Map result = await _channel.invokeMethod(RCMethodKey.GetTags, null);
     int code = result['code'];
     List resultList = new List();
@@ -2739,8 +2735,8 @@ class RongIMClient {
           if (onConversationTagChanged != null) {
             onConversationTagChanged();
           }
-            break;
-         case RCMethodCallBackKey.OnTagChanged:
+          break;
+        case RCMethodCallBackKey.OnTagChanged:
           if (onTagChanged != null) {
             onTagChanged();
           }

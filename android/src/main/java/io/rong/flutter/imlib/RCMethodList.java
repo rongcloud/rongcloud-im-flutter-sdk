@@ -23,6 +23,7 @@ public class RCMethodList {
     static String MethodKeySetCurrentUserInfo = "setCurrentUserInfo";
     static String MethodKeyInsertIncomingMessage = "insertIncomingMessage";
     static String MethodKeyInsertOutgoingMessage = "insertOutgoingMessage";
+    static String MethodKeyBatchInsertMessage = "BatchInsertMessage";
     static String MethodKeyGetTotalUnreadCount = "getTotalUnreadCount";
     static String MethodKeyGetUnreadCountTargetId = "getUnreadCountTargetId";
     static String MethodKeyGetUnreadCountConversationTypeList = "getUnreadCountConversationTypeList";
