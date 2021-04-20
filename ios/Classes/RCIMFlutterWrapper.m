@@ -1246,8 +1246,8 @@
 }
 
 #pragma mark -  标签变化监听器
-- (void)onConversationTagChanged {
-    [self.channel invokeMethod:RCMethodCallBackOnConversationTagChanged arguments:nil];
+- (void)onTagChanged {
+    [self.channel invokeMethod:RCMethodCallBackOnTagChanged arguments:nil];
 }
 
 #pragma mark - 会话标签

@@ -6,6 +6,7 @@ import '../im/util/dialog_util.dart';
 import 'dart:developer' as developer;
 import 'package:rongcloud_im_plugin/src/info/tag_info.dart';
 import 'dart:core';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class ChatDebugPage extends StatefulWidget {
   final Map arguments;
@@ -43,6 +44,11 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
       ];
       titles.addAll(onlyGroupTitles);
     }
+
+    RongIMClient.onTagChanged = ()  {
+      Fluttertoast.showToast(msg: "会话标签变化收到监听",timeInSecForIos: 2);
+    };
+
   }
 
   void _didTap(int index) {

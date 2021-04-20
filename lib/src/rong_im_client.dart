@@ -2471,8 +2471,6 @@ class RongIMClient {
   //数据库打开（调用 connect 之后回调）
   static Function(int status) onDatabaseOpened;
 
-  ///响应原生的事件
-  ///
   static void _addNativeMethodCallHandler() {
     _channel.setMethodCallHandler((MethodCall call) {
       switch (call.method) {
@@ -2713,6 +2711,10 @@ class RongIMClient {
         case RCMethodCallBackKey.ConversationTagChanged:
           if (onConversationTagChanged != null) {
             onConversationTagChanged();
+            break;
+         case RCMethodCallBackKey.OnTagChanged:
+          if (onTagChanged != null) {
+            onTagChanged();
           }
           break;
       }
