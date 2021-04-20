@@ -1567,9 +1567,9 @@
             [msgList addObject:message];
         }
         BOOL flag = [[RCIMClient sharedRCIMClient] batchInsertMessage:[msgList copy]];
-        result(@(flag));
+        result(@{@"code": @(0), @"result": @(flag)});
     }else{
-        result(@(0));
+        result(@{@"code": @(INVALID_PARAMETER), @"result": @(false)});
     }
 }
 

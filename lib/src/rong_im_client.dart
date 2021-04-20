@@ -882,8 +882,8 @@ class RongIMClient {
     Map map = {"messageMapList": messageMaps};
     Map resultMap =
         await _channel.invokeMethod(RCMethodKey.BatchInsertMessage, map);
-    bool result = resultMap[resultMap["result"]];
-    int code = resultMap[resultMap["code"]];
+    bool result = resultMap["result"];
+    int code = resultMap["code"];
     if (finished != null) {
       finished(result, code);
     }

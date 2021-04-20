@@ -256,11 +256,15 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
       return;
     }
     Message message = msgs[(Random().nextInt(msgs.length - 1))];
-    RongIMClient.batchInsertMessage([message], (int code) {
+    RongIMClient.batchInsertMessage([message], (bool result, int code) {
       if (code != 0) {
-        DialogUtil.showAlertDiaLog(context, "插入数据库消息成功");
-      } else {
         DialogUtil.showAlertDiaLog(context, "插入数据库消息失败");
+      } else {
+       if(result){
+        DialogUtil.showAlertDiaLog(context, "插入数据库消息成功");
+      }else {
+        DialogUtil.showAlertDiaLog(context, "插入数据库消息失败");
+      }
       }
     });
   }
