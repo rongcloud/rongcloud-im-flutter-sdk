@@ -1560,8 +1560,13 @@
     [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
     if ([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
-        NSArray *msgs = param[@"messageList"];
-        BOOL flag = [[RCIMClient sharedRCIMClient] batchInsertMessage:msgs];
+        NSArray *msgs = param[@"messageMapList"];
+        NSMutableArray *msgList = [[NSMutableArray alloc] init];
+        for (NSDictionary *dict in msgs) {
+            RCMessage *message = [RCFlutterMessageFactory dic2Message:dict];
+            [msgList addObject:message];
+        }
+        BOOL flag = [[RCIMClient sharedRCIMClient] batchInsertMessage:[msgList copy]];
         result(@(flag));
     }else{
         result(@(0));

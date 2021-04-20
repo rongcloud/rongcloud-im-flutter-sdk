@@ -874,7 +874,12 @@ class RongIMClient {
  */
   static void batchInsertMessage(
       List<Message> msgs, Function(int code) finished) async {
-    Map map = {"messageList": msgs};
+    List messageMaps = List();
+    for (Message message in msgs) {
+      Map messageMap = MessageFactory.instance.message2Map(message);
+      messageMaps.add(messageMap);
+    }
+    Map map = {"messageMapList": messageMaps};
     int code = await _channel.invokeMethod(RCMethodKey.BatchInsertMessage, map);
     if (finished != null) {
       finished(code);
