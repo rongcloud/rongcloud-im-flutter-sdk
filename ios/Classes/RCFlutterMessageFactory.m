@@ -342,4 +342,12 @@
     return jsonString;
 }
 
++ (RCConversationIdentifier *)dict2ConversationIdentifier:(NSDictionary *)dict {
+    RCConversationIdentifier *identifer = [[RCConversationIdentifier alloc] init];
+    identifer.targetId = [dict objectForKey:@"targetId"];
+    identifer.type =  (RCConversationType)[dict objectForKey:@"conversationType"];
+    return  identifer;
+}
+
+
 @end

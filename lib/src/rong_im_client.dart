@@ -1994,6 +1994,12 @@ class RongIMClient {
  @remarks 高级功能
  */
   static addTag(TagInfo taginfo, Function(int code) finished) async {
+    if (taginfo == null ) {
+      developer.log(
+          "addTag fail: taginfo is null",
+          name: "RongIMClient");
+      return null;
+    }
     Map map = {
       "tagId": taginfo.tagId,
       "tagName": taginfo.tagName,
@@ -2016,6 +2022,12 @@ class RongIMClient {
  @remarks 高级功能
  */
   static removeTag(String targetId, Function(int code) finished) async {
+     if (targetId == null ) {
+      developer.log(
+          "removeTag fail: targetId is null",
+          name: "RongIMClient");
+      return null;
+    }
     Map map = {"tagId": targetId};
     Map result = await _channel.invokeMethod(RCMethodKey.RemoveTag, map);
     if (finished != null) {
@@ -2033,6 +2045,12 @@ class RongIMClient {
  @remarks 高级功能
  */
   static updateTag(TagInfo taginfo, Function(int code) finished) async {
+      if (taginfo == null ) {
+      developer.log(
+          "updateTag fail: taginfo is null",
+          name: "RongIMClient");
+      return null;
+    }
     Map map = {
       "tagId": taginfo.tagId,
       "tagName": taginfo.tagName,
@@ -2321,6 +2339,10 @@ class RongIMClient {
   ///设置 Tag 多端同步监听
   ///
   static Function() onConversationTagChanged;
+
+  /// 标签变化监听器
+  ///
+  static Function() onTagChanged;
 
   ///连接状态发生变更
   ///
@@ -2711,6 +2733,7 @@ class RongIMClient {
         case RCMethodCallBackKey.ConversationTagChanged:
           if (onConversationTagChanged != null) {
             onConversationTagChanged();
+          }
             break;
          case RCMethodCallBackKey.OnTagChanged:
           if (onTagChanged != null) {

@@ -1331,11 +1331,16 @@
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
         NSString *tagId = param[@"tagId"];
-        NSArray *indentifers;
-        [[RCCoreClient sharedCoreClient] addConversationsToTag:tagId conversationIdentifiers:indentifers success:^{
-            
+        NSArray *indentifers = param[@"identifiers"];
+        NSMutableArray *indentiferArr =[[NSMutableArray alloc] init];
+        for (NSDictionary * dict in indentifers) {
+            RCConversationIdentifier *identifer = [RCFlutterMessageFactory dict2ConversationIdentifier:dict];
+            [indentiferArr addObject:identifer];
+        }
+        [[RCCoreClient sharedCoreClient] addConversationsToTag:tagId conversationIdentifiers:[indentiferArr copy] success:^{
+            result(@{@"code": @(0), @"result": @(YES)});
         } error:^(RCErrorCode errorCode) {
-            
+            result(@{@"code": @(0), @"result": @(NO)});
         }];
     }
 }
@@ -1346,11 +1351,16 @@
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
         NSString *tagId = param[@"tagId"];
-        NSArray *indentifers;
-        [[RCCoreClient sharedCoreClient] removeConversationsFromTag:tagId conversationIdentifiers:indentifers success:^{
-            
+        NSArray *indentifers = param[@"identifiers"];
+        NSMutableArray *indentiferArr =[[NSMutableArray alloc] init];
+        for (NSDictionary * dict in indentifers) {
+            RCConversationIdentifier *identifer = [RCFlutterMessageFactory dict2ConversationIdentifier:dict];
+            [indentiferArr addObject:identifer];
+        }
+        [[RCCoreClient sharedCoreClient] removeConversationsFromTag:tagId conversationIdentifiers:[indentiferArr copy] success:^{
+            result(@{@"code": @(0), @"result": @(YES)});
         } error:^(RCErrorCode errorCode) {
-            
+            result(@{@"code": @(0), @"result": @(NO)});
         }];
     }
 }
@@ -1360,12 +1370,16 @@
     [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
+        RCConversationType conversationType = (RCConversationType)param[@"conversationType"];
+        NSString *targetId = param[@"targetId"];
+        NSString *tagIds = param[@"tagIds"];
         RCConversationIdentifier *indentifer = [[RCConversationIdentifier alloc] init];
-        NSArray *tagIds;
+        indentifer.type = conversationType;
+        indentifer.targetId = targetId;
         [[RCCoreClient sharedCoreClient] removeTagsFromConversation:indentifer tagIds:tagIds success:^{
-            
+            result(@{@"code": @(0), @"result": @(YES)});
         } error:^(RCErrorCode errorCode) {
-            
+            result(@{@"code": @(0), @"result": @(NO)});
         }];
     }
 }
@@ -1375,7 +1389,11 @@
     [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
+        RCConversationType conversationType = (RCConversationType)param[@"conversationType"];
+        NSString *targetId = param[@"targetId"];
         RCConversationIdentifier *indentifer = [[RCConversationIdentifier alloc] init];
+        indentifer.type = conversationType;
+        indentifer.targetId = targetId;
        NSArray *tagInfos = [[RCCoreClient sharedCoreClient] getTagsFromConversation:indentifer];
         if (tagInfos.count > 0) {
             NSMutableArray *arr = [NSMutableArray new];
@@ -1383,9 +1401,9 @@
                 NSString *conStr = [RCFlutterMessageFactory tagInfo2String:info];
                 [arr addObject:conStr];
             }
-            result(@{@"code": @(0), @"getTagsFromConversation": [arr copy]});
+            result(@{@"code": @(0), @"ConversationTagInfoList": [arr copy]});
         }else {
-            result(@{@"code": @(0), @"getTagsFromConversation": @[]});
+            result(@{@"code": @(0), @"ConversationTagInfoList": @[]});
         }
     }
 }
@@ -1396,7 +1414,7 @@
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
         NSString *tagId = param[@"tagId"];
-        long long timestamp = [param[@"timestamp"] longLongValue];
+        long long timestamp = [param[@"ts"] longLongValue];
         int count = [param[@"count"] intValue];
        NSArray *conversations = [[RCCoreClient sharedCoreClient] getConversationsFromTagByPage:tagId timestamp:timestamp count:count];
         if (conversations.count > 0) {
@@ -1405,9 +1423,9 @@
                 NSString *conStr = [RCFlutterMessageFactory conversation2String:conversation];
                 [arr addObject:conStr];
             }
-            result(@{@"code": @(0), @"getConversationsFromTagByPage": [arr copy]});
+            result(@{@"code": @(0), @"ConversationList": [arr copy]});
         }else {
-            result(@{@"code": @(0), @"getConversationsFromTagByPage": @[]});
+            result(@{@"code": @(0), @"ConversationList": @[]});
         }
     }
 }
@@ -1420,6 +1438,7 @@
         NSString *tagId = param[@"tagId"];
         BOOL containBlocked = [param[@"containBlocked"] boolValue];
        int count = [[RCCoreClient sharedCoreClient] getUnreadCountByTag:tagId containBlocked:containBlocked];
+        result(@{@"code": @(0), @"result": @(count)});
     }
 }
 
@@ -1429,9 +1448,17 @@
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
         NSString *tagId = param[@"tagId"];
-        RCConversationType type = [param[@"conversationType"] integerValue];
+        NSString *targetId = param[@"targetId"];
+        RCConversationType conversationType = (RCConversationType)param[@"conversationType"];
         BOOL isTop = [param[@"isTop"] boolValue];
-       BOOL flag = [[RCCoreClient sharedCoreClient] setConversationToTop:type targetId:tagId isTop:isTop];
+        RCConversationIdentifier *indentifer = [[RCConversationIdentifier alloc] init];
+        indentifer.type = conversationType;
+        indentifer.targetId = targetId;
+        [[RCCoreClient sharedCoreClient] setConversationToTopInTag:tagId conversationIdentifier:indentifer isTop:isTop success:^{
+            result(@{@"code": @(0), @"result": @(YES)});
+        } error:^(RCErrorCode errorCode) {
+            result(@{@"code": @(0), @"result": @(NO)});
+        }];
     }
 }
 
@@ -1441,8 +1468,13 @@
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
         NSString *tagId = param[@"tagId"];
+        NSString *targetId = param[@"targetId"];
+        RCConversationType conversationType = (RCConversationType)param[@"conversationType"];
         RCConversationIdentifier *indentifer = [[RCConversationIdentifier alloc] init];
-       BOOL flag = [[RCCoreClient sharedCoreClient] getConversationTopStatusInTag:indentifer tagId:tagId];
+        indentifer.type = conversationType;
+        indentifer.targetId = targetId;
+        BOOL flag = [[RCCoreClient sharedCoreClient] getConversationTopStatusInTag:indentifer tagId:tagId];
+        result(@{@"code": @(0), @"result": @(flag)});
     }
 }
 
