@@ -493,6 +493,7 @@ public class RCIMFlutterWrapper {
             setKVStatusListener();
             setMessageExpansionListener();
             setConversationTagListener();
+            setTagListenerListener();
         } else {
             Log.e("RCIM flutter init", "非法参数");
         }
@@ -2264,7 +2265,21 @@ public class RCIMFlutterWrapper {
                 mMainHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        mChannel.invokeMethod(RCMethodList.MethodCallBackKeyTypingStatus, new HashMap<>());
+                        mChannel.invokeMethod(RCMethodList.MethodCallBackConversationTagChanged, new HashMap<>());
+                    }
+                });
+            }
+        });
+    }
+
+    private void setTagListenerListener(){
+        RongCoreClient.getInstance().setTagListener(new IRongCoreListener.TagListener() {
+            @Override
+            public void onTagChanged() {
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mChannel.invokeMethod(RCMethodList.MethodCallBackTagChanged, new HashMap<>());
                     }
                 });
             }

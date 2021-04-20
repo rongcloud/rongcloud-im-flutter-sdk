@@ -128,5 +128,7 @@ public class RCMethodList {
     static String MethodCallBackMessageExpansionDidUpdate = "MessageExpansionDidUpdateCallBack";
     static String MethodCallBackMessageExpansionDidRemove = "MessageExpansionDidRemoveCallBack";
     static String MethodCallBackDatabaseOpened = "DatabaseOpenedCallBack";
+    static String MethodCallBackTagChanged ="onTagChanged";
+    static String MethodCallBackConversationTagChanged = "ConversationTagChangedCallBack";
 
 }
