@@ -111,6 +111,8 @@ public class RCMethodList {
     static String MethodCallBackKeyReceiveMessage = "receiveMessageCallBack";
     static String MethodCallBackKeyJoinChatRoom = "joinChatRoomCallBack";
     static String MethodCallBackKeyQuitChatRoom = "quitChatRoomCallBack";
+    static String MethodCallBackKeyChatRoomReset = "onChatRoomResetCallBack";
+    static String MethodCallBackKeyChatRoomDestroyed = "onChatRoomDestroyedCallBack";
     static String MethodCallBackKeyUploadMediaProgress = "uploadMediaProgressCallBack";
     static String MethodCallBackKeygetRemoteHistoryMessages = "getRemoteHistoryMessagesCallBack";
     static String MethodCallBackKeyConnectionStatusChange = "ConnectionStatusChangeCallBack";

@@ -36,6 +36,7 @@ import io.rong.imlib.IRongCoreListener;
 import io.rong.imlib.MessageTag;
 import io.rong.imlib.RongCoreClient;
 import io.rong.imlib.RongIMClient;
+import io.rong.imlib.chatroom.base.RongChatRoomClient;
 import io.rong.imlib.location.message.LocationMessage;
 import io.rong.imlib.model.AndroidConfig;
 import io.rong.imlib.model.ChatRoomInfo;
@@ -2272,7 +2273,7 @@ public class RCIMFlutterWrapper {
         });
     }
 
-    private void setTagListenerListener(){
+    private void setTagListenerListener() {
         RongCoreClient.getInstance().setTagListener(new IRongCoreListener.TagListener() {
             @Override
             public void onTagChanged() {
@@ -2282,6 +2283,55 @@ public class RCIMFlutterWrapper {
                         mChannel.invokeMethod(RCMethodList.MethodCallBackTagChanged, new HashMap<>());
                     }
                 });
+            }
+        });
+    }
+
+    private void setChatRoomAdvancedActionListener() {
+        RongChatRoomClient.getInstance().setChatRoomAdvancedActionListener(new RongChatRoomClient.ChatRoomAdvancedActionListener() {
+            @Override
+            public void onJoining(String s) {
+
+            }
+
+            @Override
+            public void onJoined(String s) {
+
+            }
+
+            @Override
+            public void onReset(final String targetId) {
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Map resultMap = new HashMap();
+                        resultMap.put("targetId", targetId);
+                        mChannel.invokeMethod(RCMethodList.MethodCallBackKeyChatRoomReset, resultMap);
+                    }
+                });
+            }
+
+            @Override
+            public void onQuited(String s) {
+
+            }
+
+            @Override
+            public void onDestroyed(final String targetId, final IRongCoreEnum.ChatRoomDestroyType chatRoomDestroyType) {
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Map resultMap = new HashMap();
+                        resultMap.put("targetId", targetId);
+                        resultMap.put("type", chatRoomDestroyType.getType());
+                        mChannel.invokeMethod(RCMethodList.MethodCallBackKeyChatRoomDestroyed, resultMap);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(String s, IRongCoreEnum.CoreErrorCode coreErrorCode) {
+
             }
         });
     }
