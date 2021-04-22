@@ -1397,8 +1397,8 @@
        NSArray *tagInfos = [[RCCoreClient sharedCoreClient] getTagsFromConversation:indentifer];
         if (tagInfos.count > 0) {
             NSMutableArray *arr = [NSMutableArray new];
-            for(RCTagInfo *info in tagInfos) {
-                NSString *conStr = [RCFlutterMessageFactory tagInfo2String:info];
+            for(RCConversationTagInfo *info in tagInfos) {
+                NSString *conStr = [RCFlutterMessageFactory conversationTagInfo2String:info];
                 [arr addObject:conStr];
             }
             result(@{@"code": @(0), @"ConversationTagInfoList": [arr copy]});

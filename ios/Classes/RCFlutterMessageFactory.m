@@ -342,6 +342,22 @@
     return jsonString;
 }
 
++ (NSString *)conversationTagInfo2String:(RCConversationTagInfo *)tagInfo {
+    NSMutableDictionary *dic = [NSMutableDictionary new];
+    [dic setObject:@(tagInfo.isTop) forKey:@"isTop"];
+    NSMutableDictionary *taginfoDic = [NSMutableDictionary new];
+    [taginfoDic setObject:tagInfo.tagInfo.tagId forKey:@"tagId"];
+    [taginfoDic setObject:tagInfo.tagInfo.tagName forKey:@"tagName"];
+    [taginfoDic setObject:@(tagInfo.tagInfo.count) forKey:@"count"];
+    [taginfoDic setObject:@(tagInfo.tagInfo.timestamp) forKey:@"timestamp"];
+    NSData *taginfoDicJsonData = [NSJSONSerialization dataWithJSONObject:taginfoDic options:0 error:nil];
+    NSString *taginfoJsonString = [[NSString alloc] initWithData:taginfoDicJsonData encoding:NSUTF8StringEncoding];
+    [dic setObject:taginfoJsonString forKey:@"tagInfo"];
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dic options:0 error:nil];
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    return jsonString;
+}
+
 + (RCConversationIdentifier *)dict2ConversationIdentifier:(NSDictionary *)dict {
     RCConversationIdentifier *identifer = [[RCConversationIdentifier alloc] init];
     identifer.targetId = [dict objectForKey:@"targetId"];
