@@ -3720,14 +3720,12 @@ public class RCIMFlutterWrapper {
             @Override
             public void onSuccess(List<TagInfo> tagInfos) {
                 Map resultMap = new HashMap();
-                if (tagInfos == null) {
-                    result.success(null);
-                    return;
-                }
                 List list = new ArrayList();
-                for (TagInfo info : tagInfos) {
-                    String conStr = MessageFactory.getInstance().tagInfo2String(info);
-                    list.add(conStr);
+                if (tagInfos != null) {
+                    for (TagInfo info : tagInfos) {
+                        String conStr = MessageFactory.getInstance().tagInfo2String(info);
+                        list.add(conStr);
+                    }
                 }
                 resultMap.put("getTags", list);
                 resultMap.put("code", 0);
@@ -3904,14 +3902,12 @@ public class RCIMFlutterWrapper {
                 @Override
                 public void onSuccess(List<ConversationTagInfo> conversationTagInfos) {
                     Map resultMap = new HashMap();
-                    if (conversationTagInfos == null) {
-                        result.success(resultMap);
-                        return;
-                    }
                     List list = new ArrayList();
-                    for (ConversationTagInfo info : conversationTagInfos) {
-                        String conStr = MessageFactory.getInstance().conversationTagInfo2String(info);
-                        list.add(conStr);
+                    if (conversationTagInfos != null) {
+                        for (ConversationTagInfo info : conversationTagInfos) {
+                            String conStr = MessageFactory.getInstance().conversationTagInfo2String(info);
+                            list.add(conStr);
+                        }
                     }
                     resultMap.put("ConversationTagInfoList", list);
                     resultMap.put("code", 0);
@@ -3948,14 +3944,12 @@ public class RCIMFlutterWrapper {
                 @Override
                 public void onSuccess(List<Conversation> conversations) {
                     Map resultMap = new HashMap();
-                    if (conversations == null) {
-                        result.success(resultMap);
-                        return;
-                    }
                     List l = new ArrayList();
-                    for (Conversation con : conversations) {
-                        String conStr = MessageFactory.getInstance().conversation2String(con);
-                        l.add(conStr);
+                    if (conversations != null) {
+                        for (Conversation con : conversations) {
+                            String conStr = MessageFactory.getInstance().conversation2String(con);
+                            l.add(conStr);
+                        }
                     }
                     resultMap.put("ConversationList", l);
                     resultMap.put("code", 0);
