@@ -6,7 +6,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <RongIMLib/RongIMLib.h>
+#import <RongIMLibCore/RongIMLibCore.h>
+#import <RongChatRoom/RongChatRoom.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

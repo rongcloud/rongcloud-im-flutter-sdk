@@ -114,15 +114,15 @@
     } else if ([content isKindOfClass:[RCReferenceMessage class]]) {
         content = [self converReferenceMessage:content];
     }
-    if ([content isKindOfClass:[RCPublicServiceCommandMessage class]]) {
-        if (((RCPublicServiceCommandMessage *)content).command) {
-            NSData *data = content.encode;
-            NSString *contentStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-            [dic setObject:contentStr forKey:@"content"];
-        } else {
-            [dic setObject:@"" forKey:@"content"];
-        }
-    } else {
+//    if ([content isKindOfClass:[RCPublicServiceCommandMessage class]]) {
+//        if (((RCPublicServiceCommandMessage *)content).command) {
+//            NSData *data = content.encode;
+//            NSString *contentStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+//            [dic setObject:contentStr forKey:@"content"];
+//        } else {
+//            [dic setObject:@"" forKey:@"content"];
+//        }
+//    } else {
         if ([content isKindOfClass:[RCFileMessage class]]) {
             content = [self converFileMessage:content];
         } else if ([content isKindOfClass:[RCReferenceMessage class]]) {
@@ -131,7 +131,7 @@
         NSData *data = content.encode;
         NSString *contentStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
         [dic setObject:contentStr forKey:@"content"];
-    }
+//    }
     [dic setObject:@(message.canIncludeExpansion) forKey:@"canIncludeExpansion"];
     if (message.expansionDic) {
         [dic setObject:message.expansionDic forKey:@"expansionDic"];
