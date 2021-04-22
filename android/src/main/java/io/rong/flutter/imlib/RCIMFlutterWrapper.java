@@ -497,6 +497,7 @@ public class RCIMFlutterWrapper {
             setMessageExpansionListener();
             setConversationTagListener();
             setTagListenerListener();
+            setChatRoomAdvancedActionListener();
         } else {
             Log.e("RCIM flutter init", "非法参数");
         }
@@ -2148,7 +2149,7 @@ public class RCIMFlutterWrapper {
     }
 
     private void setOnRecallMessageListener() {
-        RongIMClient.getInstance().setOnRecallMessageListener(new RongIMClient.OnRecallMessageListener() {
+        RongIMClient.setOnRecallMessageListener(new RongIMClient.OnRecallMessageListener() {
             @Override
             public boolean onMessageRecalled(final Message message,
                                              final RecallNotificationMessage recallNotificationMessage) {
@@ -2290,7 +2291,7 @@ public class RCIMFlutterWrapper {
     }
 
     private void setChatRoomAdvancedActionListener() {
-        RongChatRoomClient.getInstance().setChatRoomAdvancedActionListener(new RongChatRoomClient.ChatRoomAdvancedActionListener() {
+        RongChatRoomClient.setChatRoomAdvancedActionListener(new RongChatRoomClient.ChatRoomAdvancedActionListener() {
             @Override
             public void onJoining(String s) {
 
