@@ -3905,7 +3905,7 @@ public class RCIMFlutterWrapper {
                 public void onSuccess(List<ConversationTagInfo> conversationTagInfos) {
                     Map resultMap = new HashMap();
                     if (conversationTagInfos == null) {
-                        result.success(null);
+                        result.success(resultMap);
                         return;
                     }
                     List list = new ArrayList();
@@ -3949,7 +3949,7 @@ public class RCIMFlutterWrapper {
                 public void onSuccess(List<Conversation> conversations) {
                     Map resultMap = new HashMap();
                     if (conversations == null) {
-                        result.success(null);
+                        result.success(resultMap);
                         return;
                     }
                     List l = new ArrayList();

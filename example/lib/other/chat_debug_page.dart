@@ -65,10 +65,9 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
       titles.addAll(onlyGroupTitles);
     }
 
-    RongIMClient.onTagChanged = ()  {
-      Fluttertoast.showToast(msg: "会话标签变化收到监听",timeInSecForIos: 2);
+    RongIMClient.onTagChanged = () {
+      Fluttertoast.showToast(msg: "会话标签变化收到监听", timeInSecForIos: 2);
     };
-
   }
 
   void _didTap(int index) {
@@ -260,11 +259,11 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
       if (code != 0) {
         DialogUtil.showAlertDiaLog(context, "插入数据库消息失败");
       } else {
-       if(result){
-        DialogUtil.showAlertDiaLog(context, "插入数据库消息成功");
-      }else {
-        DialogUtil.showAlertDiaLog(context, "插入数据库消息失败");
-      }
+        if (result) {
+          DialogUtil.showAlertDiaLog(context, "插入数据库消息成功");
+        } else {
+          DialogUtil.showAlertDiaLog(context, "插入数据库消息失败");
+        }
       }
     });
   }
@@ -362,9 +361,13 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     String toast = "";
     await RongIMClient.getTagsFromConversation(conversationType, targetId,
         (int code, List conversationList) {
-      for (ConversationTagInfo info in conversationList) {
-        toast = toast +
-            "[isTop:${info.isTop},tagId:${info.tagInfo.tagId},tagName:${info.tagInfo.tagName},count:${info.tagInfo.count},timestamp:${info.tagInfo.timestamp}] ";
+      if (conversationList == null || conversationList.length == 0) {
+        toast = "tags is null";
+      } else {
+        for (ConversationTagInfo info in conversationList) {
+          toast = toast +
+              "[isTop:${info.isTop},tagId:${info.tagInfo.tagId},tagName:${info.tagInfo.tagName},count:${info.tagInfo.count},timestamp:${info.tagInfo.timestamp}] ";
+        }
       }
       developer.log(toast, name: pageName);
       DialogUtil.showAlertDiaLog(context, toast);
@@ -384,14 +387,16 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     String toast = "";
     await RongIMClient.getConversationsFromTagByPage(targetId, 0, 0,
         (code, conversationList) {
-      if (code == 0) {
+      if (conversationList == null || conversationList.length == 0) {
+        toast = "tags is null";
+      } else {
         for (Conversation con in conversationList) {
           toast = toast +
               "[targetId:${con.conversationType},conversationType:${con.conversationType}}";
         }
       }
       developer.log(toast, name: pageName);
-      DialogUtil.showAlertDiaLog(context, "$code + $toast");
+      DialogUtil.showAlertDiaLog(context, "$toast");
     });
   }
 
