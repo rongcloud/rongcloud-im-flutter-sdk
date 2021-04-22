@@ -2004,7 +2004,7 @@
 
 #pragma mark - 聊天室状态回调
 - (void)onChatRoomDestroyed:(NSString *)chatroomId type:(RCChatRoomDestroyType)type {
-    NSDictionary *statusDic = @{ @"targetId" : chatroomId,@"type" : @"type" };
+    NSDictionary *statusDic = @{@"targetId": chatroomId,@"type" : @(type)};
     [self.channel invokeMethod:RCMethodCallBackKeyOnChatRoomDestroyed arguments:statusDic];
 }
 
