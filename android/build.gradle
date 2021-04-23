@@ -18,6 +18,7 @@ rootProject.allprojects {
         jcenter()
         mavenCentral()
         maven {url  "https://dl.bintray.com/rongcloud/maven"}
+        maven {url  "http://maven.rongcloud.cn/repository/maven-releases/"}
     }
 }
 
@@ -36,5 +37,5 @@ android {
 }
 
 dependencies {
-    api 'cn.rongcloud.sdk:im_lib:5.0.0'
+    api 'cn.rongcloud.sdk:im_lib:5.1.1.1'
 }

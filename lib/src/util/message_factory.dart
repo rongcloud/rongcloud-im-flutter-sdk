@@ -4,6 +4,8 @@ import 'dart:convert' show json;
 import '../../rongcloud_im_plugin.dart';
 import '../util/type_util.dart';
 import 'dart:developer' as developer;
+import 'package:rongcloud_im_plugin/src/info/tag_info.dart';
+
 
 class MessageFactory extends Object {
   factory MessageFactory() => _getInstance();
@@ -17,6 +19,39 @@ class MessageFactory extends Object {
       _instance = new MessageFactory._internal();
     }
     return _instance;
+  }
+
+  ConversationTagInfo string2ConversationTagInfo(String tagInfoJsonStr) {
+    if (TypeUtil.isEmptyString(tagInfoJsonStr)) {
+      return null;
+    }
+    Map map = json.decode(tagInfoJsonStr);
+    return map2ConversationTagInfo(map);
+  }
+
+  ConversationTagInfo map2ConversationTagInfo(Map map) {
+    ConversationTagInfo conversationTagInfo = new ConversationTagInfo();
+    conversationTagInfo.isTop = map["isTop"];
+    String jsonTagStr = map["tagInfo"];
+    conversationTagInfo.tagInfo = string2TagInfo(jsonTagStr);
+    return conversationTagInfo;
+  }
+
+  TagInfo string2TagInfo(String tagJsonStr) {
+    if (TypeUtil.isEmptyString(tagJsonStr)) {
+      return null;
+    }
+    Map map = json.decode(tagJsonStr);
+    return map2TagInfo(map);
+  }
+
+  TagInfo map2TagInfo(Map map) {
+    TagInfo tagInfo = new TagInfo();
+    tagInfo.tagId = map["tagId"];
+    tagInfo.tagName = map["tagName"];
+    tagInfo.count = map["count"];
+    tagInfo.timestamp = map["timestamp"];
+    return tagInfo;
   }
 
   Message string2Message(String msgJsonStr) {
@@ -122,7 +157,7 @@ class MessageFactory extends Object {
     if (contenStr == null || contenStr == "") {
       developer.log(message.objectName + ":该消息内容为空，可能该消息没有在原生 SDK 中注册",
           name: "RongIMClient.MessageFactory");
-       return message;
+      return message;
     }
     if (content != null) {
       message.content = content;
@@ -185,6 +220,16 @@ class MessageFactory extends Object {
       return RongIMClient.messageDecoders[objectName](contentS);
     }
     return content;
+  }
+
+  Map conversationIdentifier2Map(ConversationIdentifier identifier) {
+    Map map = new Map();
+    if (identifier == null) {
+      return map;
+    }
+    map["conversationType"] = identifier.conversationType;
+    map["targetId"] = identifier.targetId;
+    return map;
   }
 
   Map messageContent2Map(MessageContent content) {
@@ -295,4 +340,5 @@ class MessageFactory extends Object {
     result.mMatchCount = map["mMatchCount"];
     return result;
   }
+
 }

@@ -17,6 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
  @discussion 如果是远程推送的数据，延时之后再调用该接口，防止 Flutter 尚未初始化就调用，导致 Flutter 无法接受数据
  */
 - (void)sendDataToFlutter:(NSDictionary *)userInfo;
+
++ (NSString *)getVersion;
+
 @end
 
 NS_ASSUME_NONNULL_END
