@@ -28,7 +28,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-rongcloud_im_plugin: ^5.1.0
+rongcloud_im_plugin: ^5.1.1
 ```
 
 然后在项目路径执行 `flutter packages get` 来下载 Flutter Plugin
