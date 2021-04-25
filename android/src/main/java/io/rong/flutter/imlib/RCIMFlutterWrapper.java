@@ -71,6 +71,7 @@ public class RCIMFlutterWrapper {
     private static MethodChannel mChannel = null;
     private static RCFlutterConfig mConfig = null;
     private Handler mMainHandler = null;
+    private List<Class<? extends MessageContent>> messageContentClassList;
 
     private HashMap<String, Constructor<? extends MessageContent>> messageContentConstructorMap;
 
@@ -79,6 +80,7 @@ public class RCIMFlutterWrapper {
 
     private RCIMFlutterWrapper() {
         messageContentConstructorMap = new HashMap<>();
+        messageContentClassList = new ArrayList<>();
         mMainHandler = new Handler(Looper.getMainLooper());
 
         RongIMClient.setReadReceiptListener(new RongIMClient.ReadReceiptListener() {
@@ -530,7 +532,18 @@ public class RCIMFlutterWrapper {
         }
     }
 
+    public void registerMessage(Class<? extends MessageContent> messageClass) {
+        if (messageContentClassList != null) {
+            messageContentClassList.add(messageClass);
+        }
+    }
+
     private void connect(Object arg, final Result result) {
+        // 连接前对自定义消息进行注册，防止注册时序错误导致的注册失败
+        if (messageContentClassList != null && messageContentClassList.size() > 0) {
+            RongCoreClient.registerMessageType(messageContentClassList);
+            messageContentClassList.clear();
+        }
         if (arg instanceof String) {
             final String token = String.valueOf(arg);
             RongIMClient.connect(token, new RongIMClient.ConnectCallback() {
