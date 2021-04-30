@@ -989,6 +989,12 @@ public class RCIMFlutterWrapper {
                             ((FileMessage) content).setMediaUrl(Uri.parse(fileUrl));
                         }
                     }
+                    if (jsonObject.has("size")) {
+                        Number size = (Number) jsonObject.get("size");
+                        if (size != null) {
+                            ((FileMessage) content).setSize(size.intValue());
+                        }
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
