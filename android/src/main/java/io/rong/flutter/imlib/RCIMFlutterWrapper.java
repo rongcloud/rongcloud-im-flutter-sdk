@@ -7,13 +7,10 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 
-import androidx.core.app.ActivityCompat;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
@@ -32,15 +29,20 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.rong.common.RLog;
 import io.rong.common.fwlog.FwLog;
 import io.rong.flutter.imlib.forward.CombineMessage;
-import io.rong.imlib.AnnotationNotFoundException;
-import io.rong.imlib.IOperationCallback;
 import io.rong.imlib.IRongCallback;
+import io.rong.imlib.IRongCoreCallback;
+import io.rong.imlib.IRongCoreEnum;
+import io.rong.imlib.IRongCoreListener;
 import io.rong.imlib.MessageTag;
 import io.rong.imlib.RongCoreClient;
 import io.rong.imlib.RongIMClient;
+import io.rong.imlib.chatroom.base.RongChatRoomClient;
+import io.rong.imlib.location.message.LocationMessage;
 import io.rong.imlib.model.AndroidConfig;
 import io.rong.imlib.model.ChatRoomInfo;
 import io.rong.imlib.model.Conversation;
+import io.rong.imlib.model.ConversationIdentifier;
+import io.rong.imlib.model.ConversationTagInfo;
 import io.rong.imlib.model.IOSConfig;
 import io.rong.imlib.model.MentionedInfo;
 import io.rong.imlib.model.Message;
@@ -48,6 +50,7 @@ import io.rong.imlib.model.MessageConfig;
 import io.rong.imlib.model.MessageContent;
 import io.rong.imlib.model.MessagePushConfig;
 import io.rong.imlib.model.SearchConversationResult;
+import io.rong.imlib.model.TagInfo;
 import io.rong.imlib.model.UnknownMessage;
 import io.rong.imlib.model.UserInfo;
 import io.rong.imlib.typingmessage.TypingStatus;
@@ -55,13 +58,11 @@ import io.rong.message.FileMessage;
 import io.rong.message.GIFMessage;
 import io.rong.message.HQVoiceMessage;
 import io.rong.message.ImageMessage;
-import io.rong.message.MediaMessageContent;
 import io.rong.message.MessageHandler;
 import io.rong.message.ReadReceiptMessage;
 import io.rong.message.RecallNotificationMessage;
 import io.rong.message.ReferenceMessage;
 import io.rong.message.SightMessage;
-import io.rong.message.TextMessage;
 import io.rong.message.VoiceMessage;
 
 public class RCIMFlutterWrapper {
@@ -74,6 +75,7 @@ public class RCIMFlutterWrapper {
     private HashMap<String, Constructor<? extends MessageContent>> messageContentConstructorMap;
 
     private String appkey = null;
+    private static String sdkVersion = "";
 
     private RCIMFlutterWrapper() {
         messageContentConstructorMap = new HashMap<>();
@@ -265,8 +267,6 @@ public class RCIMFlutterWrapper {
             getUnreadMentionedMessages(call.arguments, result);
         } else if (RCMethodList.MethodKeySendDirectionalMessage.equalsIgnoreCase(call.method)) {
             sendDirectionalMessage(call.arguments, result);
-        } else if (RCMethodList.MethodKeySaveMediaToPublicDir.equalsIgnoreCase(call.method)) {
-            saveMediaToPublicDir(call.arguments);
         } else if (RCMethodList.MethodKeyForwardMessageByStep.equalsIgnoreCase(call.method)) {
             forwardMessageByStep(call.arguments);
         } else if (RCMethodList.MethodKeyMessageBeginDestruct.equalsIgnoreCase(call.method)) {
@@ -309,6 +309,32 @@ public class RCIMFlutterWrapper {
             updateMessageExpansion(call.arguments, result);
         } else if (RCMethodList.MethodKeyRemoveMessageExpansionForKey.equalsIgnoreCase(call.method)) {
             removeMessageExpansion(call.arguments, result);
+        } else if (RCMethodList.MethodKeyAddTag.equalsIgnoreCase(call.method)) {
+            addTag(call.arguments, result);
+        } else if (RCMethodList.MethodKeyRemoveTag.equalsIgnoreCase(call.method)) {
+            removeTag(call.arguments, result);
+        } else if (RCMethodList.MethodKeyUpdateTag.equalsIgnoreCase(call.method)) {
+            updateTag(call.arguments, result);
+        } else if (RCMethodList.MethodKeyGetTags.equalsIgnoreCase(call.method)) {
+            getTags(call.arguments, result);
+        } else if (RCMethodList.MethodKeyAddConversationsToTag.equalsIgnoreCase(call.method)) {
+            addConversationsToTag(call.arguments, result);
+        } else if (RCMethodList.MethodKeyRemoveConversationsFromTag.equalsIgnoreCase(call.method)) {
+            removeConversationsFromTag(call.arguments, result);
+        } else if (RCMethodList.MethodKeyRemoveTagsFromConversation.equalsIgnoreCase(call.method)) {
+            removeTagsFromConversation(call.arguments, result);
+        } else if (RCMethodList.MethodKeyGetTagsFromConversation.equalsIgnoreCase(call.method)) {
+            getTagsFromConversation(call.arguments, result);
+        } else if (RCMethodList.MethodKeyGetConversationsFromTagByPage.equalsIgnoreCase(call.method)) {
+            getConversationsFromTagByPage(call.arguments, result);
+        } else if (RCMethodList.MethodKeyGetUnreadCountByTag.equalsIgnoreCase(call.method)) {
+            getUnreadCountByTag(call.arguments, result);
+        } else if (RCMethodList.MethodKeySetConversationToTopInTag.equalsIgnoreCase(call.method)) {
+            setConversationToTopInTag(call.arguments, result);
+        } else if (RCMethodList.MethodKeyGetConversationTopStatusInTag.equalsIgnoreCase(call.method)) {
+            getConversationTopStatusInTag(call.arguments, result);
+        } else if (RCMethodList.MethodKeyBatchInsertMessage.equalsIgnoreCase(call.method)) {
+            batchInsertMessage(call.arguments, result);
         } else {
             result.notImplemented();
         }
@@ -452,9 +478,10 @@ public class RCIMFlutterWrapper {
     private void initRCIM(Object arg) {
         String LOG_TAG = "init";
 //        RCLog.i(LOG_TAG + " start param:" + arg.toString());
-        if (arg instanceof String) {
-            String appkey = String.valueOf(arg);
-            this.appkey = appkey;
+        if (arg instanceof Map) {
+            Map param = (Map) arg;
+            this.appkey = (String) param.get("appkey");
+            this.sdkVersion = (String) param.get("version");
             RongIMClient.init(mContext, appkey);
 
             // IMLib 默认检测到小视频 SDK 才会注册小视频消息，所以此处需要手动注册
@@ -468,6 +495,9 @@ public class RCIMFlutterWrapper {
             setOnReceiveDestructionMessageListener();
             setKVStatusListener();
             setMessageExpansionListener();
+            setConversationTagListener();
+            setTagListenerListener();
+            setChatRoomAdvancedActionListener();
         } else {
             Log.e("RCIM flutter init", "非法参数");
         }
@@ -892,7 +922,7 @@ public class RCIMFlutterWrapper {
                             ((HQVoiceMessage) content).setExtra(extra);
                         }
                     }
-                    String remoteUrl = (String) jsonObject.get("remoteUrl");
+                    String remoteUrl = (String) jsonObject.optString("remoteUrl");
                     if (!TextUtils.isEmpty(remoteUrl)) {
                         ((HQVoiceMessage) content).setMediaUrl(Uri.parse(remoteUrl));
                     }
@@ -914,7 +944,7 @@ public class RCIMFlutterWrapper {
                             ((SightMessage) content).setExtra(extra);
                         }
                     }
-                    String sightUrl = (String) jsonObject.get("sightUrl");
+                    String sightUrl = (String) jsonObject.optString("sightUrl");
                     if (!TextUtils.isEmpty(sightUrl)) {
                         ((SightMessage) content).setMediaUrl(Uri.parse(sightUrl));
                     }
@@ -2119,7 +2149,7 @@ public class RCIMFlutterWrapper {
     }
 
     private void setOnRecallMessageListener() {
-        RongIMClient.getInstance().setOnRecallMessageListener(new RongIMClient.OnRecallMessageListener() {
+        RongIMClient.setOnRecallMessageListener(new RongIMClient.OnRecallMessageListener() {
             @Override
             public boolean onMessageRecalled(final Message message,
                                              final RecallNotificationMessage recallNotificationMessage) {
@@ -2228,6 +2258,83 @@ public class RCIMFlutterWrapper {
                         mChannel.invokeMethod(RCMethodList.MethodCallBackMessageExpansionDidRemove, resultMap);
                     }
                 });
+            }
+        });
+    }
+
+    private void setConversationTagListener() {
+        RongCoreClient.getInstance().setConversationTagListener(new IRongCoreListener.ConversationTagListener() {
+            @Override
+            public void onConversationTagChanged() {
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mChannel.invokeMethod(RCMethodList.MethodCallBackConversationTagChanged, new HashMap<>());
+                    }
+                });
+            }
+        });
+    }
+
+    private void setTagListenerListener() {
+        RongCoreClient.getInstance().setTagListener(new IRongCoreListener.TagListener() {
+            @Override
+            public void onTagChanged() {
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mChannel.invokeMethod(RCMethodList.MethodCallBackTagChanged, new HashMap<>());
+                    }
+                });
+            }
+        });
+    }
+
+    private void setChatRoomAdvancedActionListener() {
+        RongChatRoomClient.setChatRoomAdvancedActionListener(new RongChatRoomClient.ChatRoomAdvancedActionListener() {
+            @Override
+            public void onJoining(String s) {
+
+            }
+
+            @Override
+            public void onJoined(String s) {
+
+            }
+
+            @Override
+            public void onReset(final String targetId) {
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Map resultMap = new HashMap();
+                        resultMap.put("targetId", targetId);
+                        mChannel.invokeMethod(RCMethodList.MethodCallBackKeyChatRoomReset, resultMap);
+                    }
+                });
+            }
+
+            @Override
+            public void onQuited(String s) {
+
+            }
+
+            @Override
+            public void onDestroyed(final String targetId, final IRongCoreEnum.ChatRoomDestroyType chatRoomDestroyType) {
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Map resultMap = new HashMap();
+                        resultMap.put("targetId", targetId);
+                        resultMap.put("type", chatRoomDestroyType.getType());
+                        mChannel.invokeMethod(RCMethodList.MethodCallBackKeyChatRoomDestroyed, resultMap);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(String s, IRongCoreEnum.CoreErrorCode coreErrorCode) {
+
             }
         });
     }
@@ -3480,6 +3587,430 @@ public class RCIMFlutterWrapper {
         }
     }
 
+    private void batchInsertMessage(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            List<Map> messageMapList = (List<Map>) paramMap.get("messageMapList");
+            if (messageMapList == null || messageMapList.size() == 0) {
+                RCLog.e("[batchInsertMessage] message list is null ");
+                return;
+            }
+            List<Message> messageList = new ArrayList<>();
+            for (int i = 0; i < messageMapList.size(); i++) {
+                messageList.add(map2Message(messageMapList.get(i)));
+            }
+            RongCoreClient.getInstance().batchInsertMessage(messageList, new IRongCoreCallback.ResultCallback<Boolean>() {
+                @Override
+                public void onSuccess(Boolean aBoolean) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("result", aBoolean);
+                    resultMap.put("code", 0);
+                    result.success(resultMap);
+                }
+
+                @Override
+                public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("result", false);
+                    resultMap.put("code", coreErrorCode.getValue());
+                    result.success(resultMap);
+                }
+            });
+        }
+    }
+
+    private void addTag(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            String tagId = "";
+            if (paramMap.get("tagId") != null) {
+                tagId = (String) paramMap.get("tagId");
+            }
+            String tagName = "";
+            if (paramMap.get("tagName") != null) {
+                tagName = (String) paramMap.get("tagName");
+            }
+            int count = 0;
+            if (paramMap.get("count") != null) {
+                count = (int) paramMap.get("count");
+            }
+            long timestamp = 0;
+            if (paramMap.get("timestamp") != null) {
+                timestamp = (((Number) paramMap.get("timestamp")).longValue());
+            }
+            RongCoreClient.getInstance().addTag(new TagInfo(tagId, tagName, count, timestamp), new IRongCoreCallback.OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    Map resultMap = new HashMap();
+                    resultMap.put("code", 0);
+                    result.success(resultMap);
+                }
+
+                @Override
+                public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("code", coreErrorCode.getValue());
+                    result.success(resultMap);
+                }
+            });
+        }
+    }
+
+    private void removeTag(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            String tagId = "";
+            if (paramMap.get("tagId") != null) {
+                tagId = (String) paramMap.get("tagId");
+            }
+            RongCoreClient.getInstance().removeTag(tagId, new IRongCoreCallback.OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    Map resultMap = new HashMap();
+                    resultMap.put("code", 0);
+                    result.success(resultMap);
+                }
+
+                @Override
+                public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("code", coreErrorCode.getValue());
+                    result.success(resultMap);
+                }
+            });
+        }
+    }
+
+    private void updateTag(Object arg, final Result result) {
+        Map paramMap = (Map) arg;
+        String tagId = "";
+        if (paramMap.get("tagId") != null) {
+            tagId = (String) paramMap.get("tagId");
+        }
+        String tagName = "";
+        if (paramMap.get("tagName") != null) {
+            tagName = (String) paramMap.get("tagName");
+        }
+        int count = 0;
+        if (paramMap.get("count") != null) {
+            count = (int) paramMap.get("count");
+        }
+        long timestamp = 0;
+        if (paramMap.get("timestamp") != null) {
+            timestamp = (((Number) paramMap.get("timestamp")).longValue());
+        }
+        RongCoreClient.getInstance().updateTag(new TagInfo(tagId, tagName, count, timestamp), new IRongCoreCallback.OperationCallback() {
+            @Override
+            public void onSuccess() {
+                Map resultMap = new HashMap();
+                resultMap.put("code", 0);
+                result.success(resultMap);
+            }
+
+            @Override
+            public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
+                Map resultMap = new HashMap();
+                resultMap.put("code", coreErrorCode.getValue());
+                result.success(resultMap);
+            }
+        });
+    }
+
+    private void getTags(Object arg, final Result result) {
+        RongCoreClient.getInstance().getTags(new IRongCoreCallback.ResultCallback<List<TagInfo>>() {
+            @Override
+            public void onSuccess(List<TagInfo> tagInfos) {
+                Map resultMap = new HashMap();
+                List list = new ArrayList();
+                if (tagInfos != null) {
+                    for (TagInfo info : tagInfos) {
+                        String conStr = MessageFactory.getInstance().tagInfo2String(info);
+                        list.add(conStr);
+                    }
+                }
+                resultMap.put("getTags", list);
+                resultMap.put("code", 0);
+                result.success(resultMap);
+
+            }
+
+            @Override
+            public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
+                Map resultMap = new HashMap();
+                resultMap.put("getTags", null);
+                resultMap.put("code", coreErrorCode.getValue());
+                result.success(resultMap);
+            }
+        });
+    }
+
+    private void getUnreadCountByTag(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            String tagId = (String) paramMap.get("tagId");
+            boolean containBlocked = (boolean) paramMap.get("containBlocked");
+            RongCoreClient.getInstance().getUnreadCountByTag(tagId, containBlocked, new IRongCoreCallback.ResultCallback<Integer>() {
+                @Override
+                public void onSuccess(Integer integer) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("result", integer);
+                    resultMap.put("code", 0);
+                    result.success(resultMap);
+                }
+
+                @Override
+                public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("result", -1);
+                    resultMap.put("code", coreErrorCode.getValue());
+                    result.success(resultMap);
+                }
+            });
+        }
+    }
+
+    private void setConversationToTopInTag(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            Integer t = (Integer) paramMap.get("conversationType");
+            Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
+            String targetId = (String) paramMap.get("targetId");
+            String tagId = (String) paramMap.get("tagId");
+            boolean isTop = (boolean) paramMap.get("isTop");
+            RongCoreClient.getInstance().setConversationToTopInTag(tagId, new ConversationIdentifier(type, targetId), isTop,
+                    new IRongCoreCallback.OperationCallback() {
+                        @Override
+                        public void onSuccess() {
+                            Map resultMap = new HashMap();
+                            resultMap.put("result", true);
+                            resultMap.put("code", 0);
+                            result.success(resultMap);
+                        }
+
+                        @Override
+                        public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
+                            Map resultMap = new HashMap();
+                            resultMap.put("result", false);
+                            resultMap.put("code", coreErrorCode.getValue());
+                            result.success(resultMap);
+                        }
+                    });
+        }
+    }
+
+    private void addConversationsToTag(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            String tagId = (String) paramMap.get("tagId");
+            List<Map> identifierList = (List<Map>) paramMap.get("identifiers");
+            if (identifierList == null || identifierList.size() == 0) {
+                RCLog.e("[deleteRemoteMessages] message list is null ");
+                return;
+            }
+            List<ConversationIdentifier> conversationIdentifierList = new ArrayList<>();
+            for (Map identifierMap : identifierList) {
+                conversationIdentifierList.add(map2ConversationIdentifier(identifierMap));
+            }
+            RongCoreClient.getInstance().addConversationsToTag(tagId, conversationIdentifierList, new IRongCoreCallback.OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    Map resultMap = new HashMap();
+                    resultMap.put("result", true);
+                    resultMap.put("code", 0);
+                    result.success(resultMap);
+                }
+
+                @Override
+                public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("result", false);
+                    resultMap.put("code", coreErrorCode.getValue());
+                    result.success(resultMap);
+                }
+            });
+        }
+
+    }
+
+    private void removeConversationsFromTag(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            String tagId = (String) paramMap.get("tagId");
+            List<Map> identifierList = (List<Map>) paramMap.get("identifiers");
+            if (identifierList == null || identifierList.size() == 0) {
+                RCLog.e("[deleteRemoteMessages] message list is null ");
+                return;
+            }
+            List<ConversationIdentifier> conversationIdentifierList = new ArrayList<>();
+            for (Map identifierMap : identifierList) {
+                conversationIdentifierList.add(map2ConversationIdentifier(identifierMap));
+            }
+            RongCoreClient.getInstance().removeConversationsFromTag(tagId, conversationIdentifierList, new IRongCoreCallback.OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    Map resultMap = new HashMap();
+                    resultMap.put("result", true);
+                    resultMap.put("code", 0);
+                    result.success(resultMap);
+                }
+
+                @Override
+                public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("result", false);
+                    resultMap.put("code", coreErrorCode.getValue());
+                    result.success(resultMap);
+                }
+            });
+        }
+    }
+
+    private void removeTagsFromConversation(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            Integer t = (Integer) paramMap.get("conversationType");
+            Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
+            String targetId = (String) paramMap.get("targetId");
+            List<String> tagIds = (List<String>) paramMap.get("tagIds");
+            RongCoreClient.getInstance().removeTagsFromConversation(new ConversationIdentifier(type, targetId), tagIds, new IRongCoreCallback.OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    Map resultMap = new HashMap();
+                    resultMap.put("result", true);
+                    resultMap.put("code", 0);
+                    result.success(resultMap);
+                }
+
+                @Override
+                public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("result", false);
+                    resultMap.put("code", coreErrorCode.getValue());
+                    result.success(resultMap);
+                }
+            });
+
+        }
+    }
+
+    private void getTagsFromConversation(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            Integer t = (Integer) paramMap.get("conversationType");
+            Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
+            String targetId = (String) paramMap.get("targetId");
+            RongCoreClient.getInstance().getTagsFromConversation(new ConversationIdentifier(type, targetId), new IRongCoreCallback.ResultCallback<List<ConversationTagInfo>>() {
+                @Override
+                public void onSuccess(List<ConversationTagInfo> conversationTagInfos) {
+                    Map resultMap = new HashMap();
+                    List list = new ArrayList();
+                    if (conversationTagInfos != null) {
+                        for (ConversationTagInfo info : conversationTagInfos) {
+                            String conStr = MessageFactory.getInstance().conversationTagInfo2String(info);
+                            list.add(conStr);
+                        }
+                    }
+                    resultMap.put("ConversationTagInfoList", list);
+                    resultMap.put("code", 0);
+                    RCLog.i("[getTagsFromConversation] onSuccess:");
+                    result.success(resultMap);
+                }
+
+                @Override
+                public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
+                    RCLog.e("[getTagsFromConversation] onError:" + coreErrorCode.getValue());
+                    Map resultMap = new HashMap();
+                    resultMap.put("ConversationTagInfoList", null);
+                    resultMap.put("code", coreErrorCode.getValue());
+                    result.success(resultMap);
+                }
+            });
+        }
+    }
+
+    private void getConversationsFromTagByPage(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            String tagId = (String) paramMap.get("tagId");
+            long ts = 0;
+            //传 0 的话取最小值，20
+            int count = 0;
+            if (paramMap.get("ts") != null) {
+                ts = (((Number) paramMap.get("ts")).longValue());
+            }
+            if (paramMap.get("count") != null) {
+                count = (int) paramMap.get("count");
+            }
+            RongCoreClient.getInstance().getConversationsFromTagByPage(tagId, ts, count, new IRongCoreCallback.ResultCallback<List<Conversation>>() {
+                @Override
+                public void onSuccess(List<Conversation> conversations) {
+                    Map resultMap = new HashMap();
+                    List l = new ArrayList();
+                    if (conversations != null) {
+                        for (Conversation con : conversations) {
+                            String conStr = MessageFactory.getInstance().conversation2String(con);
+                            l.add(conStr);
+                        }
+                    }
+                    resultMap.put("ConversationList", l);
+                    resultMap.put("code", 0);
+                    RCLog.i("[getConversationsFromTagByPage] onSuccess:");
+                    result.success(resultMap);
+
+                }
+
+                @Override
+                public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
+                    RCLog.e("[getConversationsFromTagByPage] onError:" + coreErrorCode.getValue());
+                    Map resultMap = new HashMap();
+                    resultMap.put("ConversationList", null);
+                    resultMap.put("code", coreErrorCode.getValue());
+                    result.success(resultMap);
+                }
+            });
+
+        }
+    }
+
+    private void getConversationTopStatusInTag(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            Integer t = (Integer) paramMap.get("conversationType");
+            Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
+            String targetId = (String) paramMap.get("targetId");
+            String tagId = (String) paramMap.get("tagId");
+            RongCoreClient.getInstance().getConversationTopStatusInTag(new ConversationIdentifier(type, targetId), tagId, new IRongCoreCallback.ResultCallback<Boolean>() {
+                @Override
+                public void onSuccess(Boolean aBoolean) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("result", aBoolean);
+                    resultMap.put("code", 0);
+                    result.success(resultMap);
+                }
+
+                @Override
+                public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("result", false);
+                    resultMap.put("code", coreErrorCode.getValue());
+                    result.success(resultMap);
+                }
+            });
+        }
+    }
+
+    private ConversationIdentifier map2ConversationIdentifier(Map identifierMap) {
+        ConversationIdentifier identifier = new ConversationIdentifier();
+        if (identifierMap != null) {
+            if (identifierMap.get("targetId") != null) {
+                identifier.setTargetId((String) identifierMap.get("targetId"));
+            }
+            if (identifierMap.get("conversationType") != null) {
+                identifier.setType(Conversation.ConversationType.setValue((Integer) identifierMap.get("conversationType")));
+            }
+        }
+        return identifier;
+    }
 
     private Message map2Message(Map messageMap) {
         String contentStr = null;
@@ -3669,6 +4200,13 @@ public class RCIMFlutterWrapper {
 //        else {
         try {
             result = constructor.newInstance(content);
+            // 防止 LocationMessage encode 导致远端地址丢失
+            if ("RC:LBSMsg".equals(objectName)) {
+                JSONObject contentObject = new JSONObject(contentStr);
+                if (contentObject.has("mImgUri")) {
+                    ((LocationMessage) result).setImgUri(Uri.parse((String) contentObject.get("mImgUri")));
+                }
+            }
         } catch (Exception e) {
             // FwLog TBC.
             result = new UnknownMessage(content);
@@ -3681,12 +4219,7 @@ public class RCIMFlutterWrapper {
         return result;
     }
 
-    private void saveMediaToPublicDir(Object arg) {
-        if (arg instanceof Map) {
-            Map paramMap = (Map) arg;
-            String filePath = (String) paramMap.get("filePath");
-            String type = (String) paramMap.get("type");
-            StorageUtils.saveMediaToPublicDir(getMainContext(), new File(filePath), type);
-        }
+    public static String getVersion() {
+        return sdkVersion;
     }
 }

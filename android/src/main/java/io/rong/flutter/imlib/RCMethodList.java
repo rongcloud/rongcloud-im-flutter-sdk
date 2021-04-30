@@ -23,6 +23,7 @@ public class RCMethodList {
     static String MethodKeySetCurrentUserInfo = "setCurrentUserInfo";
     static String MethodKeyInsertIncomingMessage = "insertIncomingMessage";
     static String MethodKeyInsertOutgoingMessage = "insertOutgoingMessage";
+    static String MethodKeyBatchInsertMessage = "BatchInsertMessage";
     static String MethodKeyGetTotalUnreadCount = "getTotalUnreadCount";
     static String MethodKeyGetUnreadCountTargetId = "getUnreadCountTargetId";
     static String MethodKeyGetUnreadCountConversationTypeList = "getUnreadCountConversationTypeList";
@@ -79,6 +80,19 @@ public class RCMethodList {
     static String MethodKeyUpdateMessageExpansion = "updateMessageExpansion";
     static String MethodKeyRemoveMessageExpansionForKey = "removeMessageExpansionForKey";
 
+    //会话标签
+    static String MethodKeyAddTag = "addTag";
+    static String MethodKeyRemoveTag = "removeTag";
+    static String MethodKeyUpdateTag = "updateTag";
+    static String MethodKeyGetTags = "getTags";
+    static String MethodKeyGetConversationTopStatusInTag = "getConversationTopStatusInTag";
+    static String MethodKeySetConversationToTopInTag = "setConversationToTopInTag";
+    static String MethodKeyGetUnreadCountByTag = "getUnreadCountByTag";
+    static String MethodKeyGetConversationsFromTagByPage = "getConversationsFromTagByPage";
+    static String MethodKeyGetTagsFromConversation = "getTagsFromConversation";
+    static String MethodKeyRemoveTagsFromConversation = "removeTagsFromConversation";
+    static String MethodKeyRemoveConversationsFromTag = "removeConversationsFromTag";
+    static String MethodKeyAddConversationsToTag = "addConversationsToTag";
 
 
 
@@ -98,6 +112,8 @@ public class RCMethodList {
     static String MethodCallBackKeyReceiveMessage = "receiveMessageCallBack";
     static String MethodCallBackKeyJoinChatRoom = "joinChatRoomCallBack";
     static String MethodCallBackKeyQuitChatRoom = "quitChatRoomCallBack";
+    static String MethodCallBackKeyChatRoomReset = "onChatRoomResetCallBack";
+    static String MethodCallBackKeyChatRoomDestroyed = "onChatRoomDestroyedCallBack";
     static String MethodCallBackKeyUploadMediaProgress = "uploadMediaProgressCallBack";
     static String MethodCallBackKeygetRemoteHistoryMessages = "getRemoteHistoryMessagesCallBack";
     static String MethodCallBackKeyConnectionStatusChange = "ConnectionStatusChangeCallBack";
@@ -115,5 +131,7 @@ public class RCMethodList {
     static String MethodCallBackMessageExpansionDidUpdate = "MessageExpansionDidUpdateCallBack";
     static String MethodCallBackMessageExpansionDidRemove = "MessageExpansionDidRemoveCallBack";
     static String MethodCallBackDatabaseOpened = "DatabaseOpenedCallBack";
+    static String MethodCallBackTagChanged ="onTagChanged";
+    static String MethodCallBackConversationTagChanged = "ConversationTagChangedCallBack";
 
 }

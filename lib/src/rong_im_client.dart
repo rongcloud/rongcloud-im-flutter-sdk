@@ -7,6 +7,7 @@ import 'util/message_factory.dart';
 import 'method_key.dart';
 import 'info/connection_status_convert.dart';
 import 'dart:developer' as developer;
+import 'package:rongcloud_im_plugin/src/info/tag_info.dart';
 
 ///消息解析函数
 ///[content] 待解析消息json字符串
@@ -18,6 +19,7 @@ class RongIMClient {
       const MethodChannel('rongcloud_im_plugin');
 
   static Map sendMessageCallbacks = Map();
+  static String SDKVersion = "5.0.0";
 
   static Map<String, MessageDecoder> messageDecoders =
       Map<String, MessageDecoder>();
@@ -25,9 +27,11 @@ class RongIMClient {
   ///初始化 SDK
   ///
   ///[appkey] appkey
-  static void init(String appkey) {
+  static void init(String appkey) async {
     _registerMessage();
-    _channel.invokeMethod(RCMethodKey.Init, appkey);
+
+    Map map = {"appkey": appkey, "version": SDKVersion};
+    _channel.invokeMethod(RCMethodKey.Init, map);
     _addNativeMethodCallHandler();
   }
 
@@ -850,6 +854,41 @@ class RongIMClient {
     }
   }
 
+  /*!
+ 批量插入接收的消息（该消息只插入本地数据库，实际不会发送给服务器和对方）
+ RCMessage 下列属性会被入库，其余属性会被抛弃
+ conversationType    会话类型
+ targetId            会话 ID
+ messageDirection    消息方向
+ senderUserId        发送者 ID
+ receivedStatus      接收状态；消息方向为接收方，并且 receivedStatus 为 ReceivedStatus_UNREAD 时，该条消息未读
+ sentStatus          发送状态
+ content             消息的内容
+ sentTime            消息发送的 Unix 时间戳，单位为毫秒 ，会影响消息排序
+ extra            RCMessage 的额外字段
+ 
+ @discussion 此方法不支持聊天室的会话类型。每批最多处理  500 条消息，超过 500 条返回 NO
+ @discussion 消息的未读会累加到回话的未读数上
+
+ @remarks 消息操作
+ */
+  static void batchInsertMessage(
+      List<Message> msgs, Function(bool result, int code) finished) async {
+    List messageMaps = List();
+    for (Message message in msgs) {
+      Map messageMap = MessageFactory.instance.message2Map(message);
+      messageMaps.add(messageMap);
+    }
+    Map map = {"messageMapList": messageMaps};
+    Map resultMap =
+        await _channel.invokeMethod(RCMethodKey.BatchInsertMessage, map);
+    bool result = resultMap["result"];
+    int code = resultMap["code"];
+    if (finished != null) {
+      finished(result, code);
+    }
+  }
+
   /// 删除特定会话的消息
   ///
   /// [conversationType] 会话类型，参见枚举 [RCConversationType]
@@ -1656,11 +1695,6 @@ class RongIMClient {
     await _channel.invokeMethod(RCMethodKey.DownloadMediaMessage, paramMap);
   }
 
-  static void saveMediaToPublicDir(String filePath, String type) async {
-    Map paramMap = {"filePath": filePath, "type": type};
-    await _channel.invokeMethod(RCMethodKey.SaveMediaToPublicDir, paramMap);
-  }
-
   static void forwardMessageByStep(
       int conversationType, String targetId, Message message,
       {Function(int messageId, int status, int code) finished}) async {
@@ -1813,7 +1847,7 @@ class RongIMClient {
   ///
   ///[targetId] 聊天室 id
   ///
-  /// 用户没有开通多设备登录功能的前提下，同一个账号在一台新设备上登录的时候，会把这个账号在之前登录的设备上踢出。
+  /// 用户���有开通多设备登录功能的前提下，同一个账号在一台新设备上登录的时候，会把这个账号在之前登录的设备上踢出。
   /// 由于 SDK 有断线重连功能，存在下面情况。
   /// 用户在 A 设备登录，A 设备网络不稳定，没有连接成功，SDK 启动重连机制。
   /// 用户此时又在 B 设备登录，B 设备连接成功。
@@ -1884,6 +1918,21 @@ class RongIMClient {
     }
   }
 
+//  缩略图压缩配置(仅 ios 使用，Android 请在 rc_configuration.xml 文件进行配置)
+//  maxSize:缩略图最大尺寸  minSize:缩略图最小尺寸  quality:缩略图质量压缩比
+//  @remarks 缩略图压缩配置，如果此处设置了配置就按照这个配置进行压缩。如果此处没有设置，会按照 RCConfig.plist 中的配置进行压缩。
+  static void imageCompressConfig(
+      double maxSize, double minSize, double quality) {
+    Map map = {"maxSize": maxSize, "minSize": minSize, "quality": quality};
+    _channel.invokeMethod(RCMethodKey.ImageCompressConfig, map);
+  }
+
+  /// typing 状态更新的时间，默认是 6s (仅 ios 使用，Android 请在 rc_configuration.xml 文件进行配置)
+  static void typingUpdateSeconds(int typingUpdateSeconds) {
+    Map map = {"typingUpdateSeconds": typingUpdateSeconds};
+    _channel.invokeMethod(RCMethodKey.TypingUpdateSeconds, map);
+  }
+
   ///通过全局唯一 ID 获取消息实体
   ///发送 message 成功后，服务器会给每个 message 分配一个唯一 ID(messageUId)
   static Future<Message> getMessageByUId(String messageUId) async {
@@ -1941,6 +1990,360 @@ class RongIMClient {
       finished(resultMap);
     }
   }
+
+/*!
+ 添加标签
+ 
+ @param tagInfo 标签信息。只需要设置标签信息的 tagId 和 tagName。
+ @param successBlock 成功的回调
+ @param errorBlock 失败的回调
+ 
+ @discussion 最多支持添加 20 个标签
+ @remarks 高级功能
+ */
+  static addTag(TagInfo taginfo, Function(int code) finished) async {
+    if (taginfo == null) {
+      developer.log("addTag fail: taginfo is null", name: "RongIMClient");
+      return null;
+    }
+    Map map = {
+      "tagId": taginfo.tagId,
+      "tagName": taginfo.tagName,
+      "count": taginfo.count,
+      "timestamp": taginfo.timestamp
+    };
+    Map result = await _channel.invokeMethod(RCMethodKey.AddTag, map);
+    if (finished != null) {
+      finished(result["code"]);
+    }
+  }
+
+/*!
+ 移除标签
+ 
+ @param tagId 标签 ID
+ @param successBlock 成功的回调
+ @param errorBlock 失败的回调
+ 
+ @remarks 高级功能
+ */
+  static removeTag(String targetId, Function(int code) finished) async {
+    if (targetId == null) {
+      developer.log("removeTag fail: targetId is null", name: "RongIMClient");
+      return null;
+    }
+    Map map = {"tagId": targetId};
+    Map result = await _channel.invokeMethod(RCMethodKey.RemoveTag, map);
+    if (finished != null) {
+      finished(result["code"]);
+    }
+  }
+
+/*!
+ 更新标签信息
+ 
+ @param tagInfo 标签信息。只支持修改标签信息的 tagName
+ @param successBlock 成功的回调
+ @param errorBlock 失败的回调
+ 
+ @remarks 高级功能
+ */
+  static updateTag(TagInfo taginfo, Function(int code) finished) async {
+    if (taginfo == null) {
+      developer.log("updateTag fail: taginfo is null", name: "RongIMClient");
+      return null;
+    }
+    Map map = {
+      "tagId": taginfo.tagId,
+      "tagName": taginfo.tagName,
+      "count": taginfo.count,
+      "timestamp": taginfo.timestamp
+    };
+    Map result = await _channel.invokeMethod(RCMethodKey.UpdateTag, map);
+    if (finished != null) {
+      finished(result["code"]);
+    }
+  }
+
+/*!
+ 获取标签列表
+ 
+ @return 标签列表
+ @remarks 高级功能
+ */
+  static Future getTags(Function(int code, List tags) finished) async {
+    Map result = await _channel.invokeMethod(RCMethodKey.GetTags, null);
+    int code = result['code'];
+    List resultList = new List();
+    if (code == 0) {
+      List tags = result['getTags'];
+      for (String conStr in tags) {
+        TagInfo tagInfo = MessageFactory.instance.string2TagInfo(conStr);
+        resultList.add(tagInfo);
+      }
+    }
+    if (finished != null) {
+      finished(code, resultList);
+    }
+  }
+
+  /// 添加会话到一个标签
+  /// [tagId] 标签 id
+  /// [identifiers]  会话列表
+  static Future addConversationsToTag(
+      String tagId,
+      List /*ConversationIdentifier*/ identifiers,
+      Function(bool result, int code) finished) async {
+    if (tagId == null || identifiers == null) {
+      developer.log(
+          "removeConversationsFromTag fail: tagId is null or identifiers is null",
+          name: "RongIMClient");
+      return null;
+    }
+    List identifierList = List();
+    for (ConversationIdentifier identifier in identifiers) {
+      Map identifierMap =
+          MessageFactory.instance.conversationIdentifier2Map(identifier);
+      identifierList.add(identifierMap);
+    }
+    Map paramMap = {
+      "tagId": tagId,
+      "identifiers": identifierList,
+    };
+    Map resultMap = await _channel.invokeMethod(
+        RCMethodKey.AddConversationsToTag, paramMap);
+    if (resultMap != null) {
+      bool reuslt = resultMap["result"];
+      int code = resultMap["code"];
+      if (finished != null) {
+        finished(reuslt, code);
+      }
+    }
+  }
+
+  /// 删除指定一个标签中会话功能
+  /// [tagId] 标签 id
+  /// [identifiers]  会话列表
+  static Future removeConversationsFromTag(
+      String tagId,
+      List /*ConversationIdentifier*/ identifiers,
+      Function(bool result, int code) finished) async {
+    if (tagId == null || identifiers == null) {
+      developer.log(
+          "removeConversationsFromTag fail: tagId is null or identifiers is null",
+          name: "RongIMClient");
+      return null;
+    }
+    List identifierList = List();
+    for (ConversationIdentifier identifier in identifiers) {
+      Map identifierMap =
+          MessageFactory.instance.conversationIdentifier2Map(identifier);
+      identifierList.add(identifierMap);
+    }
+    Map paramMap = {
+      "tagId": tagId,
+      "identifiers": identifierList,
+    };
+    Map resultMap = await _channel.invokeMethod(
+        RCMethodKey.RemoveConversationsFromTag, paramMap);
+    if (resultMap != null) {
+      bool reuslt = resultMap["result"];
+      int code = resultMap["code"];
+      if (finished != null) {
+        finished(reuslt, code);
+      }
+    }
+  }
+
+  /// 删除指定会话中的某些标签
+  /// [conversationType] 会话类型
+  /// [targetId]  会话 id
+  /// [tagIds]  标签 id 列表
+  static Future removeTagsFromConversation(
+      int conversationType,
+      String targetId,
+      List tagIds,
+      Function(bool result, int code) finished) async {
+    if (conversationType == null || targetId == null || tagIds == null) {
+      developer.log(
+          "removeTagsFromConversation fail: conversationType is null or targetId is null or tagIds is null",
+          name: "RongIMClient");
+      return null;
+    }
+    Map paramMap = {
+      "conversationType": conversationType,
+      "targetId": targetId,
+      "tagIds": tagIds
+    };
+    Map resultMap = await _channel.invokeMethod(
+        RCMethodKey.RemoveTagsFromConversation, paramMap);
+    if (resultMap != null) {
+      bool reuslt = resultMap["result"];
+      int code = resultMap["code"];
+      if (finished != null) {
+        finished(reuslt, code);
+      }
+    }
+  }
+
+  /// 获取指定会话下的所有标签
+  /// [conversationType] 会话类型
+  /// [targetId]  会话 id
+  static Future getTagsFromConversation(int conversationType, String targetId,
+      Function(int code, List conversationList) finished) async {
+    if (conversationType == null || targetId == null) {
+      developer.log(
+          "getTagsFromConversation fail: conversationType is null or targetId is null",
+          name: "RongIMClient");
+      return null;
+    }
+    Map paramMap = {
+      "conversationType": conversationType,
+      "targetId": targetId,
+    };
+    Map resultMap = await _channel.invokeMethod(
+        RCMethodKey.GetTagsFromConversation, paramMap);
+    int code = resultMap["code"];
+    List coversationTagList = resultMap["ConversationTagInfoList"];
+    List tagList = new List();
+    if (coversationTagList != null) {
+      for (String conStr in coversationTagList) {
+        ConversationTagInfo con =
+            MessageFactory.instance.string2ConversationTagInfo(conStr);
+        tagList.add(con);
+      }
+    }
+    if (finished != null) {
+      finished(code, tagList);
+    }
+  }
+
+  /// 分页获取本地指定标签下会话列表
+  /// [tagId] 标签 id
+  /// [ts] 会话中最后一条消息时间戳
+  /// [count] 获取数量(20<= count <=100)
+  static Future getConversationsFromTagByPage(String tagId, int ts, int count,
+      Function(int code, List conversationList) finished) async {
+    if (tagId == null) {
+      developer.log("getConversationsFromTagByPage fail: ctagId is null",
+          name: "RongIMClient");
+      return null;
+    }
+    Map paramMap = {"tagId": tagId, "ts": ts, "count": count};
+    Map resultMap = await _channel.invokeMethod(
+        RCMethodKey.GetConversationsFromTagByPage, paramMap);
+    int code = resultMap["code"];
+    List coversationList = resultMap["ConversationList"];
+    List conList = new List();
+    if (coversationList != null) {
+      for (String conStr in coversationList) {
+        Conversation con = MessageFactory.instance.string2Conversation(conStr);
+        conList.add(con);
+      }
+    }
+    if (finished != null) {
+      finished(code, conList);
+    }
+  }
+
+  /// 按标签获取未读消息数
+  /// [tagId] 标签 id
+  /// [containBlocked] 是否包含免打扰
+  /// result 大于等于 0 表示返回成功结果数量，等于 -1 表示获取错误，错误码为 code 的值
+  static Future getUnreadCountByTag(String tagId, bool containBlocked,
+      Function(int result, int code) finished) async {
+    if (tagId == null) {
+      developer.log("getUnreadCountByTag fail: ctagId is null",
+          name: "RongIMClient");
+      return null;
+    }
+    Map paramMap = {
+      "tagId": tagId,
+      "containBlocked": containBlocked,
+    };
+    Map resultMap =
+        await _channel.invokeMethod(RCMethodKey.GetUnreadCountByTag, paramMap);
+    if (resultMap != null) {
+      int reuslt = resultMap["result"];
+      int code = resultMap["code"];
+      if (finished != null) {
+        finished(reuslt, code);
+      }
+    }
+  }
+
+  /// 设置标签中会话置顶状态
+  /// [conversationType] 会话类型
+  /// [targetId]  会话 id
+  /// [tagId] 标签 id
+  /// [isTop] 是否置顶
+  static Future setConversationToTopInTag(
+      int conversationType,
+      String targetId,
+      String tagId,
+      bool isTop,
+      Function(bool result, int code) finished) async {
+    if (conversationType == null || targetId == null || tagId == null) {
+      developer.log(
+          "setConversationToTopInTag fail: conversationType or targetId or content is null",
+          name: "RongIMClient");
+      return null;
+    }
+    Map paramMap = {
+      "conversationType": conversationType,
+      "targetId": targetId,
+      "tagId": tagId,
+      "isTop": isTop,
+    };
+    Map resultMap = await _channel.invokeMethod(
+        RCMethodKey.SetConversationToTopInTag, paramMap);
+    if (resultMap != null) {
+      bool reuslt = resultMap["result"];
+      int code = resultMap["code"];
+      if (finished != null) {
+        finished(reuslt, code);
+      }
+    }
+  }
+
+  /// 获取指定会话下的标签置顶状态
+  /// [conversationType] 会话类型
+  /// [targetId]  会话 id
+  /// [tagId] 标签 id
+  static Future getConversationTopStatusInTag(
+      int conversationType,
+      String targetId,
+      String tagId,
+      Function(bool result, int code) finished) async {
+    if (conversationType == null || targetId == null || tagId == null) {
+      developer.log(
+          "getConversationTopStatusInTag fail: conversationType or targetId or content is null",
+          name: "RongIMClient");
+      return null;
+    }
+    Map paramMap = {
+      "conversationType": conversationType,
+      "targetId": targetId,
+      "tagId": tagId
+    };
+    Map resultMap = await _channel.invokeMethod(
+        RCMethodKey.GetConversationTopStatusInTag, paramMap);
+    if (resultMap != null) {
+      bool reuslt = resultMap["result"];
+      int code = resultMap["code"];
+      if (finished != null) {
+        finished(reuslt, code);
+      }
+    }
+  }
+
+  ///设置 Tag 多端同步监听
+  ///
+  static Function() onConversationTagChanged;
+
+  /// 标签变化监听器
+  ///
+  static Function() onTagChanged;
 
   ///连接状态发生变更
   ///
@@ -2003,6 +2406,17 @@ class RongIMClient {
   ///
   ///[status] 参见枚举 [RCOperationStatus]
   static Function(String targetId, int status) onJoinChatRoom;
+
+  ///加入聊天室成功，但是聊天室被重置。接收到此回调后，还会收到 onChatRoomJoined 回调。
+  ///
+  ///[targetId] 聊天室 id
+  static Function(String targetId) onChatRoomReset;
+
+  ///聊天室被销毁的回调，用户在线的时候房间被销毁才会收到此回调。
+  ///
+  ///[targetId] 聊天室 id
+  ///[type] 参见枚举 [RCOperationStatus]
+  static Function(String targetId, int type) onChatRoomDestroyed;
 
   ///退出聊天的回调
   ///
@@ -2080,8 +2494,6 @@ class RongIMClient {
   //数据库打开（调用 connect 之后回调）
   static Function(int status) onDatabaseOpened;
 
-  ///响应原生的事件
-  ///
   static void _addNativeMethodCallHandler() {
     _channel.setMethodCallHandler((MethodCall call) {
       switch (call.method) {
@@ -2157,6 +2569,23 @@ class RongIMClient {
             String targetId = map["targetId"];
             int status = map["status"];
             onQuitChatRoom(targetId, status);
+          }
+          break;
+
+        case RCMethodCallBackKey.OnChatRoomReset:
+          if (onChatRoomReset != null) {
+            Map map = call.arguments;
+            String targetId = map["targetId"];
+            onChatRoomReset(targetId);
+          }
+          break;
+
+        case RCMethodCallBackKey.OnChatRoomDestroyed:
+          if (onChatRoomDestroyed != null) {
+            Map map = call.arguments;
+            String targetId = map["targetId"];
+            int type = map["type"];
+            onChatRoomDestroyed(targetId, type);
           }
           break;
 
@@ -2300,6 +2729,16 @@ class RongIMClient {
             Map map = call.arguments;
             int status = map["status"];
             onDatabaseOpened(status);
+          }
+          break;
+        case RCMethodCallBackKey.ConversationTagChanged:
+          if (onConversationTagChanged != null) {
+            onConversationTagChanged();
+          }
+          break;
+        case RCMethodCallBackKey.OnTagChanged:
+          if (onTagChanged != null) {
+            onTagChanged();
           }
           break;
       }
