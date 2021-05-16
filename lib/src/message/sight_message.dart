@@ -7,15 +7,15 @@ import 'dart:developer' as developer;
 class SightMessage extends MessageContent {
   static const String objectName = "RC:SightMsg";
 
-  String localPath; //本地路径
-  String remoteUrl; //远端路径
-  String content; //缩略图内容
-  int duration; //时长
-  String extra; //额外数据
+  String? localPath; //本地路径
+  String? remoteUrl; //远端路径
+  String? content; //缩略图内容
+  int? duration; //时长
+  String? extra; //额外数据
   int size = 0;
-  String mThumbUri; //缩略图地址
-  String mName = "";
-  int mSize;
+  String? mThumbUri; //缩略图地址
+  String? mName = "";
+  int? mSize;
 
   /// [localPath] 本地路径，Android 必须以 file:// 开头
   ///
@@ -28,7 +28,7 @@ class SightMessage extends MessageContent {
   }
 
   @override
-  void decode(String jsonStr) {
+  void decode(String? jsonStr) {
     if (jsonStr == null || jsonStr == "") {
       developer.log("Flutter SightMessage deocde error: no content",
           name: "RongIMClient.SightMessage");
@@ -53,9 +53,9 @@ class SightMessage extends MessageContent {
       this.duration = d;
     }
     this.extra = map["extra"];
-    Map userMap = map["user"];
+    Map? userMap = map["user"];
     super.decodeUserInfo(userMap);
-    Map menthionedMap = map["mentionedInfo"];
+    Map? menthionedMap = map["mentionedInfo"];
     super.decodeMentionedInfo(menthionedMap);
     this.destructDuration = map["burnDuration"];
   }
@@ -88,7 +88,7 @@ class SightMessage extends MessageContent {
       Map mentionedMap = super.encodeMentionedInfo(this.mentionedInfo);
       map["mentionedInfo"] = mentionedMap;
     }
-    if (this.destructDuration != null && this.destructDuration > 0) {
+    if (this.destructDuration != null && this.destructDuration! > 0) {
       map["burnDuration"] = this.destructDuration;
     }
     return json.encode(map);

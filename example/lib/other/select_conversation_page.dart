@@ -27,13 +27,13 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
   String pageName = "example.SelectConversationPage";
   List<Message> selectMessages;
   int forwardType; // 0:逐条转发，1:合并转发
-  List conList = new List();
+  List conList = [];
   List<int> displayConversationType = [
     RCConversationType.Private,
     RCConversationType.Group
   ];
   ScrollController _scrollController;
-  List selectConList = new List();
+  List selectConList = [];
 
   @override
   void initState() {

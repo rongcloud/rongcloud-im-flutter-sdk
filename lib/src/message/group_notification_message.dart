@@ -27,19 +27,19 @@ class GroupNotificationMessage extends MessageContent {
   static const String GROUP_OPERATION_BULLETIN = "Bulletin";
 
   /// 操作人 UserId，可以为空;
-  String operatorUserId;
+  String? operatorUserId;
 
   /// 操作名，对应 GroupOperationXxxx，或任意字符串。
-  String operation;
+  String? operation;
 
   /// 被操做人 UserId 或者操作数据（如改名后的名称）。
-  String data;
+  String? data;
 
   ///操作信息，可以为空，如：你被 xxx 踢出了群。
-  String message;
+  String? message;
 
   /// 附加信息。
-  String extra;
+  String? extra;
 
   @override
   String encode() {
@@ -47,13 +47,13 @@ class GroupNotificationMessage extends MessageContent {
       "operatorUserId": this.operation,
       "operation": this.operation,
     };
-    if (data != null && data.isNotEmpty) {
+    if (data != null && data!.isNotEmpty) {
       map["data"] = data;
     }
-    if (message != null && message.isNotEmpty) {
+    if (message != null && message!.isNotEmpty) {
       map["message"] = message;
     }
-    if (extra != null && extra.isNotEmpty) {
+    if (extra != null && extra!.isNotEmpty) {
       map["extra"] = extra;
     }
     if (this.sendUserInfo != null) {
@@ -75,7 +75,7 @@ class GroupNotificationMessage extends MessageContent {
   }
 
   @override
-  void decode(String jsonStr) {
+  void decode(String? jsonStr) {
     if (jsonStr == null || jsonStr.isEmpty) {
       developer.log("Flutter GroupNotificationMessage deocde error: no content",
           name: "RongIMClient.GroupNotificationMessage");
@@ -87,9 +87,9 @@ class GroupNotificationMessage extends MessageContent {
     this.data = map["data"];
     this.message = map["message"];
     this.extra = map["extra"];
-    Map userMap = map["user"];
+    Map? userMap = map["user"];
     super.decodeUserInfo(userMap);
-    Map menthionedMap = map["mentionedInfo"];
+    Map? menthionedMap = map["mentionedInfo"];
     super.decodeMentionedInfo(menthionedMap);
   }
 

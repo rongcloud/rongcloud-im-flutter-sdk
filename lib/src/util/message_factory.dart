@@ -8,20 +8,20 @@ import 'package:rongcloud_im_plugin/src/info/tag_info.dart';
 
 
 class MessageFactory extends Object {
-  factory MessageFactory() => _getInstance();
-  static MessageFactory get instance => _getInstance();
-  static MessageFactory _instance;
+  factory MessageFactory() => _getInstance()!;
+  static MessageFactory? get instance => _getInstance();
+  static MessageFactory? _instance;
   MessageFactory._internal() {
     // 初始化
   }
-  static MessageFactory _getInstance() {
+  static MessageFactory? _getInstance() {
     if (_instance == null) {
       _instance = new MessageFactory._internal();
     }
     return _instance;
   }
 
-  ConversationTagInfo string2ConversationTagInfo(String tagInfoJsonStr) {
+  ConversationTagInfo? string2ConversationTagInfo(String tagInfoJsonStr) {
     if (TypeUtil.isEmptyString(tagInfoJsonStr)) {
       return null;
     }
@@ -32,16 +32,16 @@ class MessageFactory extends Object {
   ConversationTagInfo map2ConversationTagInfo(Map map) {
     ConversationTagInfo conversationTagInfo = new ConversationTagInfo();
     conversationTagInfo.isTop = map["isTop"];
-    String jsonTagStr = map["tagInfo"];
+    String? jsonTagStr = map["tagInfo"];
     conversationTagInfo.tagInfo = string2TagInfo(jsonTagStr);
     return conversationTagInfo;
   }
 
-  TagInfo string2TagInfo(String tagJsonStr) {
+  TagInfo? string2TagInfo(String? tagJsonStr) {
     if (TypeUtil.isEmptyString(tagJsonStr)) {
       return null;
     }
-    Map map = json.decode(tagJsonStr);
+    Map map = json.decode(tagJsonStr!);
     return map2TagInfo(map);
   }
 
@@ -54,19 +54,19 @@ class MessageFactory extends Object {
     return tagInfo;
   }
 
-  Message string2Message(String msgJsonStr) {
+  Message? string2Message(String? msgJsonStr) {
     if (TypeUtil.isEmptyString(msgJsonStr)) {
       return null;
     }
-    Map map = json.decode(msgJsonStr);
+    Map map = json.decode(msgJsonStr!);
     return map2Message(map);
   }
 
-  Conversation string2Conversation(String conJsonStr) {
+  Conversation? string2Conversation(String? conJsonStr) {
     if (TypeUtil.isEmptyString(conJsonStr)) {
       return null;
     }
-    Map map = json.decode(conJsonStr);
+    Map map = json.decode(conJsonStr!);
     return map2Conversation(map);
   }
 
@@ -75,7 +75,7 @@ class MessageFactory extends Object {
     chatRoomInfo.targetId = map["targetId"];
     chatRoomInfo.memberOrder = map["memberOrder"];
     chatRoomInfo.totalMemeberCount = map["totalMemeberCount"];
-    List memList = new List();
+    List memList = [];
     for (Map memMap in map["memberInfoList"]) {
       memList.add(map2ChatRoomMemberInfo(memMap));
     }
@@ -105,23 +105,23 @@ class MessageFactory extends Object {
     message.extra = map["extra"];
     message.canIncludeExpansion = map["canIncludeExpansion"];
     message.expansionDic = map["expansionDic"];
-    Map messageConfigMap = map["messageConfig"];
+    Map? messageConfigMap = map["messageConfig"];
     if (messageConfigMap != null) {
       MessageConfig messageConfig = MessageConfig();
       messageConfig.disableNotification =
           messageConfigMap["disableNotification"];
       message.messageConfig = messageConfig;
     }
-    Map messagePushConfigMap = map["messagePushConfig"];
+    Map? messagePushConfigMap = map["messagePushConfig"];
     if (messagePushConfigMap != null) {
       message.messagePushConfig = MessagePushConfig();
-      message.messagePushConfig.pushTitle = messagePushConfigMap["pushTitle"];
-      message.messagePushConfig.pushContent =
+      message.messagePushConfig!.pushTitle = messagePushConfigMap["pushTitle"];
+      message.messagePushConfig!.pushContent =
           messagePushConfigMap["pushContent"];
-      message.messagePushConfig.pushData = messagePushConfigMap["pushData"];
-      message.messagePushConfig.forceShowDetailContent =
+      message.messagePushConfig!.pushData = messagePushConfigMap["pushData"];
+      message.messagePushConfig!.forceShowDetailContent =
           messagePushConfigMap["forceShowDetailContent"];
-      Map androidConfigMap = messagePushConfigMap["androidConfig"];
+      Map? androidConfigMap = messagePushConfigMap["androidConfig"];
       if (androidConfigMap != null) {
         AndroidConfig androidConfig = AndroidConfig();
         androidConfig.notificationId = androidConfigMap["notificationId"];
@@ -129,20 +129,20 @@ class MessageFactory extends Object {
         androidConfig.channelIdHW = androidConfigMap["channelIdHW"];
         androidConfig.channelIdOPPO = androidConfigMap["channelIdOPPO"];
         androidConfig.typeVivo = androidConfigMap["typeVivo"];
-        message.messagePushConfig.androidConfig = androidConfig;
+        message.messagePushConfig!.androidConfig = androidConfig;
       }
-      Map iOSConfigMap = messagePushConfigMap["iOSConfig"];
+      Map? iOSConfigMap = messagePushConfigMap["iOSConfig"];
       if (iOSConfigMap != null) {
         IOSConfig iosConfig = IOSConfig();
         iosConfig.thread_id = iOSConfigMap["thread_id"];
         iosConfig.apns_collapse_id = iOSConfigMap["apns_collapse_id"];
-        message.messagePushConfig.iOSConfig = iosConfig;
+        message.messagePushConfig!.iOSConfig = iosConfig;
       }
-      message.messagePushConfig.disablePushTitle =
+      message.messagePushConfig!.disablePushTitle =
           messagePushConfigMap["disablePushTitle"];
-      message.messagePushConfig.templateId = messagePushConfigMap["templateId"];
+      message.messagePushConfig!.templateId = messagePushConfigMap["templateId"];
     }
-    Map readReceiptMap = map["readReceiptInfo"];
+    Map? readReceiptMap = map["readReceiptInfo"];
     if (readReceiptMap != null) {
       ReadReceiptInfo readReceiptInfo = ReadReceiptInfo();
       readReceiptInfo.isReceiptRequestMessage =
@@ -151,11 +151,11 @@ class MessageFactory extends Object {
       readReceiptInfo.userIdList = readReceiptMap["userIdList"];
       message.readReceiptInfo = readReceiptInfo;
     }
-    String contenStr = map["content"];
-    MessageContent content =
+    String? contenStr = map["content"];
+    MessageContent? content =
         string2MessageContent(contenStr, message.objectName);
     if (contenStr == null || contenStr == "") {
-      developer.log(message.objectName + ":该消息内容为空，可能该消息没有在原生 SDK 中注册",
+      developer.log(message.objectName! + ":该消息内容为空，可能该消息没有在原生 SDK 中注册",
           name: "RongIMClient.MessageFactory");
       return message;
     }
@@ -165,7 +165,7 @@ class MessageFactory extends Object {
       developer.log(
           "${message.objectName}:该消息不能被解析!消息内容被保存在 Message.originContentMap 中",
           name: "RongIMClient.MessageFactory");
-      Map map = json.decode(contenStr.toString());
+      Map? map = json.decode(contenStr.toString());
       message.originContentMap = map;
     }
     return message;
@@ -188,8 +188,8 @@ class MessageFactory extends Object {
     con.blockStatus = map["blockStatus"];
     con.receivedTime = map["receivedTime"];
 
-    String contenStr = map["content"];
-    MessageContent content = string2MessageContent(contenStr, con.objectName);
+    String? contenStr = map["content"];
+    MessageContent? content = string2MessageContent(contenStr, con.objectName);
     if (content != null) {
       con.latestMessageContent = content;
     } else {
@@ -198,26 +198,26 @@ class MessageFactory extends Object {
             "该会话没有消息 type:" +
                 con.conversationType.toString() +
                 " targetId:" +
-                con.targetId,
+                con.targetId!,
             name: "RongIMClient.MessageFactory");
       } else {
         developer.log(
-            con.objectName +
+            con.objectName! +
                 ":该消息不能被解析!消息内容被保存在 Conversation.originContentMap 中",
             name: "RongIMClient.MessageFactory");
-        Map map = json.decode(contenStr.toString());
+        Map? map = json.decode(contenStr.toString());
         con.originContentMap = map;
       }
     }
     return con;
   }
 
-  MessageContent string2MessageContent(String contentS, String objectName) {
-    MessageContent content;
+  MessageContent? string2MessageContent(String? contentS, String? objectName) {
+    MessageContent? content;
     if (RongIMClient.messageDecoders != null &&
         RongIMClient.messageDecoders.isNotEmpty &&
         RongIMClient.messageDecoders.containsKey(objectName)) {
-      return RongIMClient.messageDecoders[objectName](contentS);
+      return RongIMClient.messageDecoders[objectName!]!(contentS);
     }
     return content;
   }
@@ -250,7 +250,7 @@ class MessageFactory extends Object {
     map["objectName"] = message.objectName ?? "";
     map["messageUId"] = message.messageUId ?? "";
     if (message.content != null) {
-      map["content"] = message.content.encode();
+      map["content"] = message.content!.encode();
     }
     map["extra"] = message.extra ?? "";
     map["canIncludeExpansion"] = message.canIncludeExpansion ?? false;
@@ -258,42 +258,42 @@ class MessageFactory extends Object {
     if (message.messageConfig != null) {
       Map messageConfig = Map();
       messageConfig["disableNotification"] =
-          message.messageConfig.disableNotification ?? false;
+          message.messageConfig!.disableNotification ?? false;
       map["messageConfig"] = messageConfig;
     }
     if (message.messagePushConfig != null) {
       Map messagePushConfig = Map();
       messagePushConfig["pushTitle"] =
-          message.messagePushConfig.pushTitle ?? "";
+          message.messagePushConfig!.pushTitle ?? "";
       messagePushConfig["pushContent"] =
-          message.messagePushConfig.pushContent ?? "";
-      messagePushConfig["pushData"] = message.messagePushConfig.pushData ?? "";
+          message.messagePushConfig!.pushContent ?? "";
+      messagePushConfig["pushData"] = message.messagePushConfig!.pushData ?? "";
       messagePushConfig["forceShowDetailContent"] =
-          message.messagePushConfig.forceShowDetailContent ?? false;
+          message.messagePushConfig!.forceShowDetailContent ?? false;
       messagePushConfig["disablePushTitle"] =
-          message.messagePushConfig.disablePushTitle ?? false;
+          message.messagePushConfig!.disablePushTitle ?? false;
       messagePushConfig["templateId"] =
-          message.messagePushConfig.templateId ?? "";
-      if (message.messagePushConfig.androidConfig != null) {
+          message.messagePushConfig!.templateId ?? "";
+      if (message.messagePushConfig!.androidConfig != null) {
         Map androidConfig = Map();
         androidConfig["notificationId"] =
-            message.messagePushConfig.androidConfig.notificationId ?? "";
+            message.messagePushConfig!.androidConfig!.notificationId ?? "";
         androidConfig["channelIdMi"] =
-            message.messagePushConfig.androidConfig.channelIdMi ?? "";
+            message.messagePushConfig!.androidConfig!.channelIdMi ?? "";
         androidConfig["channelIdHW"] =
-            message.messagePushConfig.androidConfig.channelIdHW ?? "";
+            message.messagePushConfig!.androidConfig!.channelIdHW ?? "";
         androidConfig["channelIdOPPO"] =
-            message.messagePushConfig.androidConfig.channelIdOPPO ?? "";
+            message.messagePushConfig!.androidConfig!.channelIdOPPO ?? "";
         androidConfig["typeVivo"] =
-            message.messagePushConfig.androidConfig.typeVivo ?? "";
+            message.messagePushConfig!.androidConfig!.typeVivo ?? "";
         messagePushConfig["androidConfig"] = androidConfig;
       }
-      if (message.messagePushConfig.iOSConfig != null) {
+      if (message.messagePushConfig!.iOSConfig != null) {
         Map iOSConfig = Map();
         iOSConfig["thread_id"] =
-            message.messagePushConfig.iOSConfig.thread_id ?? "";
+            message.messagePushConfig!.iOSConfig!.thread_id ?? "";
         iOSConfig["apns_collapse_id"] =
-            message.messagePushConfig.iOSConfig.apns_collapse_id ?? "";
+            message.messagePushConfig!.iOSConfig!.apns_collapse_id ?? "";
         messagePushConfig["iOSConfig"] = iOSConfig;
       }
       map["messagePushConfig"] = messagePushConfig;
@@ -301,16 +301,16 @@ class MessageFactory extends Object {
     if (message.readReceiptInfo != null) {
       Map readReceiptMap = Map();
       readReceiptMap["isReceiptRequestMessage"] =
-          message.readReceiptInfo.isReceiptRequestMessage;
-      readReceiptMap["hasRespond"] = message.readReceiptInfo.hasRespond;
-      readReceiptMap["userIdList"] = message.readReceiptInfo.userIdList;
+          message.readReceiptInfo!.isReceiptRequestMessage;
+      readReceiptMap["hasRespond"] = message.readReceiptInfo!.hasRespond;
+      readReceiptMap["userIdList"] = message.readReceiptInfo!.userIdList;
       map["readReceiptInfo"] = readReceiptMap;
     }
 
     return map;
   }
 
-  TypingStatus string2TypingStatus(String statusJsonStr) {
+  TypingStatus? string2TypingStatus(String statusJsonStr) {
     if (TypeUtil.isEmptyString(statusJsonStr)) {
       return null;
     }
@@ -326,7 +326,7 @@ class MessageFactory extends Object {
     return status;
   }
 
-  SearchConversationResult string2SearchConversationResult(String resultStr) {
+  SearchConversationResult? string2SearchConversationResult(String resultStr) {
     if (TypeUtil.isEmptyString(resultStr)) {
       return null;
     }
