@@ -6,7 +6,6 @@ import '../util/type_util.dart';
 import 'dart:developer' as developer;
 import 'package:rongcloud_im_plugin/src/info/tag_info.dart';
 
-
 class MessageFactory extends Object {
   factory MessageFactory() => _getInstance()!;
   static MessageFactory? get instance => _getInstance();
@@ -140,7 +139,8 @@ class MessageFactory extends Object {
       }
       message.messagePushConfig!.disablePushTitle =
           messagePushConfigMap["disablePushTitle"];
-      message.messagePushConfig!.templateId = messagePushConfigMap["templateId"];
+      message.messagePushConfig!.templateId =
+          messagePushConfigMap["templateId"];
     }
     Map? readReceiptMap = map["readReceiptInfo"];
     if (readReceiptMap != null) {
@@ -214,15 +214,14 @@ class MessageFactory extends Object {
 
   MessageContent? string2MessageContent(String? contentS, String? objectName) {
     MessageContent? content;
-    if (RongIMClient.messageDecoders != null &&
-        RongIMClient.messageDecoders.isNotEmpty &&
+    if (RongIMClient.messageDecoders.isNotEmpty &&
         RongIMClient.messageDecoders.containsKey(objectName)) {
       return RongIMClient.messageDecoders[objectName!]!(contentS);
     }
     return content;
   }
 
-  Map conversationIdentifier2Map(ConversationIdentifier identifier) {
+  Map conversationIdentifier2Map(ConversationIdentifier? identifier) {
     Map map = new Map();
     if (identifier == null) {
       return map;
@@ -340,5 +339,4 @@ class MessageFactory extends Object {
     result.mMatchCount = map["mMatchCount"];
     return result;
   }
-
 }

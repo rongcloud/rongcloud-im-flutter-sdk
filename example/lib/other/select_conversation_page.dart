@@ -111,7 +111,7 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
   void sendMessageByCombine() async {
     CombineMessage combineMessage =
         await CombineMessageUtils().combineMessage(selectMessages);
-    List<Message> messageList = List<Message>();
+    List<Message> messageList = [];
     Message message = Message();
     message.content = combineMessage;
     messageList.add(message);

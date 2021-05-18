@@ -9,9 +9,9 @@ import '../../util/event_bus.dart';
 
 class MessageContentList extends StatefulWidget {
   MessageContentListDelegate delegate;
-  List messageDataSource = new List();
+  List messageDataSource = [];
   bool multiSelect;
-  List selectedMessageIds = new List();
+  List selectedMessageIds = [];
   _MessageContentListState state;
   Map burnMsgMap = Map();
   MessageContentList(
@@ -47,11 +47,11 @@ class MessageContentList extends StatefulWidget {
 class _MessageContentListState extends State<MessageContentList>
     implements ConversationItemDelegate {
   MessageContentListDelegate delegate;
-  List messageDataSource = new List();
+  List messageDataSource = [];
   ScrollController _scrollController;
   bool multiSelect;
   double mPosition = 0;
-  List selectedMessageIds = new List();
+  List selectedMessageIds = [];
   MessageBloc _bloc;
   // StreamController<List> streamController = new StreamController();
   Map conversationItems = Map();

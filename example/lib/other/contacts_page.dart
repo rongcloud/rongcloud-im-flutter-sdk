@@ -15,8 +15,8 @@ class ContactsPage extends StatefulWidget {
 }
 
 class _ContactsPageState extends State<ContactsPage> {
-  List<Widget> widgetList = new List();
-  List<example.UserInfo> userList = new List();
+  List<Widget> widgetList = [];
+  List<example.UserInfo> userList = [];
   @override
   void initState() {
     super.initState();

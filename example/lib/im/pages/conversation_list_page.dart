@@ -25,7 +25,7 @@ class ConversationListPage extends StatefulWidget {
 class _ConversationListPageState extends State<ConversationListPage>
     implements ConversationListItemDelegate {
   String pageName = "example.ConversationListPage";
-  List conList = new List();
+  List conList = [];
   List<int> displayConversationType = [
     RCConversationType.Private,
     RCConversationType.Group
@@ -107,7 +107,7 @@ class _ConversationListPageState extends State<ConversationListPage>
     };
 
     RongIMClient.onDatabaseOpened = (int status) {
-            updateConversationList();
+      updateConversationList();
     };
   }
 

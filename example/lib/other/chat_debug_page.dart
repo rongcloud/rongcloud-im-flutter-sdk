@@ -330,7 +330,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   }
 
   void _addConversationsToTag() async {
-    List identifiers = List();
+    List identifiers = [];
     ConversationIdentifier identifier = ConversationIdentifier();
     identifier.conversationType = conversationType;
     identifier.targetId = targetId;
