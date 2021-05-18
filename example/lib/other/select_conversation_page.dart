@@ -117,7 +117,7 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
     messageList.add(message);
     // 这里不使用 loading，因为发消息时 sleep 会卡住动画
     DialogUtil.showAlertDiaLog(context, "消息转发中，请稍后...",
-        confirmButton: FlatButton(onPressed: () {}, child: Text("")));
+        confirmButton: TextButton(onPressed: () {}, child: Text("确认")));
     sendMessage(messageList, isCombineMsg: true);
   }
 
@@ -130,7 +130,7 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
         name: pageName);
     // 这里不使用 loading，因为发消息时 sleep 会卡住动画
     DialogUtil.showAlertDiaLog(context, "消息转发中，请稍后...",
-        confirmButton: FlatButton(onPressed: () {}, child: Text("")));
+        confirmButton: TextButton(onPressed: () {}, child: Text("确认")));
     sendMessage(selectMessages);
   }
 
