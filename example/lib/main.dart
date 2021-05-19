@@ -38,8 +38,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     //1.初始化 im SDK
     prefix.RongIMClient.init(RongAppKey);
     //注册自定义消息
-    prefix.RongIMClient.addMessageDecoder(TestMessage.objectName, (content) => null);
-
+    prefix.RongIMClient.addMessageDecoder(TestMessage.objectName, (content) {
+      TestMessage msg = new TestMessage();
+      msg.decode(content);
+      return msg;
+    });
     // _initUserInfoCache();
 
     WidgetsBinding.instance.addObserver(this);
@@ -54,18 +57,22 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       String hasP = hasPackage ? "true" : "false";
       String off = offline ? "true" : "false";
       if (msg.content != null) {
-        developer.log("object onMessageReceivedWrapper objName:" +
-            msg.content.getObjectName() +
-            " msgContent:" +
-            msg.content.encode() +
-            " left:" +
-            left.toString() +
-            " hasPackage:" +
-            hasP +
-            " offline:" +
-            off, name: pageName);
+        developer.log(
+            "object onMessageReceivedWrapper objName:" +
+                msg.content.getObjectName() +
+                " msgContent:" +
+                msg.content.encode() +
+                " left:" +
+                left.toString() +
+                " hasPackage:" +
+                hasP +
+                " offline:" +
+                off,
+            name: pageName);
       } else {
-        developer.log("object onMessageReceivedWrapper objName: ${msg.objectName} content is null left:${left.toString()} hasPackage:$hasP offline:$off", name: pageName);
+        developer.log(
+            "object onMessageReceivedWrapper objName: ${msg.objectName} content is null left:${left.toString()} hasPackage:$hasP offline:$off",
+            name: pageName);
       }
       if (currentState == AppLifecycleState.paused &&
           !checkNoficationQuietStatus()) {
@@ -90,17 +97,20 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
     prefix.RongIMClient.onMessageReceiptRequest = (Map map) {
       EventBus.instance.commit(EventKeys.ReceiveReceiptRequest, map);
-      developer.log("object onMessageReceiptRequest " + map.toString(), name: pageName);
+      developer.log("object onMessageReceiptRequest " + map.toString(),
+          name: pageName);
     };
 
     prefix.RongIMClient.onMessageReceiptResponse = (Map map) {
       EventBus.instance.commit(EventKeys.ReceiveReceiptResponse, map);
-      developer.log("object onMessageReceiptResponse " + map.toString(), name: pageName);
+      developer.log("object onMessageReceiptResponse " + map.toString(),
+          name: pageName);
     };
 
     prefix.RongIMClient.onReceiveReadReceipt = (Map map) {
       EventBus.instance.commit(EventKeys.ReceiveReadReceipt, map);
-      developer.log("object onReceiveReadReceipt " + map.toString(), name: pageName);
+      developer.log("object onReceiveReadReceipt " + map.toString(),
+          name: pageName);
     };
   }
 
