@@ -730,7 +730,9 @@ class _ConversationPageState extends State<ConversationPage>
       return <Widget>[
         TextButton(
           child: Text(RCString.ConCancel),
-          style: ButtonStyle(backgroundColor: Color(whi)),
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+          ),
           onPressed: () {
             multiSelect = false;
             selectedMessageIds.clear();
