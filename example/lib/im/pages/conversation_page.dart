@@ -728,9 +728,9 @@ class _ConversationPageState extends State<ConversationPage>
   List _buildRightButtons() {
     if (multiSelect == true) {
       return <Widget>[
-        FlatButton(
+        TextButton(
           child: Text(RCString.ConCancel),
-          textColor: Colors.white,
+          style: ButtonStyle(backgroundColor: Color(whi)),
           onPressed: () {
             multiSelect = false;
             selectedMessageIds.clear();
@@ -752,7 +752,7 @@ class _ConversationPageState extends State<ConversationPage>
   }
 
   void _sendReadReceiptResponse(String messageUId) {
-    List readReceiptList = List();
+    List readReceiptList = [];
     for (Message message in this.messageDataSource) {
       if ((messageUId != null && message.messageUId == messageUId) ||
           (message.readReceiptInfo != null &&
@@ -1026,7 +1026,7 @@ class _ConversationPageState extends State<ConversationPage>
 
     if (conversationType == RCConversationType.Group) {
       // 群组发送消息携带@信息
-      List<String> tapUserIdList = List();
+      List<String> tapUserIdList = [];
       for (String userId in this.userIdList) {
         if (text.contains(userId) && (!tapUserIdList.contains(userId))) {
           tapUserIdList.add(userId);

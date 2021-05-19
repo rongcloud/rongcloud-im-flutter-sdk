@@ -86,7 +86,7 @@ class _ConversationListPageState extends State<ConversationListPage>
           RCConnectionStatus.UserBlocked == connectionStatus) {
         String toast = "连接状态变化 $connectionStatus, 请退出后重新登录";
         DialogUtil.showAlertDiaLog(context, toast,
-            confirmButton: FlatButton(
+            confirmButton: TextButton(
                 onPressed: () async {
                   SharedPreferences prefs =
                       await SharedPreferences.getInstance();
