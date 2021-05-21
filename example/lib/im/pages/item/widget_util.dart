@@ -114,7 +114,7 @@ class WidgetUtil {
     final RenderBox overlay = Overlay.of(context).context.findRenderObject();
     final RelativeRect position = RelativeRect.fromLTRB(tapPos.dx, tapPos.dy,
         overlay.size.width - tapPos.dx, overlay.size.height - tapPos.dy);
-    List<PopupMenuEntry<String>> items = new List();
+    List<PopupMenuEntry<String>> items = [];
     map.keys.forEach((String key) {
       PopupMenuItem<String> p = PopupMenuItem(
         child: Container(
