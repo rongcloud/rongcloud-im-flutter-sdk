@@ -220,7 +220,7 @@ RongIMClient.deleteMessages(RCConversationType.Private, "2002", (int code) {
 批量删除消息
 
 ```dart
-List<int> mids =  new List();
+List<int> mids =  [];
 mids.add(1);
 RongIMClient.deleteMessageByIds(mids, (int code) {
 

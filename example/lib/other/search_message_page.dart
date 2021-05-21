@@ -3,7 +3,7 @@ import '../im/pages/item/widget_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 class SearchMessagePage extends StatefulWidget {
-  Map arguments;
+  final Map arguments;
   SearchMessagePage({Key key, this.arguments}) : super(key: key);
   @override
   State<StatefulWidget> createState() {
@@ -24,7 +24,7 @@ class _SearchMessagePageState extends State<SearchMessagePage> {
     super.initState();
     conversationType = arguments["coversationType"];
     targetId = arguments["targetId"];
-    messageList = List();
+    messageList = [];
   }
 
   @override

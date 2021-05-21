@@ -199,7 +199,7 @@ class MessageItemFactory extends StatelessWidget {
   ///语音消息 item
   Widget voiceMessageItem() {
     VoiceMessage msg = message.content;
-    List<Widget> list = new List();
+    List<Widget> list = [];
     if (message.messageDirection == RCMessageDirection.Send) {
       list.add(SizedBox(
         width: 6,
@@ -583,9 +583,10 @@ class MessageItemFactory extends StatelessWidget {
       return referenceMessageItem(context);
     } else if (message.content is LocationMessage) {
       return Text("位置消息 " + message.objectName);
-    } else if (message.content is GroupNotificationMessage){
+    } else if (message.content is GroupNotificationMessage) {
       GroupNotificationMessage groupNotificationMessage = message.content;
-      return Text("群通知消息 ${groupNotificationMessage.operatorUserId} ${groupNotificationMessage.operation} ${groupNotificationMessage.data}");
+      return Text(
+          "群通知消息 ${groupNotificationMessage.operatorUserId} ${groupNotificationMessage.operation} ${groupNotificationMessage.data}");
     } else {
       return Text("无法识别消息 " + message.objectName);
     }

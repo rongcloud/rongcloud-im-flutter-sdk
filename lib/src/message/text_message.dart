@@ -5,8 +5,8 @@ import 'dart:developer' as developer;
 class TextMessage extends MessageContent {
   static const String objectName = "RC:TxtMsg";
 
-  String content;
-  String extra;
+  String? content;
+  String? extra;
 
   /// [content] 文本内容
   static TextMessage obtain(String content) {
@@ -16,7 +16,7 @@ class TextMessage extends MessageContent {
   }
 
   @override
-  void decode(String jsonStr) {
+  void decode(String? jsonStr) {
     if (jsonStr == null) {
       developer.log("Flutter TextMessage deocde error: no content",
           name: "RongIMClient.TextMessage");
@@ -25,9 +25,9 @@ class TextMessage extends MessageContent {
     Map map = json.decode(jsonStr.toString());
     this.content = map["content"];
     this.extra = map["extra"];
-    Map userMap = map["user"];
+    Map? userMap = map["user"];
     super.decodeUserInfo(userMap);
-    Map menthionedMap = map["mentionedInfo"];
+    Map? menthionedMap = map["mentionedInfo"];
     super.decodeMentionedInfo(menthionedMap);
     this.destructDuration = map["burnDuration"];
   }
@@ -43,14 +43,14 @@ class TextMessage extends MessageContent {
       Map mentionedMap = super.encodeMentionedInfo(this.mentionedInfo);
       map["mentionedInfo"] = mentionedMap;
     }
-    if (this.destructDuration != null && this.destructDuration > 0) {
+    if (this.destructDuration != null && this.destructDuration! > 0) {
       map["burnDuration"] = this.destructDuration;
     }
     return json.encode(map);
   }
 
   @override
-  String conversationDigest() {
+  String? conversationDigest() {
     return content;
   }
 

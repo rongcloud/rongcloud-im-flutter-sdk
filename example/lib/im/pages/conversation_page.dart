@@ -43,9 +43,9 @@ class _ConversationPageState extends State<ConversationPage>
   int conversationType;
   String targetId;
 
-  List phrasesList = new List(); // 快捷回复，短语数组
-  List messageDataSource = new List(); //消息数组
-  List<Widget> extWidgetList = new List(); //加号扩展栏的 widget 列表
+  List phrasesList = []; // 快捷回复，短语数组
+  List messageDataSource = []; //消息数组
+  List<Widget> extWidgetList = []; //加号扩展栏的 widget 列表
   ConversationStatus currentStatus; //当前输入工具栏的状态
   String textDraft = ''; //草稿内容
   BottomInputBar bottomInputBar;
@@ -53,15 +53,14 @@ class _ConversationPageState extends State<ConversationPage>
   String titleContent;
   InputBarStatus currentInputStatus;
   ListView phrasesListView;
-  List emojiList = new List(); // emoji 数组
+  List emojiList = []; // emoji 数组
 
   MessageContentList messageContentList;
   example.BaseInfo info;
 
   bool multiSelect = false; //是否是多选模式
-  List selectedMessageIds =
-      new List(); //已经选择的所有消息Id，只有在 multiSelect 为 YES,才会有有效值
-  List userIdList = new List();
+  List selectedMessageIds = []; //已经选择的所有消息Id，只有在 multiSelect 为 YES,才会有有效值
+  List userIdList = [];
   int recordTime = 0;
   Map burnMsgMap = Map();
   bool isSecretChat = false;
@@ -729,9 +728,11 @@ class _ConversationPageState extends State<ConversationPage>
   List _buildRightButtons() {
     if (multiSelect == true) {
       return <Widget>[
-        FlatButton(
+        TextButton(
           child: Text(RCString.ConCancel),
-          textColor: Colors.white,
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+          ),
           onPressed: () {
             multiSelect = false;
             selectedMessageIds.clear();
@@ -753,7 +754,7 @@ class _ConversationPageState extends State<ConversationPage>
   }
 
   void _sendReadReceiptResponse(String messageUId) {
-    List readReceiptList = List();
+    List readReceiptList = [];
     for (Message message in this.messageDataSource) {
       if ((messageUId != null && message.messageUId == messageUId) ||
           (message.readReceiptInfo != null &&
@@ -1027,7 +1028,7 @@ class _ConversationPageState extends State<ConversationPage>
 
     if (conversationType == RCConversationType.Group) {
       // 群组发送消息携带@信息
-      List<String> tapUserIdList = List();
+      List<String> tapUserIdList = [];
       for (String userId in this.userIdList) {
         if (text.contains(userId) && (!tapUserIdList.contains(userId))) {
           tapUserIdList.add(userId);
@@ -1163,7 +1164,7 @@ class _ConversationPageState extends State<ConversationPage>
 
   @override
   void didTapForward() async {
-    List selectMsgs = new List();
+    List selectMsgs = [];
     bool isAllowCombine = true;
     for (int msgId in selectedMessageIds) {
       Message forwardMsg = await RongIMClient.getMessage(msgId);

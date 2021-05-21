@@ -6,11 +6,11 @@ import 'dart:developer' as developer;
 class RichContentMessage extends MessageContent {
   static const String objectName = "RC:ImgTextMsg";
 
-  String title;
-  String digest;
-  String imageURL;
-  String url;
-  String extra;
+  String? title;
+  String? digest;
+  String? imageURL;
+  String? url;
+  String? extra;
 
   /// [content] 文本内容
   static RichContentMessage obtain(String title, String digest, String imageURL,
@@ -25,7 +25,7 @@ class RichContentMessage extends MessageContent {
   }
 
   @override
-  void decode(String jsonStr) {
+  void decode(String? jsonStr) {
     if (jsonStr == null) {
       developer.log("Flutter TextMessage deocde error: no content",
           name: "RongIMClient.RichContentMessage");
@@ -37,9 +37,9 @@ class RichContentMessage extends MessageContent {
     this.digest = map["content"];
     this.title = map["title"];
     this.url = map["url"];
-    Map userMap = map["user"];
+    Map? userMap = map["user"];
     super.decodeUserInfo(userMap);
-    Map menthionedMap = map["mentionedInfo"];
+    Map? menthionedMap = map["mentionedInfo"];
     super.decodeMentionedInfo(menthionedMap);
     // this.destructDuration = map["burnDuration"];
   }

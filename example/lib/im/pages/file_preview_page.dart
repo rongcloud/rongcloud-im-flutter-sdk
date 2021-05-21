@@ -76,8 +76,11 @@ class _FilePreviewState extends State<FilePreviewPage> {
                     margin: EdgeInsets.fromLTRB(40, 50, 40, 0),
                     width: double.infinity,
                     height: 60,
-                    child: FlatButton(
-                        color: const Color(0xff4876FF),
+                    child: TextButton(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              Color(0xff4876FF)),
+                        ),
                         onPressed: () {
                           _fileButtonClick();
                         },

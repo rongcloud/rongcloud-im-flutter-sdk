@@ -6,13 +6,13 @@ import 'dart:developer' as developer;
 class GifMessage extends MessageContent {
   static const String objectName = "RC:GIFMsg";
 
-  String localPath; //本地路径
-  String remoteUrl; //远端路径
-  int width; //GIF 图的宽
-  int height; //GIF 图的高
-  int gifDataSize; //GIF 图的大小
-  String name; //名字
-  String extra; //GIF 消息的附加信息
+  String? localPath; //本地路径
+  String? remoteUrl; //远端路径
+  int? width; //GIF 图的宽
+  int? height; //GIF 图的高
+  int? gifDataSize; //GIF 图的大小
+  String? name; //名字
+  String? extra; //GIF 消息的附加信息
 
   /// 根据 localPath 构建 GifMessage
   /// [localPath] 本地路径，Android 必须以 file:// 开头
@@ -25,7 +25,7 @@ class GifMessage extends MessageContent {
   }
 
   @override
-  void decode(String jsonStr) {
+  void decode(String? jsonStr) {
     if (jsonStr == null || jsonStr == "") {
       developer.log("Flutter GifMessage deocde error: no content",
           name: "RongIMClient.GifMessage");
@@ -40,9 +40,9 @@ class GifMessage extends MessageContent {
     this.name = map["name"];
     this.extra = map["extra"];
     this.gifDataSize = map["gifDataSize"];
-    Map userMap = map["user"];
+    Map? userMap = map["user"];
     super.decodeUserInfo(userMap);
-    Map menthionedMap = map["mentionedInfo"];
+    Map? menthionedMap = map["mentionedInfo"];
     super.decodeMentionedInfo(menthionedMap);
     this.destructDuration = map["burnDuration"];
   }
@@ -70,10 +70,10 @@ class GifMessage extends MessageContent {
       Map mentionedMap = super.encodeMentionedInfo(this.mentionedInfo);
       map["mentionedInfo"] = mentionedMap;
     }
-    if (this.remoteUrl != null && this.remoteUrl.isNotEmpty) {
+    if (this.remoteUrl != null && this.remoteUrl!.isNotEmpty) {
       map["remoteUrl"] = this.remoteUrl;
     }
-    if (this.destructDuration != null && this.destructDuration > 0) {
+    if (this.destructDuration != null && this.destructDuration! > 0) {
       map["burnDuration"] = this.destructDuration;
     }
     return json.encode(map);

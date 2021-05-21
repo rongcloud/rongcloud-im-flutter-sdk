@@ -9,19 +9,19 @@ import 'dart:developer' as developer;
 class ReferenceMessage extends MessageContent {
   static const String objectName = "RC:ReferenceMsg";
 
-  String content; //引用文本
-  String referMsgUserId; //被引用消息的发送者 ID
-  MessageContent referMsg; //被引用消息体
-  String extra; //引用消息的附加信息
+  String? content; //引用文本
+  String? referMsgUserId; //被引用消息的发送者 ID
+  MessageContent? referMsg; //被引用消息体
+  String? extra; //引用消息的附加信息
 
   @override
-  void decode(String jsonStr) {
+  void decode(String? jsonStr) {
     if (jsonStr == null || jsonStr == "") {
       developer.log("Flutter ReferenceMessage deocde error: no content",
           name: "RongIMClient.ReferenceMessage");
       return;
     }
-    Map map = json.decode(jsonStr);
+    Map? map = json.decode(jsonStr);
     if (map == null) {
       developer.log("Flutter ReferenceMessage deocde error: no right content",
           name: "RongIMClient.ReferenceMessage");
@@ -29,15 +29,15 @@ class ReferenceMessage extends MessageContent {
     }
     this.content = map["content"];
     this.referMsgUserId = map["referMsgUserId"];
-    Map messageMap = map["referMsg"];
+    Map? messageMap = map["referMsg"];
     String messageStr = json.encode(messageMap);
-    String objectName = map["objName"];
+    String? objectName = map["objName"];
     this.referMsg =
-        MessageFactory.instance.string2MessageContent(messageStr, objectName);
+        MessageFactory.instance!.string2MessageContent(messageStr, objectName);
     this.extra = map["extra"];
-    Map userMap = map["user"];
+    Map? userMap = map["user"];
     super.decodeUserInfo(userMap);
-    Map menthionedMap = map["mentionedInfo"];
+    Map? menthionedMap = map["mentionedInfo"];
     super.decodeMentionedInfo(menthionedMap);
     this.destructDuration = map["burnDuration"];
   }
@@ -52,11 +52,11 @@ class ReferenceMessage extends MessageContent {
       map["referMsgUserId"] = this.referMsgUserId;
     }
     if (messageInfoWithContent() != null) {
-      Map messageMap = messageInfoWithContent();
+      Map? messageMap = messageInfoWithContent();
       map["referMsg"] = messageMap;
     }
     if (this.referMsg?.getObjectName() != null) {
-      map["objName"] = this.referMsg.getObjectName();
+      map["objName"] = this.referMsg!.getObjectName();
     }
     if (this.extra != null) {
       map["extra"] = this.extra;
@@ -69,14 +69,14 @@ class ReferenceMessage extends MessageContent {
       Map mentionedMap = super.encodeMentionedInfo(this.mentionedInfo);
       map["mentionedInfo"] = mentionedMap;
     }
-    if (this.destructDuration != null && this.destructDuration > 0) {
+    if (this.destructDuration != null && this.destructDuration! > 0) {
       map["burnDuration"] = this.destructDuration;
     }
     return json.encode(map);
   }
 
   @override
-  String conversationDigest() {
+  String? conversationDigest() {
     return this.content;
   }
 
@@ -85,25 +85,25 @@ class ReferenceMessage extends MessageContent {
     return objectName;
   }
 
-  Map messageInfoWithContent() {
-    MessageContent content = this.referMsg;
-    Map map = Map();
+  Map? messageInfoWithContent() {
+    MessageContent? content = this.referMsg;
+    Map? map = Map();
     if (content != null) {
       switch (content.getObjectName()) {
         case "RC:TxtMsg":
-          TextMessage textMsg = content;
+          TextMessage textMsg = content as TextMessage;
           map = json.decode(textMsg.encode());
           break;
         case "RC:ImgMsg":
-          ImageMessage imageMsg = content;
+          ImageMessage imageMsg = content as ImageMessage;
           map = json.decode(imageMsg.encode());
           break;
         case "RC:FileMsg":
-          FileMessage fileMsg = content;
+          FileMessage fileMsg = content as FileMessage;
           map = json.decode(fileMsg.encode());
           break;
         case "RC:ImgTextMsg":
-          RichContentMessage richContentMsg = content;
+          RichContentMessage richContentMsg = content as RichContentMessage;
           map = json.decode(richContentMsg.encode());
           break;
         default:
