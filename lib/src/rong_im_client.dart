@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:rongcloud_im_plugin/src/info/history_message_option.dart';
 import 'package:rongcloud_im_plugin/src/info/send_message_option.dart';
 import 'package:rongcloud_im_plugin/src/message/group_notification_message.dart';
 import 'package:rongcloud_im_plugin/src/util/type_util.dart';
@@ -762,6 +763,56 @@ class RongIMClient {
     };
     Map resultMap = await _channel.invokeMethod(
         RCMethodCallBackKey.GetRemoteHistoryMessages, map);
+    int? code = resultMap["code"];
+    if (code == 0) {
+      List? msgStrList = resultMap["messages"];
+      if (msgStrList == null) {
+        if (finished != null) {
+          finished(null, code);
+        }
+        return;
+      }
+      List l = [];
+      for (String msgStr in msgStrList) {
+        Message? m = MessageFactory.instance!.string2Message(msgStr);
+        l.add(m);
+      }
+      if (finished != null) {
+        finished(l, code);
+      }
+    } else {
+      if (finished != null) {
+        finished(null, code);
+      }
+    }
+  }
+
+//  获取历史消息
+
+//  [conversationType]    会话类型
+//  [targetId]           会话 ID
+//  [option]            可配置的参数
+//  [finished] 获取成功的回调 [messages：获取到的历史消息数组； code : 获取是否成功，0表示成功，非 0 表示失败，此时 messages 数组可能存在断档]
+
+//  必须开通历史消息云存储功能。
+//  count 传入 1~20 之间的数值。
+//  此方法先从本地获取历史消息，本地有缺失的情况下会从服务端同步缺失的部分。
+//  从服务端同步失败的时候会返回非 0 的 errorCode，同时把本地能取到的消息回调上去。
+
+  static void getMessages(
+      int conversationType,
+      String targetId,
+      HistoryMessageOption option,
+      Function(List? /*<Message>*/ msgList, int? code)? finished) async {
+    Map paramMap = {
+      'conversationType': conversationType,
+      'targetId': targetId,
+      "count": option.count,
+      "recordTime": option.recordTime,
+      "order": option.order,
+    };
+    Map resultMap =
+        await _channel.invokeMethod(RCMethodKey.GetMessages, paramMap);
     int? code = resultMap["code"];
     if (code == 0) {
       List? msgStrList = resultMap["messages"];

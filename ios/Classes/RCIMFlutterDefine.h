@@ -15,6 +15,7 @@ static NSString *RCMethodKeyJoinExistChatRoom = @"joinExistChatRoom";
 static NSString *RCMethodKeyQuitChatRoom = @"quitChatRoom";
 static NSString *RCMethodKeyGetHistoryMessage = @"getHistoryMessage";
 static NSString *RCMethodKeyGetHistoryMessages = @"getHistoryMessages";
+static NSString *RCMethodKeyGetMessages = @"GetMessages";
 static NSString *RCMethodKeyGetMessage = @"GetMessage";
 static NSString *RCMethodKeyGetConversationList = @"getConversationList";
 static NSString *RCMethodKeyGetConversationListByPage = @"getConversationListByPage";

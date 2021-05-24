@@ -11,6 +11,7 @@ class RCMethodKey {
   static const String QuitChatRoom = 'quitChatRoom';
   static const String GetHistoryMessage = 'getHistoryMessage';
   static const String GetHistoryMessages = 'getHistoryMessages';
+  static const String GetMessages = 'GetMessages';
   static const String GetMessage = 'GetMessage';
   static const String GetConversationList = 'getConversationList';
   static const String GetConversationListByPage = 'getConversationListByPage';
@@ -80,7 +81,6 @@ class RCMethodKey {
   static const String SendIntactMessage = 'sendIntactMessage';
   static const String ImageCompressConfig = 'imageCompressConfig';
   static const String TypingUpdateSeconds = 'typingUpdateSeconds';
-  
 
   // 聊天室状态存储
   static const String SetChatRoomEntry = 'SetChatRoomEntry';
@@ -100,10 +100,12 @@ class RCMethodKey {
   static const String RemoveTag = 'removeTag';
   static const String UpdateTag = 'updateTag';
   static const String GetTags = 'getTags';
-  static const String GetConversationTopStatusInTag ='getConversationTopStatusInTag';
+  static const String GetConversationTopStatusInTag =
+      'getConversationTopStatusInTag';
   static const String SetConversationToTopInTag = 'setConversationToTopInTag';
   static const String GetUnreadCountByTag = 'getUnreadCountByTag';
-  static const String GetConversationsFromTagByPage ='getConversationsFromTagByPage';
+  static const String GetConversationsFromTagByPage =
+      'getConversationsFromTagByPage';
   static const String GetTagsFromConversation = 'getTagsFromConversation';
   static const String RemoveTagsFromConversation = 'removeTagsFromConversation';
   static const String RemoveConversationsFromTag = 'removeConversationsFromTag';
@@ -140,5 +142,5 @@ class RCMethodCallBackKey {
       'MessageExpansionDidRemoveCallBack';
   static const String DatabaseOpened = 'DatabaseOpenedCallBack';
   static const String ConversationTagChanged = 'ConversationTagChangedCallBack';
-  static const String OnTagChanged ='onTagChanged';
+  static const String OnTagChanged = 'onTagChanged';
 }

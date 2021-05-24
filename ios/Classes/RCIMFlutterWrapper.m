@@ -110,6 +110,8 @@
         [self getHistoryMessages:call.arguments result:result];
     }else if ([RCMethodKeyGetMessage isEqualToString:call.method]) {
         [self getMessage:call.arguments result:result];
+    }else if ([RCMethodKeyGetMessages isEqualToString:call.method]) {
+        [self getMessages:call.arguments result:result];
     }else if([RCMethodKeyGetConversationList isEqualToString:call.method]) {
         [self getConversationList:call.arguments result:result];
     }else if([RCMethodKeyGetConversationListByPage isEqualToString:call.method]) {
@@ -1105,6 +1107,35 @@
         RCMessage *message = [[RCIMClient sharedRCIMClient] getMessage:messageId];
         NSString *jsonString = [RCFlutterMessageFactory message2String:message];
         result(jsonString);
+    }
+}
+
+- (void)getMessages:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"getMessages";
+    [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *dic = (NSDictionary *)arg;
+        RCConversationType type = [dic[@"conversationType"] integerValue];
+        NSString *targetId = dic[@"targetId"];
+        long recordTime = [dic[@"count"] longValue];
+        int count = [dic[@"recordTime"] intValue];
+        int order = [dic[@"order"] intValue];
+        RCHistoryMessageOption *option = [[RCHistoryMessageOption alloc] init];
+        option.count = count;
+        option.recordTime = recordTime;
+        option.order = order;
+        [[RCCoreClient sharedCoreClient] getMessages:type targetId:targetId option:option complete:^(NSArray *messages, RCErrorCode code) {
+            [RCLog i:[NSString stringWithFormat:@"%@, success",LOG_TAG]];
+            NSMutableArray *msgsArray = [NSMutableArray new];
+            for(RCMessage *message in messages) {
+                NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+                [msgsArray addObject:jsonString];
+            }
+            NSMutableDictionary *callbackDic = [NSMutableDictionary new];
+            [callbackDic setObject:@(0) forKey:@"code"];
+            [callbackDic setObject:msgsArray forKey:@"messages"];
+            result(callbackDic);
+        }];
     }
 }
 
