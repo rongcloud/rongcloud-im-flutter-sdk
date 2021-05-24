@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:rongcloud_im_plugin/src/info/send_message_option.dart';
 import 'package:rongcloud_im_plugin/src/message/group_notification_message.dart';
 import 'package:rongcloud_im_plugin/src/util/type_util.dart';
 import '../rongcloud_im_plugin.dart';
@@ -340,6 +341,8 @@ class RongIMClient {
   ///
   ///[content] 消息内容 参见 [MessageContent]
   ///
+  ///[option] 消息配置
+  ///
   ///[pushContent] 接收方离线时需要显示的远程推送内容
   ///
   ///[pushData] 接收方离线时需要在远程推送中携带的非显示数据
@@ -348,6 +351,37 @@ class RongIMClient {
   /// 目前仅支持群组。
   static Future<Message?> sendDirectionalMessage(int? conversationType,
       String? targetId, List userIdList, MessageContent? content,
+      {String? pushContent,
+      String? pushData,
+      Function(int messageId, int status, int code)? finished}) async {
+    SendMessageOption option = SendMessageOption(false);
+    return sendDirectionalMessageWithOption(
+        conversationType, targetId, userIdList, content, option,
+        pushContent: pushContent, pushData: pushData, finished: finished);
+  }
+
+  ///发送定向消息
+  ///
+  ///[conversationType] 会话类型，参见枚举 [RCConversationType]
+  ///
+  ///[targetId] 会话 id
+  ///
+  ///[userIdList] 接收消息的用户 ID 列表
+  ///
+  ///[content] 消息内容 参见 [MessageContent]
+  ///
+  ///[pushContent] 接收方离线时需要显示的远程推送内容
+  ///
+  ///[pushData] 接收方离线时需要在远程推送中携带的非显示数据
+  ///
+  /// 此方法用于在群组中发送消息给其中的部分用户，其它用户不会收到这条消息。
+  /// 目前仅支持群组。
+  static Future<Message?> sendDirectionalMessageWithOption(
+      int? conversationType,
+      String? targetId,
+      List userIdList,
+      MessageContent? content,
+      SendMessageOption option,
       {String? pushContent,
       String? pushData,
       Function(int messageId, int status, int code)? finished}) async {
@@ -382,6 +416,7 @@ class RongIMClient {
       "objectName": objName,
       "pushContent": pushContent,
       "pushData": pushData,
+      "option": option.isVoIPPush,
       "timestamp": timestamp
     };
 

@@ -921,6 +921,9 @@
         NSArray *userIdList = param[@"userIdList"];
         NSString *contentStr = param[@"content"];
         NSString *pushContent = param[@"pushContent"];
+        bool   isVoIPPush = param[@"option"];
+        RCSendMessageOption *option = [[RCSendMessageOption alloc] init];
+        option.isVoIPPush = isVoIPPush;
         long long timestamp = [param[@"timestamp"] longLongValue];
         if(pushContent.length <= 0) {
             pushContent = nil;
@@ -945,7 +948,7 @@
         }
         
         __weak typeof(self) ws = self;
-        RCMessage *message = [[RCIMClient sharedRCIMClient] sendDirectionalMessage:type targetId:targetId toUserIdList:userIdList content:content pushContent:pushContent pushData:pushData success:^(long messageId) {
+        RCMessage *message = [[RCChannelClient sharedChannelManager] sendDirectionalMessage:type targetId:targetId channelId:nil toUserIdList:userIdList content:content pushContent:pushContent pushData:pushData option:option  success:^(long messageId) {
             [RCLog i:[NSString stringWithFormat:@"%@, success, messageId %@",LOG_TAG ,@(messageId)]];
             NSMutableDictionary *dic = [NSMutableDictionary new];
             [dic setObject:@(messageId) forKey:@"messageId"];
