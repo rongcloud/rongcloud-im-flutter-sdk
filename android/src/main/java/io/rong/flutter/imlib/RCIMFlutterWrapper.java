@@ -43,6 +43,7 @@ import io.rong.imlib.model.ChatRoomInfo;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.ConversationIdentifier;
 import io.rong.imlib.model.ConversationTagInfo;
+import io.rong.imlib.model.HistoryMessageOption;
 import io.rong.imlib.model.IOSConfig;
 import io.rong.imlib.model.MentionedInfo;
 import io.rong.imlib.model.Message;
@@ -175,6 +176,8 @@ public class RCIMFlutterWrapper {
             getHistoryMessages(call.arguments, result);
         } else if (RCMethodList.MethodKeyGetMessage.equalsIgnoreCase(call.method)) {
             getMessage(call.arguments, result);
+        } else if (RCMethodList.MethodKeyGetMessages.equalsIgnoreCase(call.method)) {
+            getMessages(call.arguments, result);
         } else if (RCMethodList.MethodKeyGetConversationList.equalsIgnoreCase(call.method)) {
             getConversationList(call.arguments, result);
         } else if (RCMethodList.MethodKeyGetConversationListByPage.equalsIgnoreCase(call.method)) {
@@ -1388,6 +1391,55 @@ public class RCIMFlutterWrapper {
                 public void onError(RongIMClient.ErrorCode errorCode) {
                     RCLog.e("[getMessage] onError:" + errorCode.getValue());
                     result.success(null);
+                }
+            });
+        }
+    }
+
+    private void getMessages(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map map = (Map) arg;
+            if (map.get("conversationType") == null || map.get("targetId") == null) {
+                return;
+            }
+            int t = (int) map.get("conversationType");
+            Conversation.ConversationType type = Conversation.ConversationType.setValue(t);
+            String targetId = (String) map.get("targetId");
+
+            int count = 0;
+            int order = 0;
+            long time = -1;
+
+            if (map.get("count") != null) {
+                count = (int) map.get("count");
+            }
+            if (map.get("order") != null) {
+                order = (int) map.get("order");
+            }
+            if (map.get("recordTime")!=null){
+                Number recordTime = (Number)map.get("recordTime");
+                time = recordTime.longValue();
+            }
+            HistoryMessageOption.PullOrder pullOrder;
+            if (order == 0) {
+                pullOrder = HistoryMessageOption.PullOrder.DESCEND;
+            } else {
+                pullOrder = HistoryMessageOption.PullOrder.ASCEND;
+            }
+
+            RongCoreClient.getInstance().getMessages(type, targetId, new HistoryMessageOption(time, count, pullOrder), new IRongCoreCallback.IGetMessageCallback() {
+                @Override
+                public void onComplete(List<Message> list, IRongCoreEnum.CoreErrorCode coreErrorCode) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("code",coreErrorCode.getValue());
+                    List<String> messageList = new ArrayList<>();
+                    if (list!=null){
+                        for(Message message : list){
+                            messageList.add(MessageFactory.getInstance().message2String(message));
+                        }
+                    }
+                    resultMap.put("messages",messageList);
+                    result.success(resultMap);
                 }
             });
         }
