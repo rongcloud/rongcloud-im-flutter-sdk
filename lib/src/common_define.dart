@@ -153,8 +153,3 @@ class RCTimestampOrder {
   /// 升序, 按照时间戳从小到大
   static const int RC_Timestamp_Asc = 1;
 }
-
-class RCHistoryMessageOrder {
-  static const RCHistoryMessageOrderDesc = 0;
-  static const RCHistoryMessageOrderAsc = 1;
-}

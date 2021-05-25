@@ -1117,24 +1117,36 @@
         NSDictionary *dic = (NSDictionary *)arg;
         RCConversationType type = [dic[@"conversationType"] integerValue];
         NSString *targetId = dic[@"targetId"];
-        long recordTime = [dic[@"count"] longValue];
-        int count = [dic[@"recordTime"] intValue];
+        long recordTime = [dic[@"recordTime"] longValue];
+        int count = [dic[@"count"] intValue];
         int order = [dic[@"order"] intValue];
         RCHistoryMessageOption *option = [[RCHistoryMessageOption alloc] init];
         option.count = count;
         option.recordTime = recordTime;
         option.order = order;
         [[RCCoreClient sharedCoreClient] getMessages:type targetId:targetId option:option complete:^(NSArray *messages, RCErrorCode code) {
-            [RCLog i:[NSString stringWithFormat:@"%@, success",LOG_TAG]];
-            NSMutableArray *msgsArray = [NSMutableArray new];
-            for(RCMessage *message in messages) {
-                NSString *jsonString = [RCFlutterMessageFactory message2String:message];
-                [msgsArray addObject:jsonString];
-            }
             NSMutableDictionary *callbackDic = [NSMutableDictionary new];
-            [callbackDic setObject:@(0) forKey:@"code"];
-            [callbackDic setObject:msgsArray forKey:@"messages"];
-            result(callbackDic);
+            if (code == 0) {
+                [RCLog i:[NSString stringWithFormat:@"%@, success",LOG_TAG]];
+                if (messages &&messages.count > 0) {
+                    NSMutableArray *msgsArray = [NSMutableArray new];
+                    for(RCMessage *message in messages) {
+                        NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+                        [msgsArray addObject:jsonString];
+                    }
+                    [callbackDic setObject:msgsArray forKey:@"messages"];
+                }else {
+                    
+                }
+                [callbackDic setObject:@(0) forKey:@"code"];
+                [callbackDic setObject:@[] forKey:@"messages"];
+                result(callbackDic);
+            }else {
+                [callbackDic setObject:@(code) forKey:@"code"];
+                [callbackDic setObject:@[] forKey:@"messages"];
+
+            }
+
         }];
     }
 }
