@@ -994,7 +994,7 @@ public class RCIMFlutterWrapper {
                     }
                     if (jsonObject.has("size")) {
                         Number size = (Number) jsonObject.get("size");
-                        if (size != null) {
+                        if (size != null && size.intValue() > 0) {
                             ((FileMessage) content).setSize(size.intValue());
                         }
                     }
