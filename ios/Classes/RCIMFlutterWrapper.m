@@ -59,6 +59,7 @@
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 @property (nonatomic, strong) RCFlutterConfig *config;
 @property (nonatomic, strong) NSString *sdkVersion;
+@property (nonatomic, strong) NSMutableArray *registerMessages;
 @end
 
 @implementation RCIMFlutterWrapper
@@ -74,6 +75,7 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
+        _registerMessages = [[NSMutableArray alloc] init];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveMessageHasReadNotification:) name:RCLibDispatchReadReceiptNotification object:nil];
     }
     return self;
@@ -306,6 +308,14 @@
     }
 }
 
+- (void)registerMessageType:(Class)messageClass {
+    if (!messageClass) {
+        return;
+    }else {
+        [self.registerMessages addObject:messageClass];
+    }
+}
+
 - (void)config:(id)arg {
     NSString *LOG_TAG =  @"config";
     [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
@@ -334,6 +344,12 @@
 - (void)connectWithToken:(id)arg result:(FlutterResult)result {
     NSString *LOG_TAG =  @"connect";
 //    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]]
+    if (self.registerMessages && self.registerMessages.count > 0) {
+        for (Class message in self.registerMessages) {
+            [[RCIMClient sharedRCIMClient] registerMessageType:message];
+        }
+        [self.registerMessages removeAllObjects];
+    }
     if([arg isKindOfClass:[NSString class]]) {
         NSString *token = (NSString *)arg;
         [[RCIMClient sharedRCIMClient] connectWithToken:token dbOpened:^(RCDBErrorCode code) {
