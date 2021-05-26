@@ -46,5 +46,25 @@
                 android:resource="@xml/filepaths"
                 tools:replace="android:resource" />
         </provider>
+
+        <!-- HWPush -->
+        <service
+            android:name="io.rong.push.platform.hms.HMSPushService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.huawei.push.action.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name="com.example.rongcloud_im_plugin_example.push.SealNotificationReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="io.rong.push.intent.MESSAGE_ARRIVED" />
+                <action android:name="io.rong.push.intent.MESSAGE_CLICKED" />
+                <action android:name="io.rong.push.intent.THIRD_PARTY_PUSH_STATE" />
+            </intent-filter>
+        </receiver>
+
     </application>
 </manifest>

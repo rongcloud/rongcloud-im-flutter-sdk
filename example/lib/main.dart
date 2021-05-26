@@ -35,6 +35,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void initState() {
     super.initState();
 
+    prefix.PushConfig pushConfig = prefix.PushConfig();
+    pushConfig.enableHWPush = true;
+    prefix.RongIMClient.setAndroidPushConfig(pushConfig);
+
     //1.初始化 im SDK
     prefix.RongIMClient.init(RongAppKey);
     //注册自定义消息

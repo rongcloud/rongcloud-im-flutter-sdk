@@ -7,8 +7,6 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.gson.JsonNull;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,6 +65,8 @@ import io.rong.message.RecallNotificationMessage;
 import io.rong.message.ReferenceMessage;
 import io.rong.message.SightMessage;
 import io.rong.message.VoiceMessage;
+import io.rong.push.RongPushClient;
+import io.rong.push.pushconfig.PushConfig;
 
 public class RCIMFlutterWrapper {
 
@@ -342,6 +342,8 @@ public class RCIMFlutterWrapper {
             getConversationTopStatusInTag(call.arguments, result);
         } else if (RCMethodList.MethodKeyBatchInsertMessage.equalsIgnoreCase(call.method)) {
             batchInsertMessage(call.arguments, result);
+        } else if (RCMethodList.MethodKeySetAndroidPushConfig.equalsIgnoreCase(call.method)) {
+            setPushConfig(call.arguments);
         } else {
             result.notImplemented();
         }
@@ -355,6 +357,45 @@ public class RCIMFlutterWrapper {
     public String getAppkey() {
         return appkey;
     }
+
+    public void setPushConfig(Object arg) {
+        if (arg instanceof Map) {
+            Map paramMap = (Map) arg;
+            PushConfig.Builder configBuilder = new PushConfig.Builder();
+            if (paramMap.get("enableHWPush") != null) {
+                configBuilder.enableHWPush((boolean) paramMap.get("enableHWPush"));
+            }
+            if (paramMap.get("enableFCM") != null) {
+                configBuilder.enableFCM((boolean) paramMap.get("enableFCM"));
+            }
+            if (paramMap.get("enableVivoPush") != null) {
+                configBuilder.enableVivoPush((boolean) paramMap.get("enableVivoPush"));
+            }
+            if (paramMap.get("miAppId") != null && paramMap.get("miAppKey") != null) {
+                String miAppId = (String) paramMap.get("miAppId");
+                String miAppKey = (String) paramMap.get("miAppKey");
+                if (!TextUtils.isEmpty(miAppId) && !TextUtils.isEmpty(miAppKey)) {
+                    configBuilder.enableMiPush(miAppId, miAppKey);
+                }
+            }
+            if (paramMap.get("mzAppId") != null && paramMap.get("mzAppKey") != null) {
+                String mzAppId = (String) paramMap.get("mzAppId");
+                String mzAppKey = (String) paramMap.get("mzAppKey");
+                if (!TextUtils.isEmpty(mzAppId) && !TextUtils.isEmpty(mzAppKey)) {
+                    configBuilder.enableMeiZuPush(mzAppId, mzAppKey);
+                }
+            }
+            if (paramMap.get("oppoAppKey") != null && paramMap.get("oppoAppSecret") != null) {
+                String oppoAppKey = (String) paramMap.get("oppoAppKey");
+                String oppoAppSecret = (String) paramMap.get("oppoAppSecret");
+                if (!TextUtils.isEmpty(oppoAppKey) && !TextUtils.isEmpty(oppoAppSecret)) {
+                    configBuilder.enableOppoPush(oppoAppKey, oppoAppSecret);
+                }
+            }
+            RongPushClient.setPushConfig(configBuilder.build());
+        }
+    }
+
 
     // 可通过该接口向Flutter传递数据
     public void sendDataToFlutter(final Map map) {

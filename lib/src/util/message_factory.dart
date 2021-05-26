@@ -339,4 +339,18 @@ class MessageFactory extends Object {
     result.mMatchCount = map["mMatchCount"];
     return result;
   }
+
+  Map pushConfig2Map(PushConfig pushConfig) {
+    Map map = new Map();
+    map["enableHWPush"] = pushConfig.enableHWPush;
+    map["enableFCM"] = pushConfig.enableFCM;
+    map["enableVivoPush"] = pushConfig.enableVivoPush;
+    map["miAppId"] = pushConfig.miAppId;
+    map["miAppKey"] = pushConfig.miAppKey;
+    map["mzAppId"] = pushConfig.mzAppId;
+    map["mzAppKey"] = pushConfig.mzAppKey;
+    map["oppoAppKey"] = pushConfig.oppoAppKey;
+    map["oppoAppSecret"] = pushConfig.oppoAppSecret;
+    return map;
+  }
 }

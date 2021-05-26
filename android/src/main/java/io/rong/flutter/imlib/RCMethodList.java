@@ -77,6 +77,7 @@ public class RCMethodList {
     static String MethodKeyGetMessageByUId = "getMessageByUId";
     static String MethodKeyGetFirstUnreadMessage = "getFirstUnreadMessage";
     static String MethodKeySendIntactMessage = "sendIntactMessage";
+    static String MethodKeySetAndroidPushConfig = "setAndroidPushConfig";
 
     // 消息扩展
     static String MethodKeyUpdateMessageExpansion = "updateMessageExpansion";
