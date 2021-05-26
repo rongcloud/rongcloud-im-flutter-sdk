@@ -7,6 +7,8 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.gson.JsonNull;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -913,8 +915,8 @@ public class RCIMFlutterWrapper {
                         }
                     }
                     if (jsonObject.has("remoteUrl")) {
-                        String remoteUrl = (String) jsonObject.get("remoteUrl");
-                        if (!TextUtils.isEmpty(remoteUrl)) {
+                        String remoteUrl = jsonObject.optString("remoteUrl");
+                        if (!TextUtils.isEmpty(remoteUrl) && !"null".equals(remoteUrl)) {
                             ((GIFMessage) content).setRemoteUri(Uri.parse(remoteUrl));
                         }
                     }
@@ -939,7 +941,7 @@ public class RCIMFlutterWrapper {
                         }
                     }
                     String remoteUrl = (String) jsonObject.optString("remoteUrl");
-                    if (!TextUtils.isEmpty(remoteUrl)) {
+                    if (!TextUtils.isEmpty(remoteUrl) && !"null".equals(remoteUrl)) {
                         ((HQVoiceMessage) content).setMediaUrl(Uri.parse(remoteUrl));
                     }
                 } catch (JSONException e) {
@@ -1017,8 +1019,8 @@ public class RCIMFlutterWrapper {
                         }
                     }
                     if (jsonObject.has("remoteUrl")) {
-                        String remoteUrl = (String) jsonObject.get("remoteUrl");
-                        if (!TextUtils.isEmpty(remoteUrl)) {
+                        String remoteUrl = jsonObject.optString("remoteUrl");
+                        if (!TextUtils.isEmpty(remoteUrl) && !"null".equals(remoteUrl)) {
                             ((CombineMessage) content).setMediaUrl(Uri.parse(remoteUrl));
                         }
                     }
@@ -1416,8 +1418,8 @@ public class RCIMFlutterWrapper {
             if (map.get("order") != null) {
                 order = (int) map.get("order");
             }
-            if (map.get("recordTime")!=null){
-                Number recordTime = (Number)map.get("recordTime");
+            if (map.get("recordTime") != null) {
+                Number recordTime = (Number) map.get("recordTime");
                 time = recordTime.longValue();
             }
             HistoryMessageOption.PullOrder pullOrder;
@@ -1431,14 +1433,14 @@ public class RCIMFlutterWrapper {
                 @Override
                 public void onComplete(List<Message> list, IRongCoreEnum.CoreErrorCode coreErrorCode) {
                     Map resultMap = new HashMap();
-                    resultMap.put("code",coreErrorCode.getValue());
+                    resultMap.put("code", coreErrorCode.getValue());
                     List<String> messageList = new ArrayList<>();
-                    if (list!=null){
-                        for(Message message : list){
+                    if (list != null) {
+                        for (Message message : list) {
                             messageList.add(MessageFactory.getInstance().message2String(message));
                         }
                     }
-                    resultMap.put("messages",messageList);
+                    resultMap.put("messages", messageList);
                     result.success(resultMap);
                 }
             });
