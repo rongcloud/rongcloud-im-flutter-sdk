@@ -82,7 +82,7 @@ flutter {
 }
 
 dependencies {
-    implementation files('lib/MiPush_SDK_Client_3_8_2.jar')
+    compile fileTree(include: ['*.jar', '*.aar'], dir: 'lib')
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
