@@ -24,22 +24,10 @@ public class SealNotificationReceiver extends PushMessageReceiver {
     public boolean onNotificationMessageClicked(Context context, PushType pushType, PushNotificationMessage message) {
         if (!message.getSourceType().equals(PushNotificationMessage.PushSourceType.FROM_ADMIN)) {
             String targetId = message.getTargetId();
-            //10000 为 Demo Server 加好友的 id，若 targetId 为 10000，则为加好友消息，默认跳转到 NewFriendListActivity
-            if (targetId != null && targetId.equals("10000")) {
-//                Intent intentMain = new Intent(context, NewFriendListActivity.class);
-//                intentMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
-                Intent intentNewFriend = new Intent(context, MainActivity.class);
-                intentNewFriend.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
-                Intent[] intents = new Intent[]{};
-//                intents[0] = intentMain;
-                intents[1] = intentNewFriend;
-                context.startActivities(intents);
-                return true;
-            } else {
-                Intent intentMain = new Intent(context, MainActivity.class);
-                intentMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
-                context.startActivity(intentMain);
-            }
+            //根据自己需求填写点击跳转逻辑
+            Intent intentMain = new Intent(context, MainActivity.class);
+            intentMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intentMain);
         }
         return false;
     }

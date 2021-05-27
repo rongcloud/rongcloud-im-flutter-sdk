@@ -37,6 +37,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
     prefix.PushConfig pushConfig = prefix.PushConfig();
     pushConfig.enableHWPush = true;
+    // 小米推送，请填入自己申请的 appkey 和 id
+    // pushConfig.miAppKey = "1111147338625";
+    // pushConfig.miAppId = "2222203761517473625";
     prefix.RongIMClient.setAndroidPushConfig(pushConfig);
 
     //1.初始化 im SDK
