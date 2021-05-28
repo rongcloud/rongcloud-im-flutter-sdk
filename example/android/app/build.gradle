@@ -89,5 +89,10 @@ dependencies {
 
     implementation 'com.android.support:appcompat-v7:26.0.0'
     implementation 'com.huawei.hms:push:4.0.2.300'
+    implementation("com.google.android.gms:play-services-gcm:12.0.1") {
+        force = true
+    }
+    implementation 'com.google.firebase:firebase-messaging:17.6.0'
 }
 apply plugin: 'com.huawei.agconnect'
+apply plugin: 'com.android.application'

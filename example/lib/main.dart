@@ -36,10 +36,21 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     super.initState();
 
     prefix.PushConfig pushConfig = prefix.PushConfig();
-    pushConfig.enableHWPush = true;
+    // pushConfig.enableHWPush = true;
+    // pushConfig.enableVivoPush = true;
+
     // 小米推送，请填入自己申请的 appkey 和 id
     // pushConfig.miAppKey = "1111147338625";
     // pushConfig.miAppId = "2222203761517473625";
+
+    // oppo 推送，请填入自己申请的 appkey 和 secret
+    // pushConfig.oppoAppKey = "11111146d261446dbd3c94bb04d322de";
+    // pushConfig.oppoAppSecret = "2222223d5ce1414ea4b6d75c880a3031";
+    
+    //魅族推送 请填入自己申请的 appkey 和 id
+    // pushConfig.mzAppKey = "111111802ac4bd5843d694517307896";
+    // pushConfig.mzAppId = "123234";
+
     prefix.RongIMClient.setAndroidPushConfig(pushConfig);
 
     //1.初始化 im SDK
