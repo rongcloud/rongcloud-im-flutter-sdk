@@ -139,7 +139,7 @@ class MediaUtil {
 
   //播放语音
   void startPlayAudio(String path) {
-    if (flutterSound.isPlaying) {
+    if (flutterSound.audioState == t_AUDIO_STATE.IS_PLAYING) {
       stopPlayAudio();
     }
     flutterSound.startPlayer(path);

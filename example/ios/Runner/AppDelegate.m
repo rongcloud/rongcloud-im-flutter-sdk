@@ -10,10 +10,9 @@
     [GeneratedPluginRegistrant registerWithRegistry:self];
     /**
      //注册自定义消息流程
-     //1.初始化 SDK，2.注册自定义的消息
-     [[RCIMClient sharedRCIMClient] initWithAppKey:@"pvxdm17jxjaor"];
-     [[RCIMClient sharedRCIMClient] registerMessageType:[RCDTestMessage class]];
+     用户只需要调用以下方法注册自定义消息。SDK 内部会在 connectWithToken: 方法里，链接 IM 之前 把所有自定义消息注册到底层 SDK。
      */
+    [[RCIMFlutterWrapper sharedWrapper] registerMessageType:[RCDTestMessage class]];
     
     /**
      * 推送处理1 (申请推送权限)

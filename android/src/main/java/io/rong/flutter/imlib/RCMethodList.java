@@ -14,6 +14,7 @@ public class RCMethodList {
     static String MethodKeyGetHistoryMessage ="getHistoryMessage";
     static String MethodKeyGetHistoryMessages ="getHistoryMessages";
     static String MethodKeyGetMessage ="getMessage";
+    static String MethodKeyGetMessages = "GetMessages";
     static String MethodKeyGetConversationList ="getConversationList";
     static String MethodKeyGetConversationListByPage ="getConversationListByPage";
     static String MethodKeyGetConversation ="getConversation";
@@ -76,6 +77,8 @@ public class RCMethodList {
     static String MethodKeyGetMessageByUId = "getMessageByUId";
     static String MethodKeyGetFirstUnreadMessage = "getFirstUnreadMessage";
     static String MethodKeySendIntactMessage = "sendIntactMessage";
+    static String MethodKeySetAndroidPushConfig = "setAndroidPushConfig";
+
     // 消息扩展
     static String MethodKeyUpdateMessageExpansion = "updateMessageExpansion";
     static String MethodKeyRemoveMessageExpansionForKey = "removeMessageExpansionForKey";

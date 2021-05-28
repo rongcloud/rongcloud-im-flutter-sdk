@@ -18,6 +18,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)sendDataToFlutter:(NSDictionary *)userInfo;
 
+/*
+ 注册自定义消息
+ */
+- (void)registerMessageType:(Class)messageClass;
+
 + (NSString *)getVersion;
 
 @end

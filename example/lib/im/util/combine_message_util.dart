@@ -435,7 +435,7 @@ class CombineMessageUtils {
   }
 
   Future<List<String>> getNameList(List<Message> messages) async {
-    List<String> names = List<String>();
+    List<String> names = [];
     for (Message msg in messages) {
       if (names.length == 2) return names;
       String name =
@@ -468,7 +468,7 @@ class CombineMessageUtils {
   }
 
   Future<List<String>> getSummaryList(List<Message> messages) async {
-    List<String> summaryList = List<String>();
+    List<String> summaryList = [];
     int conversationType = messages[0].conversationType;
     for (int i = 0; i < messages.length && i < SUMMARY_MAX_SIZE; i++) {
       Message message = messages[i];

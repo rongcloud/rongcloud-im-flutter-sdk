@@ -4,18 +4,18 @@ import 'dart:developer' as developer;
 
 class CombineMessage extends MessageContent {
   static const String objectName = "RC:CombineMsg";
-  String title = "";
+  String? title = "";
   // 这两个参数用来拼装默认消息的标题
   // 区分合并消息是在群聊里还是单聊里
-  int conversationType;
+  int? conversationType;
   // 单聊里最多有两个,群聊不记录
-  List<String> nameList;
+  List<String>? nameList;
   // 默认消息的内容
-  List<String> summaryList;
-  String localPath;
-  String mMediaUrl;
-  String extra = "";
-  String mName = "";
+  List<String>? summaryList;
+  String? localPath;
+  String? mMediaUrl;
+  String? extra = "";
+  String? mName = "";
 
   static CombineMessage obtain(String localPath) {
     CombineMessage msg = new CombineMessage();
@@ -45,14 +45,14 @@ class CombineMessage extends MessageContent {
       Map mentionedMap = super.encodeMentionedInfo(this.mentionedInfo);
       map["mentionedInfo"] = mentionedMap;
     }
-    if (this.destructDuration != null && this.destructDuration > 0) {
+    if (this.destructDuration != null && this.destructDuration! > 0) {
       map["burnDuration"] = this.destructDuration;
     }
     return json.encode(map);
   }
 
   @override
-  void decode(String jsonStr) {
+  void decode(String? jsonStr) {
     if (jsonStr == null || jsonStr == "") {
       developer.log("Flutter CombineMessage deocde error: no content",
           name: "RongIMClient.CombineMessage");
@@ -67,14 +67,14 @@ class CombineMessage extends MessageContent {
     if (map["nameList"] != null) {
       this.nameList = List<String>.from(map["nameList"]);
     } else {
-      this.nameList = List();
+      this.nameList = [];
     }
 
     this.summaryList = List<String>.from(map["summaryList"]);
     this.extra = map["extra"];
-    Map userMap = map["user"];
+    Map? userMap = map["user"];
     super.decodeUserInfo(userMap);
-    Map menthionedMap = map["mentionedInfo"];
+    Map? menthionedMap = map["mentionedInfo"];
     super.decodeMentionedInfo(menthionedMap);
     this.destructDuration = map["burnDuration"];
   }

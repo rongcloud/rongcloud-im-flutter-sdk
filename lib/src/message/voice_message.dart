@@ -5,10 +5,10 @@ import 'dart:developer' as developer;
 class VoiceMessage extends MessageContent {
   static const String objectName = "RC:HQVCMsg";
 
-  String localPath;
-  String remoteUrl;
-  int duration;
-  String extra;
+  String? localPath;
+  String? remoteUrl;
+  int? duration;
+  String? extra;
 
   /// [localPath] 本地路径，Android 必须以 file:// 开头
   ///
@@ -21,7 +21,7 @@ class VoiceMessage extends MessageContent {
   }
 
   @override
-  void decode(String jsonStr) {
+  void decode(String? jsonStr) {
     if (jsonStr == null) {
       developer.log("Flutter VoiceMessage deocde error: no content",
           name: "RongIMClient.VoiceMessage");
@@ -32,9 +32,9 @@ class VoiceMessage extends MessageContent {
     this.remoteUrl = map["remoteUrl"];
     this.duration = map["duration"];
     this.extra = map["extra"];
-    Map userMap = map["user"];
+    Map? userMap = map["user"];
     super.decodeUserInfo(userMap);
-    Map menthionedMap = map["mentionedInfo"];
+    Map? menthionedMap = map["mentionedInfo"];
     super.decodeMentionedInfo(menthionedMap);
     this.destructDuration = map["burnDuration"];
   }
@@ -58,7 +58,7 @@ class VoiceMessage extends MessageContent {
       Map mentionedMap = super.encodeMentionedInfo(this.mentionedInfo);
       map["mentionedInfo"] = mentionedMap;
     }
-    if (this.destructDuration != null && this.destructDuration > 0) {
+    if (this.destructDuration != null && this.destructDuration! > 0) {
       map["burnDuration"] = this.destructDuration;
     }
     return json.encode(map);

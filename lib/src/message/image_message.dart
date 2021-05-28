@@ -5,11 +5,11 @@ import 'dart:developer' as developer;
 class ImageMessage extends MessageContent {
   static const String objectName = "RC:ImgMsg";
 
-  String localPath;
-  String extra;
-  String content;
-  String imageUri;
-  String mThumbUri; //缩略图地址
+  String? localPath;
+  String? extra;
+  String? content;
+  String? imageUri;
+  String? mThumbUri; //缩略图地址
 
   /// [localPath] 本地路径，Android 必须以 file:// 开头
   static ImageMessage obtain(String localPath) {
@@ -19,7 +19,7 @@ class ImageMessage extends MessageContent {
   }
 
   @override
-  void decode(String jsonStr) {
+  void decode(String? jsonStr) {
     if (jsonStr == null || jsonStr.isEmpty) {
       developer.log("Flutter ImageMessage deocde error: no content",
           name: "RongIMClient.ImageMessage");
@@ -31,9 +31,9 @@ class ImageMessage extends MessageContent {
     this.imageUri = map["imageUri"];
     this.mThumbUri = map["thumbUri"];
     this.extra = map["extra"];
-    Map userMap = map["user"];
+    Map? userMap = map["user"];
     super.decodeUserInfo(userMap);
-    Map menthionedMap = map["mentionedInfo"];
+    Map? menthionedMap = map["mentionedInfo"];
     super.decodeMentionedInfo(menthionedMap);
     this.destructDuration = map["burnDuration"];
   }
@@ -63,7 +63,7 @@ class ImageMessage extends MessageContent {
       Map mentionedMap = super.encodeMentionedInfo(this.mentionedInfo);
       map["mentionedInfo"] = mentionedMap;
     }
-    if (this.destructDuration != null && this.destructDuration > 0) {
+    if (this.destructDuration != null && this.destructDuration! > 0) {
       map["burnDuration"] = this.destructDuration;
     }
     return json.encode(map);

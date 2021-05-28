@@ -43,6 +43,7 @@ import io.rong.imlib.model.ChatRoomInfo;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.ConversationIdentifier;
 import io.rong.imlib.model.ConversationTagInfo;
+import io.rong.imlib.model.HistoryMessageOption;
 import io.rong.imlib.model.IOSConfig;
 import io.rong.imlib.model.MentionedInfo;
 import io.rong.imlib.model.Message;
@@ -64,6 +65,8 @@ import io.rong.message.RecallNotificationMessage;
 import io.rong.message.ReferenceMessage;
 import io.rong.message.SightMessage;
 import io.rong.message.VoiceMessage;
+import io.rong.push.RongPushClient;
+import io.rong.push.pushconfig.PushConfig;
 
 public class RCIMFlutterWrapper {
 
@@ -71,6 +74,7 @@ public class RCIMFlutterWrapper {
     private static MethodChannel mChannel = null;
     private static RCFlutterConfig mConfig = null;
     private Handler mMainHandler = null;
+    private List<Class<? extends MessageContent>> messageContentClassList;
 
     private HashMap<String, Constructor<? extends MessageContent>> messageContentConstructorMap;
 
@@ -79,6 +83,7 @@ public class RCIMFlutterWrapper {
 
     private RCIMFlutterWrapper() {
         messageContentConstructorMap = new HashMap<>();
+        messageContentClassList = new ArrayList<>();
         mMainHandler = new Handler(Looper.getMainLooper());
 
         RongIMClient.setReadReceiptListener(new RongIMClient.ReadReceiptListener() {
@@ -173,6 +178,8 @@ public class RCIMFlutterWrapper {
             getHistoryMessages(call.arguments, result);
         } else if (RCMethodList.MethodKeyGetMessage.equalsIgnoreCase(call.method)) {
             getMessage(call.arguments, result);
+        } else if (RCMethodList.MethodKeyGetMessages.equalsIgnoreCase(call.method)) {
+            getMessages(call.arguments, result);
         } else if (RCMethodList.MethodKeyGetConversationList.equalsIgnoreCase(call.method)) {
             getConversationList(call.arguments, result);
         } else if (RCMethodList.MethodKeyGetConversationListByPage.equalsIgnoreCase(call.method)) {
@@ -335,6 +342,8 @@ public class RCIMFlutterWrapper {
             getConversationTopStatusInTag(call.arguments, result);
         } else if (RCMethodList.MethodKeyBatchInsertMessage.equalsIgnoreCase(call.method)) {
             batchInsertMessage(call.arguments, result);
+        } else if (RCMethodList.MethodKeySetAndroidPushConfig.equalsIgnoreCase(call.method)) {
+            setPushConfig(call.arguments);
         } else {
             result.notImplemented();
         }
@@ -348,6 +357,50 @@ public class RCIMFlutterWrapper {
     public String getAppkey() {
         return appkey;
     }
+
+    public void setPushConfig(Object arg) {
+        if (arg instanceof Map) {
+            final Map paramMap = (Map) arg;
+            mMainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    PushConfig.Builder configBuilder = new PushConfig.Builder();
+                    if (paramMap.get("enableHWPush") != null) {
+                        configBuilder.enableHWPush((boolean) paramMap.get("enableHWPush"));
+                    }
+                    if (paramMap.get("enableFCM") != null) {
+                        configBuilder.enableFCM((boolean) paramMap.get("enableFCM"));
+                    }
+                    if (paramMap.get("enableVivoPush") != null) {
+                        configBuilder.enableVivoPush((boolean) paramMap.get("enableVivoPush"));
+                    }
+                    if (paramMap.get("miAppId") != null && paramMap.get("miAppKey") != null) {
+                        String miAppId = (String) paramMap.get("miAppId");
+                        String miAppKey = (String) paramMap.get("miAppKey");
+                        if (!TextUtils.isEmpty(miAppId) && !TextUtils.isEmpty(miAppKey)) {
+                            configBuilder.enableMiPush(miAppId, miAppKey);
+                        }
+                    }
+                    if (paramMap.get("mzAppId") != null && paramMap.get("mzAppKey") != null) {
+                        String mzAppId = (String) paramMap.get("mzAppId");
+                        String mzAppKey = (String) paramMap.get("mzAppKey");
+                        if (!TextUtils.isEmpty(mzAppId) && !TextUtils.isEmpty(mzAppKey)) {
+                            configBuilder.enableMeiZuPush(mzAppId, mzAppKey);
+                        }
+                    }
+                    if (paramMap.get("oppoAppKey") != null && paramMap.get("oppoAppSecret") != null) {
+                        String oppoAppKey = (String) paramMap.get("oppoAppKey");
+                        String oppoAppSecret = (String) paramMap.get("oppoAppSecret");
+                        if (!TextUtils.isEmpty(oppoAppKey) && !TextUtils.isEmpty(oppoAppSecret)) {
+                            configBuilder.enableOppoPush(oppoAppKey, oppoAppSecret);
+                        }
+                    }
+                    RongPushClient.setPushConfig(configBuilder.build());
+                }
+            });
+        }
+    }
+
 
     // 可通过该接口向Flutter传递数据
     public void sendDataToFlutter(final Map map) {
@@ -530,7 +583,18 @@ public class RCIMFlutterWrapper {
         }
     }
 
+    public void registerMessage(Class<? extends MessageContent> messageClass) {
+        if (messageContentClassList != null) {
+            messageContentClassList.add(messageClass);
+        }
+    }
+
     private void connect(Object arg, final Result result) {
+        // 连接前对自定义消息进行注册，防止注册时序错误导致的注册失败
+        if (messageContentClassList != null && messageContentClassList.size() > 0) {
+            RongCoreClient.registerMessageType(messageContentClassList);
+            messageContentClassList.clear();
+        }
         if (arg instanceof String) {
             final String token = String.valueOf(arg);
             RongIMClient.connect(token, new RongIMClient.ConnectCallback() {
@@ -897,8 +961,8 @@ public class RCIMFlutterWrapper {
                         }
                     }
                     if (jsonObject.has("remoteUrl")) {
-                        String remoteUrl = (String) jsonObject.get("remoteUrl");
-                        if (!TextUtils.isEmpty(remoteUrl)) {
+                        String remoteUrl = jsonObject.optString("remoteUrl");
+                        if (!TextUtils.isEmpty(remoteUrl) && !"null".equals(remoteUrl)) {
                             ((GIFMessage) content).setRemoteUri(Uri.parse(remoteUrl));
                         }
                     }
@@ -923,7 +987,7 @@ public class RCIMFlutterWrapper {
                         }
                     }
                     String remoteUrl = (String) jsonObject.optString("remoteUrl");
-                    if (!TextUtils.isEmpty(remoteUrl)) {
+                    if (!TextUtils.isEmpty(remoteUrl) && !"null".equals(remoteUrl)) {
                         ((HQVoiceMessage) content).setMediaUrl(Uri.parse(remoteUrl));
                     }
                 } catch (JSONException e) {
@@ -976,6 +1040,12 @@ public class RCIMFlutterWrapper {
                             ((FileMessage) content).setMediaUrl(Uri.parse(fileUrl));
                         }
                     }
+                    if (jsonObject.has("size")) {
+                        Number size = (Number) jsonObject.get("size");
+                        if (size != null && size.intValue() > 0) {
+                            ((FileMessage) content).setSize(size.intValue());
+                        }
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -995,8 +1065,8 @@ public class RCIMFlutterWrapper {
                         }
                     }
                     if (jsonObject.has("remoteUrl")) {
-                        String remoteUrl = (String) jsonObject.get("remoteUrl");
-                        if (!TextUtils.isEmpty(remoteUrl)) {
+                        String remoteUrl = jsonObject.optString("remoteUrl");
+                        if (!TextUtils.isEmpty(remoteUrl) && !"null".equals(remoteUrl)) {
                             ((CombineMessage) content).setMediaUrl(Uri.parse(remoteUrl));
                         }
                     }
@@ -1369,6 +1439,55 @@ public class RCIMFlutterWrapper {
                 public void onError(RongIMClient.ErrorCode errorCode) {
                     RCLog.e("[getMessage] onError:" + errorCode.getValue());
                     result.success(null);
+                }
+            });
+        }
+    }
+
+    private void getMessages(Object arg, final Result result) {
+        if (arg instanceof Map) {
+            Map map = (Map) arg;
+            if (map.get("conversationType") == null || map.get("targetId") == null) {
+                return;
+            }
+            int t = (int) map.get("conversationType");
+            Conversation.ConversationType type = Conversation.ConversationType.setValue(t);
+            String targetId = (String) map.get("targetId");
+
+            int count = 0;
+            int order = 0;
+            long time = -1;
+
+            if (map.get("count") != null) {
+                count = (int) map.get("count");
+            }
+            if (map.get("order") != null) {
+                order = (int) map.get("order");
+            }
+            if (map.get("recordTime") != null) {
+                Number recordTime = (Number) map.get("recordTime");
+                time = recordTime.longValue();
+            }
+            HistoryMessageOption.PullOrder pullOrder;
+            if (order == 0) {
+                pullOrder = HistoryMessageOption.PullOrder.DESCEND;
+            } else {
+                pullOrder = HistoryMessageOption.PullOrder.ASCEND;
+            }
+
+            RongCoreClient.getInstance().getMessages(type, targetId, new HistoryMessageOption(time, count, pullOrder), new IRongCoreCallback.IGetMessageCallback() {
+                @Override
+                public void onComplete(List<Message> list, IRongCoreEnum.CoreErrorCode coreErrorCode) {
+                    Map resultMap = new HashMap();
+                    resultMap.put("code", coreErrorCode.getValue());
+                    List<String> messageList = new ArrayList<>();
+                    if (list != null) {
+                        for (Message message : list) {
+                            messageList.add(MessageFactory.getInstance().message2String(message));
+                        }
+                    }
+                    resultMap.put("messages", messageList);
+                    result.success(resultMap);
                 }
             });
         }

@@ -43,7 +43,7 @@ class DbManager {
   }
 
   Future<List<UserInfo>> getUserInfo({String userId}) async {
-    List<Map<String, dynamic>> maps = List();
+    List<Map<String, dynamic>> maps = [];
     if (database == null) {
       await openDb();
     }
@@ -53,7 +53,7 @@ class DbManager {
       maps = await database
           ?.query(userTableName, where: 'userId = ?', whereArgs: [userId]);
     }
-    List<UserInfo> infoList = List();
+    List<UserInfo> infoList = [];
     if (maps.length > 0) {
       infoList = List.generate(maps.length, (i) {
         UserInfo info = UserInfo();
@@ -75,7 +75,7 @@ class DbManager {
   }
 
   Future<List<GroupInfo>> getGroupInfo({String groupId}) async {
-    List<Map<String, dynamic>> maps = List();
+    List<Map<String, dynamic>> maps = [];
     if (database == null) {
       await openDb();
     }
@@ -85,7 +85,7 @@ class DbManager {
       maps = await database
           ?.query(groupTableName, where: 'groupId = ?', whereArgs: [groupId]);
     }
-    List<GroupInfo> infoList = List();
+    List<GroupInfo> infoList = [];
     if (maps.length > 0) {
       infoList = List.generate(maps.length, (i) {
         GroupInfo info = GroupInfo();

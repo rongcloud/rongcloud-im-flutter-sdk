@@ -1,11 +1,11 @@
 name: rongcloud_im_plugin
 description: RongCloud IM Flutter Plugin.
-version: 5.1.1
+version: 5.1.2
 homepage: https://www.rongcloud.cn/
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
-  flutter: ">=1.10.0"
+  sdk: '>=2.12.0 <3.0.0'
+  flutter: ">=2.0.0"
 
 dependencies:
   flutter:

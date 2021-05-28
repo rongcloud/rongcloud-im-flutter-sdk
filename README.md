@@ -28,7 +28,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-rongcloud_im_plugin: ^5.1.1
+rongcloud_im_plugin: ^5.1.2
 ```
 
 然后在项目路径执行 `flutter packages get` 来下载 Flutter Plugin
@@ -220,7 +220,7 @@ RongIMClient.deleteMessages(RCConversationType.Private, "2002", (int code) {
 批量删除消息
 
 ```dart
-List<int> mids =  new List();
+List<int> mids =  [];
 mids.add(1);
 RongIMClient.deleteMessageByIds(mids, (int code) {
 
@@ -662,3 +662,6 @@ int duration = await RongIMClient.getOfflineMessageDuration();
 更多接口请[参考](https://github.com/rongcloud/rongcloud-im-flutter-sdk)
 
 [常见问题](https://github.com/rongcloud/rongcloud-im-flutter-sdk/tree/master/doc)
+
+## 设置 Android 端推送
+详细参见[Android推送文档](https://github.com/rongcloud/rongcloud-im-flutter-sdk/blob/release/doc/Android%20推送.md)

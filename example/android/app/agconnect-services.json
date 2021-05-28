@@ -1,0 +1,11 @@
+{
+  "client": {
+    "cp_id": "填写您自己的申请的账号信息",
+    "product_id": "填写您自己的申请的账号信息",
+    "client_id": "填写您自己的申请的账号信息",
+    "client_secret": "填写您自己的申请的账号信息",
+    "app_id": "填写您自己的申请的账号信息",
+    "package_name": "com.example.rongcloud_im_plugin_example"
+  },
+  "configuration_version": "1.0"
+}

@@ -37,11 +37,10 @@ class RCOperationStatus {
   static const int Failed = 1;
 }
 
-
 //聊天室销毁原因
 class RCChatRoomDestroyType {
-  static const int RCChatRoomDestroyTypeManual = 0;//开发者主动销毁
-  static const int RCChatRoomDestroyTypeAuto = 3;//聊天室长时间不活跃，被系统自动回收
+  static const int RCChatRoomDestroyTypeManual = 0; //开发者主动销毁
+  static const int RCChatRoomDestroyTypeAuto = 3; //聊天室长时间不活跃，被系统自动回收
 }
 
 //消息免打扰状态
