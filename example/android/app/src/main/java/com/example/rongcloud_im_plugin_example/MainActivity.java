@@ -3,17 +3,10 @@ package com.example.rongcloud_im_plugin_example;
 import android.content.Context;
 import android.os.Bundle;
 
-import io.rong.flutter.imlib.RCIMFlutterWrapper;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugins.GeneratedPluginRegistrant;
-import io.rong.imlib.AnnotationNotFoundException;
-import io.rong.imlib.RongIMClient;
 
 public class MainActivity extends FlutterActivity {
     @Override
@@ -36,7 +29,5 @@ public class MainActivity extends FlutterActivity {
 //        RCIMFlutterWrapper.getInstance().sendDataToFlutter(map);
 //      }
 //    },500);
-
-
     }
 }

@@ -48,8 +48,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     // pushConfig.oppoAppSecret = "2222223d5ce1414ea4b6d75c880a3031";
     
     //魅族推送 请填入自己申请的 appkey 和 id
-    // pushConfig.mzAppKey = "111111802ac4bd5843d694517307896";
-    // pushConfig.mzAppId = "123234";
+    // pushConfig.mzAppKey = "11111802ac4bd5843d694517307896";
+    // pushConfig.mzAppId = "222288";
+    // pushConfig.enableFCM = true;
 
     prefix.RongIMClient.setAndroidPushConfig(pushConfig);
 
