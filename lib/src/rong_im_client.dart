@@ -21,7 +21,7 @@ class RongIMClient {
       const MethodChannel('rongcloud_im_plugin');
 
   static Map sendMessageCallbacks = Map();
-  static String sdkVersion = "5.0.0";
+  static String sdkVersion = "5.1.2";
 
   static Map<String, MessageDecoder> messageDecoders =
       Map<String, MessageDecoder>();
@@ -37,7 +37,7 @@ class RongIMClient {
     _addNativeMethodCallHandler();
   }
 
-    ///设置推送配置(Android 第三方推送配置)
+  ///设置推送配置(Android 第三方推送配置)
   ///
   ///[pushConfig] 推送配置
   static void setAndroidPushConfig(PushConfig pushConfig) async {
@@ -49,7 +49,6 @@ class RongIMClient {
     Map paramMap = MessageFactory.instance!.pushConfig2Map(pushConfig);
     _channel.invokeMethod(RCMethodKey.SetAndroidPushConfig, paramMap);
   }
-
 
   ///注册Flutter端自定义消息
   ///[objectName] 希望注册的新消息类型,例如:RC:TxtMsg。
