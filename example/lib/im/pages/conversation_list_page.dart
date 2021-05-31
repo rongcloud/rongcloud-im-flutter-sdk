@@ -25,7 +25,7 @@ class ConversationListPage extends StatefulWidget {
 class _ConversationListPageState extends State<ConversationListPage>
     implements ConversationListItemDelegate {
   String pageName = "example.ConversationListPage";
-  List conList = new List();
+  List conList = [];
   List<int> displayConversationType = [
     RCConversationType.Private,
     RCConversationType.Group
@@ -86,7 +86,7 @@ class _ConversationListPageState extends State<ConversationListPage>
           RCConnectionStatus.UserBlocked == connectionStatus) {
         String toast = "连接状态变化 $connectionStatus, 请退出后重新登录";
         DialogUtil.showAlertDiaLog(context, toast,
-            confirmButton: FlatButton(
+            confirmButton: TextButton(
                 onPressed: () async {
                   SharedPreferences prefs =
                       await SharedPreferences.getInstance();
@@ -107,7 +107,7 @@ class _ConversationListPageState extends State<ConversationListPage>
     };
 
     RongIMClient.onDatabaseOpened = (int status) {
-            updateConversationList();
+      updateConversationList();
     };
   }
 

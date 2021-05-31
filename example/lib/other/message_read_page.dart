@@ -17,8 +17,8 @@ class _MessageReadPageState extends State<MessageReadPage> {
   final prefix.Message message;
   _MessageReadPageState(this.message);
 
-  List<Widget> widgetList = new List();
-  List<example.UserInfo> userList = new List();
+  List<Widget> widgetList = [];
+  List<example.UserInfo> userList = [];
   @override
   void initState() {
     super.initState();
@@ -79,8 +79,7 @@ class _MessageReadPageState extends State<MessageReadPage> {
       appBar: AppBar(
         title: Text("已读成员列表"),
       ),
-      body:
-      ListView.builder(
+      body: ListView.builder(
         scrollDirection: Axis.vertical,
         itemCount: this.widgetList.length,
         itemBuilder: (BuildContext context, int index) {

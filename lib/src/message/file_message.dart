@@ -4,13 +4,13 @@ import 'dart:developer' as developer;
 
 class FileMessage extends MessageContent {
   static const String objectName = "RC:FileMsg";
-  int mSize;
-  String mType; //后缀名，默认是 bin
-  int progress;
-  String localPath;
-  String mMediaUrl;
-  String extra = "";
-  String mName = "";
+  int? mSize;
+  String? mType; //后缀名，默认是 bin
+  int? progress;
+  String? localPath;
+  String? mMediaUrl;
+  String? extra = "";
+  String? mName = "";
 
   /// [localPath] 本地路径，Android 必须以 file:// 开头
   static FileMessage obtain(String localPath) {
@@ -20,7 +20,7 @@ class FileMessage extends MessageContent {
   }
 
   @override
-  void decode(String jsonStr) {
+  void decode(String? jsonStr) {
     if (jsonStr == null || jsonStr == "") {
       developer.log("Flutter FileMessage deocde error: no content",
           name: "RongIMClient.FileMessage");
@@ -33,9 +33,9 @@ class FileMessage extends MessageContent {
     this.localPath = map["localPath"];
     this.extra = map["extra"];
     this.mMediaUrl = map["fileUrl"];
-    Map userMap = map["user"];
+    Map? userMap = map["user"];
     super.decodeUserInfo(userMap);
-    Map menthionedMap = map["mentionedInfo"];
+    Map? menthionedMap = map["mentionedInfo"];
     super.decodeMentionedInfo(menthionedMap);
     // this.destructDuration = map["burnDuration"];
   }
@@ -66,7 +66,7 @@ class FileMessage extends MessageContent {
     } else {
       map["localPath"] = "";
     }
-    if (mMediaUrl != null && mMediaUrl.length > 0) {
+    if (mMediaUrl != null && mMediaUrl!.length > 0) {
       map['fileUrl'] = mMediaUrl;
     }
     if (this.sendUserInfo != null) {

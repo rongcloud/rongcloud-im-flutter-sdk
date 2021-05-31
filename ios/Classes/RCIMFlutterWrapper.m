@@ -59,6 +59,7 @@
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 @property (nonatomic, strong) RCFlutterConfig *config;
 @property (nonatomic, strong) NSString *sdkVersion;
+@property (nonatomic, strong) NSMutableArray *registerMessages;
 @end
 
 @implementation RCIMFlutterWrapper
@@ -74,6 +75,7 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
+        _registerMessages = [[NSMutableArray alloc] init];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveMessageHasReadNotification:) name:RCLibDispatchReadReceiptNotification object:nil];
     }
     return self;
@@ -110,6 +112,8 @@
         [self getHistoryMessages:call.arguments result:result];
     }else if ([RCMethodKeyGetMessage isEqualToString:call.method]) {
         [self getMessage:call.arguments result:result];
+    }else if ([RCMethodKeyGetMessages isEqualToString:call.method]) {
+        [self getMessages:call.arguments result:result];
     }else if([RCMethodKeyGetConversationList isEqualToString:call.method]) {
         [self getConversationList:call.arguments result:result];
     }else if([RCMethodKeyGetConversationListByPage isEqualToString:call.method]) {
@@ -304,6 +308,14 @@
     }
 }
 
+- (void)registerMessageType:(Class)messageClass {
+    if (!messageClass) {
+        return;
+    }else {
+        [self.registerMessages addObject:messageClass];
+    }
+}
+
 - (void)config:(id)arg {
     NSString *LOG_TAG =  @"config";
     [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
@@ -332,6 +344,12 @@
 - (void)connectWithToken:(id)arg result:(FlutterResult)result {
     NSString *LOG_TAG =  @"connect";
 //    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]]
+    if (self.registerMessages && self.registerMessages.count > 0) {
+        for (Class message in self.registerMessages) {
+            [[RCIMClient sharedRCIMClient] registerMessageType:message];
+        }
+        [self.registerMessages removeAllObjects];
+    }
     if([arg isKindOfClass:[NSString class]]) {
         NSString *token = (NSString *)arg;
         [[RCIMClient sharedRCIMClient] connectWithToken:token dbOpened:^(RCDBErrorCode code) {
@@ -921,6 +939,9 @@
         NSArray *userIdList = param[@"userIdList"];
         NSString *contentStr = param[@"content"];
         NSString *pushContent = param[@"pushContent"];
+        bool   isVoIPPush = param[@"option"];
+        RCSendMessageOption *option = [[RCSendMessageOption alloc] init];
+        option.isVoIPPush = isVoIPPush;
         long long timestamp = [param[@"timestamp"] longLongValue];
         if(pushContent.length <= 0) {
             pushContent = nil;
@@ -945,7 +966,7 @@
         }
         
         __weak typeof(self) ws = self;
-        RCMessage *message = [[RCIMClient sharedRCIMClient] sendDirectionalMessage:type targetId:targetId toUserIdList:userIdList content:content pushContent:pushContent pushData:pushData success:^(long messageId) {
+        RCMessage *message = [[RCChannelClient sharedChannelManager] sendDirectionalMessage:type targetId:targetId channelId:nil toUserIdList:userIdList content:content pushContent:pushContent pushData:pushData option:option  success:^(long messageId) {
             [RCLog i:[NSString stringWithFormat:@"%@, success, messageId %@",LOG_TAG ,@(messageId)]];
             NSMutableDictionary *dic = [NSMutableDictionary new];
             [dic setObject:@(messageId) forKey:@"messageId"];
@@ -1102,6 +1123,47 @@
         RCMessage *message = [[RCIMClient sharedRCIMClient] getMessage:messageId];
         NSString *jsonString = [RCFlutterMessageFactory message2String:message];
         result(jsonString);
+    }
+}
+
+- (void)getMessages:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG =  @"getMessages";
+    [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *dic = (NSDictionary *)arg;
+        RCConversationType type = [dic[@"conversationType"] integerValue];
+        NSString *targetId = dic[@"targetId"];
+        long recordTime = [dic[@"recordTime"] longValue];
+        int count = [dic[@"count"] intValue];
+        int order = [dic[@"order"] intValue];
+        RCHistoryMessageOption *option = [[RCHistoryMessageOption alloc] init];
+        option.count = count;
+        option.recordTime = recordTime;
+        option.order = order;
+        [[RCCoreClient sharedCoreClient] getMessages:type targetId:targetId option:option complete:^(NSArray *messages, RCErrorCode code) {
+            NSMutableDictionary *callbackDic = [NSMutableDictionary new];
+            if (code == 0) {
+                [RCLog i:[NSString stringWithFormat:@"%@, success",LOG_TAG]];
+                if (messages &&messages.count > 0) {
+                    NSMutableArray *msgsArray = [NSMutableArray new];
+                    for(RCMessage *message in messages) {
+                        NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+                        [msgsArray addObject:jsonString];
+                    }
+                    [callbackDic setObject:msgsArray forKey:@"messages"];
+                }else {
+                    
+                }
+                [callbackDic setObject:@(0) forKey:@"code"];
+                [callbackDic setObject:@[] forKey:@"messages"];
+                result(callbackDic);
+            }else {
+                [callbackDic setObject:@(code) forKey:@"code"];
+                [callbackDic setObject:@[] forKey:@"messages"];
+
+            }
+
+        }];
     }
 }
 

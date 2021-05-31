@@ -69,7 +69,7 @@ class RCLayout {
 
   //加号扩展栏
   static const double ExtIconLayoutSize = 50;
-  static const double ExtentionLayoutWidth = 180;
+  static const double ExtentionLayoutWidth = 200;
   static const double CommonPhrasesHeight = 36;
 
   //底部输入框

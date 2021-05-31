@@ -27,13 +27,13 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
   String pageName = "example.SelectConversationPage";
   List<Message> selectMessages;
   int forwardType; // 0:逐条转发，1:合并转发
-  List conList = new List();
+  List conList = [];
   List<int> displayConversationType = [
     RCConversationType.Private,
     RCConversationType.Group
   ];
   ScrollController _scrollController;
-  List selectConList = new List();
+  List selectConList = [];
 
   @override
   void initState() {
@@ -111,13 +111,13 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
   void sendMessageByCombine() async {
     CombineMessage combineMessage =
         await CombineMessageUtils().combineMessage(selectMessages);
-    List<Message> messageList = List<Message>();
+    List<Message> messageList = [];
     Message message = Message();
     message.content = combineMessage;
     messageList.add(message);
     // 这里不使用 loading，因为发消息时 sleep 会卡住动画
     DialogUtil.showAlertDiaLog(context, "消息转发中，请稍后...",
-        confirmButton: FlatButton(onPressed: () {}, child: Text("")));
+        confirmButton: TextButton(onPressed: () {}, child: Text("确认")));
     sendMessage(messageList, isCombineMsg: true);
   }
 
@@ -130,7 +130,7 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
         name: pageName);
     // 这里不使用 loading，因为发消息时 sleep 会卡住动画
     DialogUtil.showAlertDiaLog(context, "消息转发中，请稍后...",
-        confirmButton: FlatButton(onPressed: () {}, child: Text("")));
+        confirmButton: TextButton(onPressed: () {}, child: Text("确认")));
     sendMessage(selectMessages);
   }
 

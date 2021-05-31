@@ -7,6 +7,7 @@ import 'dart:developer' as developer;
 import 'package:rongcloud_im_plugin/src/info/tag_info.dart';
 import 'dart:core';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:rongcloud_im_plugin/src/info/history_message_option.dart';
 
 class ChatDebugPage extends StatefulWidget {
   final Map arguments;
@@ -48,7 +49,8 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
       "分页获取本地指定标签下会话列表",
       "按标签获取未读消息数",
       "设置标签中会话置顶状态",
-      "获取指定会话下的标签置顶状态"
+      "获取指定会话下的标签置顶状态",
+      "消息断档新接口"
     ];
     if (conversationType == RCConversationType.Private) {
       List onlyPrivateTitles = [
@@ -126,6 +128,9 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
         break;
       case "发送定向消息":
         _onSendDirectionalMessage();
+        break;
+      case "消息断档新接口":
+        _getMessages();
         break;
       case "获取指定会话下的所有标签":
         _getTagsFromConversation();
@@ -278,6 +283,25 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     });
   }
 
+  void _getMessages() async {
+    List msgs =
+        await RongIMClient.getHistoryMessage(conversationType, targetId, 0, 20);
+    if (msgs.length <= 0) {
+      return;
+    }
+    Message message = msgs[msgs.length - 1];
+    int timestamps = message.sentTime;
+    HistoryMessageOption option = HistoryMessageOption(20, timestamps, 0);
+    RongIMClient.getMessages(conversationType, targetId, option,
+        (msgList, code) {
+      String toast = code == 0
+          ? "断档消息获取成功:" + msgList.length.toString()
+          : "断档消息获取失败， $code";
+      developer.log(toast, name: pageName);
+      DialogUtil.showAlertDiaLog(context, toast);
+    });
+  }
+
   void _imageCompressConfig() {
     RongIMClient.imageCompressConfig(120, 50, 0.3);
   }
@@ -330,7 +354,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   }
 
   void _addConversationsToTag() async {
-    List identifiers = List();
+    List identifiers = [];
     ConversationIdentifier identifier = ConversationIdentifier();
     identifier.conversationType = conversationType;
     identifier.targetId = targetId;
@@ -344,7 +368,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   }
 
   void _removeConversationsFromTag() async {
-    List identifiers = List();
+    List identifiers = [];
     ConversationIdentifier identifier = ConversationIdentifier();
     identifier.conversationType = conversationType;
     identifier.targetId = targetId;

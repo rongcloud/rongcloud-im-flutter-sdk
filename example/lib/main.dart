@@ -35,11 +35,33 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void initState() {
     super.initState();
 
+    prefix.PushConfig pushConfig = prefix.PushConfig();
+    // pushConfig.enableHWPush = true;
+    // pushConfig.enableVivoPush = true;
+
+    // 小米推送，请填入自己申请的 appkey 和 id
+    // pushConfig.miAppKey = "1111147338625";
+    // pushConfig.miAppId = "2222203761517473625";
+
+    // oppo 推送，请填入自己申请的 appkey 和 secret
+    // pushConfig.oppoAppKey = "11111146d261446dbd3c94bb04d322de";
+    // pushConfig.oppoAppSecret = "2222223d5ce1414ea4b6d75c880a3031";
+    
+    //魅族推送 请填入自己申请的 appkey 和 id
+    // pushConfig.mzAppKey = "11111802ac4bd5843d694517307896";
+    // pushConfig.mzAppId = "222288";
+    // pushConfig.enableFCM = true;
+
+    prefix.RongIMClient.setAndroidPushConfig(pushConfig);
+
     //1.初始化 im SDK
     prefix.RongIMClient.init(RongAppKey);
     //注册自定义消息
-    prefix.RongIMClient.addMessageDecoder(TestMessage.objectName, (content) => null);
-
+    prefix.RongIMClient.addMessageDecoder(TestMessage.objectName, (content) {
+      TestMessage msg = new TestMessage();
+      msg.decode(content);
+      return msg;
+    });
     // _initUserInfoCache();
 
     WidgetsBinding.instance.addObserver(this);
@@ -54,18 +76,22 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       String hasP = hasPackage ? "true" : "false";
       String off = offline ? "true" : "false";
       if (msg.content != null) {
-        developer.log("object onMessageReceivedWrapper objName:" +
-            msg.content.getObjectName() +
-            " msgContent:" +
-            msg.content.encode() +
-            " left:" +
-            left.toString() +
-            " hasPackage:" +
-            hasP +
-            " offline:" +
-            off, name: pageName);
+        developer.log(
+            "object onMessageReceivedWrapper objName:" +
+                msg.content.getObjectName() +
+                " msgContent:" +
+                msg.content.encode() +
+                " left:" +
+                left.toString() +
+                " hasPackage:" +
+                hasP +
+                " offline:" +
+                off,
+            name: pageName);
       } else {
-        developer.log("object onMessageReceivedWrapper objName: ${msg.objectName} content is null left:${left.toString()} hasPackage:$hasP offline:$off", name: pageName);
+        developer.log(
+            "object onMessageReceivedWrapper objName: ${msg.objectName} content is null left:${left.toString()} hasPackage:$hasP offline:$off",
+            name: pageName);
       }
       if (currentState == AppLifecycleState.paused &&
           !checkNoficationQuietStatus()) {
@@ -90,17 +116,20 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
     prefix.RongIMClient.onMessageReceiptRequest = (Map map) {
       EventBus.instance.commit(EventKeys.ReceiveReceiptRequest, map);
-      developer.log("object onMessageReceiptRequest " + map.toString(), name: pageName);
+      developer.log("object onMessageReceiptRequest " + map.toString(),
+          name: pageName);
     };
 
     prefix.RongIMClient.onMessageReceiptResponse = (Map map) {
       EventBus.instance.commit(EventKeys.ReceiveReceiptResponse, map);
-      developer.log("object onMessageReceiptResponse " + map.toString(), name: pageName);
+      developer.log("object onMessageReceiptResponse " + map.toString(),
+          name: pageName);
     };
 
     prefix.RongIMClient.onReceiveReadReceipt = (Map map) {
       EventBus.instance.commit(EventKeys.ReceiveReadReceipt, map);
-      developer.log("object onReceiveReadReceipt " + map.toString(), name: pageName);
+      developer.log("object onReceiveReadReceipt " + map.toString(),
+          name: pageName);
     };
   }
 

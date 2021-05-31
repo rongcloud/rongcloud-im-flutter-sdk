@@ -4,11 +4,11 @@ import 'dart:developer' as developer;
 
 class LocationMessage extends MessageContent {
   static const String objectName = "RC:LBSMsg";
-  double mLat;
-  double mLng;
-  String mPoi;
-  String mBase64;
-  String mImgUri;
+  double? mLat;
+  double? mLng;
+  String? mPoi;
+  String? mBase64;
+  String? mImgUri;
 
   static LocationMessage obtain(
       double lat, double lng, String poi, String imgUri) {
@@ -21,7 +21,7 @@ class LocationMessage extends MessageContent {
   }
 
   @override
-  void decode(String jsonStr) {
+  void decode(String? jsonStr) {
     if (jsonStr == null || jsonStr.isEmpty) {
       developer.log("Flutter LocationMessage deocde error: no content",
           name: "RongIMClient.LocationMessage");
@@ -33,7 +33,7 @@ class LocationMessage extends MessageContent {
     this.mPoi = map["poi"];
     this.mBase64 = map["content"];
     this.mImgUri = map["content"];
-    Map userMap = map["user"];
+    Map? userMap = map["user"];
     super.decodeUserInfo(userMap);
   }
 

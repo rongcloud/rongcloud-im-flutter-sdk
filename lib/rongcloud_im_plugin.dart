@@ -28,6 +28,8 @@ export 'src/info/typing_status.dart';
 export 'src/info/conversation_tag_info.dart';
 export 'src/info/tag_info.dart';
 export 'src/info/conversation_identifier.dart';
+export 'src/info/send_message_option.dart';
+export 'src/info/push_config.dart';
 
 //宏定义
 export 'src/common_define.dart';

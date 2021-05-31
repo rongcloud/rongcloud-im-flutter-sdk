@@ -11,3 +11,4 @@ gradlew.bat
 gradle-wrapper.jar
 gradle-wrapper.properties
 .flutter-plugins-dependencies
+.DS_Store

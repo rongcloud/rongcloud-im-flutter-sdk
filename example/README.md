@@ -3,6 +3,9 @@
 ![](https://raw.githubusercontent.com/rongcloud/imkit-flutter-quickstart/master/screenshot1.png)
 ![](https://raw.githubusercontent.com/rongcloud/imkit-flutter-quickstart/master/screenshot2.png)
 
+##登陆账号
+需要您在 [这里注册登陆账号] (https://sealtalk.rongcloud.cn/#/account/signup)，然后用此账号登陆本 Demo。
+
 ## iOS 初次运行
 
 初次安装需要从 pod 下载 IMLib 的 iOS SDK，要花费较长的时间，建议手动更新一下

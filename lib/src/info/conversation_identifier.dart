@@ -1,4 +1,4 @@
 class ConversationIdentifier {
-  int conversationType;
-  String targetId;
+  int? conversationType;
+  String? targetId;
 }

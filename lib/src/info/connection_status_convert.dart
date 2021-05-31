@@ -8,7 +8,7 @@ import '../common_define.dart';
 ///
 ///具体可以参见对应平台的枚举： iOS 的 [RCConnectionStatus] 和 Android 的 [ConnectionStatus]
 class ConnectionStatusConvert {
-  static int convert(int originCode) {
+  static int? convert(int? originCode) {
     if (TargetPlatform.android == defaultTargetPlatform) {
       return _convertAndroid(originCode);
     } else if (TargetPlatform.iOS == defaultTargetPlatform) {
@@ -17,7 +17,7 @@ class ConnectionStatusConvert {
     return originCode;
   }
 
-  static int _convertIOS(int originCode) {
+  static int? _convertIOS(int? originCode) {
     if (originCode == 0) {
       return RCConnectionStatus.Connected;
     } else if (originCode == 10) {
@@ -40,7 +40,7 @@ class ConnectionStatusConvert {
     return originCode;
   }
 
-  static int _convertAndroid(int originCode) {
+  static int? _convertAndroid(int? originCode) {
     if (originCode == 0) {
       return RCConnectionStatus.Connected;
     } else if (originCode == 1) {

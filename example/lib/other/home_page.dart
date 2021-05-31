@@ -22,14 +22,14 @@ class _HomePageState extends State<HomePage> {
   final List<BottomNavigationBarItem> tabbarList = [
     new BottomNavigationBarItem(
       icon: new Icon(Icons.chat, color: Colors.grey),
-      title: new Text("会话"),
+      label: "会话",
     ),
     new BottomNavigationBarItem(
       icon: new Icon(
         Icons.perm_contact_calendar,
         color: Colors.grey,
       ),
-      title: new Text("通讯录"),
+      label: "通讯录",
     ),
   ];
   final List<StatefulWidget> vcList = [

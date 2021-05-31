@@ -7,14 +7,14 @@ import 'dart:developer' as developer;
 class ChatroomKVNotificationMessage extends MessageContent {
   static const String objectName = "RC:chrmKVNotiMsg";
 
-  int type; //聊天室操作的类型
-  String key; //聊天室属性名称
-  String value; //聊天室属性对应的值
-  String extra; //通知消息的自定义字段，最大长度 2 kb
+  int? type; //聊天室操作的类型
+  String? key; //聊天室属性名称
+  String? value; //聊天室属性对应的值
+  String? extra; //通知消息的自定义字段，最大长度 2 kb
 
   @override
-  void decode(String jsonStr) {
-    if (jsonStr == null && jsonStr.isEmpty) {
+  void decode(String? jsonStr) {
+    if (jsonStr == null && jsonStr!.isEmpty) {
       developer.log(
           "Flutter ChatroomKVNotificationMessage deocde error: no content",
           name: "RongIMClient.ChatroomKVNotificationMessage");
@@ -25,9 +25,9 @@ class ChatroomKVNotificationMessage extends MessageContent {
     this.key = map["key"];
     this.value = map["value"];
     this.extra = map["extra"];
-    Map userMap = map["user"];
+    Map? userMap = map["user"];
     super.decodeUserInfo(userMap);
-    Map menthionedMap = map["mentionedInfo"];
+    Map? menthionedMap = map["mentionedInfo"];
     super.decodeMentionedInfo(menthionedMap);
   }
 

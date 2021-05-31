@@ -1,5 +1,5 @@
-current_version = ENV['CURRENT_VERSION'] ? ENV['CURRENT_VERSION'] : '5.1.0'
-im_sdk_version = ENV['IM_SDK_VERSION'] ? ENV['IM_SDK_VERSION'] : '5.1.1.1'
+current_version = ENV['CURRENT_VERSION'] ? ENV['CURRENT_VERSION'] : '5.1.2'
+im_sdk_version = ENV['IM_SDK_VERSION'] ? ENV['IM_SDK_VERSION'] : '5.1.2'
 
 Pod::Spec.new do |s|
   s.name             = 'rongcloud_im_plugin'

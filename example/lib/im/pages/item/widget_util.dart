@@ -114,7 +114,7 @@ class WidgetUtil {
     final RenderBox overlay = Overlay.of(context).context.findRenderObject();
     final RelativeRect position = RelativeRect.fromLTRB(tapPos.dx, tapPos.dy,
         overlay.size.width - tapPos.dx, overlay.size.height - tapPos.dy);
-    List<PopupMenuEntry<String>> items = new List();
+    List<PopupMenuEntry<String>> items = [];
     map.keys.forEach((String key) {
       PopupMenuItem<String> p = PopupMenuItem(
         child: Container(
@@ -143,7 +143,7 @@ class WidgetUtil {
   /// onTaped 点击事件，0~n 代表点击了对应下标，-1 代表点击了白透明空白区域，暂无用
   static Widget buildLongPressDialog(
       List<String> titles, Function(int index) onTaped) {
-    List<Widget> wList = new List();
+    List<Widget> wList = [];
     for (int i = 0; i < titles.length; i++) {
       Widget w = Container(
         alignment: Alignment.center,
