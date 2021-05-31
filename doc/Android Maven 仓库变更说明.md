@@ -19,5 +19,5 @@ http://maven.rongcloud.cn/repository/maven-releases
 
 `5.* 版本`
 
-建议升级到 5.* 最新版本
+建议升级到 `5.1.1` 及其以后的版本
 
