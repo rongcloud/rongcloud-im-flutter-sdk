@@ -2842,7 +2842,6 @@ class RongIMClient {
           }
           break;
       }
-      return;
     } as Future<dynamic> Function(MethodCall)?);
   }
 }

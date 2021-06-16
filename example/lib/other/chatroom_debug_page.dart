@@ -30,6 +30,7 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
       "退出聊天室 1",
       "获取聊天室历史消息",
       "加入已存在的聊天室 1",
+      "聊天室发送消息",
     ];
 
     RongIMClient.onJoinChatRoom = (String targetId, int status) {
@@ -44,13 +45,14 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
           timeInSecForIos: 2);
     };
 
-     RongIMClient.onChatRoomReset = (String targetId) {
-      Fluttertoast.showToast(msg: "聊天室被重制 $targetId ",timeInSecForIos: 2);
+    RongIMClient.onChatRoomReset = (String targetId) {
+      Fluttertoast.showToast(msg: "聊天室被重制 $targetId ", timeInSecForIos: 2);
     };
 
-     RongIMClient.onChatRoomDestroyed = (String targetId, int type) {
-     Fluttertoast.showToast(
-          msg: "聊天室被销毁 $targetId " + (type == 0 ? "开发者主动销毁" : "聊天室长时间不活跃，被系统自动回收"),
+    RongIMClient.onChatRoomDestroyed = (String targetId, int type) {
+      Fluttertoast.showToast(
+          msg: "聊天室被销毁 $targetId " +
+              (type == 0 ? "开发者主动销毁" : "聊天室长时间不活跃，被系统自动回收"),
           timeInSecForIos: 2);
     };
 
@@ -65,6 +67,7 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
     RongIMClient.chatRoomKVDidRemove = (String roomId, Map entry) {
       DialogUtil.showAlertDiaLog(context, "chatRoomKVDidRemove $roomId $entry");
     };
+   
   }
 
   void _didTap(int index) {
@@ -99,6 +102,9 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
         break;
       case 9:
         _joinExistChatRoom();
+        break;
+      case 10:
+        _sendChatMessage();
         break;
     }
   }
@@ -163,6 +169,13 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
 
   void _quitChatRoom() {
     RongIMClient.quitChatRoom(targetId);
+  }
+
+  void _sendChatMessage() async {
+    TextMessage msg = new TextMessage();
+    msg.content = "测试文本消息携带用户信息";
+    Message message =
+        await RongIMClient.sendMessage(RCConversationType.ChatRoom, targetId, msg);
   }
 
   void _getChatRoomHistoryMessage() {
