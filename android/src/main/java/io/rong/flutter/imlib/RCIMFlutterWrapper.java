@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import io.rong.imlib.IRongCoreCallback;
 import io.rong.imlib.IRongCoreEnum;
 import io.rong.imlib.IRongCoreListener;
 import io.rong.imlib.MessageTag;
+import io.rong.imlib.NativeClient;
 import io.rong.imlib.RongCoreClient;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.chatroom.base.RongChatRoomClient;
@@ -806,9 +808,10 @@ public class RCIMFlutterWrapper {
                     // do nothing
                 }
             } else {
-                content = newMessageContent(objectName, bytes, contentStr);
                 if (objectName.equalsIgnoreCase("RC:ReferenceMsg")) {
-                    makeReferenceMessage(content, contentStr);
+                    content = makeReferenceMessage(contentStr);
+                } else {
+                    content = newMessageContent(objectName, bytes, contentStr);
                 }
             }
             // 处理引用消息内容丢失的问题
@@ -876,9 +879,6 @@ public class RCIMFlutterWrapper {
     }
 
     private void makeReferenceMessage(MessageContent content, String contentStr) {
-        if (content == null || TextUtils.isEmpty(contentStr)) {
-            return;
-        }
         JSONObject jsonObject = null;
         String objName;
         try {
@@ -898,6 +898,109 @@ public class RCIMFlutterWrapper {
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    private MessageContent makeReferenceMessage(String contentStr) {
+        if (TextUtils.isEmpty(contentStr)) {
+            return null;
+        }
+        try {
+            JSONObject jsonObj = new JSONObject(contentStr);
+            String userId = "";
+            if (jsonObj.has("referMsgUserId")) {
+                userId = jsonObj.getString("referMsgUserId");
+            }
+
+            String editSendText = "";
+            if (jsonObj.has("content")) {
+                editSendText = jsonObj.getString("content");
+            }
+            String objName = "";
+            if (jsonObj.has("objName")) {
+                objName = jsonObj.getString("objName");
+            }
+
+            MessageContent messageContent = null;
+            if (jsonObj.has("referMsg") && !TextUtils.isEmpty(objName)) {
+                JSONObject jsonObject = (JSONObject) jsonObj.get("referMsg");
+                byte[] bytes = jsonObject.toString().getBytes("UTF-8");
+                messageContent = newMessageContent(objName, bytes, jsonObject.toString());
+//                this.setContent(NativeClient.getInstance().newMessageContent(this.getObjName(), bytes));
+            }
+
+            ReferenceMessage referenceMessage = ReferenceMessage.obtainMessage(userId, messageContent);
+            referenceMessage.setEditSendText(editSendText);
+
+            String extra = "";
+            if (jsonObj.has("extra")) {
+                extra = jsonObj.getString("extra");
+            }
+            referenceMessage.setExtra(extra);
+
+            if (jsonObj.has("user")) {
+                referenceMessage.setUserInfo(parseJsonToUserInfo(jsonObj.getJSONObject("user")));
+            }
+
+            if (jsonObj.has("mentionedInfo")) {
+                referenceMessage.setMentionedInfo(parseJsonToMentionInfo(jsonObj.getJSONObject("mentionedInfo")));
+            }
+            return referenceMessage;
+        } catch (JSONException var6) {
+            RLog.e("ReferenceMessage", "JSONException " + var6.getMessage());
+        } catch (UnsupportedEncodingException var7) {
+            RLog.e("ReferenceMessage", "ReferenceMessage UnsupportedEncodingException", var7);
+        }
+        return null;
+    }
+
+    public UserInfo parseJsonToUserInfo(JSONObject jsonObj) {
+        UserInfo info = null;
+        String id = jsonObj.optString("id");
+        String name = jsonObj.optString("name");
+        String icon = jsonObj.optString("portrait");
+        String extra = jsonObj.optString("extra");
+        if (TextUtils.isEmpty(icon)) {
+            icon = jsonObj.optString("icon");
+        }
+
+        if (!TextUtils.isEmpty(id) && !TextUtils.isEmpty(name)) {
+            Uri portrait = icon != null ? Uri.parse(icon) : null;
+            info = new UserInfo(id, name, portrait);
+            info.setExtra(extra);
+        }
+
+        return info;
+    }
+
+    protected MentionedInfo parseJsonToMentionInfo(JSONObject jsonObject) {
+        MentionedInfo.MentionedType type = MentionedInfo.MentionedType.valueOf(jsonObject.optInt("type"));
+        JSONArray userList = jsonObject.optJSONArray("userIdList");
+        String mentionContent = jsonObject.optString("mentionedContent");
+        if (type.equals(MentionedInfo.MentionedType.NONE)) {
+            return null;
+        } else {
+            MentionedInfo mentionedInfo;
+            if (type.equals(MentionedInfo.MentionedType.ALL)) {
+                mentionedInfo = new MentionedInfo(type, (List) null, mentionContent);
+            } else {
+                List<String> list = new ArrayList();
+                if (userList == null || userList.length() <= 0) {
+                    return null;
+                }
+
+                try {
+                    for (int i = 0; i < userList.length(); ++i) {
+                        list.add((String) userList.get(i));
+                    }
+                } catch (JSONException var8) {
+                    var8.printStackTrace();
+                }
+
+                mentionedInfo = new MentionedInfo(type, list, mentionContent);
+            }
+
+            return mentionedInfo;
         }
     }
 
@@ -1020,7 +1123,7 @@ public class RCIMFlutterWrapper {
                 try {
                     JSONObject jsonObject = new JSONObject(contentStr);
                     String localPath = (String) jsonObject.get("localPath");
-                    if (!TextUtils.isEmpty(localPath)){
+                    if (!TextUtils.isEmpty(localPath)) {
                         localPath = getCorrectLocalPath(localPath);
                     }
                     Uri uri = Uri.parse(localPath);
@@ -1048,7 +1151,7 @@ public class RCIMFlutterWrapper {
                             ((FileMessage) content).setSize(size.intValue());
                         }
                     }
-                    if (jsonObject.has("name")){
+                    if (jsonObject.has("name")) {
                         String name = jsonObject.optString("name");
                         if (!TextUtils.isEmpty(name)) {
                             ((FileMessage) content).setName(name);
