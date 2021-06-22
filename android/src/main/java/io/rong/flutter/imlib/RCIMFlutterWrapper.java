@@ -1020,7 +1020,9 @@ public class RCIMFlutterWrapper {
                 try {
                     JSONObject jsonObject = new JSONObject(contentStr);
                     String localPath = (String) jsonObject.get("localPath");
-                    localPath = getCorrectLocalPath(localPath);
+                    if (!TextUtils.isEmpty(localPath)){
+                        localPath = getCorrectLocalPath(localPath);
+                    }
                     Uri uri = Uri.parse(localPath);
                     content = FileMessage.obtain(uri);
                     if (jsonObject.has("type")) {
@@ -1044,6 +1046,12 @@ public class RCIMFlutterWrapper {
                         Number size = (Number) jsonObject.get("size");
                         if (size != null && size.intValue() > 0) {
                             ((FileMessage) content).setSize(size.intValue());
+                        }
+                    }
+                    if (jsonObject.has("name")){
+                        String name = jsonObject.optString("name");
+                        if (!TextUtils.isEmpty(name)) {
+                            ((FileMessage) content).setName(name);
                         }
                     }
                 } catch (JSONException e) {
