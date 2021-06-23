@@ -2595,254 +2595,255 @@ class RongIMClient {
   static Function(int? status)? onDatabaseOpened;
 
   static void _addNativeMethodCallHandler() {
-    _channel.setMethodCallHandler((MethodCall call) {
-      switch (call.method) {
-        case RCMethodCallBackKey.SendMessage:
-          {
-            Map argMap = call.arguments;
-            int? msgId = argMap["messageId"];
-            int? status = argMap["status"];
-            int? code = argMap["code"];
-            int? timestamp = argMap["timestamp"];
-            if (timestamp != null && timestamp > 0) {
-              Function(int? messageId, int? status, int? code)? finished =
-                  sendMessageCallbacks[timestamp];
-              if (finished != null) {
-                finished(msgId, status, code);
-                sendMessageCallbacks.remove(timestamp);
-              } else {
-                if (onMessageSend != null) {
-                  onMessageSend!(msgId, status, code);
-                }
-              }
+    _channel.setMethodCallHandler(_methodCallHandler);
+  }
+
+  static Future<dynamic> _methodCallHandler(MethodCall call) async {
+    switch (call.method) {
+      case RCMethodCallBackKey.SendMessage:
+        {
+          Map argMap = call.arguments;
+          int? msgId = argMap["messageId"];
+          int? status = argMap["status"];
+          int? code = argMap["code"];
+          int? timestamp = argMap["timestamp"];
+          if (timestamp != null && timestamp > 0) {
+            Function(int? messageId, int? status, int? code)? finished =
+                sendMessageCallbacks[timestamp];
+            if (finished != null) {
+              finished(msgId, status, code);
+              sendMessageCallbacks.remove(timestamp);
             } else {
               if (onMessageSend != null) {
                 onMessageSend!(msgId, status, code);
               }
             }
-          }
-          break;
-
-        case RCMethodCallBackKey.ReceiveMessage:
-          {
-            int count = 0;
-            if (onMessageReceived != null) {
-              count++;
-              Map map = call.arguments;
-              int? left = map["left"];
-              String? messageString = map["message"];
-              Message? msg =
-                  MessageFactory.instance!.string2Message(messageString);
-              onMessageReceived!(msg, left);
-            }
-            if (onMessageReceivedWrapper != null) {
-              count++;
-              Map map = call.arguments;
-              int? left = map["left"];
-              String? messageString = map["message"];
-              bool? hasPackage = map["hasPackage"];
-              bool? offline = map["offline"];
-              Message? msg =
-                  MessageFactory.instance!.string2Message(messageString);
-              onMessageReceivedWrapper!(msg, left, hasPackage, offline);
-            }
-            if (count == 2) {
-              developer.log(
-                  "警告：同时实现了 onMessageReceived 和 onMessageReceivedWrapper 两个接收消息的回调，可能会出现重复接收消息或者重复刷新的问题，建议只实现其中一个！！！",
-                  name: "RongIMClient");
+          } else {
+            if (onMessageSend != null) {
+              onMessageSend!(msgId, status, code);
             }
           }
-          break;
+        }
+        break;
 
-        case RCMethodCallBackKey.JoinChatRoom:
-          if (onJoinChatRoom != null) {
+      case RCMethodCallBackKey.ReceiveMessage:
+        {
+          int count = 0;
+          if (onMessageReceived != null) {
+            count++;
             Map map = call.arguments;
-            String? targetId = map["targetId"];
-            int? status = map["status"];
-            onJoinChatRoom!(targetId, status);
-          }
-          break;
-
-        case RCMethodCallBackKey.QuitChatRoom:
-          if (onQuitChatRoom != null) {
-            Map map = call.arguments;
-            String? targetId = map["targetId"];
-            int? status = map["status"];
-            onQuitChatRoom!(targetId, status);
-          }
-          break;
-
-        case RCMethodCallBackKey.OnChatRoomReset:
-          if (onChatRoomReset != null) {
-            Map map = call.arguments;
-            String? targetId = map["targetId"];
-            onChatRoomReset!(targetId);
-          }
-          break;
-
-        case RCMethodCallBackKey.OnChatRoomDestroyed:
-          if (onChatRoomDestroyed != null) {
-            Map map = call.arguments;
-            String? targetId = map["targetId"];
-            int? type = map["type"];
-            onChatRoomDestroyed!(targetId, type);
-          }
-          break;
-
-        case RCMethodCallBackKey.ChatRoomKVDidSync:
-          if (chatRoomKVDidSync != null) {
-            Map map = call.arguments;
-            String? roomId = map["roomId"];
-            chatRoomKVDidSync!(roomId);
-          }
-          break;
-
-        case RCMethodCallBackKey.ChatRoomKVDidUpdate:
-          if (chatRoomKVDidUpdate != null) {
-            Map map = call.arguments;
-            String? roomId = map["roomId"];
-            Map? entry = map["entry"];
-            chatRoomKVDidUpdate!(roomId, entry);
-          }
-          break;
-
-        case RCMethodCallBackKey.ChatRoomKVDidRemove:
-          if (chatRoomKVDidRemove != null) {
-            Map map = call.arguments;
-            String? roomId = map["roomId"];
-            Map? entry = map["entry"];
-            chatRoomKVDidRemove!(roomId, entry);
-          }
-          break;
-
-        case RCMethodCallBackKey.UploadMediaProgress:
-          if (onUploadMediaProgress != null) {
-            Map map = call.arguments;
-            int? messageId = map["messageId"];
-            int? progress = map["progress"];
-            onUploadMediaProgress!(messageId, progress);
-          }
-          break;
-
-        case RCMethodCallBackKey.ConnectionStatusChange:
-          if (onConnectionStatusChange != null) {
-            Map map = call.arguments;
-            int? code = map["status"];
-            int? status = ConnectionStatusConvert.convert(code);
-            onConnectionStatusChange!(status);
-          }
-          break;
-
-        case RCMethodCallBackKey.SendDataToFlutter:
-          if (onDataReceived != null) {
-            Map? map = call.arguments;
-            onDataReceived!(map);
-          }
-          break;
-        case RCMethodCallBackKey.ReceiveReadReceipt:
-          if (onReceiveReadReceipt != null) {
-            Map? map = call.arguments;
-            onReceiveReadReceipt!(map);
-          }
-          break;
-
-        case RCMethodCallBackKey.ReceiptRequest:
-          if (onMessageReceiptRequest != null) {
-            Map? map = call.arguments;
-            onMessageReceiptRequest!(map);
-          }
-          break;
-        case RCMethodCallBackKey.ReceiptResponse:
-          if (onMessageReceiptResponse != null) {
-            Map? map = call.arguments;
-            onMessageReceiptResponse!(map);
-          }
-          break;
-        case RCMethodCallBackKey.TypingStatusChanged:
-          if (onTypingStatusChanged != null) {
-            Map map = call.arguments;
-            int? conversationType = map["conversationType"];
-            String? targetId = map["targetId"];
-            List list = map["typingStatus"];
-            List statusList = [];
-            for (String statusStr in list) {
-              TypingStatus? status =
-                  MessageFactory.instance!.string2TypingStatus(statusStr);
-              statusList.add(status);
-            }
-            onTypingStatusChanged!(conversationType, targetId, statusList);
-          }
-          break;
-        case RCMethodCallBackKey.DownloadMediaMessage:
-          if (onDownloadMediaMessageResponse != null) {
-            Map map = call.arguments;
-            int? code = map["code"];
-            int? progress = map["progress"];
-            int? messageId = map["messageId"];
+            int? left = map["left"];
             String? messageString = map["message"];
-            Message? message =
+            Message? msg =
                 MessageFactory.instance!.string2Message(messageString);
-            onDownloadMediaMessageResponse!(code, progress, messageId, message);
+            onMessageReceived!(msg, left);
           }
-          break;
-        case RCMethodCallBackKey.RecallMessage:
-          if (onRecallMessageReceived != null) {
+          if (onMessageReceivedWrapper != null) {
+            count++;
             Map map = call.arguments;
+            int? left = map["left"];
             String? messageString = map["message"];
-            Message? message =
+            bool? hasPackage = map["hasPackage"];
+            bool? offline = map["offline"];
+            Message? msg =
                 MessageFactory.instance!.string2Message(messageString);
-            onRecallMessageReceived!(message);
+            onMessageReceivedWrapper!(msg, left, hasPackage, offline);
           }
-          break;
-        case RCMethodCallBackKey.DestructMessage:
-          if (onMessageDestructing != null) {
-            Map map = call.arguments;
-            String? messageString = map["message"];
-            int? remainDuration = map["remainDuration"];
-            Message? message =
-                MessageFactory.instance!.string2Message(messageString);
-            onMessageDestructing!(message, remainDuration);
+          if (count == 2) {
+            developer.log(
+                "警告：同时实现了 onMessageReceived 和 onMessageReceivedWrapper 两个接收消息的回调，可能会出现重复接收消息或者重复刷新的问题，建议只实现其中一个！！！",
+                name: "RongIMClient");
           }
-          break;
-        case RCMethodCallBackKey.MessageExpansionDidUpdate:
-          if (messageExpansionDidUpdate != null) {
-            Map map = call.arguments;
-            Map? expansionDic = map["expansionDic"];
-            String? messageString = map["message"];
-            Message? message =
-                MessageFactory.instance!.string2Message(messageString);
-            messageExpansionDidUpdate!(expansionDic, message);
+        }
+        break;
+
+      case RCMethodCallBackKey.JoinChatRoom:
+        if (onJoinChatRoom != null) {
+          Map map = call.arguments;
+          String? targetId = map["targetId"];
+          int? status = map["status"];
+          onJoinChatRoom!(targetId, status);
+        }
+        break;
+
+      case RCMethodCallBackKey.QuitChatRoom:
+        if (onQuitChatRoom != null) {
+          Map map = call.arguments;
+          String? targetId = map["targetId"];
+          int? status = map["status"];
+          onQuitChatRoom!(targetId, status);
+        }
+        break;
+
+      case RCMethodCallBackKey.OnChatRoomReset:
+        if (onChatRoomReset != null) {
+          Map map = call.arguments;
+          String? targetId = map["targetId"];
+          onChatRoomReset!(targetId);
+        }
+        break;
+
+      case RCMethodCallBackKey.OnChatRoomDestroyed:
+        if (onChatRoomDestroyed != null) {
+          Map map = call.arguments;
+          String? targetId = map["targetId"];
+          int? type = map["type"];
+          onChatRoomDestroyed!(targetId, type);
+        }
+        break;
+
+      case RCMethodCallBackKey.ChatRoomKVDidSync:
+        if (chatRoomKVDidSync != null) {
+          Map map = call.arguments;
+          String? roomId = map["roomId"];
+          chatRoomKVDidSync!(roomId);
+        }
+        break;
+
+      case RCMethodCallBackKey.ChatRoomKVDidUpdate:
+        if (chatRoomKVDidUpdate != null) {
+          Map map = call.arguments;
+          String? roomId = map["roomId"];
+          Map? entry = map["entry"];
+          chatRoomKVDidUpdate!(roomId, entry);
+        }
+        break;
+
+      case RCMethodCallBackKey.ChatRoomKVDidRemove:
+        if (chatRoomKVDidRemove != null) {
+          Map map = call.arguments;
+          String? roomId = map["roomId"];
+          Map? entry = map["entry"];
+          chatRoomKVDidRemove!(roomId, entry);
+        }
+        break;
+
+      case RCMethodCallBackKey.UploadMediaProgress:
+        if (onUploadMediaProgress != null) {
+          Map map = call.arguments;
+          int? messageId = map["messageId"];
+          int? progress = map["progress"];
+          onUploadMediaProgress!(messageId, progress);
+        }
+        break;
+
+      case RCMethodCallBackKey.ConnectionStatusChange:
+        if (onConnectionStatusChange != null) {
+          Map map = call.arguments;
+          int? code = map["status"];
+          int? status = ConnectionStatusConvert.convert(code);
+          onConnectionStatusChange!(status);
+        }
+        break;
+
+      case RCMethodCallBackKey.SendDataToFlutter:
+        if (onDataReceived != null) {
+          Map? map = call.arguments;
+          onDataReceived!(map);
+        }
+        break;
+      case RCMethodCallBackKey.ReceiveReadReceipt:
+        if (onReceiveReadReceipt != null) {
+          Map? map = call.arguments;
+          onReceiveReadReceipt!(map);
+        }
+        break;
+
+      case RCMethodCallBackKey.ReceiptRequest:
+        if (onMessageReceiptRequest != null) {
+          Map? map = call.arguments;
+          onMessageReceiptRequest!(map);
+        }
+        break;
+      case RCMethodCallBackKey.ReceiptResponse:
+        if (onMessageReceiptResponse != null) {
+          Map? map = call.arguments;
+          onMessageReceiptResponse!(map);
+        }
+        break;
+      case RCMethodCallBackKey.TypingStatusChanged:
+        if (onTypingStatusChanged != null) {
+          Map map = call.arguments;
+          int? conversationType = map["conversationType"];
+          String? targetId = map["targetId"];
+          List list = map["typingStatus"];
+          List statusList = [];
+          for (String statusStr in list) {
+            TypingStatus? status =
+                MessageFactory.instance!.string2TypingStatus(statusStr);
+            statusList.add(status);
           }
-          break;
-        case RCMethodCallBackKey.MessageExpansionDidRemove:
-          if (messageExpansionDidRemove != null) {
-            Map map = call.arguments;
-            List? keyArray = map["keyArray"];
-            String? messageString = map["message"];
-            Message? message =
-                MessageFactory.instance!.string2Message(messageString);
-            messageExpansionDidRemove!(keyArray, message);
-          }
-          break;
-        case RCMethodCallBackKey.DatabaseOpened:
-          if (onDatabaseOpened != null) {
-            Map map = call.arguments;
-            int? status = map["status"];
-            onDatabaseOpened!(status);
-          }
-          break;
-        case RCMethodCallBackKey.ConversationTagChanged:
-          if (onConversationTagChanged != null) {
-            onConversationTagChanged!();
-          }
-          break;
-        case RCMethodCallBackKey.OnTagChanged:
-          if (onTagChanged != null) {
-            onTagChanged!();
-          }
-          break;
-      }
-      return;
-    } as Future<dynamic> Function(MethodCall)?);
+          onTypingStatusChanged!(conversationType, targetId, statusList);
+        }
+        break;
+      case RCMethodCallBackKey.DownloadMediaMessage:
+        if (onDownloadMediaMessageResponse != null) {
+          Map map = call.arguments;
+          int? code = map["code"];
+          int? progress = map["progress"];
+          int? messageId = map["messageId"];
+          String? messageString = map["message"];
+          Message? message =
+              MessageFactory.instance!.string2Message(messageString);
+          onDownloadMediaMessageResponse!(code, progress, messageId, message);
+        }
+        break;
+      case RCMethodCallBackKey.RecallMessage:
+        if (onRecallMessageReceived != null) {
+          Map map = call.arguments;
+          String? messageString = map["message"];
+          Message? message =
+              MessageFactory.instance!.string2Message(messageString);
+          onRecallMessageReceived!(message);
+        }
+        break;
+      case RCMethodCallBackKey.DestructMessage:
+        if (onMessageDestructing != null) {
+          Map map = call.arguments;
+          String? messageString = map["message"];
+          int? remainDuration = map["remainDuration"];
+          Message? message =
+              MessageFactory.instance!.string2Message(messageString);
+          onMessageDestructing!(message, remainDuration);
+        }
+        break;
+      case RCMethodCallBackKey.MessageExpansionDidUpdate:
+        if (messageExpansionDidUpdate != null) {
+          Map map = call.arguments;
+          Map? expansionDic = map["expansionDic"];
+          String? messageString = map["message"];
+          Message? message =
+              MessageFactory.instance!.string2Message(messageString);
+          messageExpansionDidUpdate!(expansionDic, message);
+        }
+        break;
+      case RCMethodCallBackKey.MessageExpansionDidRemove:
+        if (messageExpansionDidRemove != null) {
+          Map map = call.arguments;
+          List? keyArray = map["keyArray"];
+          String? messageString = map["message"];
+          Message? message =
+              MessageFactory.instance!.string2Message(messageString);
+          messageExpansionDidRemove!(keyArray, message);
+        }
+        break;
+      case RCMethodCallBackKey.DatabaseOpened:
+        if (onDatabaseOpened != null) {
+          Map map = call.arguments;
+          int? status = map["status"];
+          onDatabaseOpened!(status);
+        }
+        break;
+      case RCMethodCallBackKey.ConversationTagChanged:
+        if (onConversationTagChanged != null) {
+          onConversationTagChanged!();
+        }
+        break;
+      case RCMethodCallBackKey.OnTagChanged:
+        if (onTagChanged != null) {
+          onTagChanged!();
+        }
+        break;
+    }
   }
 }
