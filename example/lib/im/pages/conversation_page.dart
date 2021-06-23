@@ -1156,6 +1156,7 @@ class _ConversationPageState extends State<ConversationPage>
     multiSelect = false;
     RongIMClient.deleteMessageByIds(messageIds, (int code) {
       if (code == 0) {
+        selectedMessageIds.clear();
         onGetHistoryMessages();
         _refreshUI();
       }
@@ -1168,6 +1169,9 @@ class _ConversationPageState extends State<ConversationPage>
     bool isAllowCombine = true;
     for (int msgId in selectedMessageIds) {
       Message forwardMsg = await RongIMClient.getMessage(msgId);
+      if (forwardMsg == null) {
+        return;
+      }
       if (!CombineMessageUtils.allowForward(forwardMsg.objectName)) {
         isAllowCombine = false;
       }
