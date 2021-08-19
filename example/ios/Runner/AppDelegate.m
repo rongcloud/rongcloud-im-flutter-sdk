@@ -1,6 +1,6 @@
 #include "AppDelegate.h"
 #include "GeneratedPluginRegistrant.h"
-#import <RongIMLib/RongIMLib.h>
+#import <RongIMLibCore/RongIMLibCore.h>
 #import "RCDTestMessage.h"
 #import <rongcloud_im_plugin/RCIMFlutterWrapper.h>
 
@@ -55,7 +55,7 @@
  */
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
    // 如果您的 SDK 版本已升级到 2.9.25，请使用下面这种方式:
-    [[RCIMClient sharedRCIMClient] setDeviceTokenData:deviceToken];
+    [[RCCoreClient sharedCoreClient] setDeviceTokenData:deviceToken];
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo{
