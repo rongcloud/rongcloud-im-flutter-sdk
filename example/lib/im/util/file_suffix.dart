@@ -1,28 +1,5 @@
 class FileSuffix {
-  static const List ImageFileSuffix = [
-    '.bmp',
-    '.cod',
-    '.gif',
-    '.ief',
-    '.jpe',
-    '.jpeg',
-    '.jpg',
-    '.jfif',
-    '.svg',
-    '.tif',
-    '.tiff',
-    '.ras',
-    '.ico',
-    '.pbm',
-    '.pgm',
-    '.png',
-    '.pnm',
-    '.ppm',
-    '.xbm',
-    '.xpm',
-    '.xwd',
-    '.rgb'
-  ];
+  static const List ImageFileSuffix = ['.bmp', '.cod', '.gif', '.ief', '.jpe', '.jpeg', '.jpg', '.jfif', '.svg', '.tif', '.tiff', '.ras', '.ico', '.pbm', '.pgm', '.png', '.pnm', '.ppm', '.xbm', '.xpm', '.xwd', '.rgb'];
 
   static const List FileFileSuffix = [
     '.txt',

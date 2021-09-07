@@ -1,9 +1,11 @@
-import 'package:flutter/material.dart';
-import '../im/util/http_util.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'home_page.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:developer' as developer;
+
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../im/util/http_util.dart';
+import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -48,9 +50,7 @@ class _LoginPageState extends State<LoginPage> {
           String token = result["token"];
           _saveUserInfo(id, token);
           developer.log("Login Success, $map", name: pageName);
-          Navigator.of(context).pushAndRemoveUntil(
-              new MaterialPageRoute(builder: (context) => new HomePage()),
-              (route) => route == null);
+          Navigator.of(context).pushAndRemoveUntil(new MaterialPageRoute(builder: (context) => new HomePage()), (route) => route == null);
         } else if (errorCode == -1) {
           Fluttertoast.showToast(msg: "网络未连接，请连接网络重试");
         } else {
@@ -85,22 +85,14 @@ class _LoginPageState extends State<LoginPage> {
       keyboardType: TextInputType.number,
       autofocus: false,
       controller: _assount,
-      decoration: InputDecoration(
-          hintText: 'SealTalk 账号',
-          contentPadding: new EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-          border:
-              OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
+      decoration: InputDecoration(hintText: 'SealTalk 账号', contentPadding: new EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0), border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
     );
 
     final password = TextFormField(
       autofocus: false,
       obscureText: true,
       controller: _password,
-      decoration: InputDecoration(
-          hintText: 'SealTalk 密码',
-          contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-          border:
-              OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
+      decoration: InputDecoration(hintText: 'SealTalk 密码', contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0), border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
     );
 
     final loginButton = Padding(

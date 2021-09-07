@@ -1,16 +1,14 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-import 'package:cached_network_image/cached_network_image.dart';
-
-import '../../util/time.dart';
 import '../../util/style.dart';
+import '../../util/time.dart';
 
 class WidgetUtil {
   /// 会话页面加号扩展栏里面的 widget，上面图片，下面文本
-  static Widget buildExtentionWidget(
-      IconData icon, String text, Function() clicked) {
+  static Widget buildExtentionWidget(IconData icon, String text, Function() clicked) {
     return Column(
       children: <Widget>[
         SizedBox(
@@ -47,8 +45,7 @@ class WidgetUtil {
   static Widget buildUserPortrait(String path) {
     Widget protraitWidget;
     if (path == null || path.isEmpty) {
-      protraitWidget =
-          Image.asset("assets/images/default_portrait.png", fit: BoxFit.fill);
+      protraitWidget = Image.asset("assets/images/default_portrait.png", fit: BoxFit.fill);
     } else {
       if (path.startsWith("http")) {
         protraitWidget = CachedNetworkImage(
@@ -101,19 +98,16 @@ class WidgetUtil {
         color: Color(RCColor.MessageTimeBgColor),
         child: Text(
           TimeUtil.convertTime(sentTime),
-          style:
-              TextStyle(color: Colors.white, fontSize: RCFont.MessageTimeFont),
+          style: TextStyle(color: Colors.white, fontSize: RCFont.MessageTimeFont),
         ),
       ),
     );
   }
 
   /// 长按的 menu，用于处理会话列表页面和会话页面的长按
-  static void showLongPressMenu(BuildContext context, Offset tapPos,
-      Map<String, String> map, Function(String key) onSelected) {
+  static void showLongPressMenu(BuildContext context, Offset tapPos, Map<String, String> map, Function(String key) onSelected) {
     final RenderBox overlay = Overlay.of(context).context.findRenderObject();
-    final RelativeRect position = RelativeRect.fromLTRB(tapPos.dx, tapPos.dy,
-        overlay.size.width - tapPos.dx, overlay.size.height - tapPos.dy);
+    final RelativeRect position = RelativeRect.fromLTRB(tapPos.dx, tapPos.dy, overlay.size.width - tapPos.dx, overlay.size.height - tapPos.dy);
     List<PopupMenuEntry<String>> items = [];
     map.keys.forEach((String key) {
       PopupMenuItem<String> p = PopupMenuItem(
@@ -128,8 +122,7 @@ class WidgetUtil {
       );
       items.add(p);
     });
-    showMenu<String>(context: context, position: position, items: items)
-        .then<String>((String selectedStr) {
+    showMenu<String>(context: context, position: position, items: items).then<String>((String selectedStr) {
       if (onSelected != null) {
         if (selectedStr == null) {
           selectedStr = RCLongPressAction.UndefinedKey;
@@ -141,8 +134,7 @@ class WidgetUtil {
   }
 
   /// onTaped 点击事件，0~n 代表点击了对应下标，-1 代表点击了白透明空白区域，暂无用
-  static Widget buildLongPressDialog(
-      List<String> titles, Function(int index) onTaped) {
+  static Widget buildLongPressDialog(List<String> titles, Function(int index) onTaped) {
     List<Widget> wList = [];
     for (int i = 0; i < titles.length; i++) {
       Widget w = Container(

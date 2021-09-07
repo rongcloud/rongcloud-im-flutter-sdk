@@ -7,6 +7,7 @@ export 'src/info/chatroom_info.dart';
 export 'src/info/conversation.dart';
 export 'src/info/conversation_identifier.dart';
 export 'src/info/conversation_tag_info.dart';
+export 'src/info/history_message_option.dart';
 export 'src/info/message.dart';
 export 'src/info/push_config.dart';
 export 'src/info/search_conversation_result.dart';

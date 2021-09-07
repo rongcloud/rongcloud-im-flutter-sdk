@@ -8,12 +8,10 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 typedef void ErrorListener();
 
-class CachedNetworkImageProvider
-    extends ImageProvider<CachedNetworkImageProvider> {
+class CachedNetworkImageProvider extends ImageProvider<CachedNetworkImageProvider> {
   /// Creates an ImageProvider which loads an image from the [url], using the [scale].
   /// When the image fails to load [errorListener] is called.
-  const CachedNetworkImageProvider(this.url,
-      {this.scale = 1.0, this.errorListener, this.headers, this.cacheManager})
+  const CachedNetworkImageProvider(this.url, {this.scale = 1.0, this.errorListener, this.headers, this.cacheManager})
       : assert(url != null),
         assert(scale != null);
 
@@ -32,14 +30,12 @@ class CachedNetworkImageProvider
   final Map<String, String> headers;
 
   @override
-  Future<CachedNetworkImageProvider> obtainKey(
-      ImageConfiguration configuration) {
+  Future<CachedNetworkImageProvider> obtainKey(ImageConfiguration configuration) {
     return SynchronousFuture<CachedNetworkImageProvider>(this);
   }
 
   @override
-  ImageStreamCompleter load(
-      CachedNetworkImageProvider key, DecoderCallback decode) {
+  ImageStreamCompleter load(CachedNetworkImageProvider key, DecoderCallback decode) {
     return MultiFrameImageStreamCompleter(
       codec: _loadAsync(key),
       scale: key.scale,
@@ -63,8 +59,7 @@ class CachedNetworkImageProvider
     return _loadAsyncFromFile(key, file);
   }
 
-  Future<ui.Codec> _loadAsyncFromFile(
-      CachedNetworkImageProvider key, File file) async {
+  Future<ui.Codec> _loadAsyncFromFile(CachedNetworkImageProvider key, File file) async {
     assert(key == this);
 
     final bytes = await file.readAsBytes();

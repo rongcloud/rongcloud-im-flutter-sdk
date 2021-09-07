@@ -1,22 +1,23 @@
+import 'dart:convert';
+import 'dart:developer' as developer;
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+
 import '../../util/combine_message_util.dart';
-import '../../widget/cachImage/cached_image_widget.dart';
 import '../../util/file.dart';
 import '../../util/media_util.dart';
-import 'dart:convert';
-import 'dart:typed_data';
 import '../../util/style.dart';
-import 'dart:developer' as developer;
+import '../../widget/cachImage/cached_image_widget.dart';
 
 class MessageItemFactory extends StatelessWidget {
   final String pageName = "example.MessageItemFactory";
   final Message message;
   final bool needShow;
-  const MessageItemFactory({Key key, this.message, this.needShow = true})
-      : super(key: key);
+
+  const MessageItemFactory({Key key, this.message, this.needShow = true}) : super(key: key);
 
   ///文本消息 item
   Widget textMessageItem(BuildContext context) {
@@ -58,8 +59,7 @@ class MessageItemFactory extends StatelessWidget {
             RongIMClient.downloadMediaMessage(message);
             // widget = Image.network(msg.imageUri);
             widget = CachedNetworkImage(
-              progressIndicatorBuilder: (context, url, progress) =>
-                  CircularProgressIndicator(
+              progressIndicatorBuilder: (context, url, progress) => CircularProgressIndicator(
                 value: progress.progress,
               ),
               imageUrl: msg.imageUri,
@@ -69,8 +69,7 @@ class MessageItemFactory extends StatelessWidget {
           RongIMClient.downloadMediaMessage(message);
           // widget = Image.network(msg.imageUri);
           widget = CachedNetworkImage(
-            progressIndicatorBuilder: (context, url, progress) =>
-                CircularProgressIndicator(
+            progressIndicatorBuilder: (context, url, progress) => CircularProgressIndicator(
               value: progress.progress,
             ),
             imageUrl: msg.imageUri,
@@ -81,9 +80,7 @@ class MessageItemFactory extends StatelessWidget {
       widget = Stack(
         children: <Widget>[
           Image.asset(
-            message.messageDirection == RCMessageDirection.Send
-                ? "assets/images/burnPicture.png"
-                : "assets/images/burnPictureForm.png",
+            message.messageDirection == RCMessageDirection.Send ? "assets/images/burnPicture.png" : "assets/images/burnPictureForm.png",
             width: 120,
             height: 126,
           ),
@@ -123,15 +120,11 @@ class MessageItemFactory extends StatelessWidget {
           widget = Image.network(
             msg.remoteUrl,
             fit: BoxFit.cover,
-            loadingBuilder: (BuildContext context, Widget child,
-                ImageChunkEvent loadingProgress) {
+            loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
               if (loadingProgress == null) return child;
               return Center(
                 child: CircularProgressIndicator(
-                  value: loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes
-                      : null,
+                  value: loadingProgress.expectedTotalBytes != null ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes : null,
                 ),
               );
             },
@@ -142,30 +135,21 @@ class MessageItemFactory extends StatelessWidget {
         widget = Image.network(
           msg.remoteUrl,
           fit: BoxFit.cover,
-          loadingBuilder: (BuildContext context, Widget child,
-              ImageChunkEvent loadingProgress) {
+          loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
             if (loadingProgress == null) return child;
             return Center(
               child: CircularProgressIndicator(
-                value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded /
-                        loadingProgress.expectedTotalBytes
-                    : null,
+                value: loadingProgress.expectedTotalBytes != null ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes : null,
               ),
             );
           },
         );
       } else {
-        developer.log("GifMessage localPath && remoteUrl is null",
-            name: pageName);
+        developer.log("GifMessage localPath && remoteUrl is null", name: pageName);
       }
 
       double screenWidth = MediaQuery.of(context).size.width;
-      if (msg.width != null &&
-          msg.height != null &&
-          msg.width > 0 &&
-          msg.height > 0 &&
-          msg.width > screenWidth / 3) {
+      if (msg.width != null && msg.height != null && msg.width > 0 && msg.height > 0 && msg.width > screenWidth / 3) {
         return Container(
           width: msg.width.toDouble() / 3,
           height: msg.height.toDouble() / 3,
@@ -176,9 +160,7 @@ class MessageItemFactory extends StatelessWidget {
       widget = Stack(
         children: <Widget>[
           Image.asset(
-            message.messageDirection == RCMessageDirection.Send
-                ? "assets/images/burnPicture.png"
-                : "assets/images/burnPictureForm.png",
+            message.messageDirection == RCMessageDirection.Send ? "assets/images/burnPicture.png" : "assets/images/burnPictureForm.png",
             width: 120,
             height: 126,
           ),
@@ -300,9 +282,7 @@ class MessageItemFactory extends StatelessWidget {
       return Stack(
         children: <Widget>[
           Image.asset(
-            message.messageDirection == RCMessageDirection.Send
-                ? "assets/images/burnPicture.png"
-                : "assets/images/burnPictureForm.png",
+            message.messageDirection == RCMessageDirection.Send ? "assets/images/burnPicture.png" : "assets/images/burnPictureForm.png",
             width: 120,
             height: 126,
           ),
@@ -325,12 +305,10 @@ class MessageItemFactory extends StatelessWidget {
     return Container(
         height: (screenWidth - 140) / 3,
         width: screenWidth - 140,
-        child:
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
           Container(
             margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-            child: Image.asset(FileUtil.fileTypeImagePath(fileMessage.mName),
-                width: 50, height: 50),
+            child: Image.asset(FileUtil.fileTypeImagePath(fileMessage.mName), width: 50, height: 50),
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -344,8 +322,7 @@ class MessageItemFactory extends StatelessWidget {
                   softWrap: true,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
-                  style:
-                      TextStyle(fontSize: 16, color: const Color(0xff000000)),
+                  style: TextStyle(fontSize: 16, color: const Color(0xff000000)),
                 ),
               ),
               Container(
@@ -353,8 +330,7 @@ class MessageItemFactory extends StatelessWidget {
                   width: screenWidth - 220,
                   child: Text(
                     FileUtil.formatFileSize(fileMessage.mSize),
-                    style:
-                        TextStyle(fontSize: 12, color: const Color(0xff888888)),
+                    style: TextStyle(fontSize: 12, color: const Color(0xff888888)),
                   ))
             ],
           )
@@ -394,9 +370,7 @@ class MessageItemFactory extends StatelessWidget {
               Container(
                 width: RCLayout.RichMessageImageSize,
                 height: RCLayout.RichMessageImageSize,
-                child: msg.imageURL == null || msg.imageURL.isEmpty
-                    ? Image.asset("assets/images/rich_content_msg_default.png")
-                    : Image.network(msg.imageURL),
+                child: msg.imageURL == null || msg.imageURL.isEmpty ? Image.asset("assets/images/rich_content_msg_default.png") : Image.network(msg.imageURL),
               ),
             ],
           ),
@@ -438,20 +412,12 @@ class MessageItemFactory extends StatelessWidget {
           Container(
             margin: EdgeInsets.fromLTRB(10, 4, 10, 0),
             alignment: Alignment.centerLeft,
-            child: Text(title,
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                    fontSize: RCFont.MessageCombineTitleFont,
-                    color: Colors.black)),
+            child: Text(title, textAlign: TextAlign.left, style: TextStyle(fontSize: RCFont.MessageCombineTitleFont, color: Colors.black)),
           ),
           Container(
             padding: EdgeInsets.fromLTRB(10, 4, 10, 4),
             alignment: Alignment.centerLeft,
-            child: Text(summaryStr,
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                    fontSize: RCFont.MessageCombineContentFont,
-                    color: Color(RCColor.ConCombineMsgContentColor))),
+            child: Text(summaryStr, textAlign: TextAlign.left, style: TextStyle(fontSize: RCFont.MessageCombineContentFont, color: Color(RCColor.ConCombineMsgContentColor))),
           ),
           Container(
             margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
@@ -462,11 +428,7 @@ class MessageItemFactory extends StatelessWidget {
           Container(
             padding: EdgeInsets.fromLTRB(10, 6, 0, 10),
             alignment: Alignment.centerLeft,
-            child: Text(RCString.ChatRecord,
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                    fontSize: RCFont.MessageCombineContentFont,
-                    color: Color(RCColor.ConCombineMsgContentColor))),
+            child: Text(RCString.ChatRecord, textAlign: TextAlign.left, style: TextStyle(fontSize: RCFont.MessageCombineContentFont, color: Color(RCColor.ConCombineMsgContentColor))),
           ),
         ]));
   }
@@ -492,11 +454,7 @@ class MessageItemFactory extends StatelessWidget {
           Container(
             margin: EdgeInsets.fromLTRB(10, 4, 10, 10),
             alignment: Alignment.centerLeft,
-            child: Text(msg.content,
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                    fontSize: RCFont.MessageReferenceTitleFont,
-                    color: Colors.black)),
+            child: Text(msg.content, textAlign: TextAlign.left, style: TextStyle(fontSize: RCFont.MessageReferenceTitleFont, color: Colors.black)),
           ),
         ]));
   }
@@ -505,11 +463,7 @@ class MessageItemFactory extends StatelessWidget {
   Widget referenceWidget(ReferenceMessage msg) {
     if (msg.referMsg is TextMessage) {
       TextMessage textMessage = msg.referMsg;
-      return Text("${msg.referMsgUserId}:\n\n${textMessage.content}",
-          textAlign: TextAlign.left,
-          style: TextStyle(
-              fontSize: RCFont.MessageReferenceContentFont,
-              color: Color(RCColor.ConReferenceMsgContentColor)));
+      return Text("${msg.referMsgUserId}:\n\n${textMessage.content}", textAlign: TextAlign.left, style: TextStyle(fontSize: RCFont.MessageReferenceContentFont, color: Color(RCColor.ConReferenceMsgContentColor)));
     } else if (msg.referMsg is ImageMessage) {
       ImageMessage imageMessage = msg.referMsg;
       Widget widget;
@@ -518,16 +472,14 @@ class MessageItemFactory extends StatelessWidget {
         widget = Image.memory(bytes);
       } else {
         if (imageMessage.localPath != null) {
-          String path =
-              MediaUtil.instance.getCorrectedLocalPath(imageMessage.localPath);
+          String path = MediaUtil.instance.getCorrectedLocalPath(imageMessage.localPath);
           File file = File(path);
           if (file != null && file.existsSync()) {
             widget = Image.file(file);
           } else {
             // widget = Image.network(msg.imageUri);
             widget = CachedNetworkImage(
-              progressIndicatorBuilder: (context, url, progress) =>
-                  CircularProgressIndicator(
+              progressIndicatorBuilder: (context, url, progress) => CircularProgressIndicator(
                 value: progress.progress,
               ),
               imageUrl: imageMessage.imageUri,
@@ -536,8 +488,7 @@ class MessageItemFactory extends StatelessWidget {
         } else {
           // widget = Image.network(msg.imageUri);
           widget = CachedNetworkImage(
-            progressIndicatorBuilder: (context, url, progress) =>
-                CircularProgressIndicator(
+            progressIndicatorBuilder: (context, url, progress) => CircularProgressIndicator(
               value: progress.progress,
             ),
             imageUrl: imageMessage.imageUri,
@@ -547,18 +498,10 @@ class MessageItemFactory extends StatelessWidget {
       return widget;
     } else if (msg.referMsg is FileMessage) {
       FileMessage fileMessage = msg.referMsg;
-      return Text("${msg.referMsgUserId}:\n\n[文件] ${fileMessage.mName}",
-          textAlign: TextAlign.left,
-          style: TextStyle(
-              fontSize: RCFont.MessageReferenceContentFont,
-              color: Color(RCColor.ConReferenceMsgContentColor)));
+      return Text("${msg.referMsgUserId}:\n\n[文件] ${fileMessage.mName}", textAlign: TextAlign.left, style: TextStyle(fontSize: RCFont.MessageReferenceContentFont, color: Color(RCColor.ConReferenceMsgContentColor)));
     } else if (msg.referMsg is RichContentMessage) {
       RichContentMessage richContentMessage = msg.referMsg;
-      return Text("${msg.referMsgUserId}:\n\n[图文] ${richContentMessage.title}",
-          textAlign: TextAlign.left,
-          style: TextStyle(
-              fontSize: RCFont.MessageReferenceContentFont,
-              color: Color(RCColor.ConReferenceMsgContentColor)));
+      return Text("${msg.referMsgUserId}:\n\n[图文] ${richContentMessage.title}", textAlign: TextAlign.left, style: TextStyle(fontSize: RCFont.MessageReferenceContentFont, color: Color(RCColor.ConReferenceMsgContentColor)));
     }
   }
 
@@ -585,8 +528,7 @@ class MessageItemFactory extends StatelessWidget {
       return Text("位置消息 " + message.objectName);
     } else if (message.content is GroupNotificationMessage) {
       GroupNotificationMessage groupNotificationMessage = message.content;
-      return Text(
-          "群通知消息 ${groupNotificationMessage.operatorUserId} ${groupNotificationMessage.operation} ${groupNotificationMessage.data}");
+      return Text("群通知消息 ${groupNotificationMessage.operatorUserId} ${groupNotificationMessage.operation} ${groupNotificationMessage.data}");
     } else {
       return Text("无法识别消息 " + message.objectName);
     }

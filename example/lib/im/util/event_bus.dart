@@ -3,11 +3,14 @@ typedef void EventCallback(arg);
 //事件总线
 class EventBus {
   factory EventBus() => _getInstance();
+
   static EventBus get instance => _getInstance();
   static EventBus _instance;
+
   EventBus._internal() {
     // 初始化
   }
+
   static EventBus _getInstance() {
     if (_instance == null) {
       _instance = new EventBus._internal();
@@ -46,8 +49,7 @@ class EventKeys {
   static const String ReceiveReceiptRequest = "ReceiveReceiptRequest";
   static const String ReceiveReceiptResponse = "ReceiveReceiptResponse";
   static const String LongPressUserPortrait = "LongPressUserPortrait";
-  static const String UpdateNotificationQuietStatus =
-      "UpdateNotificationQuietStatus";
+  static const String UpdateNotificationQuietStatus = "UpdateNotificationQuietStatus";
   static const String ForwardMessageEnd = "ForwardMessageEnd";
   static const String BurnMessage = "BurnMessage";
 }

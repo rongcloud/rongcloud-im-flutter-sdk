@@ -1,5 +1,6 @@
-import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'dart:convert' show json;
+
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 //app 层的测试消息
 class TestMessage extends MessageContent {
@@ -7,6 +8,7 @@ class TestMessage extends MessageContent {
 
   String content;
   String extra;
+
   @override
   void decode(String jsonStr) {
     Map map = json.decode(jsonStr.toString());

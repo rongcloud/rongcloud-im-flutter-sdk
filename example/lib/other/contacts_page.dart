@@ -17,6 +17,7 @@ class ContactsPage extends StatefulWidget {
 class _ContactsPageState extends State<ContactsPage> {
   List<Widget> widgetList = [];
   List<example.UserInfo> userList = [];
+
   @override
   void initState() {
     super.initState();
@@ -45,10 +46,7 @@ class _ContactsPageState extends State<ContactsPage> {
   }
 
   void _onTapUser(example.UserInfo user) {
-    Map arg = {
-      "coversationType": prefix.RCConversationType.Private,
-      "targetId": user.id
-    };
+    Map arg = {"coversationType": prefix.RCConversationType.Private, "targetId": user.id};
     Navigator.pushNamed(context, "/conversation", arguments: arg);
   }
 
@@ -60,9 +58,7 @@ class _ContactsPageState extends State<ContactsPage> {
     prefix.RongIMClient.disconnect(false);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove("token");
-    Navigator.of(context).pushAndRemoveUntil(
-        new MaterialPageRoute(builder: (context) => new LoginPage()),
-        (route) => route == null);
+    Navigator.of(context).pushAndRemoveUntil(new MaterialPageRoute(builder: (context) => new LoginPage()), (route) => route == null);
   }
 
   Widget getWidget(example.UserInfo user) {

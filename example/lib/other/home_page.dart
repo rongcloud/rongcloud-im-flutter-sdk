@@ -32,10 +32,7 @@ class _HomePageState extends State<HomePage> {
       label: "通讯录",
     ),
   ];
-  final List<StatefulWidget> vcList = [
-    new ConversationListPage(),
-    new ContactsPage()
-  ];
+  final List<StatefulWidget> vcList = [new ConversationListPage(), new ContactsPage()];
 
   int curIndex = 0;
 
@@ -60,9 +57,7 @@ class _HomePageState extends State<HomePage> {
         EventBus.instance.commit(EventKeys.UpdateNotificationQuietStatus, {});
         if (code == 31004 || code == 12) {
           developer.log("connect result " + code.toString(), name: pageName);
-          Navigator.of(context).pushAndRemoveUntil(
-              new MaterialPageRoute(builder: (context) => new LoginPage()),
-              (route) => route == null);
+          Navigator.of(context).pushAndRemoveUntil(new MaterialPageRoute(builder: (context) => new LoginPage()), (route) => route == null);
         } else if (code == 0) {
           developer.log("connect userId" + userId, name: pageName);
           // 连接成功后打开数据库
@@ -70,9 +65,7 @@ class _HomePageState extends State<HomePage> {
         }
       });
     } else {
-      Navigator.of(context).pushAndRemoveUntil(
-          new MaterialPageRoute(builder: (context) => new LoginPage()),
-          (route) => route == null);
+      Navigator.of(context).pushAndRemoveUntil(new MaterialPageRoute(builder: (context) => new LoginPage()), (route) => route == null);
     }
   }
 

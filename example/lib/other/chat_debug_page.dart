@@ -1,20 +1,20 @@
+import 'dart:core';
+import 'dart:developer' as developer;
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import '../im/util/dialog_util.dart';
-import 'dart:developer' as developer;
-import 'package:rongcloud_im_plugin/src/info/tag_info.dart';
-import 'dart:core';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:rongcloud_im_plugin/src/info/history_message_option.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+
+import '../im/util/dialog_util.dart';
 
 class ChatDebugPage extends StatefulWidget {
   final Map arguments;
+
   ChatDebugPage({Key key, this.arguments}) : super(key: key);
+
   @override
-  State<StatefulWidget> createState() =>
-      _ChatDebugPageState(arguments: this.arguments);
+  State<StatefulWidget> createState() => _ChatDebugPageState(arguments: this.arguments);
 }
 
 class _ChatDebugPageState extends State<ChatDebugPage> {
@@ -24,34 +24,15 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   int conversationType;
   String targetId;
   bool isPrivate;
+
   _ChatDebugPageState({this.arguments});
+
   @override
   void initState() {
     super.initState();
     conversationType = arguments["coversationType"];
     targetId = arguments["targetId"];
-    titles = [
-      "设置免打扰",
-      "取消免打扰",
-      "查看免打扰",
-      "搜索会话消息记录",
-      "通过UId获取消息",
-      "批量插入数据库消息",
-      "设置缩略图配置",
-      "添加标签",
-      "移除标签",
-      "更新标签",
-      "获取标签列表",
-      "添加会话到一个标签",
-      "删除指定一个标签中会话",
-      "获取指定会话下的所有标签",
-      "删除指定会话中的某些标签",
-      "分页获取本地指定标签下会话列表",
-      "按标签获取未读消息数",
-      "设置标签中会话置顶状态",
-      "获取指定会话下的标签置顶状态",
-      "消息断档新接口"
-    ];
+    titles = ["设置免打扰", "取消免打扰", "查看免打扰", "搜索会话消息记录", "通过UId获取消息", "批量插入数据库消息", "设置缩略图配置", "添加标签", "移除标签", "更新标签", "获取标签列表", "添加会话到一个标签", "删除指定一个标签中会话", "获取指定会话下的所有标签", "删除指定会话中的某些标签", "分页获取本地指定标签下会话列表", "按标签获取未读消息数", "设置标签中会话置顶状态", "获取指定会话下的标签置顶状态", "消息断档新接口"];
     if (conversationType == RCConversationType.Private) {
       List onlyPrivateTitles = [
         "加入黑名单",
@@ -183,10 +164,8 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
           DialogUtil.showAlertDiaLog(context, "用户:" + targetId + " 不在黑名单中");
         }
       } else {
-        developer.log("用户:" + targetId + " 黑名单状态查询失败" + code.toString(),
-            name: pageName);
-        DialogUtil.showAlertDiaLog(
-            context, "用户:" + targetId + " 黑名单状态查询失败" + code.toString());
+        developer.log("用户:" + targetId + " 黑名单状态查询失败" + code.toString(), name: pageName);
+        DialogUtil.showAlertDiaLog(context, "用户:" + targetId + " 黑名单状态查询失败" + code.toString());
       }
     });
   }
@@ -194,11 +173,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   void _getBlackList() {
     developer.log("_getBlackList", name: pageName);
     RongIMClient.getBlackList((List/*<String>*/ userIdList, int code) {
-      DialogUtil.showAlertDiaLog(
-          context,
-          "获取黑名单列表:\n userId 列表:" +
-              userIdList.toString() +
-              (code == 0 ? "" : "\n获取失败，错误码 code:" + code.toString()));
+      DialogUtil.showAlertDiaLog(context, "获取黑名单列表:\n userId 列表:" + userIdList.toString() + (code == 0 ? "" : "\n获取失败，错误码 code:" + code.toString()));
       userIdList.forEach((userId) {
         developer.log("userId:" + userId, name: pageName);
       });
@@ -206,30 +181,23 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   }
 
   void _setConStatusEnable() {
-    RongIMClient.setConversationNotificationStatus(
-        conversationType, targetId, true, (int status, int code) {
-      developer.log(
-          "setConversationNotificationStatus1 status " + status.toString(),
-          name: pageName);
+    RongIMClient.setConversationNotificationStatus(conversationType, targetId, true, (int status, int code) {
+      developer.log("setConversationNotificationStatus1 status " + status.toString(), name: pageName);
       String toast = code == 0 ? "设置免打扰成功" : "设置免打扰失败，错误码: $code";
       DialogUtil.showAlertDiaLog(context, toast);
     });
   }
 
   void _setConStatusDisanable() {
-    RongIMClient.setConversationNotificationStatus(
-        conversationType, targetId, false, (int status, int code) {
-      developer.log(
-          "setConversationNotificationStatus2 status " + status.toString(),
-          name: pageName);
+    RongIMClient.setConversationNotificationStatus(conversationType, targetId, false, (int status, int code) {
+      developer.log("setConversationNotificationStatus2 status " + status.toString(), name: pageName);
       String toast = code == 0 ? "取消免打扰成功" : "取消免打扰失败，错误码: $code";
       DialogUtil.showAlertDiaLog(context, toast);
     });
   }
 
   void _getConStatus() {
-    RongIMClient.getConversationNotificationStatus(conversationType, targetId,
-        (int status, int code) {
+    RongIMClient.getConversationNotificationStatus(conversationType, targetId, (int status, int code) {
       String toast = "免打扰状态:" + (status == 0 ? "免打扰" : "有消息提醒");
       developer.log(toast, name: pageName);
       DialogUtil.showAlertDiaLog(context, toast);
@@ -242,8 +210,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   }
 
   void _getMessageByUId() async {
-    List msgs =
-        await RongIMClient.getHistoryMessage(conversationType, targetId, 0, 20);
+    List msgs = await RongIMClient.getHistoryMessage(conversationType, targetId, 0, 20);
     if (msgs.length <= 0) {
       return;
     }
@@ -254,8 +221,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   }
 
   void _batchInsertMessage() async {
-    List msgs =
-        await RongIMClient.getHistoryMessage(conversationType, targetId, 0, 20);
+    List msgs = await RongIMClient.getHistoryMessage(conversationType, targetId, 0, 20);
     if (msgs.length <= 0) {
       return;
     }
@@ -276,27 +242,21 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   void _onSendDirectionalMessage() async {
     TextMessage txtMessage = new TextMessage();
     txtMessage.content = "这条消息来自 Flutter 的群定向消息";
-    RongIMClient.sendDirectionalMessage(
-        conversationType, targetId, ['UserId1', 'UserId2'], txtMessage,
-        finished: (int messageId, int status, int code) {
+    RongIMClient.sendDirectionalMessage(conversationType, targetId, ['UserId1', 'UserId2'], txtMessage, finished: (int messageId, int status, int code) {
       print("sendDirectionalMessage $messageId, $status, $code");
     });
   }
 
   void _getMessages() async {
-    List msgs =
-        await RongIMClient.getHistoryMessage(conversationType, targetId, 0, 20);
+    List msgs = await RongIMClient.getHistoryMessage(conversationType, targetId, 0, 20);
     if (msgs.length <= 0) {
       return;
     }
     Message message = msgs[msgs.length - 1];
     int timestamps = message.sentTime;
     HistoryMessageOption option = HistoryMessageOption(20, timestamps, 0);
-    RongIMClient.getMessages(conversationType, targetId, option,
-        (msgList, code) {
-      String toast = code == 0
-          ? "断档消息获取成功:" + msgList.length.toString()
-          : "断档消息获取失败， $code";
+    RongIMClient.getMessages(conversationType, targetId, option, (msgList, code) {
+      String toast = code == 0 ? "断档消息获取成功:" + msgList.length.toString() : "断档消息获取失败， $code";
       developer.log(toast, name: pageName);
       DialogUtil.showAlertDiaLog(context, toast);
     });
@@ -359,8 +319,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     identifier.conversationType = conversationType;
     identifier.targetId = targetId;
     identifiers.add(identifier);
-    await RongIMClient.addConversationsToTag(targetId, identifiers,
-        (result, code) {
+    await RongIMClient.addConversationsToTag(targetId, identifiers, (result, code) {
       String toast = code == 0 ? "添加成功" : "添加失败 $code";
       developer.log(toast, name: pageName);
       DialogUtil.showAlertDiaLog(context, toast);
@@ -373,8 +332,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     identifier.conversationType = conversationType;
     identifier.targetId = targetId;
     identifiers.add(identifier);
-    await RongIMClient.removeConversationsFromTag(targetId, identifiers,
-        (result, code) {
+    await RongIMClient.removeConversationsFromTag(targetId, identifiers, (result, code) {
       String toast = code == 0 ? "删除成功" : "删除失败 $code";
       developer.log(toast, name: pageName);
       DialogUtil.showAlertDiaLog(context, toast);
@@ -383,14 +341,12 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
 
   void _getTagsFromConversation() async {
     String toast = "";
-    await RongIMClient.getTagsFromConversation(conversationType, targetId,
-        (int code, List conversationList) {
+    await RongIMClient.getTagsFromConversation(conversationType, targetId, (int code, List conversationList) {
       if (conversationList == null || conversationList.length == 0) {
         toast = "tags is null";
       } else {
         for (ConversationTagInfo info in conversationList) {
-          toast = toast +
-              "[isTop:${info.isTop},tagId:${info.tagInfo.tagId},tagName:${info.tagInfo.tagName},count:${info.tagInfo.count},timestamp:${info.tagInfo.timestamp}] ";
+          toast = toast + "[isTop:${info.isTop},tagId:${info.tagInfo.tagId},tagName:${info.tagInfo.tagName},count:${info.tagInfo.count},timestamp:${info.tagInfo.timestamp}] ";
         }
       }
       developer.log(toast, name: pageName);
@@ -399,8 +355,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   }
 
   void _removeTagsFromConversation() async {
-    await RongIMClient.removeTagsFromConversation(
-        conversationType, targetId, [targetId], (result, code) {
+    await RongIMClient.removeTagsFromConversation(conversationType, targetId, [targetId], (result, code) {
       String toast = code == 0 ? "删除成功" : "删除失败 $code";
       developer.log(toast, name: pageName);
       DialogUtil.showAlertDiaLog(context, toast);
@@ -409,14 +364,12 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
 
   void _getConversationsFromTagByPage() async {
     String toast = "";
-    await RongIMClient.getConversationsFromTagByPage(targetId, 0, 0,
-        (code, conversationList) {
+    await RongIMClient.getConversationsFromTagByPage(targetId, 0, 0, (code, conversationList) {
       if (conversationList == null || conversationList.length == 0) {
         toast = "tags is null";
       } else {
         for (Conversation con in conversationList) {
-          toast = toast +
-              "[targetId:${con.conversationType},conversationType:${con.conversationType}}";
+          toast = toast + "[targetId:${con.conversationType},conversationType:${con.conversationType}}";
         }
       }
       developer.log(toast, name: pageName);
@@ -433,8 +386,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   }
 
   void _setConversationToTopInTag() async {
-    RongIMClient.setConversationToTopInTag(
-        conversationType, targetId, targetId, true, (result, code) {
+    RongIMClient.setConversationToTopInTag(conversationType, targetId, targetId, true, (result, code) {
       String toast = code == 0 ? "设置置顶成功" : "设置失败 $code";
       developer.log(toast, name: pageName);
       DialogUtil.showAlertDiaLog(context, toast);
@@ -442,8 +394,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   }
 
   void _getConversationTopStatusInTag() async {
-    RongIMClient.getConversationTopStatusInTag(
-        conversationType, targetId, targetId, (result, code) {
+    RongIMClient.getConversationTopStatusInTag(conversationType, targetId, targetId, (result, code) {
       String toast = code == 0 ? "置顶状态 $result" : "获取失败 $code";
       developer.log(toast, name: pageName);
       DialogUtil.showAlertDiaLog(context, toast);

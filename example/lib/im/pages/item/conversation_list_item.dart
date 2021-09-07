@@ -11,8 +11,8 @@ import 'dart:developer' as developer;
 class ConversationListItem extends StatefulWidget {
   final Conversation conversation;
   final ConversationListItemDelegate delegate;
-  const ConversationListItem({Key key, this.delegate, this.conversation})
-      : super(key: key);
+
+  const ConversationListItem({Key key, this.delegate, this.conversation}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -27,8 +27,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
   example.BaseInfo info;
   Offset tapPos;
 
-  _ConversationListItemState(
-      ConversationListItemDelegate delegate, Conversation con) {
+  _ConversationListItemState(ConversationListItemDelegate delegate, Conversation con) {
     this.delegate = delegate;
     this.conversation = con;
     setInfo();
@@ -92,10 +91,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
   Widget _buildTime() {
     String time = TimeUtil.convertTime(conversation.sentTime);
     List<Widget> _rightArea = <Widget>[
-      Text(time,
-          style: TextStyle(
-              fontSize: RCFont.ConListTimeFont,
-              color: Color(RCColor.ConListTimeColor))),
+      Text(time, style: TextStyle(fontSize: RCFont.ConListTimeFont, color: Color(RCColor.ConListTimeColor))),
       SizedBox(
         height: 15,
       )
@@ -103,20 +99,15 @@ class _ConversationListItemState extends State<ConversationListItem> {
     return Container(
       width: RCLayout.ConListItemHeight,
       margin: EdgeInsets.only(right: 8),
-      child: Column(
-          mainAxisAlignment: MainAxisAlignment.center, children: _rightArea),
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: _rightArea),
     );
   }
 
   Widget _buildTitle() {
-    String title = (conversation.conversationType == RCConversationType.Private
-            ? "单聊："
-            : "群聊：") +
-        (this.info == null || this.info.id == null ? "" : this.info.id);
+    String title = (conversation.conversationType == RCConversationType.Private ? "单聊：" : "群聊：") + (this.info == null || this.info.id == null ? "" : this.info.id);
     String digest = "";
     if (conversation.latestMessageContent != null) {
-      if (conversation.latestMessageContent.destructDuration != null &&
-          conversation.latestMessageContent.destructDuration > 0) {
+      if (conversation.latestMessageContent.destructDuration != null && conversation.latestMessageContent.destructDuration > 0) {
         digest = "[阅后即焚]";
       } else {
         digest = conversation.latestMessageContent.conversationDigest();
@@ -134,10 +125,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
         children: <Widget>[
           Text(
             title,
-            style: TextStyle(
-                fontSize: RCFont.ConListTitleFont,
-                color: Color(RCColor.ConListTitleColor),
-                fontWeight: FontWeight.w400),
+            style: TextStyle(fontSize: RCFont.ConListTitleFont, color: Color(RCColor.ConListTitleColor), fontWeight: FontWeight.w400),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -172,9 +160,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
             width: screenWidth - 170,
             child: Text(
               digest,
-              style: TextStyle(
-                  fontSize: RCFont.ConListDigestFont,
-                  color: Color(RCColor.ConListDigestColor)),
+              style: TextStyle(fontSize: RCFont.ConListDigestFont, color: Color(RCColor.ConListDigestColor)),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ))
@@ -182,9 +168,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
     } else {
       return Text(
         digest,
-        style: TextStyle(
-            fontSize: RCFont.ConListDigestFont,
-            color: Color(RCColor.ConListDigestColor)),
+        style: TextStyle(fontSize: RCFont.ConListDigestFont, color: Color(RCColor.ConListDigestColor)),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       );
@@ -196,17 +180,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
       return WidgetUtil.buildEmptyWidget();
     }
     double width = count > 100 ? 25 : RCLayout.ConListUnreadSize;
-    return Container(
-        width: width,
-        height: RCLayout.ConListUnreadSize,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(width / 2.0),
-            color: Color(RCColor.ConListUnreadColor)),
-        child: Text(count.toString(),
-            style: TextStyle(
-                fontSize: RCFont.ConListUnreadFont,
-                color: Color(RCColor.ConListUnreadTextColor))));
+    return Container(width: width, height: RCLayout.ConListUnreadSize, alignment: Alignment.center, decoration: BoxDecoration(borderRadius: BorderRadius.circular(width / 2.0), color: Color(RCColor.ConListUnreadColor)), child: Text(count.toString(), style: TextStyle(fontSize: RCFont.ConListUnreadFont, color: Color(RCColor.ConListUnreadTextColor))));
   }
 
   @override
@@ -216,10 +190,8 @@ class _ConversationListItemState extends State<ConversationListItem> {
 
   void setInfo() {
     String targetId = conversation.targetId;
-    example.UserInfo userInfo =
-        example.UserInfoDataSource.cachedUserMap[targetId];
-    example.GroupInfo groupInfo =
-        example.UserInfoDataSource.cachedGroupMap[targetId];
+    example.UserInfo userInfo = example.UserInfoDataSource.cachedUserMap[targetId];
+    example.GroupInfo groupInfo = example.UserInfoDataSource.cachedGroupMap[targetId];
     if (conversation.conversationType == RCConversationType.Private) {
       if (userInfo != null) {
         this.info = userInfo;
@@ -259,9 +231,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
         },
         child: Container(
           height: RCLayout.ConListItemHeight,
-          color: conversation.isTop
-              ? Color(RCColor.ConListTopBgColor)
-              : Color(RCColor.ConListItemBgColor),
+          color: conversation.isTop ? Color(RCColor.ConListTopBgColor) : Color(RCColor.ConListItemBgColor),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[_buildPortrait(), _buildContent()],

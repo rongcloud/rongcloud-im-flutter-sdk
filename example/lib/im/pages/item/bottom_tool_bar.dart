@@ -4,6 +4,7 @@ import 'dart:developer' as developer;
 
 class BottomToolBar extends StatefulWidget {
   BottomToolBarDelegate delegate;
+
   BottomToolBar(BottomToolBarDelegate delegate) {
     this.delegate = delegate;
   }
@@ -17,6 +18,7 @@ class BottomToolBar extends StatefulWidget {
 class _BottomToolBarState extends State<BottomToolBar> {
   String pageName = "example.BottomToolBar";
   BottomToolBarDelegate delegate;
+
   _BottomToolBarState(BottomToolBarDelegate delegate) {
     this.delegate = delegate;
   }
@@ -71,5 +73,6 @@ class _BottomToolBarState extends State<BottomToolBar> {
 
 abstract class BottomToolBarDelegate {
   void didTapDelete();
+
   void didTapForward();
 }
