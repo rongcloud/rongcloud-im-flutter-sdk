@@ -1,26 +1,23 @@
-current_version = ENV['CURRENT_VERSION'] ? ENV['CURRENT_VERSION'] : '5.1.2'
-im_sdk_version = ENV['IM_SDK_VERSION'] ? ENV['IM_SDK_VERSION'] : '5.1.2'
-
+#
+# To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html
+#
 Pod::Spec.new do |s|
   s.name             = 'rongcloud_im_plugin'
-  s.version          = current_version
-  s.summary          = 'RongCloud IM Flutter Plugin.'
-  s.homepage         = 'https://www.rongcloud.cn/'
+  s.version          = '0.0.1'
+  s.summary          = 'A new flutter plugin project.'
+  s.description      = <<-DESC
+A new flutter plugin project.
+                       DESC
+  s.homepage         = 'http://example.com'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'GP-Moon' => 'pmgd19881226@gmail.com' }
+  s.author           = { 'Your Company' => 'email@example.com' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.static_framework = true
   s.dependency 'Flutter'
-
-#  local = ENV['USE_LOCAL_SDK']
-#  if local and local == 'true'
-#    im_framework = '../../ios-imsdk/imlib/bin/RongIMLib.framework'
-#    s.vendored_frameworks = im_framework
-#  else
-    s.dependency 'RongCloudIM/IMLib', im_sdk_version
-#  end
+  s.dependency 'RongCloudIM/IMLib', '5.1.3.1'
 
   s.ios.deployment_target = '8.0'
 end
+

@@ -1,6 +1,7 @@
-import 'message_content.dart';
 import 'dart:convert' show json;
 import 'dart:developer' as developer;
+
+import 'message_content.dart';
 
 class ImageMessage extends MessageContent {
   static const String objectName = "RC:ImgMsg";
@@ -21,8 +22,7 @@ class ImageMessage extends MessageContent {
   @override
   void decode(String? jsonStr) {
     if (jsonStr == null || jsonStr.isEmpty) {
-      developer.log("Flutter ImageMessage deocde error: no content",
-          name: "RongIMClient.ImageMessage");
+      developer.log("Flutter ImageMessage deocde error: no content", name: "RongIMClient.ImageMessage");
       return;
     }
     Map map = json.decode(jsonStr.toString());

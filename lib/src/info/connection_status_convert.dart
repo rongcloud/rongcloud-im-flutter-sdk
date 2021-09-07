@@ -26,9 +26,9 @@ class ConnectionStatusConvert {
       return RCConnectionStatus.KickedByOtherClient;
     } else if (originCode == 1) {
       return RCConnectionStatus.NetworkUnavailable;
-    } else if (originCode == 31004) {
+    } else if (originCode == 15) {
       return RCConnectionStatus.TokenIncorrect;
-    } else if (originCode == 31011) {
+    } else if (originCode == 16) {
       return RCConnectionStatus.UserBlocked;
     } else if (originCode == 12) {
       return RCConnectionStatus.DisConnected;

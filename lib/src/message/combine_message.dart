@@ -1,15 +1,19 @@
 import 'dart:convert';
-import 'message_content.dart';
 import 'dart:developer' as developer;
+
+import 'message_content.dart';
 
 class CombineMessage extends MessageContent {
   static const String objectName = "RC:CombineMsg";
   String? title = "";
+
   // 这两个参数用来拼装默认消息的标题
   // 区分合并消息是在群聊里还是单聊里
   int? conversationType;
+
   // 单聊里最多有两个,群聊不记录
   List<String>? nameList;
+
   // 默认消息的内容
   List<String>? summaryList;
   String? localPath;
@@ -27,16 +31,7 @@ class CombineMessage extends MessageContent {
 
   @override
   String encode() {
-    Map map = {
-      "title": title,
-      "name": mName,
-      "localPath": localPath,
-      "remoteUrl": mMediaUrl,
-      "extra": extra,
-      "conversationType": conversationType,
-      "nameList": nameList,
-      "summaryList": summaryList
-    };
+    Map map = {"title": title, "name": mName, "localPath": localPath, "remoteUrl": mMediaUrl, "extra": extra, "conversationType": conversationType, "nameList": nameList, "summaryList": summaryList};
     if (this.sendUserInfo != null) {
       Map userMap = super.encodeUserInfo(this.sendUserInfo);
       map["user"] = userMap;
@@ -54,8 +49,7 @@ class CombineMessage extends MessageContent {
   @override
   void decode(String? jsonStr) {
     if (jsonStr == null || jsonStr == "") {
-      developer.log("Flutter CombineMessage deocde error: no content",
-          name: "RongIMClient.CombineMessage");
+      developer.log("Flutter CombineMessage deocde error: no content", name: "RongIMClient.CombineMessage");
       return;
     }
     Map map = json.decode(jsonStr);

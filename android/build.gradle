@@ -19,6 +19,7 @@ rootProject.allprojects {
         mavenCentral()
         maven {url  "https://dl.bintray.com/rongcloud/maven"}
         maven {url  "http://maven.rongcloud.cn/repository/maven-releases/"}
+        maven {url 'http://developer.huawei.com/repo/'}
     }
 }
 
@@ -37,16 +38,5 @@ android {
 }
 
 dependencies {
-    def localPropertiesFile = new File(rootProject.projectDir, "local.properties")
-    def properties = new Properties()
-
-    assert localPropertiesFile.exists()
-    localPropertiesFile.withReader("UTF-8") { reader -> properties.load(reader) }
-
-    def remote = properties.getProperty("rongcloud.flutter.demo.use_remote_lib", "true")
-
-    if (remote == "true")
-        implementation 'cn.rongcloud.sdk:im_lib:5.1.2'
-    else
-        api project(':kit')
+    api 'cn.rongcloud.sdk:im_lib:5.1.3.1'
 }

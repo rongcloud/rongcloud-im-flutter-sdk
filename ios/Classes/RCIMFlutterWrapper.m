@@ -276,6 +276,8 @@
         [self setConversationToTopInTag:call.arguments result:result];
     }else if([RCMethodKeyGetConversationTopStatusInTag isEqualToString:call.method]){
         [self getConversationTopStatusInTag:call.arguments result:result];
+    }else if ([RCMethodKeySetAndroidPushConfig isEqualToString:call.method]){
+        //配合安卓做的安卓推送。这里不写会抛异常。所以写了个空方法
     }
     else {
         result(FlutterMethodNotImplemented);

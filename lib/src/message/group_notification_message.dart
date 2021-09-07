@@ -1,6 +1,7 @@
-import 'message_content.dart';
 import 'dart:convert' show json;
 import 'dart:developer' as developer;
+
+import 'message_content.dart';
 
 class GroupNotificationMessage extends MessageContent {
   static const String objectName = "RC:GrpNtf";
@@ -77,8 +78,7 @@ class GroupNotificationMessage extends MessageContent {
   @override
   void decode(String? jsonStr) {
     if (jsonStr == null || jsonStr.isEmpty) {
-      developer.log("Flutter GroupNotificationMessage deocde error: no content",
-          name: "RongIMClient.GroupNotificationMessage");
+      developer.log("Flutter GroupNotificationMessage deocde error: no content", name: "RongIMClient.GroupNotificationMessage");
       return;
     }
     Map map = json.decode(jsonStr.toString());

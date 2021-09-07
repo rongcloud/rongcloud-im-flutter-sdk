@@ -1,6 +1,7 @@
 import 'dart:convert' show json;
-import 'message_content.dart';
 import 'dart:developer' as developer;
+
+import 'message_content.dart';
 
 class VoiceMessage extends MessageContent {
   static const String objectName = "RC:HQVCMsg";
@@ -23,8 +24,7 @@ class VoiceMessage extends MessageContent {
   @override
   void decode(String? jsonStr) {
     if (jsonStr == null) {
-      developer.log("Flutter VoiceMessage deocde error: no content",
-          name: "RongIMClient.VoiceMessage");
+      developer.log("Flutter VoiceMessage deocde error: no content", name: "RongIMClient.VoiceMessage");
       return;
     }
     Map map = json.decode(jsonStr.toString());

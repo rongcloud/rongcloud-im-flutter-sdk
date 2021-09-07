@@ -93,7 +93,7 @@ static NSString *RCMethodKeyGetConversationsFromTagByPage = @"getConversationsFr
 static NSString *RCMethodKeyGetUnreadCountByTag = @"getUnreadCountByTag";
 static NSString *RCMethodKeySetConversationToTopInTag = @"setConversationToTopInTag";
 static NSString *RCMethodKeyGetConversationTopStatusInTag = @"getConversationTopStatusInTag";
-
+static NSString *RCMethodKeySetAndroidPushConfig = @"setAndroidPushConfig";
 
 // 聊天室状态存储
 static NSString *RCMethodKeySetChatRoomEntry = @"SetChatRoomEntry";

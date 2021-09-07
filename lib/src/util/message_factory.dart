@@ -1,18 +1,22 @@
-import 'dart:core';
 import 'dart:convert' show json;
+import 'dart:core';
+import 'dart:developer' as developer;
+
+import 'package:rongcloud_im_plugin/src/info/tag_info.dart';
 
 import '../../rongcloud_im_plugin.dart';
 import '../util/type_util.dart';
-import 'dart:developer' as developer;
-import 'package:rongcloud_im_plugin/src/info/tag_info.dart';
 
 class MessageFactory extends Object {
   factory MessageFactory() => _getInstance()!;
+
   static MessageFactory? get instance => _getInstance();
   static MessageFactory? _instance;
+
   MessageFactory._internal() {
     // 初始化
   }
+
   static MessageFactory? _getInstance() {
     if (_instance == null) {
       _instance = new MessageFactory._internal();
@@ -107,19 +111,16 @@ class MessageFactory extends Object {
     Map? messageConfigMap = map["messageConfig"];
     if (messageConfigMap != null) {
       MessageConfig messageConfig = MessageConfig();
-      messageConfig.disableNotification =
-          messageConfigMap["disableNotification"];
+      messageConfig.disableNotification = messageConfigMap["disableNotification"];
       message.messageConfig = messageConfig;
     }
     Map? messagePushConfigMap = map["messagePushConfig"];
     if (messagePushConfigMap != null) {
       message.messagePushConfig = MessagePushConfig();
       message.messagePushConfig!.pushTitle = messagePushConfigMap["pushTitle"];
-      message.messagePushConfig!.pushContent =
-          messagePushConfigMap["pushContent"];
+      message.messagePushConfig!.pushContent = messagePushConfigMap["pushContent"];
       message.messagePushConfig!.pushData = messagePushConfigMap["pushData"];
-      message.messagePushConfig!.forceShowDetailContent =
-          messagePushConfigMap["forceShowDetailContent"];
+      message.messagePushConfig!.forceShowDetailContent = messagePushConfigMap["forceShowDetailContent"];
       Map? androidConfigMap = messagePushConfigMap["androidConfig"];
       if (androidConfigMap != null) {
         AndroidConfig androidConfig = AndroidConfig();
@@ -137,34 +138,27 @@ class MessageFactory extends Object {
         iosConfig.apns_collapse_id = iOSConfigMap["apns_collapse_id"];
         message.messagePushConfig!.iOSConfig = iosConfig;
       }
-      message.messagePushConfig!.disablePushTitle =
-          messagePushConfigMap["disablePushTitle"];
-      message.messagePushConfig!.templateId =
-          messagePushConfigMap["templateId"];
+      message.messagePushConfig!.disablePushTitle = messagePushConfigMap["disablePushTitle"];
+      message.messagePushConfig!.templateId = messagePushConfigMap["templateId"];
     }
     Map? readReceiptMap = map["readReceiptInfo"];
     if (readReceiptMap != null) {
       ReadReceiptInfo readReceiptInfo = ReadReceiptInfo();
-      readReceiptInfo.isReceiptRequestMessage =
-          readReceiptMap["isReceiptRequestMessage"];
+      readReceiptInfo.isReceiptRequestMessage = readReceiptMap["isReceiptRequestMessage"];
       readReceiptInfo.hasRespond = readReceiptMap["hasRespond"];
       readReceiptInfo.userIdList = readReceiptMap["userIdList"];
       message.readReceiptInfo = readReceiptInfo;
     }
     String? contenStr = map["content"];
-    MessageContent? content =
-        string2MessageContent(contenStr, message.objectName);
+    MessageContent? content = string2MessageContent(contenStr, message.objectName);
     if (contenStr == null || contenStr == "") {
-      developer.log(message.objectName! + ":该消息内容为空，可能该消息没有在原生 SDK 中注册",
-          name: "RongIMClient.MessageFactory");
+      developer.log(message.objectName! + ":该消息内容为空，可能该消息没有在原生 SDK 中注册", name: "RongIMClient.MessageFactory");
       return message;
     }
     if (content != null) {
       message.content = content;
     } else {
-      developer.log(
-          "${message.objectName}:该消息不能被解析!消息内容被保存在 Message.originContentMap 中",
-          name: "RongIMClient.MessageFactory");
+      developer.log("${message.objectName}:该消息不能被解析!消息内容被保存在 Message.originContentMap 中", name: "RongIMClient.MessageFactory");
       Map? map = json.decode(contenStr.toString());
       message.originContentMap = map;
     }
@@ -194,17 +188,9 @@ class MessageFactory extends Object {
       con.latestMessageContent = content;
     } else {
       if (contenStr == null || contenStr.length <= 0) {
-        developer.log(
-            "该会话没有消息 type:" +
-                con.conversationType.toString() +
-                " targetId:" +
-                con.targetId!,
-            name: "RongIMClient.MessageFactory");
+        developer.log("该会话没有消息 type:" + con.conversationType.toString() + " targetId:" + con.targetId!, name: "RongIMClient.MessageFactory");
       } else {
-        developer.log(
-            con.objectName! +
-                ":该消息不能被解析!消息内容被保存在 Conversation.originContentMap 中",
-            name: "RongIMClient.MessageFactory");
+        developer.log(con.objectName! + ":该消息不能被解析!消息内容被保存在 Conversation.originContentMap 中", name: "RongIMClient.MessageFactory");
         Map? map = json.decode(contenStr.toString());
         con.originContentMap = map;
       }
@@ -214,8 +200,7 @@ class MessageFactory extends Object {
 
   MessageContent? string2MessageContent(String? contentS, String? objectName) {
     MessageContent? content;
-    if (RongIMClient.messageDecoders.isNotEmpty &&
-        RongIMClient.messageDecoders.containsKey(objectName)) {
+    if (RongIMClient.messageDecoders.isNotEmpty && RongIMClient.messageDecoders.containsKey(objectName)) {
       return RongIMClient.messageDecoders[objectName!]!(contentS);
     }
     return content;
@@ -256,51 +241,37 @@ class MessageFactory extends Object {
     map["expansionDic"] = message.expansionDic;
     if (message.messageConfig != null) {
       Map messageConfig = Map();
-      messageConfig["disableNotification"] =
-          message.messageConfig!.disableNotification ?? false;
+      messageConfig["disableNotification"] = message.messageConfig!.disableNotification ?? false;
       map["messageConfig"] = messageConfig;
     }
     if (message.messagePushConfig != null) {
       Map messagePushConfig = Map();
-      messagePushConfig["pushTitle"] =
-          message.messagePushConfig!.pushTitle ?? "";
-      messagePushConfig["pushContent"] =
-          message.messagePushConfig!.pushContent ?? "";
+      messagePushConfig["pushTitle"] = message.messagePushConfig!.pushTitle ?? "";
+      messagePushConfig["pushContent"] = message.messagePushConfig!.pushContent ?? "";
       messagePushConfig["pushData"] = message.messagePushConfig!.pushData ?? "";
-      messagePushConfig["forceShowDetailContent"] =
-          message.messagePushConfig!.forceShowDetailContent ?? false;
-      messagePushConfig["disablePushTitle"] =
-          message.messagePushConfig!.disablePushTitle ?? false;
-      messagePushConfig["templateId"] =
-          message.messagePushConfig!.templateId ?? "";
+      messagePushConfig["forceShowDetailContent"] = message.messagePushConfig!.forceShowDetailContent ?? false;
+      messagePushConfig["disablePushTitle"] = message.messagePushConfig!.disablePushTitle ?? false;
+      messagePushConfig["templateId"] = message.messagePushConfig!.templateId ?? "";
       if (message.messagePushConfig!.androidConfig != null) {
         Map androidConfig = Map();
-        androidConfig["notificationId"] =
-            message.messagePushConfig!.androidConfig!.notificationId ?? "";
-        androidConfig["channelIdMi"] =
-            message.messagePushConfig!.androidConfig!.channelIdMi ?? "";
-        androidConfig["channelIdHW"] =
-            message.messagePushConfig!.androidConfig!.channelIdHW ?? "";
-        androidConfig["channelIdOPPO"] =
-            message.messagePushConfig!.androidConfig!.channelIdOPPO ?? "";
-        androidConfig["typeVivo"] =
-            message.messagePushConfig!.androidConfig!.typeVivo ?? "";
+        androidConfig["notificationId"] = message.messagePushConfig!.androidConfig!.notificationId ?? "";
+        androidConfig["channelIdMi"] = message.messagePushConfig!.androidConfig!.channelIdMi ?? "";
+        androidConfig["channelIdHW"] = message.messagePushConfig!.androidConfig!.channelIdHW ?? "";
+        androidConfig["channelIdOPPO"] = message.messagePushConfig!.androidConfig!.channelIdOPPO ?? "";
+        androidConfig["typeVivo"] = message.messagePushConfig!.androidConfig!.typeVivo ?? "";
         messagePushConfig["androidConfig"] = androidConfig;
       }
       if (message.messagePushConfig!.iOSConfig != null) {
         Map iOSConfig = Map();
-        iOSConfig["thread_id"] =
-            message.messagePushConfig!.iOSConfig!.thread_id ?? "";
-        iOSConfig["apns_collapse_id"] =
-            message.messagePushConfig!.iOSConfig!.apns_collapse_id ?? "";
+        iOSConfig["thread_id"] = message.messagePushConfig!.iOSConfig!.thread_id ?? "";
+        iOSConfig["apns_collapse_id"] = message.messagePushConfig!.iOSConfig!.apns_collapse_id ?? "";
         messagePushConfig["iOSConfig"] = iOSConfig;
       }
       map["messagePushConfig"] = messagePushConfig;
     }
     if (message.readReceiptInfo != null) {
       Map readReceiptMap = Map();
-      readReceiptMap["isReceiptRequestMessage"] =
-          message.readReceiptInfo!.isReceiptRequestMessage;
+      readReceiptMap["isReceiptRequestMessage"] = message.readReceiptInfo!.isReceiptRequestMessage;
       readReceiptMap["hasRespond"] = message.readReceiptInfo!.hasRespond;
       readReceiptMap["userIdList"] = message.readReceiptInfo!.userIdList;
       map["readReceiptInfo"] = readReceiptMap;

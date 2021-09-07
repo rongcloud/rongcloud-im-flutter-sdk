@@ -49,12 +49,12 @@ class MessagePushConfig extends Object {
   String? templateId; //推送模板 ID
 }
 
-class IOSConfig extends Object{
+class IOSConfig extends Object {
   String? thread_id; //iOS 平台通知栏分组 ID
   String? apns_collapse_id; //iOS 平台通知覆盖 ID
 }
 
-class AndroidConfig extends Object{
+class AndroidConfig extends Object {
   String? notificationId; // Android 平台 Push 唯一标识
   String? channelIdMi; // 小米推送平台渠道 ID
   String? channelIdHW; // 华为推送平台渠道 ID

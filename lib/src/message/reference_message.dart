@@ -1,9 +1,10 @@
+import 'dart:convert' show json;
+import 'dart:developer' as developer;
+
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
-import 'message_content.dart';
-import 'dart:convert' show json;
 import '../util/message_factory.dart';
-import 'dart:developer' as developer;
+import 'message_content.dart';
 
 //Gif消息
 class ReferenceMessage extends MessageContent {
@@ -17,14 +18,12 @@ class ReferenceMessage extends MessageContent {
   @override
   void decode(String? jsonStr) {
     if (jsonStr == null || jsonStr == "") {
-      developer.log("Flutter ReferenceMessage deocde error: no content",
-          name: "RongIMClient.ReferenceMessage");
+      developer.log("Flutter ReferenceMessage deocde error: no content", name: "RongIMClient.ReferenceMessage");
       return;
     }
     Map? map = json.decode(jsonStr);
     if (map == null) {
-      developer.log("Flutter ReferenceMessage deocde error: no right content",
-          name: "RongIMClient.ReferenceMessage");
+      developer.log("Flutter ReferenceMessage deocde error: no right content", name: "RongIMClient.ReferenceMessage");
       return;
     }
     this.content = map["content"];
@@ -32,8 +31,7 @@ class ReferenceMessage extends MessageContent {
     Map? messageMap = map["referMsg"];
     String messageStr = json.encode(messageMap);
     String? objectName = map["objName"];
-    this.referMsg =
-        MessageFactory.instance!.string2MessageContent(messageStr, objectName);
+    this.referMsg = MessageFactory.instance!.string2MessageContent(messageStr, objectName);
     this.extra = map["extra"];
     Map? userMap = map["user"];
     super.decodeUserInfo(userMap);

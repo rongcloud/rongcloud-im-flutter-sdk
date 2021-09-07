@@ -1,6 +1,7 @@
-import 'message_content.dart';
 import 'dart:convert' show json;
 import 'dart:developer' as developer;
+
+import 'message_content.dart';
 
 //Gif消息
 class GifMessage extends MessageContent {
@@ -27,8 +28,7 @@ class GifMessage extends MessageContent {
   @override
   void decode(String? jsonStr) {
     if (jsonStr == null || jsonStr == "") {
-      developer.log("Flutter GifMessage deocde error: no content",
-          name: "RongIMClient.GifMessage");
+      developer.log("Flutter GifMessage deocde error: no content", name: "RongIMClient.GifMessage");
       return;
     }
     Map map = json.decode(jsonStr.toString());

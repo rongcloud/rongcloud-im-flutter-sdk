@@ -1,6 +1,7 @@
 import 'dart:convert';
-import 'message_content.dart';
 import 'dart:developer' as developer;
+
+import 'message_content.dart';
 
 class FileMessage extends MessageContent {
   static const String objectName = "RC:FileMsg";
@@ -22,8 +23,7 @@ class FileMessage extends MessageContent {
   @override
   void decode(String? jsonStr) {
     if (jsonStr == null || jsonStr == "") {
-      developer.log("Flutter FileMessage deocde error: no content",
-          name: "RongIMClient.FileMessage");
+      developer.log("Flutter FileMessage deocde error: no content", name: "RongIMClient.FileMessage");
       return;
     }
     Map map = json.decode(jsonStr);

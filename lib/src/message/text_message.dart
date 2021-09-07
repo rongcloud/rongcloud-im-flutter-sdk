@@ -1,6 +1,7 @@
-import 'message_content.dart';
 import 'dart:convert' show json;
 import 'dart:developer' as developer;
+
+import 'message_content.dart';
 
 class TextMessage extends MessageContent {
   static const String objectName = "RC:TxtMsg";
@@ -18,8 +19,7 @@ class TextMessage extends MessageContent {
   @override
   void decode(String? jsonStr) {
     if (jsonStr == null) {
-      developer.log("Flutter TextMessage deocde error: no content",
-          name: "RongIMClient.TextMessage");
+      developer.log("Flutter TextMessage deocde error: no content", name: "RongIMClient.TextMessage");
       return;
     }
     Map map = json.decode(jsonStr.toString());

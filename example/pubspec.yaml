@@ -36,6 +36,7 @@ dependencies:
   rxdart: ^0.24.0
   flutter_cache_manager: ^1.2.0
   connectivity: ^0.4.8+2
+  ffi: ^1.0.0
 
 
 dev_dependencies:
