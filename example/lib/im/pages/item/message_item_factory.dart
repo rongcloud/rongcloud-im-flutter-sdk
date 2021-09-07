@@ -582,7 +582,8 @@ class MessageItemFactory extends StatelessWidget {
     } else if (message.content is ReferenceMessage) {
       return referenceMessageItem(context);
     } else if (message.content is LocationMessage) {
-      return Text("位置消息 " + message.objectName);
+      LocationMessage msg = message.content;
+      return Text("位置消息 " + msg.mPoi);
     } else if (message.content is GroupNotificationMessage) {
       GroupNotificationMessage groupNotificationMessage = message.content;
       return Text(

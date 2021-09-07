@@ -8,6 +8,7 @@ import 'im/util/event_bus.dart';
 import 'user_data.dart';
 import 'router.dart';
 import 'dart:developer' as developer;
+import 'location_message.dart';
 
 void main() => runApp(MyApp());
 
@@ -57,11 +58,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     //1.初始化 im SDK
     prefix.RongIMClient.init(RongAppKey);
     //注册自定义消息
-    prefix.RongIMClient.addMessageDecoder(TestMessage.objectName, (content) {
-      TestMessage msg = new TestMessage();
-      msg.decode(content);
-      return msg;
-    });
+    _registerCustomMessage();
+    
     // _initUserInfoCache();
 
     WidgetsBinding.instance.addObserver(this);
@@ -133,6 +131,19 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     };
   }
 
+  void _registerCustomMessage() {
+    prefix.RongIMClient.addMessageDecoder(TestMessage.objectName, (content) {
+      TestMessage msg = new TestMessage();
+      msg.decode(content);
+      return msg;
+    });
+
+    prefix.RongIMClient.addMessageDecoder(LocationMessage.objectName, (content) {
+      LocationMessage msg = new LocationMessage();
+      msg.decode(content);
+      return msg;
+    });
+  }
   void _getNotificationQuietHours() {
     prefix.RongIMClient.getNotificationQuietHours(
         (int code, String startTime, int spansMin) {
