@@ -493,7 +493,7 @@ class _ConversationPageState extends State<ConversationPage>
 
   void showShortToast(String message) {
     Fluttertoast.showToast(
-        msg: message, toastLength: Toast.LENGTH_SHORT, timeInSecForIos: 1);
+        msg: message, toastLength: Toast.LENGTH_SHORT, timeInSecForIosWeb: 1);
   }
 
   /// 禁止随意调用 setState 接口刷新 UI，必须调用该接口刷新 UI
