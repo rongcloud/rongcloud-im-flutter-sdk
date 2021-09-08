@@ -131,3 +131,4 @@ static NSString *RCMethodCallBackKeyMessageExpansionDidUpdate = @"MessageExpansi
 static NSString *RCMethodCallBackKeyMessageExpansionDidRemove = @"MessageExpansionDidRemoveCallBack";
 static NSString *RCMethodCallBackDatabaseOpened = @"DatabaseOpenedCallBack";
 static NSString *RCMethodCallBackOnTagChanged = @"onTagChanged";
+static NSString *RCMethodCallBackOnMessageBlocked = @"onMessageBlocked";

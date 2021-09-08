@@ -135,4 +135,5 @@ class RCMethodCallBackKey {
   static const String DatabaseOpened = 'DatabaseOpenedCallBack';
   static const String ConversationTagChanged = 'ConversationTagChangedCallBack';
   static const String OnTagChanged = 'onTagChanged';
+  static const String OnMessageBlocked = 'onMessageBlocked';
 }

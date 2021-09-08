@@ -41,6 +41,7 @@ import io.rong.imlib.RongIMClient;
 import io.rong.imlib.chatroom.base.RongChatRoomClient;
 import io.rong.imlib.location.message.LocationMessage;
 import io.rong.imlib.model.AndroidConfig;
+import io.rong.imlib.model.BlockedMessageInfo;
 import io.rong.imlib.model.ChatRoomInfo;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.ConversationIdentifier;
@@ -557,6 +558,7 @@ public class RCIMFlutterWrapper {
             setConversationTagListener();
             setTagListenerListener();
             setChatRoomAdvancedActionListener();
+            setMessageBlockListener();
         } else {
             Log.e("RCIM flutter init", "非法参数");
         }
@@ -2611,6 +2613,26 @@ public class RCIMFlutterWrapper {
                 Map map = new HashMap();
                 map.put("status", connectionStatus.getValue());
                 mChannel.invokeMethod(RCMethodList.MethodCallBackKeyConnectionStatusChange, map);
+            }
+        });
+    }
+
+    private void setMessageBlockListener() {
+        RongCoreClient.getInstance().setMessageBlockListener(new IRongCoreListener.MessageBlockListener() {
+            @Override
+            public void onMessageBlock(final BlockedMessageInfo info) {
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Map<String, Object> arguments = new HashMap<>();
+                        arguments.put("conversationType", info.getConversationType().getValue());
+                        arguments.put("targetId", info.getTargetId());
+                        arguments.put("blockMsgUId", info.getBlockMsgUId());
+                        arguments.put("blockType", info.getType().value);
+                        arguments.put("extra", info.getExtra());
+                        mChannel.invokeMethod(RCMethodList.MethodCallBackMessageBlocked, arguments);
+                    }
+                });
             }
         });
     }

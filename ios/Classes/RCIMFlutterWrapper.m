@@ -55,7 +55,15 @@
                                content:(NSString *)content;
 @end
 
-@interface RCIMFlutterWrapper ()<RCIMClientReceiveMessageDelegate,RCConnectionStatusChangeDelegate,RCTypingStatusDelegate, RCMessageDestructDelegate, RCChatRoomKVStatusChangeDelegate, RCMessageExpansionDelegate, RCChatRoomStatusDelegate,RCTagDelegate>
+@interface RCIMFlutterWrapper () <RCIMClientReceiveMessageDelegate,
+                                  RCConnectionStatusChangeDelegate,
+                                  RCTypingStatusDelegate,
+                                  RCMessageDestructDelegate,
+                                  RCChatRoomKVStatusChangeDelegate,
+                                  RCMessageExpansionDelegate,
+                                  RCChatRoomStatusDelegate,
+                                  RCTagDelegate,
+                                  RCMessageBlockDelegate>
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 @property (nonatomic, strong) RCFlutterConfig *config;
 @property (nonatomic, strong) NSString *sdkVersion;
@@ -308,6 +316,7 @@
         [[RCChatRoomClient sharedChatRoomClient] setChatRoomStatusDelegate:self];
         [[RCIMClient sharedRCIMClient] setMessageExpansionDelegate:self];
         [RCCoreClient sharedCoreClient].tagDelegate = self;
+        [[RCCoreClient sharedCoreClient] setMessageBlockDelegate:self];
         self.sdkVersion = [conf objectForKey:@"version"];
     }else {
         [RCLog e:[NSString stringWithFormat:@"%@,非法参数",LOG_TAG]];
@@ -1316,6 +1325,16 @@
 #pragma mark -  标签变化监听器
 - (void)onTagChanged {
     [self.channel invokeMethod:RCMethodCallBackOnTagChanged arguments:nil];
+}
+
+#pragma mark -  敏感消息拦截监听
+- (void)messageDidBlock:(RCBlockedMessageInfo *)info {
+    NSDictionary *arguments = @{ @"conversationType" : @(info.type),
+                                 @"targetId" : info.targetId,
+                                 @"blockMsgUId" : info.blockedMsgUId,
+                                 @"blockType" : @(info.blockType),
+                                 @"extra" : info.extra };
+    [self.channel invokeMethod:RCMethodCallBackOnMessageBlocked arguments:arguments];
 }
 
 #pragma mark - 会话标签

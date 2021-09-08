@@ -138,5 +138,6 @@ public class RCMethodList {
     static String MethodCallBackDatabaseOpened = "DatabaseOpenedCallBack";
     static String MethodCallBackTagChanged ="onTagChanged";
     static String MethodCallBackConversationTagChanged = "ConversationTagChangedCallBack";
+    static String MethodCallBackMessageBlocked = "onMessageBlocked";
 
 }

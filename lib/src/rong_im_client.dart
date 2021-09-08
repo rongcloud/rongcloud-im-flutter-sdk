@@ -9,6 +9,7 @@ import 'package:rongcloud_im_plugin/src/util/type_util.dart';
 
 import '../rongcloud_im_plugin.dart';
 import 'common_define.dart';
+import 'info/blocked_message_info.dart';
 import 'info/connection_status_convert.dart';
 import 'method_key.dart';
 import 'util/message_factory.dart';
@@ -1357,14 +1358,12 @@ class RongIMClient {
     bool overWrite,
     Function(int code, Map<String, int>? errors) finished,
   ) async {
-    print('GPTest setChatRoomEntries???');
     Map arguments = {
       "chatRoomId": chatRoomId,
       "chatRoomEntryMap": chatRoomEntryMap,
       "autoRemove": autoRemove,
       "overWrite": overWrite,
     };
-    print('GPTest setChatRoomEntries');
     Map<String, dynamic>? result = await _channel.invokeMapMethod(RCMethodKey.SetChatRoomEntries, arguments);
     if (result != null) {
       int code = result['code'];
@@ -1390,13 +1389,11 @@ class RongIMClient {
     bool force,
     Function(int code, Map<String, int>? errors) finished,
   ) async {
-    print('GPTest removeChatRoomEntries???');
     Map arguments = {
       "chatRoomId": chatRoomId,
       "chatRoomEntryList": chatRoomEntryList,
       "force": force,
     };
-    print('GPTest removeChatRoomEntries');
     Map<String, dynamic>? result = await _channel.invokeMapMethod(RCMethodKey.RemoveChatRoomEntries, arguments);
     if (result != null) {
       int code = result['code'];
@@ -2086,6 +2083,9 @@ class RongIMClient {
   ///
   static Function()? onTagChanged;
 
+  /// 发送含有敏感词消息被拦截的回调
+  static Function(BlockedMessageInfo info)? onMessageBlocked;
+
   ///连接状态发生变更
   ///
   /// [connectionStatus] 连接状态，具体参见枚举 [RCConnectionStatus]
@@ -2470,6 +2470,9 @@ class RongIMClient {
         if (onTagChanged != null) {
           onTagChanged!();
         }
+        break;
+      case RCMethodCallBackKey.OnMessageBlocked:
+        onMessageBlocked?.call(BlockedMessageInfo.fromMap(call.arguments));
         break;
     }
   }
