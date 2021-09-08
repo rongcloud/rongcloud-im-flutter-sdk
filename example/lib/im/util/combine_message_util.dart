@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:io';
 
@@ -8,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:sqflite/utils/utils.dart';
 import 'http_util.dart';
 import '../../main.dart';
 
@@ -414,7 +414,7 @@ class CombineMessageUtils {
   String generateMd5(String data) {
     var content = new Utf8Encoder().convert(data);
     var digest = md5.convert(content);
-    return hex.encode(digest.bytes);
+    return hex(digest.bytes);
   }
 
   Future<String> getBase64FromLocalPath(String fileName) async {

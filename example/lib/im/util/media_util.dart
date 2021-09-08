@@ -2,7 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
-import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
+import 'package:flutter_plugin_record/flutter_plugin_record.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_sound/flutter_sound.dart';
@@ -19,7 +19,8 @@ class MediaUtil {
   static MediaUtil get instance => _getInstance();
   static MediaUtil _instance;
 
-  FlutterAudioRecorder _recorder;
+  FlutterPluginRecord _recorder = new FlutterPluginRecord();
+  
   MediaUtil._internal() {
     // 初始化
   }
@@ -46,7 +47,7 @@ class MediaUtil {
 
   //拍照，成功则返回照片的本地路径，注：Android 必须要加 file:// 头
   Future<String> takePhoto() async {
-    File imgfile = await ImagePicker.pickImage(source: ImageSource.camera);
+    File imgfile = (await ImagePicker().pickImage(source: ImageSource.camera)) as File;
     if (imgfile == null) {
       return null;
     }
@@ -59,7 +60,7 @@ class MediaUtil {
 
   //从相册选照片，成功则返回照片的本地路径，注：Android 必须要加 file:// 头
   Future<String> pickImage() async {
-    File imgfile = await ImagePicker.pickImage(source: ImageSource.gallery);
+    File imgfile = await ImagePicker().pickImage(source: ImageSource.gallery) as File;;
     if (imgfile == null) {
       return null;
     }
@@ -72,36 +73,34 @@ class MediaUtil {
 
   //选择本地文件，成功返回文件信息
   Future<List<File>> pickFiles() async {
-    List<File> files = await FilePicker.getMultiFile();
+    List<File> files = (await FilePicker.platform.getDirectoryPath()) as List<File>;
     return files;
   }
 
   //开始录音
   void startRecordAudio() async {
     developer.log("debug 准备录音并检查权限", name: pageName);
-    bool hasPermission = await FlutterAudioRecorder.hasPermissions;
-    if (hasPermission) {
+    _recorder.init();
+    // bool hasPermission = await FlutterAudioRecorder.hasPermissions;
+    // if (hasPermission) {
       developer.log("debug 录音权限已开启", name: pageName);
       Directory tempDir = await getTemporaryDirectory();
       String tempPath = tempDir.path +
           "/" +
           DateTime.now().millisecondsSinceEpoch.toString() +
           ".aac";
-      _recorder = FlutterAudioRecorder(tempPath,
-          audioFormat: AudioFormat.AAC); // or AudioFormat.WAV
-      await _recorder.initialized;
-      await _recorder.start();
+          _recorder.startByWavPath(tempPath);
       developer.log("debug 开始录音", name: pageName);
-    } else {
-      Fluttertoast.showToast(
-          msg: "录音权限未开启",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIos: 1,
-          backgroundColor: Colors.grey[800],
-          textColor: Colors.white,
-          fontSize: 16.0);
-    }
+    // } else {
+    //   Fluttertoast.showToast(
+    //       msg: "录音权限未开启",
+    //       toastLength: Toast.LENGTH_SHORT,
+    //       gravity: ToastGravity.CENTER,
+    //       timeInSecForIosWeb: 1,
+    //       backgroundColor: Colors.grey[800],
+    //       textColor: Colors.white,
+    //       fontSize: 16.0);
+    // }
   }
 
   //录音结束，通过 finished 返回本地路径和语音时长，注：Android 必须要加 file:// 头
@@ -130,7 +129,7 @@ class MediaUtil {
           msg: "说话时间太短",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
-          timeInSecForIos: 1,
+          timeInSecForIosWeb: 1,
           backgroundColor: Colors.grey[800],
           textColor: Colors.white,
           fontSize: 16.0);
@@ -139,15 +138,17 @@ class MediaUtil {
 
   //播放语音
   void startPlayAudio(String path) {
-    if (flutterSound.audioState == t_AUDIO_STATE.IS_PLAYING) {
-      stopPlayAudio();
-    }
-    flutterSound.startPlayer(path);
+    // if (flutterSound.audioState == t_AUDIO_STATE.IS_PLAYING) {
+    //   stopPlayAudio();
+    // }
+    // flutterSound.startPlayer(path);
+    _recorder.playByPath(path, 'file');
   }
 
   //停止播放语音
   void stopPlayAudio() {
-    flutterSound.stopPlayer();
+    // flutterSound.stopPlayer();
+    _recorder.stopPlay();
   }
 
   String getCorrectedLocalPath(String localPath) {

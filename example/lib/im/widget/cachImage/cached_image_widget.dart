@@ -239,7 +239,7 @@ class CachedNetworkImageState extends State<CachedNetworkImage>
   }
 
   void _createFileStream() {
-    _fromMemory = _cacheManager().getFileFromMemory(widget.imageUrl);
+    _fromMemory = _cacheManager().getFileFromMemory(widget.imageUrl) as FileInfo;
 
     _fileResponseStream = _cacheManager()
         .getFileStream(

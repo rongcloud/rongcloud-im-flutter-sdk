@@ -187,17 +187,16 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         "app_icon"); // app_icon 所在目录为 res/drawable/
     var initializationSettingsIOS = new IOSInitializationSettings(
         requestAlertPermission: true, requestSoundPermission: true);
-    var initializationSettings = new InitializationSettings(
-        initializationSettingsAndroid, initializationSettingsIOS);
+    var initializationSettings = new InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
     flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onSelectNotification: null);
 
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
         'your channel id', 'your channel name', 'your channel description',
-        importance: Importance.Max, priority: Priority.High, ticker: '本地通知');
+        importance: Importance.max, priority: Priority.high, ticker: '本地通知');
 
     var platformChannelSpecifics =
-        NotificationDetails(androidPlatformChannelSpecifics, null);
+        NotificationDetails(android: androidPlatformChannelSpecifics, iOS: null);
 
     String content = "测试本地通知";
 

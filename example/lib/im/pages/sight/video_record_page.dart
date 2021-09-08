@@ -116,7 +116,8 @@ class _VideoRecordPageState extends State<VideoRecordPage>
 
     try {
       videoPath = filePath;
-      await cameraController.startVideoRecording(filePath);
+      // await cameraController.startVideoRecording(filePath);
+      await cameraController.startVideoRecording();
     } on CameraException catch (e) {
       developer.log(e.toString(), name: pageName);
       return null;

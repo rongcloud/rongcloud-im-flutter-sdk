@@ -36,24 +36,24 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
     RongIMClient.onJoinChatRoom = (String targetId, int status) {
       Fluttertoast.showToast(
           msg: "加入聊天室 $targetId " + (status == 0 ? "成功" : "失败"),
-          timeInSecForIos: 2);
+          timeInSecForIosWeb: 2);
     };
 
     RongIMClient.onQuitChatRoom = (String targetId, int status) {
       Fluttertoast.showToast(
           msg: "退出聊天室 $targetId " + (status == 0 ? "成功" : "失败"),
-          timeInSecForIos: 2);
+          timeInSecForIosWeb: 2);
     };
 
     RongIMClient.onChatRoomReset = (String targetId) {
-      Fluttertoast.showToast(msg: "聊天室被重制 $targetId ", timeInSecForIos: 2);
+      Fluttertoast.showToast(msg: "聊天室被重制 $targetId ", timeInSecForIosWeb: 2);
     };
 
     RongIMClient.onChatRoomDestroyed = (String targetId, int type) {
       Fluttertoast.showToast(
           msg: "聊天室被销毁 $targetId " +
               (type == 0 ? "开发者主动销毁" : "聊天室长时间不活跃，被系统自动回收"),
-          timeInSecForIos: 2);
+          timeInSecForIosWeb: 2);
     };
 
     RongIMClient.chatRoomKVDidSync = (String roomId) {

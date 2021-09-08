@@ -68,7 +68,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     }
 
     RongIMClient.onTagChanged = () {
-      Fluttertoast.showToast(msg: "会话标签变化收到监听", timeInSecForIos: 2);
+      Fluttertoast.showToast(msg: "会话标签变化收到监听", timeInSecForIosWeb: 2);
     };
   }
 
