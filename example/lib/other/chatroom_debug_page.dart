@@ -1,5 +1,3 @@
-import 'dart:developer' as developer;
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
@@ -15,6 +13,7 @@ class ChatRoomDebugPage extends StatefulWidget {
 class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
   String pageName = "example.ChatRoomDebugPage";
   List titles;
+  List<Function> functions;
   String targetId = "kvchatroom1";
 
   _ChatRoomDebugPageState();
@@ -28,12 +27,30 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
       "强制设置 KV",
       "删除 KV",
       "强制删除 KV",
+      "设置 KV 列表",
+      "删除 KV 列表",
       "获取单个 KV",
       "获取所有 KV",
       "退出聊天室 1",
       "获取聊天室历史消息",
       "加入已存在的聊天室 1",
       "聊天室发送消息",
+    ];
+
+    functions = [
+      _joinChatRoom,
+      _setEntry,
+      _forceSetEntry,
+      _removeEntry,
+      _forceRemoveEntry,
+      _setEntries,
+      _removeEntries,
+      _getEntry,
+      _getAllEntry,
+      _quitChatRoom,
+      _getChatRoomHistoryMessage,
+      _joinExistChatRoom,
+      _sendChatMessage,
     ];
 
     RongIMClient.onJoinChatRoom = (String targetId, int status) {
@@ -66,42 +83,7 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
   }
 
   void _didTap(int index) {
-    developer.log("did tap debug " + titles[index], name: pageName);
-    switch (index) {
-      case 0:
-        _joinChatRoom();
-        break;
-      case 1:
-        _setEntry();
-        break;
-      case 2:
-        _forceSetEntry();
-        break;
-      case 3:
-        _removeEntry();
-        break;
-      case 4:
-        _forceRemoveEntry();
-        break;
-      case 5:
-        _getEntry();
-        break;
-      case 6:
-        _getAllEntry();
-        break;
-      case 7:
-        _quitChatRoom();
-        break;
-      case 8:
-        _getChatRoomHistoryMessage();
-        break;
-      case 9:
-        _joinExistChatRoom();
-        break;
-      case 10:
-        _sendChatMessage();
-        break;
-    }
+    functions[index].call();
   }
 
   void _joinChatRoom() {
@@ -134,6 +116,37 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
     RongIMClient.forceRemoveChatRoomEntry(targetId, "key2", false, "notificationExtra", (int code) {
       DialogUtil.showAlertDiaLog(context, "强制删除 KV：key2, 不发送通知，code：" + CodeUtil.codeString(code));
     });
+  }
+
+  void _setEntries() {
+    Map<String, String> map = {
+      "key3": "value3",
+      "key4": "value4",
+    };
+    RongIMClient.setChatRoomEntries(
+      targetId,
+      map,
+      true,
+      true,
+      (code, errors) {
+        DialogUtil.showAlertDiaLog(context, "设置 KV：$map, 退出时删除，覆盖，code：" + CodeUtil.codeString(code));
+      },
+    );
+  }
+
+  void _removeEntries() {
+    List<String> list = [
+      "key3",
+      "key4",
+    ];
+    RongIMClient.removeChatRoomEntries(
+      targetId,
+      list,
+      true,
+      (code, errors) {
+        DialogUtil.showAlertDiaLog(context, "删除 KV：$list, 强制，code：" + CodeUtil.codeString(code));
+      },
+    );
   }
 
   void _getEntry() {

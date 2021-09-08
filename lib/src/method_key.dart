@@ -85,6 +85,8 @@ class RCMethodKey {
   static const String GetAllChatRoomEntries = 'GetAllChatRoomEntries';
   static const String RemoveChatRoomEntry = 'RemoveChatRoomEntry';
   static const String ForceRemoveChatRoomEntry = 'ForceRemoveChatRoomEntry';
+  static const String SetChatRoomEntries = 'SetChatRoomEntries';
+  static const String RemoveChatRoomEntries = 'RemoveChatRoomEntries';
 
   // 消息扩展
   static const String UpdateMessageExpansion = 'updateMessageExpansion';

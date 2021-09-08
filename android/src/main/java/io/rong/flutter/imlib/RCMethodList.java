@@ -106,6 +106,8 @@ public class RCMethodList {
     static String MethodKeyGetAllChatRoomEntries = "GetAllChatRoomEntries";
     static String MethodKeyRemoveChatRoomEntry = "RemoveChatRoomEntry";
     static String MethodKeyForceRemoveChatRoomEntry = "ForceRemoveChatRoomEntry";
+    static String MethodKeySetChatRoomEntries = "SetChatRoomEntries";
+    static String MethodKeyRemoveChatRoomEntries = "RemoveChatRoomEntries";
 
 
 

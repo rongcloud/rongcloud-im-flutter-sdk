@@ -266,6 +266,10 @@ public class RCIMFlutterWrapper {
             removeChatRoomEntry(call.arguments, result);
         } else if (RCMethodList.MethodKeyForceRemoveChatRoomEntry.equalsIgnoreCase(call.method)) {
             forceRemoveChatRoomEntry(call.arguments, result);
+        } else if (RCMethodList.MethodKeySetChatRoomEntries.equalsIgnoreCase(call.method)) {
+            setChatRoomEntries(call, result);
+        } else if (RCMethodList.MethodKeyRemoveChatRoomEntries.equalsIgnoreCase(call.method)) {
+            removeChatRoomEntries(call, result);
         } else if (RCMethodList.MethodKeySetNotificationQuietHours.equalsIgnoreCase(call.method)) {
             setNotificationQuietHours(call.arguments, result);
         } else if (RCMethodList.MethodKeyRemoveNotificationQuietHours.equalsIgnoreCase(call.method)) {
@@ -3173,6 +3177,54 @@ public class RCIMFlutterWrapper {
                         }
                     });
         }
+    }
+
+    private void setChatRoomEntries(MethodCall call, final Result result) {
+        String chatRoomId = call.argument("chatRoomId");
+        Map<String, String> chatRoomEntryMap = call.argument("chatRoomEntryMap");
+        Boolean autoRemove = call.argument("autoRemove");
+        assert autoRemove != null;
+        Boolean overWrite = call.argument("overWrite");
+        assert overWrite != null;
+        RongChatRoomClient.getInstance().setChatRoomEntries(chatRoomId, chatRoomEntryMap, autoRemove, overWrite, new IRongCoreCallback.SetChatRoomKVCallback() {
+            @Override
+            public void onSuccess() {
+                Map<String, Object> map = new HashMap<>();
+                map.put("code", 0);
+                result.success(map);
+            }
+
+            @Override
+            public void onError(IRongCoreEnum.CoreErrorCode code, Map<String, IRongCoreEnum.CoreErrorCode> errors) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("code", code.getValue());
+                map.put("errors", errors);
+                result.success(map);
+            }
+        });
+    }
+
+    private void removeChatRoomEntries(MethodCall call, final Result result) {
+        String chatRoomId = call.argument("chatRoomId");
+        List<String> chatRoomEntryList = call.argument("chatRoomEntryList");
+        Boolean force = call.argument("force");
+        assert force != null;
+        RongChatRoomClient.getInstance().deleteChatRoomEntries(chatRoomId, chatRoomEntryList, force, new IRongCoreCallback.SetChatRoomKVCallback() {
+            @Override
+            public void onSuccess() {
+                Map<String, Object> map = new HashMap<>();
+                map.put("code", 0);
+                result.success(map);
+            }
+
+            @Override
+            public void onError(IRongCoreEnum.CoreErrorCode code, Map<String, IRongCoreEnum.CoreErrorCode> errors) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("code", code.getValue());
+                map.put("errors", errors);
+                result.success(map);
+            }
+        });
     }
 
     // 设置消息通知免打扰时间

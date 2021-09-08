@@ -182,6 +182,10 @@
         [self removeChatRoomEntry:call.arguments result:result];
     }else if ([RCMethodKeyForceRemoveChatRoomEntry isEqualToString:call.method]) {
         [self forceRemoveChatRoomEntry:call.arguments result:result];
+    }else if ([RCMethodKeySetChatRoomEntries isEqualToString:call.method]) {
+        [self setChatRoomEntries:call.arguments result:result];
+    }else if ([RCMethodKeyRemoveChatRoomEntries isEqualToString:call.method]) {
+        [self removeChatRoomEntries:call.arguments result:result];
     }else if ([RCMethodKeySyncConversationReadStatus isEqualToString:call.method]) {
         [self syncConversationReadStatus:call.arguments result:result];
     }else if ([RCMethodKeyGetTextMessageDraft isEqualToString:call.method]) {
@@ -2198,6 +2202,50 @@
         } error:^(RCErrorCode nErrorCode) {
             [RCLog e:[NSString stringWithFormat:@"%@, errorCode:%@",LOG_TAG,@(nErrorCode)]];
             result(@(nErrorCode));
+        }];
+    }
+}
+
+- (void)setChatRoomEntries:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"setChatRoomEntries";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        NSString *chatRoomId = param[@"chatRoomId"];
+        NSDictionary *chatRoomEntryMap = param[@"chatRoomEntryMap"];
+        BOOL autoRemove = [param[@"autoRemove"] boolValue];
+        BOOL overWrite = [param[@"overWrite"] boolValue];
+        
+        [[RCChatRoomClient sharedChatRoomClient] setChatRoomEntries:chatRoomId
+                                                            entries:chatRoomEntryMap
+                                                            isForce:overWrite
+                                                         autoDelete:autoRemove
+                                                            success:^{
+            result(@{@"code":@(0)});
+        }
+                                                              error:^(RCErrorCode nErrorCode, NSDictionary * _Nonnull entries) {
+            result(@{@"code":@(nErrorCode), @"errors":entries});
+        }];
+    }
+}
+
+- (void)removeChatRoomEntries:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"removeChatRoomEntries";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        NSString *chatRoomId = param[@"chatRoomId"];
+        NSArray *chatRoomEntryList = param[@"chatRoomEntryList"];
+        BOOL force = [param[@"force"] boolValue];
+        
+        [[RCChatRoomClient sharedChatRoomClient] removeChatRoomEntries:chatRoomId
+                                                                  keys:chatRoomEntryList
+                                                               isForce:force
+                                                               success:^{
+            result(@{@"code":@(0)});
+        }
+                                                                 error:^(RCErrorCode nErrorCode, NSDictionary * _Nonnull entries) {
+            result(@{@"code":@(nErrorCode), @"errors":entries});
         }];
     }
 }

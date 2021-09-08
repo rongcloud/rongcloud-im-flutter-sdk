@@ -102,6 +102,8 @@ static NSString *RCMethodKeyGetChatRoomEntry = @"GetChatRoomEntry";
 static NSString *RCMethodKeyGetAllChatRoomEntries = @"GetAllChatRoomEntries";
 static NSString *RCMethodKeyRemoveChatRoomEntry = @"RemoveChatRoomEntry";
 static NSString *RCMethodKeyForceRemoveChatRoomEntry = @"ForceRemoveChatRoomEntry";
+static NSString *RCMethodKeySetChatRoomEntries = @"SetChatRoomEntries";
+static NSString *RCMethodKeyRemoveChatRoomEntries = @"RemoveChatRoomEntries";
 
 //callback iOS 通知 flutter
 static NSString *RCMethodCallBackKeySendMessage = @"sendMessageCallBack";
