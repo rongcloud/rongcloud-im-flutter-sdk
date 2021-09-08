@@ -5,8 +5,8 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import '../util/media_util.dart';
 
 class ImagePreviewPage extends StatefulWidget {
-  final Message message;
-  const ImagePreviewPage({Key key, this.message}) : super(key: key);
+  final Message? message;
+  const ImagePreviewPage({Key? key, this.message}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -15,41 +15,41 @@ class ImagePreviewPage extends StatefulWidget {
 }
 
 class _ImagePreviewPageState extends State<ImagePreviewPage> {
-  final Message message;
+  final Message? message;
 
   _ImagePreviewPageState(this.message);
 
   //优先加载本地路径图片，否则加载网络图片
   Widget getImageWidget() {
-    String localPath;
-    String remoteUrl;
-    if (message.content is GifMessage) {
-      GifMessage msg = message.content;
+    String? localPath;
+    String? remoteUrl;
+    if (message!.content is GifMessage) {
+      GifMessage msg = message!.content as GifMessage;
       localPath = msg.localPath;
       remoteUrl = msg.remoteUrl;
     } else {
-      ImageMessage msg = message.content;
+      ImageMessage msg = message!.content as ImageMessage;
       localPath = msg.localPath;
       remoteUrl = msg.imageUri;
     }
     Widget widget;
     if (localPath != null) {
-      String path = MediaUtil.instance.getCorrectedLocalPath(localPath);
+      String path = MediaUtil.instance!.getCorrectedLocalPath(localPath)!;
       File file = File(path);
       if (file != null && file.existsSync()) {
         widget = Image.file(file);
       } else {
         widget = Image.network(
-          remoteUrl,
+          remoteUrl!,
           fit: BoxFit.cover,
           loadingBuilder: (BuildContext context, Widget child,
-              ImageChunkEvent loadingProgress) {
+              ImageChunkEvent? loadingProgress) {
             if (loadingProgress == null) return child;
             return Center(
               child: CircularProgressIndicator(
                 value: loadingProgress.expectedTotalBytes != null
                     ? loadingProgress.cumulativeBytesLoaded /
-                        loadingProgress.expectedTotalBytes
+                        loadingProgress.expectedTotalBytes!
                     : null,
               ),
             );
@@ -58,16 +58,16 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
       }
     } else {
       widget = Image.network(
-        remoteUrl,
+        remoteUrl!,
         fit: BoxFit.cover,
         loadingBuilder: (BuildContext context, Widget child,
-            ImageChunkEvent loadingProgress) {
+            ImageChunkEvent? loadingProgress) {
           if (loadingProgress == null) return child;
           return Center(
             child: CircularProgressIndicator(
               value: loadingProgress.expectedTotalBytes != null
                   ? loadingProgress.cumulativeBytesLoaded /
-                      loadingProgress.expectedTotalBytes
+                      loadingProgress.expectedTotalBytes!
                   : null,
             ),
           );

@@ -13,8 +13,8 @@ import '../../util/user_info_datesource.dart' as example;
 import 'dart:developer' as developer;
 
 class BottomInputBar extends StatefulWidget {
-  BottomInputBarDelegate delegate;
-  _BottomInputBarState state;
+  BottomInputBarDelegate? delegate;
+  late _BottomInputBarState state;
   BottomInputBar(BottomInputBarDelegate delegate) {
     this.delegate = delegate;
   }
@@ -22,7 +22,7 @@ class BottomInputBar extends StatefulWidget {
   _BottomInputBarState createState() =>
       state = _BottomInputBarState(this.delegate);
 
-  void setTextContent(String textContent) {
+  void setTextContent(String? textContent) {
     this.state.setText(textContent);
   }
 
@@ -30,11 +30,11 @@ class BottomInputBar extends StatefulWidget {
     this.state._refreshUI();
   }
 
-  void makeReferenceMessage(Message message) {
+  void makeReferenceMessage(Message? message) {
     this.state.makeReferenceMessage(message);
   }
 
-  ReferenceMessage getReferenceMessage() {
+  ReferenceMessage? getReferenceMessage() {
     return this.state.referenceMessage;
   }
 
@@ -45,16 +45,16 @@ class BottomInputBar extends StatefulWidget {
 
 class _BottomInputBarState extends State<BottomInputBar> {
   String pageName = "example.BottomInputBar";
-  BottomInputBarDelegate delegate;
-  TextField textField;
+  BottomInputBarDelegate? delegate;
+  TextField? textField;
   FocusNode focusNode = FocusNode();
-  InputBarStatus inputBarStatus;
-  TextEditingController textEditingController;
-  Message message;
-  ReferenceMessage referenceMessage;
-  example.UserInfo referenceUserInfo;
+  InputBarStatus? inputBarStatus;
+  TextEditingController? textEditingController;
+  Message? message;
+  ReferenceMessage? referenceMessage;
+  example.UserInfo? referenceUserInfo;
 
-  _BottomInputBarState(BottomInputBarDelegate delegate) {
+  _BottomInputBarState(BottomInputBarDelegate? delegate) {
     this.delegate = delegate;
     this.inputBarStatus = InputBarStatus.Normal;
     this.textEditingController = TextEditingController();
@@ -71,14 +71,14 @@ class _BottomInputBarState extends State<BottomInputBar> {
     );
   }
 
-  void setText(String textContent) {
+  void setText(String? textContent) {
     if (textContent == null) {
       textContent = '';
     }
-    this.textEditingController.text =
-        this.textEditingController.text + textContent;
-    this.textEditingController.selection = TextSelection.fromPosition(
-        TextPosition(offset: textEditingController.text.length));
+    this.textEditingController!.text =
+        this.textEditingController!.text + textContent;
+    this.textEditingController!.selection = TextSelection.fromPosition(
+        TextPosition(offset: textEditingController!.text.length));
     _refreshUI();
   }
 
@@ -89,9 +89,9 @@ class _BottomInputBarState extends State<BottomInputBar> {
   @override
   void initState() {
     super.initState();
-    textEditingController.addListener(() {
+    textEditingController!.addListener(() {
       //获取输入的值
-      delegate.onTextChange(textEditingController.text);
+      delegate!.onTextChange(textEditingController!.text);
     });
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
@@ -107,11 +107,11 @@ class _BottomInputBarState extends State<BottomInputBar> {
     }
 
     if (this.delegate != null) {
-      this.delegate.willSendText(messageStr);
+      this.delegate!.willSendText(messageStr);
     } else {
       developer.log("没有实现 BottomInputBarDelegate", name: pageName);
     }
-    this.textField.controller.text = '';
+    this.textField!.controller!.text = '';
   }
 
   switchPhrases() {
@@ -157,7 +157,7 @@ class _BottomInputBarState extends State<BottomInputBar> {
       status = InputBarStatus.Extention;
     }
     if (this.delegate != null) {
-      this.delegate.didTapExtentionButton();
+      this.delegate!.didTapExtentionButton();
     } else {
       developer.log("没有实现 BottomInputBarDelegate", name: pageName);
     }
@@ -166,9 +166,9 @@ class _BottomInputBarState extends State<BottomInputBar> {
 
   _onVoiceGesLongPress() {
     developer.log("_onVoiceGesLongPress", name: pageName);
-    MediaUtil.instance.startRecordAudio();
+    MediaUtil.instance!.startRecordAudio();
     if (this.delegate != null) {
-      this.delegate.willStartRecordVoice();
+      this.delegate!.willStartRecordVoice();
     } else {
       developer.log("没有实现 BottomInputBarDelegate", name: pageName);
     }
@@ -178,14 +178,14 @@ class _BottomInputBarState extends State<BottomInputBar> {
     developer.log("_onVoiceGesLongPressEnd", name: pageName);
 
     if (this.delegate != null) {
-      this.delegate.willStopRecordVoice();
+      this.delegate!.willStopRecordVoice();
     } else {
       developer.log("没有实现 BottomInputBarDelegate", name: pageName);
     }
 
-    MediaUtil.instance.stopRecordAudio((String path, int duration) {
-      if (this.delegate != null && path.length > 0) {
-        this.delegate.willSendVoice(path, duration);
+    MediaUtil.instance!.stopRecordAudio((String? path, int? duration) {
+      if (this.delegate != null && path!.length > 0) {
+        this.delegate!.willSendVoice(path, duration);
       } else {
         developer.log("没有实现 BottomInputBarDelegate || 录音路径为空", name: pageName);
       }
@@ -242,7 +242,7 @@ class _BottomInputBarState extends State<BottomInputBar> {
   void _notifyInputStatusChanged(InputBarStatus status) {
     this.inputBarStatus = status;
     if (this.delegate != null) {
-      this.delegate.inputStatusDidChange(status);
+      this.delegate!.inputStatusDidChange(status);
     } else {
       developer.log("没有实现 BottomInputBarDelegate", name: pageName);
     }
@@ -323,7 +323,7 @@ class _BottomInputBarState extends State<BottomInputBar> {
               Container(
                   margin: EdgeInsets.only(top: 4, bottom: 2),
                   child: Text(
-                      referenceUserInfo == null ? "" : referenceUserInfo.id,
+                      referenceUserInfo == null ? "" : referenceUserInfo!.id!,
                       style: TextStyle(
                           fontSize: RCFont.BottomReferenceNameSize,
                           color: Color(RCColor.BottomReferenceNameColor)))),
@@ -357,19 +357,19 @@ class _BottomInputBarState extends State<BottomInputBar> {
   }
 
   void _clickContent() {
-    if (referenceMessage.referMsg is ImageMessage) {
+    if (referenceMessage!.referMsg is ImageMessage) {
       // 引用的消息为图片时的点击事件
-      Message tempMsg = message;
-      tempMsg.content = referenceMessage.referMsg;
+      Message tempMsg = message!;
+      tempMsg.content = referenceMessage!.referMsg;
       Navigator.pushNamed(context, "/image_preview", arguments: tempMsg);
-    } else if (referenceMessage.referMsg is FileMessage) {
+    } else if (referenceMessage!.referMsg is FileMessage) {
       // 引用的消息为文件时的点击事件
-      Message tempMsg = message;
-      tempMsg.content = referenceMessage.referMsg;
+      Message tempMsg = message!;
+      tempMsg.content = referenceMessage!.referMsg;
       Navigator.pushNamed(context, "/file_preview", arguments: tempMsg);
-    } else if (referenceMessage.referMsg is RichContentMessage) {
+    } else if (referenceMessage!.referMsg is RichContentMessage) {
       // 引用的消息为图文时的点击事件
-      RichContentMessage richContentMessage = referenceMessage.referMsg;
+      RichContentMessage richContentMessage = referenceMessage!.referMsg as RichContentMessage;
       Map param = {
         "url": richContentMessage.url,
         "title": richContentMessage.title
@@ -382,23 +382,23 @@ class _BottomInputBarState extends State<BottomInputBar> {
 
   Widget _buildReferenceContent() {
     Widget widget = WidgetUtil.buildEmptyWidget();
-    MessageContent messageContent = referenceMessage.referMsg;
+    MessageContent? messageContent = referenceMessage!.referMsg;
     if (messageContent is TextMessage) {
       TextMessage textMessage = messageContent;
-      widget = Text(textMessage.content,
+      widget = Text(textMessage.content!,
           style: TextStyle(
               fontSize: RCFont.BottomReferenceContentSize,
               color: Color(RCColor.BottomReferenceContentColor)));
     } else if (messageContent is ImageMessage) {
       ImageMessage imageMessage = messageContent;
       Widget imageWidget;
-      if (imageMessage.content != null && imageMessage.content.length > 0) {
-        Uint8List bytes = base64.decode(imageMessage.content);
+      if (imageMessage.content != null && imageMessage.content!.length > 0) {
+        Uint8List bytes = base64.decode(imageMessage.content!);
         imageWidget = Image.memory(bytes);
       } else {
         if (imageMessage.localPath != null) {
           String path =
-              MediaUtil.instance.getCorrectedLocalPath(imageMessage.localPath);
+              MediaUtil.instance!.getCorrectedLocalPath(imageMessage.localPath)!;
           File file = File(path);
           if (file != null && file.existsSync()) {
             imageWidget = Image.file(file);
@@ -406,18 +406,18 @@ class _BottomInputBarState extends State<BottomInputBar> {
             imageWidget = CachedNetworkImage(
               progressIndicatorBuilder: (context, url, progress) =>
                   CircularProgressIndicator(
-                value: progress.progress,
+                value: progress!.progress,
               ),
-              imageUrl: imageMessage.imageUri,
+              imageUrl: imageMessage.imageUri!,
             );
           }
         } else {
           imageWidget = CachedNetworkImage(
             progressIndicatorBuilder: (context, url, progress) =>
                 CircularProgressIndicator(
-              value: progress.progress,
+              value: progress!.progress,
             ),
-            imageUrl: imageMessage.imageUri,
+            imageUrl: imageMessage.imageUri!,
           );
         }
       }
@@ -441,7 +441,7 @@ class _BottomInputBarState extends State<BottomInputBar> {
               color: Color(RCColor.BottomReferenceContentColorFile)));
     } else if (messageContent is ReferenceMessage) {
       ReferenceMessage referenceMessage = messageContent;
-      widget = Text(referenceMessage.content,
+      widget = Text(referenceMessage.content!,
           style: TextStyle(
               fontSize: RCFont.BottomReferenceContentSize,
               color: Color(RCColor.BottomReferenceContentColorFile)));
@@ -449,8 +449,8 @@ class _BottomInputBarState extends State<BottomInputBar> {
     return widget;
   }
 
-  void setInfo(String userId) {
-    example.UserInfo userInfo =
+  void setInfo(String? userId) {
+    example.UserInfo? userInfo =
         example.UserInfoDataSource.cachedUserMap[userId];
     if (userInfo != null) {
       this.referenceUserInfo = userInfo;
@@ -463,26 +463,26 @@ class _BottomInputBarState extends State<BottomInputBar> {
     }
   }
 
-  void makeReferenceMessage(Message message) {
+  void makeReferenceMessage(Message? message) {
     if (message != null) {
       this.message = message;
       referenceMessage = ReferenceMessage();
-      referenceMessage.referMsgUserId = message.senderUserId;
+      referenceMessage!.referMsgUserId = message.senderUserId;
       if (message.content is ReferenceMessage) {
-        ReferenceMessage content = message.content;
-        TextMessage textMessage = TextMessage.obtain(content.content);
-        referenceMessage.referMsg = textMessage;
+        ReferenceMessage content = message.content as ReferenceMessage;
+        TextMessage textMessage = TextMessage.obtain(content.content!);
+        referenceMessage!.referMsg = textMessage;
       } else {
-        referenceMessage.referMsg = message.content;
+        referenceMessage!.referMsg = message.content;
       }
-      setInfo(referenceMessage.referMsgUserId);
+      setInfo(referenceMessage!.referMsgUserId);
     } else {
       referenceMessage = null;
     }
     _refreshUI();
   }
 
-  ReferenceMessage getReferenceMessage() {
+  ReferenceMessage? getReferenceMessage() {
     return referenceMessage;
   }
 
@@ -509,7 +509,7 @@ abstract class BottomInputBarDelegate {
   void willSendText(String text);
 
   ///即将发送语音
-  void willSendVoice(String path, int duration);
+  void willSendVoice(String? path, int? duration);
 
   ///即将开始录音
   void willStartRecordVoice();

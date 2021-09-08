@@ -3,7 +3,7 @@ import '../../util/style.dart';
 import 'dart:developer' as developer;
 
 class BottomToolBar extends StatefulWidget {
-  BottomToolBarDelegate delegate;
+  BottomToolBarDelegate? delegate;
   BottomToolBar(BottomToolBarDelegate delegate) {
     this.delegate = delegate;
   }
@@ -16,8 +16,8 @@ class BottomToolBar extends StatefulWidget {
 
 class _BottomToolBarState extends State<BottomToolBar> {
   String pageName = "example.BottomToolBar";
-  BottomToolBarDelegate delegate;
-  _BottomToolBarState(BottomToolBarDelegate delegate) {
+  BottomToolBarDelegate? delegate;
+  _BottomToolBarState(BottomToolBarDelegate? delegate) {
     this.delegate = delegate;
   }
 
@@ -54,7 +54,7 @@ class _BottomToolBarState extends State<BottomToolBar> {
 
   void tapDelete() {
     if (this.delegate != null) {
-      this.delegate.didTapDelete();
+      this.delegate!.didTapDelete();
     } else {
       developer.log("没有实现 BottomToolBarDelegate", name: pageName);
     }
@@ -62,7 +62,7 @@ class _BottomToolBarState extends State<BottomToolBar> {
 
   void tapForward() {
     if (this.delegate != null) {
-      this.delegate.didTapForward();
+      this.delegate!.didTapForward();
     } else {
       developer.log("没有实现 BottomToolBarDelegate", name: pageName);
     }

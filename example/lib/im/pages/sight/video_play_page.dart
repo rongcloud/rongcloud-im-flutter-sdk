@@ -6,8 +6,8 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayPage extends StatefulWidget {
-  final Message message;
-  const VideoPlayPage({Key key, this.message}) : super(key: key);
+  final Message? message;
+  const VideoPlayPage({Key? key, this.message}) : super(key: key);
   @override
   State<StatefulWidget> createState() {
     return _VideoPlayPageState(message);
@@ -15,10 +15,10 @@ class VideoPlayPage extends StatefulWidget {
 }
 
 class _VideoPlayPageState extends State<VideoPlayPage> {
-  final Message message;
+  final Message? message;
 
-  VideoPlayerController videoPlayerController;
-  SightMessage sightMessage;
+  VideoPlayerController? videoPlayerController;
+  SightMessage? sightMessage;
 
   _VideoPlayPageState(this.message);
 
@@ -35,17 +35,17 @@ class _VideoPlayPageState extends State<VideoPlayPage> {
   }
 
   void initVideoController() async {
-    sightMessage = message.content;
-    if (sightMessage.localPath != null && sightMessage.localPath != "") {
+    sightMessage = message!.content as SightMessage?;
+    if (sightMessage!.localPath != null && sightMessage!.localPath != "") {
       videoPlayerController =
-          VideoPlayerController.file(File(sightMessage.localPath));
+          VideoPlayerController.file(File(sightMessage!.localPath!));
     } else {
       //TODO 是否需要做缓存？ VideoPlayerController.network 每次都会下载一遍视频
       videoPlayerController =
-          VideoPlayerController.network(sightMessage.remoteUrl);
+          VideoPlayerController.network(sightMessage!.remoteUrl!);
     }
-    videoPlayerController.initialize();
-    await videoPlayerController.play();
+    videoPlayerController!.initialize();
+    await videoPlayerController!.play();
     setState(() {});
   }
 
@@ -57,7 +57,7 @@ class _VideoPlayPageState extends State<VideoPlayPage> {
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
-        VideoPlayer(videoPlayerController),
+        VideoPlayer(videoPlayerController!),
         Container(
           height: 100,
           width: MediaQuery.of(context).size.width,

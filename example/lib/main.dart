@@ -16,7 +16,7 @@ class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
 
-  static BuildContext getContext() {
+  static BuildContext? getContext() {
     return _MyAppState.getContext();
   }
 }
@@ -24,11 +24,11 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   String pageName = "example.main";
   AppLifecycleState currentState = AppLifecycleState.resumed;
-  DateTime notificationQuietEndTime;
-  DateTime notificationQuietStartTime;
-  static BuildContext appContext;
+  DateTime? notificationQuietEndTime;
+  DateTime? notificationQuietStartTime;
+  static BuildContext? appContext;
 
-  static BuildContext getContext() {
+  static BuildContext? getContext() {
     return appContext;
   }
 
@@ -62,23 +62,23 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     
     // _initUserInfoCache();
 
-    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance!.addObserver(this);
 
-    EventBus.instance.addListener(EventKeys.UpdateNotificationQuietStatus,
+    EventBus.instance!.addListener(EventKeys.UpdateNotificationQuietStatus,
         (map) {
       _getNotificationQuietHours();
     });
 
     prefix.RongIMClient.onMessageReceivedWrapper =
-        (prefix.Message msg, int left, bool hasPackage, bool offline) {
-      String hasP = hasPackage ? "true" : "false";
-      String off = offline ? "true" : "false";
-      if (msg.content != null) {
+        (prefix.Message? msg, int? left, bool? hasPackage, bool? offline) {
+      String hasP = hasPackage! ? "true" : "false";
+      String off = offline! ? "true" : "false";
+      if (msg!.content != null) {
         developer.log(
             "object onMessageReceivedWrapper objName:" +
-                msg.content.getObjectName() +
+                msg.content!.getObjectName()! +
                 " msgContent:" +
-                msg.content.encode() +
+                msg.content!.encode()! +
                 " left:" +
                 left.toString() +
                 " hasPackage:" +
@@ -93,39 +93,39 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       }
       if (currentState == AppLifecycleState.paused &&
           !checkNoficationQuietStatus()) {
-        EventBus.instance.commit(EventKeys.ReceiveMessage,
+        EventBus.instance!.commit(EventKeys.ReceiveMessage,
             {"message": msg, "left": left, "hasPackage": hasPackage});
         prefix.RongIMClient.getConversationNotificationStatus(
-            msg.conversationType, msg.targetId, (int status, int code) {
+            msg.conversationType!, msg.targetId!, (int? status, int? code) {
           if (status == 1) {
             _postLocalNotification(msg, left);
           }
         });
       } else {
         //通知其他页面收到消息
-        EventBus.instance.commit(EventKeys.ReceiveMessage,
+        EventBus.instance!.commit(EventKeys.ReceiveMessage,
             {"message": msg, "left": left, "hasPackage": hasPackage});
       }
     };
 
-    prefix.RongIMClient.onDataReceived = (Map map) {
+    prefix.RongIMClient.onDataReceived = (Map? map) {
       developer.log("object onDataReceived " + map.toString(), name: pageName);
     };
 
-    prefix.RongIMClient.onMessageReceiptRequest = (Map map) {
-      EventBus.instance.commit(EventKeys.ReceiveReceiptRequest, map);
+    prefix.RongIMClient.onMessageReceiptRequest = (Map? map) {
+      EventBus.instance!.commit(EventKeys.ReceiveReceiptRequest, map);
       developer.log("object onMessageReceiptRequest " + map.toString(),
           name: pageName);
     };
 
-    prefix.RongIMClient.onMessageReceiptResponse = (Map map) {
-      EventBus.instance.commit(EventKeys.ReceiveReceiptResponse, map);
+    prefix.RongIMClient.onMessageReceiptResponse = (Map? map) {
+      EventBus.instance!.commit(EventKeys.ReceiveReceiptResponse, map);
       developer.log("object onMessageReceiptResponse " + map.toString(),
           name: pageName);
     };
 
-    prefix.RongIMClient.onReceiveReadReceipt = (Map map) {
-      EventBus.instance.commit(EventKeys.ReceiveReadReceipt, map);
+    prefix.RongIMClient.onReceiveReadReceipt = (Map? map) {
+      EventBus.instance!.commit(EventKeys.ReceiveReadReceipt, map);
       developer.log("object onReceiveReadReceipt " + map.toString(),
           name: pageName);
     };
@@ -146,8 +146,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
   void _getNotificationQuietHours() {
     prefix.RongIMClient.getNotificationQuietHours(
-        (int code, String startTime, int spansMin) {
-      if (startTime != null && startTime.length > 0 && spansMin > 0) {
+        (int? code, String? startTime, int? spansMin) {
+      if (startTime != null && startTime.length > 0 && spansMin! > 0) {
         DateTime now = DateTime.now();
         String nowString = now.year.toString() +
             "-" +
@@ -172,15 +172,15 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     DateTime now = DateTime.now();
     if (notificationQuietStartTime != null &&
         notificationQuietEndTime != null &&
-        now.isAfter(notificationQuietStartTime) &&
-        now.isBefore(notificationQuietEndTime)) {
+        now.isAfter(notificationQuietStartTime!) &&
+        now.isBefore(notificationQuietEndTime!)) {
       isNotificationQuiet = true;
     }
 
     return isNotificationQuiet;
   }
 
-  void _postLocalNotification(prefix.Message msg, int left) async {
+  void _postLocalNotification(prefix.Message? msg, int? left) async {
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         new FlutterLocalNotificationsPlugin();
     var initializationSettingsAndroid = new AndroidInitializationSettings(

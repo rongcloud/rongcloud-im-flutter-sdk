@@ -9,9 +9,9 @@ import '../../util/user_info_datesource.dart' as example;
 import 'dart:developer' as developer;
 
 class ConversationListItem extends StatefulWidget {
-  final Conversation conversation;
-  final ConversationListItemDelegate delegate;
-  const ConversationListItem({Key key, this.delegate, this.conversation})
+  final Conversation? conversation;
+  final ConversationListItemDelegate? delegate;
+  const ConversationListItem({Key? key, this.delegate, this.conversation})
       : super(key: key);
 
   @override
@@ -22,13 +22,13 @@ class ConversationListItem extends StatefulWidget {
 
 class _ConversationListItemState extends State<ConversationListItem> {
   String pageName = "example.ConversationListItem";
-  Conversation conversation;
-  ConversationListItemDelegate delegate;
-  example.BaseInfo info;
-  Offset tapPos;
+  Conversation? conversation;
+  ConversationListItemDelegate? delegate;
+  example.BaseInfo? info;
+  Offset? tapPos;
 
   _ConversationListItemState(
-      ConversationListItemDelegate delegate, Conversation con) {
+      ConversationListItemDelegate? delegate, Conversation? con) {
     this.delegate = delegate;
     this.conversation = con;
     setInfo();
@@ -36,7 +36,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
 
   void _onTaped() {
     if (this.delegate != null) {
-      this.delegate.didTapConversation(this.conversation);
+      this.delegate!.didTapConversation(this.conversation);
     } else {
       developer.log("没有实现 ConversationListItemDelegate", name: pageName);
     }
@@ -44,7 +44,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
 
   void _onLongPressed() {
     if (this.delegate != null) {
-      this.delegate.didLongPressConversation(this.conversation, this.tapPos);
+      this.delegate!.didLongPressConversation(this.conversation, this.tapPos);
     } else {
       developer.log("没有实现 ConversationListItemDelegate", name: pageName);
     }
@@ -65,7 +65,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
         Positioned(
           right: -3.0,
           top: -3.0,
-          child: _buildUnreadCount(conversation.unreadMessageCount),
+          child: _buildUnreadCount(conversation!.unreadMessageCount!),
         ),
       ],
     );
@@ -90,7 +90,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
   }
 
   Widget _buildTime() {
-    String time = TimeUtil.convertTime(conversation.sentTime);
+    String time = TimeUtil.convertTime(conversation!.sentTime!);
     List<Widget> _rightArea = <Widget>[
       Text(time,
           style: TextStyle(
@@ -109,20 +109,20 @@ class _ConversationListItemState extends State<ConversationListItem> {
   }
 
   Widget _buildTitle() {
-    String title = (conversation.conversationType == RCConversationType.Private
+    String title = (conversation!.conversationType == RCConversationType.Private
             ? "单聊："
             : "群聊：") +
-        (this.info == null || this.info.id == null ? "" : this.info.id);
-    String digest = "";
-    if (conversation.latestMessageContent != null) {
-      if (conversation.latestMessageContent.destructDuration != null &&
-          conversation.latestMessageContent.destructDuration > 0) {
+        (this.info == null || this.info!.id == null ? "" : this.info!.id!);
+    String? digest = "";
+    if (conversation!.latestMessageContent != null) {
+      if (conversation!.latestMessageContent!.destructDuration != null &&
+          conversation!.latestMessageContent!.destructDuration! > 0) {
         digest = "[阅后即焚]";
       } else {
-        digest = conversation.latestMessageContent.conversationDigest();
+        digest = conversation!.latestMessageContent!.conversationDigest();
       }
     } else {
-      digest = "无法识别消息 " + conversation.objectName;
+      digest = "无法识别消息 " + conversation!.objectName!;
     }
     if (digest == null) {
       digest = "";
@@ -152,11 +152,11 @@ class _ConversationListItemState extends State<ConversationListItem> {
 
   Widget _buildDigest(String digest) {
     bool showError = false;
-    if (conversation.mentionedCount > 0) {
+    if (conversation!.mentionedCount! > 0) {
       digest = RCString.ConHaveMentioned + digest;
-    } else if (conversation.draft != null && conversation.draft.isNotEmpty) {
-      digest = RCString.ConDraft + conversation.draft;
-    } else if (conversation.sentStatus == RCSentStatus.Failed) {
+    } else if (conversation!.draft != null && conversation!.draft!.isNotEmpty) {
+      digest = RCString.ConDraft + conversation!.draft!;
+    } else if (conversation!.sentStatus == RCSentStatus.Failed) {
       showError = true;
     }
     double screenWidth = MediaQuery.of(context).size.width;
@@ -215,12 +215,12 @@ class _ConversationListItemState extends State<ConversationListItem> {
   }
 
   void setInfo() {
-    String targetId = conversation.targetId;
-    example.UserInfo userInfo =
+    String? targetId = conversation!.targetId;
+    example.UserInfo? userInfo =
         example.UserInfoDataSource.cachedUserMap[targetId];
-    example.GroupInfo groupInfo =
+    example.GroupInfo? groupInfo =
         example.UserInfoDataSource.cachedGroupMap[targetId];
-    if (conversation.conversationType == RCConversationType.Private) {
+    if (conversation!.conversationType == RCConversationType.Private) {
       if (userInfo != null) {
         this.info = userInfo;
       } else {
@@ -259,7 +259,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
         },
         child: Container(
           height: RCLayout.ConListItemHeight,
-          color: conversation.isTop
+          color: conversation!.isTop!
               ? Color(RCColor.ConListTopBgColor)
               : Color(RCColor.ConListItemBgColor),
           child: Row(
@@ -274,8 +274,8 @@ class _ConversationListItemState extends State<ConversationListItem> {
 
 abstract class ConversationListItemDelegate {
   ///点击了会话 item
-  void didTapConversation(Conversation conversation);
+  void didTapConversation(Conversation? conversation);
 
   ///长按了会话 item
-  void didLongPressConversation(Conversation conversation, Offset tapPos);
+  void didLongPressConversation(Conversation? conversation, Offset? tapPos);
 }

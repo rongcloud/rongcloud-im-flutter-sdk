@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:developer' as developer;
 
 class BottomRecordItem extends StatefulWidget {
-  VideoBottomToolBarDelegate delegate;
+  VideoBottomToolBarDelegate? delegate;
   BottomRecordItem(VideoBottomToolBarDelegate delegate) {
     this.delegate = delegate;
   }
@@ -14,10 +14,10 @@ class BottomRecordItem extends StatefulWidget {
 class _BottomRecordItemState extends State<BottomRecordItem>
     with TickerProviderStateMixin {
   String pageName = "example.BottomRecordItem";
-  VideoBottomToolBarDelegate delegate;
+  VideoBottomToolBarDelegate? delegate;
   bool isNarmal = true; //正常状态，选择状态
 
-  _BottomRecordItemState(VideoBottomToolBarDelegate delegate) {
+  _BottomRecordItemState(VideoBottomToolBarDelegate? delegate) {
     this.delegate = delegate;
   }
 
@@ -113,7 +113,7 @@ class _BottomRecordItemState extends State<BottomRecordItem>
 
   onLongPressCamera() {
     if (delegate != null) {
-      delegate.didLongPressCamera();
+      delegate!.didLongPressCamera();
     } else {
       developer.log("没有实现 didLongPressCamera", name: pageName);
     }
@@ -124,7 +124,7 @@ class _BottomRecordItemState extends State<BottomRecordItem>
       isNarmal = false;
     });
     if (delegate != null) {
-      delegate.didLongPressEndCamera();
+      delegate!.didLongPressEndCamera();
     } else {
       developer.log("没有实现 didLongPressEndCamera", name: pageName);
     }
@@ -134,7 +134,7 @@ class _BottomRecordItemState extends State<BottomRecordItem>
 
   onCancelEvent() {
     if (delegate != null) {
-      delegate.didCancelEvent();
+      delegate!.didCancelEvent();
     } else {
       developer.log("没有实现 didLongPressEndCamera", name: pageName);
     }
@@ -145,7 +145,7 @@ class _BottomRecordItemState extends State<BottomRecordItem>
 
   onFinishEvent() {
     if (delegate != null) {
-      delegate.didFinishEvent();
+      delegate!.didFinishEvent();
     } else {
       developer.log("没有实现 didLongPressEndCamera", name: pageName);
     }

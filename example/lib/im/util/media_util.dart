@@ -2,7 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
-import 'package:flutter_plugin_record/flutter_plugin_record.dart';
+import 'package:flutter_plugin_record/index.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_sound/flutter_sound.dart';
@@ -15,16 +15,16 @@ class MediaUtil {
   FlutterSound flutterSound = new FlutterSound();
 
   String pageName = "example.MediaUtil";
-  factory MediaUtil() => _getInstance();
-  static MediaUtil get instance => _getInstance();
-  static MediaUtil _instance;
+  factory MediaUtil() => _getInstance()!;
+  static MediaUtil? get instance => _getInstance();
+  static MediaUtil? _instance;
 
   FlutterPluginRecord _recorder = new FlutterPluginRecord();
   
   MediaUtil._internal() {
     // 初始化
   }
-  static MediaUtil _getInstance() {
+  static MediaUtil? _getInstance() {
     if (_instance == null) {
       _instance = new MediaUtil._internal();
     }
@@ -46,8 +46,8 @@ class MediaUtil {
   }
 
   //拍照，成功则返回照片的本地路径，注：Android 必须要加 file:// 头
-  Future<String> takePhoto() async {
-    File imgfile = (await ImagePicker().pickImage(source: ImageSource.camera)) as File;
+  Future<String?> takePhoto() async {
+    File? imgfile = (await ImagePicker().pickImage(source: ImageSource.camera)) as File?;
     if (imgfile == null) {
       return null;
     }
@@ -59,8 +59,8 @@ class MediaUtil {
   }
 
   //从相册选照片，成功则返回照片的本地路径，注：Android 必须要加 file:// 头
-  Future<String> pickImage() async {
-    File imgfile = await ImagePicker().pickImage(source: ImageSource.gallery) as File;;
+  Future<String?> pickImage() async {
+    File? imgfile = await ImagePicker().pickImage(source: ImageSource.gallery) as File?;;
     if (imgfile == null) {
       return null;
     }
@@ -72,8 +72,8 @@ class MediaUtil {
   }
 
   //选择本地文件，成功返回文件信息
-  Future<List<File>> pickFiles() async {
-    List<File> files = (await FilePicker.platform.getDirectoryPath()) as List<File>;
+  Future<List<File>?> pickFiles() async {
+    List<File>? files = (await FilePicker.platform.getDirectoryPath()) as List<File>?;
     return files;
   }
 
@@ -104,7 +104,7 @@ class MediaUtil {
   }
 
   //录音结束，通过 finished 返回本地路径和语音时长，注：Android 必须要加 file:// 头
-  void stopRecordAudio(Function(String path, int duration) finished) async {
+  void stopRecordAudio(Function(String? path, int? duration) finished) async {
     var result = await _recorder.stop();
     developer.log(
         "Stop recording: path = ${result.path}，duration = ${result.duration}",
@@ -112,14 +112,14 @@ class MediaUtil {
     developer.log("Stop recording: duration = ${result.duration}",
         name: pageName);
     if (result.duration.inSeconds > 0) {
-      String path = result.path;
+      String? path = result.path;
       if (path == null) {
         if (finished != null) {
           finished(null, 0);
         }
       }
       if (TargetPlatform.android == defaultTargetPlatform) {
-        path = "file://" + path;
+        path = "file://" + path!;
       }
       if (finished != null) {
         finished(path, result.duration.inSeconds);
@@ -151,11 +151,11 @@ class MediaUtil {
     _recorder.stopPlay();
   }
 
-  String getCorrectedLocalPath(String localPath) {
-    String path = localPath;
+  String? getCorrectedLocalPath(String? localPath) {
+    String? path = localPath;
     //Android 本地路径需要删除 file:// 才能被 File 对象识别
     if (TargetPlatform.android == defaultTargetPlatform) {
-      path = localPath.replaceFirst("file://", "");
+      path = localPath!.replaceFirst("file://", "");
     }
     return path;
   }
