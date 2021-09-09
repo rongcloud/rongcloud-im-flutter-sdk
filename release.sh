@@ -4,7 +4,7 @@
 help="release.sh \
 -p <platform>"
 
-while getopts ":s:h:" opt
+while getopts ":p:h:" opt
 do
     case $opt in
         p)
