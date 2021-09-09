@@ -1364,11 +1364,15 @@ class RongIMClient {
       "autoRemove": autoRemove,
       "overWrite": overWrite,
     };
-    Map<String, dynamic>? result = await _channel.invokeMapMethod(RCMethodKey.SetChatRoomEntries, arguments);
+    Map<dynamic, dynamic>? result = await _channel.invokeMapMethod(RCMethodKey.SetChatRoomEntries, arguments);
     if (result != null) {
       int code = result['code'];
-      Map<String, int>? errors = result['errors'];
-      finished(code, errors);
+      Map<dynamic, dynamic>? errors = result['errors'];
+      if (errors != null) {
+        finished(code, Map<String, int>.from(errors));
+      } else {
+        finished(code, null);
+      }
     } else {
       finished(-1, null);
     }
@@ -1397,8 +1401,12 @@ class RongIMClient {
     Map<String, dynamic>? result = await _channel.invokeMapMethod(RCMethodKey.RemoveChatRoomEntries, arguments);
     if (result != null) {
       int code = result['code'];
-      Map<String, int>? errors = result['errors'];
-      finished(code, errors);
+      Map<dynamic, dynamic>? errors = result['errors'];
+      if (errors != null) {
+        finished(code, Map<String, int>.from(errors));
+      } else {
+        finished(code, null);
+      }
     } else {
       finished(-1, null);
     }
