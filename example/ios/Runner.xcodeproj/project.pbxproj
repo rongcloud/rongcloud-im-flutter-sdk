@@ -471,7 +471,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = cn.rongcloud.sealbiz;
+				PRODUCT_BUNDLE_IDENTIFIER = cn.rongcloud.im.flutter.example;
 				PRODUCT_NAME = RC_Flutter_Demo;
 				SWIFT_VERSION = 4.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -598,7 +598,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = cn.rongcloud.sealbiz;
+				PRODUCT_BUNDLE_IDENTIFIER = cn.rongcloud.im.flutter.example;
 				PRODUCT_NAME = RC_Flutter_Demo;
 				SWIFT_VERSION = 4.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -625,7 +625,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = cn.rongcloud.sealbiz;
+				PRODUCT_BUNDLE_IDENTIFIER = cn.rongcloud.im.flutter.example;
 				PRODUCT_NAME = RC_Flutter_Demo;
 				SWIFT_VERSION = 4.0;
 				VERSIONING_SYSTEM = "apple-generic";

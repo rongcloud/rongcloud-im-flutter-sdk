@@ -71,6 +71,11 @@
 @end
 
 @implementation RCIMFlutterWrapper
+
++ (void)load {
+//    [RCUtilities setModuleName:@"imflutter" version:[self getVersion]];
+}
+
 + (instancetype)sharedWrapper {
     static RCIMFlutterWrapper *wrapper = nil;
     static dispatch_once_t onceToken;
