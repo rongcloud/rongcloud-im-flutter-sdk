@@ -1338,7 +1338,7 @@
                                  @"targetId" : info.targetId,
                                  @"blockMsgUId" : info.blockedMsgUId,
                                  @"blockType" : @(info.blockType),
-                                 @"extra" : info.extra };
+                                 @"extra" : info.extra ? info.extra : @"" };
     [self.channel invokeMethod:RCMethodCallBackOnMessageBlocked arguments:arguments];
 }
 
