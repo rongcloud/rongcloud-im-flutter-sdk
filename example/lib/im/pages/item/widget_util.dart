@@ -44,8 +44,8 @@ class WidgetUtil {
   }
 
   /// 用户头像
-  static Widget buildUserPortrait(String path) {
-    Widget protraitWidget;
+  static Widget buildUserPortrait(String? path) {
+    Widget? protraitWidget;
     if (path == null || path.isEmpty) {
       protraitWidget =
           Image.asset("assets/images/default_portrait.png", fit: BoxFit.fill);
@@ -110,8 +110,8 @@ class WidgetUtil {
 
   /// 长按的 menu，用于处理会话列表页面和会话页面的长按
   static void showLongPressMenu(BuildContext context, Offset tapPos,
-      Map<String, String> map, Function(String key) onSelected) {
-    final RenderBox overlay = Overlay.of(context).context.findRenderObject();
+      Map<String, String> map, Function(String? key) onSelected) {
+    final RenderBox overlay = Overlay.of(context)!.context.findRenderObject() as RenderBox;
     final RelativeRect position = RelativeRect.fromLTRB(tapPos.dx, tapPos.dy,
         overlay.size.width - tapPos.dx, overlay.size.height - tapPos.dy);
     List<PopupMenuEntry<String>> items = [];
@@ -120,7 +120,7 @@ class WidgetUtil {
         child: Container(
           alignment: Alignment.center,
           child: Text(
-            map[key],
+            map[key]!,
             textAlign: TextAlign.center,
           ),
         ),
@@ -129,14 +129,14 @@ class WidgetUtil {
       items.add(p);
     });
     showMenu<String>(context: context, position: position, items: items)
-        .then<String>((String selectedStr) {
+        .then<String>((String? selectedStr) {
       if (onSelected != null) {
         if (selectedStr == null) {
           selectedStr = RCLongPressAction.UndefinedKey;
         }
         onSelected(selectedStr);
       }
-      return selectedStr;
+      return selectedStr!;
     });
   }
 

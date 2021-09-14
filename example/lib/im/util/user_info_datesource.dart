@@ -3,9 +3,9 @@ import 'dart:math';
 import 'db_manager.dart';
 
 class BaseInfo {
-  String id;
-  String name;
-  String portraitUrl;
+  String? id;
+  String? name;
+  String? portraitUrl;
 }
 
 class UserInfo extends BaseInfo {
@@ -24,9 +24,9 @@ class GroupInfo extends BaseInfo {
 
 //用户信息，用户信息需要开发者自行处理（从 APP 服务获取用户信息并保存），此处只做了最简单的处理
 class UserInfoDataSource {
-  static Map<String, UserInfo> cachedUserMap = new Map(); //保证同一 userId
-  static Map<String, GroupInfo> cachedGroupMap = new Map(); //保证同一 groupId
-  static UserInfoCacheListener cacheListener;
+  static Map<String?, UserInfo> cachedUserMap = new Map(); //保证同一 userId
+  static Map<String?, GroupInfo> cachedGroupMap = new Map(); //保证同一 groupId
+  static UserInfoCacheListener? cacheListener;
 
   // 用来刷新用户信息，当有用户信息更新的时候
   static void setUserInfo(UserInfo info) {
@@ -34,27 +34,27 @@ class UserInfoDataSource {
       return;
     }
     cachedUserMap[info.id] = info;
-    DbManager.instance.setUserInfo(info);
+    DbManager.instance!.setUserInfo(info);
   }
 
   // 获取用户信息
-  static Future<UserInfo> getUserInfo(String userId) async {
-    UserInfo cachedUserInfo = cachedUserMap[userId];
+  static Future<UserInfo> getUserInfo(String? userId) async {
+    UserInfo? cachedUserInfo = cachedUserMap[userId];
     if (cachedUserInfo != null) {
       return cachedUserInfo;
     } else {
-      UserInfo info;
+      UserInfo? info;
       List<UserInfo> infoList =
-          await DbManager.instance.getUserInfo(userId: userId);
+          await DbManager.instance!.getUserInfo(userId: userId);
       if (infoList != null && infoList.length > 0) {
         info = infoList[0];
       }
       if (info == null) {
         if (cacheListener != null) {
-          info = cacheListener.getUserInfo(userId);
+          info = cacheListener!.getUserInfo(userId);
         }
         if (info != null) {
-          DbManager.instance.setUserInfo(info);
+          DbManager.instance!.setUserInfo(info);
         }
       }
       if (info != null) {
@@ -68,7 +68,7 @@ class UserInfoDataSource {
     }
   }
 
-  static UserInfo generateUserInfo(String userId) {
+  static UserInfo generateUserInfo(String? userId) {
     List names = _getCachedNameList();
     List urls = _getCachedPortraitList();
 
@@ -81,7 +81,7 @@ class UserInfoDataSource {
     return user;
   }
 
-  static GroupInfo generateGroupInfo(String groupId) {
+  static GroupInfo generateGroupInfo(String? groupId) {
     List names = _getCachedNameList();
     List urls = _getCachedPortraitList();
 
@@ -99,27 +99,27 @@ class UserInfoDataSource {
       return;
     }
     cachedGroupMap[info.id] = info;
-    DbManager.instance.setGroupInfo(info);
+    DbManager.instance!.setGroupInfo(info);
   }
 
   // 群组信息
-  static Future<GroupInfo> getGroupInfo(String groupId) async {
-    GroupInfo cachedGroupInfo = cachedGroupMap[groupId];
+  static Future<GroupInfo> getGroupInfo(String? groupId) async {
+    GroupInfo? cachedGroupInfo = cachedGroupMap[groupId];
     if (cachedGroupInfo != null) {
       return cachedGroupInfo;
     } else {
-      GroupInfo info;
+      GroupInfo? info;
       List<GroupInfo> infoList =
-          await DbManager.instance.getGroupInfo(groupId: groupId);
+          await DbManager.instance!.getGroupInfo(groupId: groupId);
       if (infoList != null && infoList.length > 0) {
         info = infoList[0];
       }
       if (info == null) {
         if (cacheListener != null) {
-          info = cacheListener.getGroupInfo(groupId);
+          info = cacheListener!.getGroupInfo(groupId);
         }
         if (info != null) {
-          DbManager.instance.setGroupInfo(info);
+          DbManager.instance!.setGroupInfo(info);
         }
       }
       if (info != null) {
@@ -185,7 +185,7 @@ class UserInfoDataSource {
 }
 
 class UserInfoCacheListener {
-  UserInfo Function(String userId) getUserInfo;
-  GroupInfo Function(String groupId) getGroupInfo;
-  void Function(UserInfo info) onUserInfoUpdated;
+  late UserInfo Function(String? userId) getUserInfo;
+  late GroupInfo Function(String? groupId) getGroupInfo;
+  void Function(UserInfo info)? onUserInfoUpdated;
 }

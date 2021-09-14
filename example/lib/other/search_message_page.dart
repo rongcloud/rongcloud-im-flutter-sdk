@@ -3,8 +3,8 @@ import '../im/pages/item/widget_util.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 class SearchMessagePage extends StatefulWidget {
-  final Map arguments;
-  SearchMessagePage({Key key, this.arguments}) : super(key: key);
+  final Map? arguments;
+  SearchMessagePage({Key? key, this.arguments}) : super(key: key);
   @override
   State<StatefulWidget> createState() {
     return _SearchMessagePageState(arguments: arguments);
@@ -12,18 +12,18 @@ class SearchMessagePage extends StatefulWidget {
 }
 
 class _SearchMessagePageState extends State<SearchMessagePage> {
-  Map arguments;
-  int conversationType;
-  String targetId;
-  List messageList;
+  Map? arguments;
+  int? conversationType;
+  String? targetId;
+  late List messageList;
 
   _SearchMessagePageState({this.arguments});
 
   @override
   void initState() {
     super.initState();
-    conversationType = arguments["coversationType"];
-    targetId = arguments["targetId"];
+    conversationType = arguments!["coversationType"];
+    targetId = arguments!["targetId"];
     messageList = [];
   }
 
@@ -62,7 +62,7 @@ class _SearchMessagePageState extends State<SearchMessagePage> {
                             itemBuilder: (BuildContext context, int index) {
                               if (messageList.length != null &&
                                   messageList.length > 0) {
-                                Message message = messageList[index];
+                                Message? message = messageList[index];
                                 return GestureDetector(
                                     child: Container(
                                   alignment: Alignment.center,
@@ -101,8 +101,8 @@ class _SearchMessagePageState extends State<SearchMessagePage> {
       messageList.clear();
       _refreshUI();
     }
-    RongIMClient.searchMessages(conversationType, targetId, keyWord, 50, 0,
-        (List/*<Message>*/ msgList, int code) {
+    RongIMClient.searchMessages(conversationType!, targetId!, keyWord, 50, 0,
+        (List?/*<Message>*/ msgList, int? code) {
       if (code == 0 && msgList != null) {
         messageList = msgList;
         _refreshUI();

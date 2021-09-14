@@ -30,7 +30,7 @@ class _ConversationListPageState extends State<ConversationListPage>
     RCConversationType.Private,
     RCConversationType.Group
   ];
-  ScrollController _scrollController;
+  ScrollController? _scrollController;
   double mPosition = 0;
 
   @override
@@ -39,7 +39,7 @@ class _ConversationListPageState extends State<ConversationListPage>
     addIMhandler();
     updateConversationList();
 
-    EventBus.instance.addListener(EventKeys.ConversationPageDispose, (arg) {
+    EventBus.instance!.addListener(EventKeys.ConversationPageDispose, (arg) {
       Timer(Duration(milliseconds: 10), () {
         addIMhandler();
         updateConversationList();
@@ -51,11 +51,11 @@ class _ConversationListPageState extends State<ConversationListPage>
   @override
   void dispose() {
     super.dispose();
-    EventBus.instance.removeListener(EventKeys.ConversationPageDispose);
+    EventBus.instance!.removeListener(EventKeys.ConversationPageDispose);
   }
 
   updateConversationList() async {
-    List list = await RongIMClient.getConversationList(displayConversationType);
+    List? list = await RongIMClient.getConversationList(displayConversationType);
     if (list != null) {
       // list.sort((a,b) => b.sentTime.compareTo(a.sentTime));
       conList = list;
@@ -68,9 +68,9 @@ class _ConversationListPageState extends State<ConversationListPage>
   }
 
   addIMhandler() {
-    EventBus.instance.addListener(EventKeys.ReceiveMessage, (map) {
+    EventBus.instance!.addListener(EventKeys.ReceiveMessage, (map) {
       Message msg = map["message"];
-      int left = map["left"];
+      int? left = map["left"];
       bool hasPackage = map["hasPackage"];
       bool isDisplayConversation = msg.conversationType != null &&
           displayConversationType.contains(msg.conversationType);
@@ -80,7 +80,7 @@ class _ConversationListPageState extends State<ConversationListPage>
       }
     });
 
-    RongIMClient.onConnectionStatusChange = (int connectionStatus) {
+    RongIMClient.onConnectionStatusChange = (int? connectionStatus) {
       if (RCConnectionStatus.KickedByOtherClient == connectionStatus ||
           RCConnectionStatus.TokenIncorrect == connectionStatus ||
           RCConnectionStatus.UserBlocked == connectionStatus) {
@@ -102,11 +102,11 @@ class _ConversationListPageState extends State<ConversationListPage>
       }
     };
 
-    RongIMClient.onRecallMessageReceived = (Message message) {
+    RongIMClient.onRecallMessageReceived = (Message? message) {
       updateConversationList();
     };
 
-    RongIMClient.onDatabaseOpened = (int status) {
+    RongIMClient.onDatabaseOpened = (int? status) {
       updateConversationList();
     };
   }
@@ -114,8 +114,8 @@ class _ConversationListPageState extends State<ConversationListPage>
   void _deleteConversation(Conversation conversation) {
     //删除会话需要刷新会话列表数据
     RongIMClient.removeConversation(
-        conversation.conversationType, conversation.targetId, (bool success) {
-      if (success) {
+        conversation.conversationType!, conversation.targetId!, (bool? success) {
+      if (success!) {
         updateConversationList();
         // // 如果需要删除会话中的消息调用下面的接口
         // RongIMClient.deleteMessages(
@@ -128,8 +128,8 @@ class _ConversationListPageState extends State<ConversationListPage>
 
   void _clearConversationUnread(Conversation conversation) async {
     //清空未读需要刷新会话列表数据
-    bool success = await RongIMClient.clearMessagesUnreadStatus(
-        conversation.conversationType, conversation.targetId);
+    bool success = await (RongIMClient.clearMessagesUnreadStatus(
+        conversation.conversationType!, conversation.targetId!) as FutureOr<bool>);
     if (success) {
       updateConversationList();
     }
@@ -137,8 +137,8 @@ class _ConversationListPageState extends State<ConversationListPage>
 
   void _setConversationToTop(Conversation conversation, bool isTop) {
     RongIMClient.setConversationToTop(
-        conversation.conversationType, conversation.targetId, isTop,
-        (bool status, int code) {
+        conversation.conversationType!, conversation.targetId!, isTop,
+        (bool? status, int? code) {
       if (code == 0) {
         updateConversationList();
       }
@@ -146,8 +146,8 @@ class _ConversationListPageState extends State<ConversationListPage>
   }
 
   void _addScroolListener() {
-    _scrollController.addListener(() {
-      mPosition = _scrollController.position.pixels;
+    _scrollController!.addListener(() {
+      mPosition = _scrollController!.position.pixels;
     });
   }
 
@@ -180,24 +180,24 @@ class _ConversationListPageState extends State<ConversationListPage>
   }
 
   @override
-  void didLongPressConversation(Conversation conversation, Offset tapPos) {
+  void didLongPressConversation(Conversation? conversation, Offset? tapPos) {
     Map<String, String> actionMap = {
       RCLongPressAction.DeleteConversationKey:
           RCLongPressAction.DeleteConversationValue,
       RCLongPressAction.ClearUnreadKey: RCLongPressAction.ClearUnreadValue,
-      RCLongPressAction.SetConversationToTopKey: conversation.isTop
+      RCLongPressAction.SetConversationToTopKey: conversation!.isTop!
           ? RCLongPressAction.CancelConversationToTopValue
           : RCLongPressAction.SetConversationToTopValue
     };
-    WidgetUtil.showLongPressMenu(context, tapPos, actionMap, (String key) {
-      developer.log("当前选中的是 " + key, name: pageName);
+    WidgetUtil.showLongPressMenu(context, tapPos!, actionMap, (String? key) {
+      developer.log("当前选中的是 " + key!, name: pageName);
       if (key == RCLongPressAction.DeleteConversationKey) {
         _deleteConversation(conversation);
       } else if (key == RCLongPressAction.ClearUnreadKey) {
         _clearConversationUnread(conversation);
       } else if (key == RCLongPressAction.SetConversationToTopKey) {
         bool isTop = true;
-        if (conversation.isTop) {
+        if (conversation.isTop!) {
           isTop = false;
         }
         _setConversationToTop(conversation, isTop);
@@ -208,9 +208,9 @@ class _ConversationListPageState extends State<ConversationListPage>
   }
 
   @override
-  void didTapConversation(Conversation conversation) {
+  void didTapConversation(Conversation? conversation) {
     Map arg = {
-      "coversationType": conversation.conversationType,
+      "coversationType": conversation!.conversationType,
       "targetId": conversation.targetId
     };
     Navigator.pushNamed(context, "/conversation", arguments: arg);

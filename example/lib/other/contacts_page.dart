@@ -74,7 +74,7 @@ class _ContactsPageState extends State<ContactsPage> {
           _onTapUser(user);
         },
         child: new ListTile(
-          title: new Text(user.id),
+          title: new Text(user.id!),
           leading: Container(
             width: 36,
             height: 36,
@@ -82,7 +82,7 @@ class _ContactsPageState extends State<ContactsPage> {
               borderRadius: BorderRadius.circular(5),
               child: CachedNetworkImage(
                 fit: BoxFit.fill,
-                imageUrl: user.portraitUrl,
+                imageUrl: user.portraitUrl!,
               ),
             ),
           ),
