@@ -35,7 +35,7 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
       "获取聊天室历史消息",
       "加入已存在的聊天室 1",
       "聊天室发送消息",
-      "聊天室发送带有敏感词消息",
+      // "聊天室发送带有敏感词消息",
     ];
 
     functions = [
@@ -52,7 +52,7 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
       _getChatRoomHistoryMessage,
       _joinExistChatRoom,
       _sendChatMessage,
-      _sendXXMessage,
+      // _sendXXMessage,
     ];
 
     RongIMClient.onJoinChatRoom = (String targetId, int status) {
@@ -81,10 +81,6 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
 
     RongIMClient.chatRoomKVDidRemove = (String roomId, Map entry) {
       DialogUtil.showAlertDiaLog(context, "chatRoomKVDidRemove $roomId $entry");
-    };
-
-    RongIMClient.onMessageBlocked = (info) {
-      Fluttertoast.showToast(msg: "敏感词被拦截", timeInSecForIos: 2);
     };
   }
 
@@ -183,11 +179,11 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
     });
   }
 
-  void _sendXXMessage() async {
-    TextMessage msg = new TextMessage();
-    msg.content = "fuck";
-    Message message = await RongIMClient.sendMessage(RCConversationType.ChatRoom, targetId, msg);
-  }
+  // void _sendXXMessage() async {
+  //   TextMessage msg = new TextMessage();
+  //   msg.content = "fuck";
+  //   Message message = await RongIMClient.sendMessage(RCConversationType.ChatRoom, targetId, msg);
+  // }
 
   @override
   Widget build(BuildContext context) {

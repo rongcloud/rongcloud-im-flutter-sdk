@@ -110,6 +110,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       EventBus.instance.commit(EventKeys.ReceiveReadReceipt, map);
       developer.log("object onReceiveReadReceipt " + map.toString(), name: pageName);
     };
+
+    prefix.RongIMClient.onMessageBlocked = (info) {
+      EventBus.instance.commit(EventKeys.BlockMessage, info);
+      developer.log("object onReceiveReadReceipt " + info.toString(), name: pageName);
+    };
   }
 
   void _getNotificationQuietHours() {

@@ -52,4 +52,5 @@ class EventKeys {
   static const String UpdateNotificationQuietStatus = "UpdateNotificationQuietStatus";
   static const String ForwardMessageEnd = "ForwardMessageEnd";
   static const String BurnMessage = "BurnMessage";
+  static const String BlockMessage = "BlockMessage";
 }

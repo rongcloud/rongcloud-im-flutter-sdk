@@ -1,7 +1,7 @@
 async
 2.12
-file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/async-2.6.1/
-file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/async-2.6.1/lib/
+file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/async-2.8.1/
+file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/async-2.8.1/lib/
 boolean_selector
 2.12
 file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/boolean_selector-2.1.0/
@@ -12,8 +12,8 @@ file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/characters-1.1.0/
 file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/characters-1.1.0/lib/
 charcode
 2.12
-file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/charcode-1.2.0/
-file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/charcode-1.2.0/lib/
+file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/charcode-1.3.1/
+file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/charcode-1.3.1/lib/
 clock
 2.12
 file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/clock-1.1.0/
@@ -32,8 +32,8 @@ file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/matcher-0.12.10/
 file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/matcher-0.12.10/lib/
 meta
 2.12
-file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/meta-1.3.0/
-file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/meta-1.3.0/lib/
+file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/meta-1.7.0/
+file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/meta-1.7.0/lib/
 path
 2.12
 file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/path-1.8.0/
@@ -60,8 +60,8 @@ file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/term_glyph-1.2.0/
 file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/term_glyph-1.2.0/lib/
 test_api
 2.12
-file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/test_api-0.3.0/
-file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/test_api-0.3.0/lib/
+file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/test_api-0.4.2/
+file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/test_api-0.4.2/lib/
 typed_data
 2.12
 file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/typed_data-1.3.0/

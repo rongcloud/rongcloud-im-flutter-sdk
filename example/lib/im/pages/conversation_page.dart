@@ -1,23 +1,22 @@
+import 'dart:developer' as developer;
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import '../util/combine_message_util.dart';
-import 'item/bottom_tool_bar.dart';
-import 'package:path/path.dart' as path;
-
-import '../util/style.dart';
-import 'item/bottom_input_bar.dart';
-import 'item/message_content_list.dart';
-import 'item/widget_util.dart';
-
-import '../util/user_info_datesource.dart' as example;
-import '../util/media_util.dart';
-import '../util/event_bus.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:path/path.dart' as path;
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+
+import '../util/combine_message_util.dart';
 import '../util/dialog_util.dart';
-import 'dart:developer' as developer;
+import '../util/event_bus.dart';
+import '../util/media_util.dart';
+import '../util/style.dart';
+import '../util/user_info_datesource.dart' as example;
+import 'item/bottom_input_bar.dart';
+import 'item/bottom_tool_bar.dart';
+import 'item/message_content_list.dart';
+import 'item/widget_util.dart';
 
 enum ConversationStatus {
   Normal, //正常
@@ -134,6 +133,7 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
     EventBus.instance.removeListener(EventKeys.ReceiveReadReceipt);
     EventBus.instance.removeListener(EventKeys.ReceiveReceiptRequest);
     EventBus.instance.removeListener(EventKeys.ReceiveReceiptResponse);
+    EventBus.instance.removeListener(EventKeys.BlockMessage);
     MediaUtil.instance.stopPlayAudio();
   }
 
@@ -256,6 +256,13 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
         _replaceMeidaMessage(message);
       }
     };
+
+    EventBus.instance.addListener(EventKeys.BlockMessage, (info) {
+      Fluttertoast.showToast(
+        msg: "敏感词被拦截,拦截类型:${info.blockType},会话类型:${info.conversationType},目标ID:${info.targetId},消息UID:${info.blockMsgUId},扩展信息:${info.extra}",
+        timeInSecForIos: 5,
+      );
+    });
   }
 
   onGetHistoryMessages() async {

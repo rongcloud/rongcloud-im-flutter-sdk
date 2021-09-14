@@ -125,7 +125,9 @@ class MediaUtil {
 
   //停止播放语音
   void stopPlayAudio() {
-    flutterSound.stopPlayer();
+    if (flutterSound.audioState == t_AUDIO_STATE.IS_PLAYING) {
+      flutterSound.stopPlayer();
+    }
   }
 
   String getCorrectedLocalPath(String localPath) {
