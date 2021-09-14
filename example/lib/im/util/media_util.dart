@@ -1,26 +1,24 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
 import 'dart:io';
-import 'package:flutter_plugin_record/index.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter_sound/flutter_sound.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:developer' as developer;
+import 'package:record/record.dart';
 
 ///媒体工具，负责申请权限，选照片，拍照，录音，播放语音
 class MediaUtil {
-  FlutterSound flutterSound = new FlutterSound();
-
   String pageName = "example.MediaUtil";
   factory MediaUtil() => _getInstance()!;
   static MediaUtil? get instance => _getInstance();
   static MediaUtil? _instance;
 
-  FlutterPluginRecord _recorder = new FlutterPluginRecord();
-  
+  AudioPlayer player = AudioPlayer();
+
   MediaUtil._internal() {
     // 初始化
   }
@@ -47,7 +45,8 @@ class MediaUtil {
 
   //拍照，成功则返回照片的本地路径，注：Android 必须要加 file:// 头
   Future<String?> takePhoto() async {
-    File? imgfile = (await ImagePicker().pickImage(source: ImageSource.camera)) as File?;
+    File? imgfile =
+        (await ImagePicker().pickImage(source: ImageSource.camera)) as File?;
     if (imgfile == null) {
       return null;
     }
@@ -60,7 +59,9 @@ class MediaUtil {
 
   //从相册选照片，成功则返回照片的本地路径，注：Android 必须要加 file:// 头
   Future<String?> pickImage() async {
-    File? imgfile = await ImagePicker().pickImage(source: ImageSource.gallery) as File?;;
+    File? imgfile =
+        await ImagePicker().pickImage(source: ImageSource.gallery) as File?;
+    ;
     if (imgfile == null) {
       return null;
     }
@@ -73,46 +74,54 @@ class MediaUtil {
 
   //选择本地文件，成功返回文件信息
   Future<List<File>?> pickFiles() async {
-    List<File>? files = (await FilePicker.platform.getDirectoryPath()) as List<File>?;
+    List<File>? files =
+        (await FilePicker.platform.getDirectoryPath()) as List<File>?;
     return files;
   }
 
   //开始录音
   void startRecordAudio() async {
     developer.log("debug 准备录音并检查权限", name: pageName);
-    _recorder.init();
-    // bool hasPermission = await FlutterAudioRecorder.hasPermissions;
-    // if (hasPermission) {
+    // Check and request permission
+    bool hasPermission = await Record().hasPermission();
+
+    if (hasPermission) {
       developer.log("debug 录音权限已开启", name: pageName);
       Directory tempDir = await getTemporaryDirectory();
       String tempPath = tempDir.path +
           "/" +
           DateTime.now().millisecondsSinceEpoch.toString() +
           ".aac";
-          _recorder.startByWavPath(tempPath);
       developer.log("debug 开始录音", name: pageName);
-    // } else {
-    //   Fluttertoast.showToast(
-    //       msg: "录音权限未开启",
-    //       toastLength: Toast.LENGTH_SHORT,
-    //       gravity: ToastGravity.CENTER,
-    //       timeInSecForIosWeb: 1,
-    //       backgroundColor: Colors.grey[800],
-    //       textColor: Colors.white,
-    //       fontSize: 16.0);
-    // }
+      // Start recording
+      await Record().start(
+        path: tempPath, // required
+        encoder: AudioEncoder.AAC, // by default
+      );
+    } else {
+      Fluttertoast.showToast(
+          msg: "录音权限未开启",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.grey[800],
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
   }
 
   //录音结束，通过 finished 返回本地路径和语音时长，注：Android 必须要加 file:// 头
   void stopRecordAudio(Function(String? path, int? duration) finished) async {
-    var result = await _recorder.stop();
-    developer.log(
-        "Stop recording: path = ${result.path}，duration = ${result.duration}",
+    String? audioPath = await Record().stop();
+    Duration? durationA = await player.setFilePath(audioPath!);
+
+    int duration = durationA!.inSeconds;
+
+    developer.log("Stop recording: path = ${audioPath}，duration = ${duration}",
         name: pageName);
-    developer.log("Stop recording: duration = ${result.duration}",
-        name: pageName);
-    if (result.duration.inSeconds > 0) {
-      String? path = result.path;
+    developer.log("Stop recording: duration = ${duration}", name: pageName);
+    if (duration > 0) {
+      String? path = audioPath;
       if (path == null) {
         if (finished != null) {
           finished(null, 0);
@@ -122,7 +131,7 @@ class MediaUtil {
         path = "file://" + path!;
       }
       if (finished != null) {
-        finished(path, result.duration.inSeconds);
+        finished(path, duration);
       }
     } else {
       Fluttertoast.showToast(
@@ -138,17 +147,16 @@ class MediaUtil {
 
   //播放语音
   void startPlayAudio(String path) {
-    // if (flutterSound.audioState == t_AUDIO_STATE.IS_PLAYING) {
-    //   stopPlayAudio();
-    // }
-    // flutterSound.startPlayer(path);
-    _recorder.playByPath(path, 'file');
+    if (player.playing) {
+      stopPlayAudio();
+    }
+    player.setFilePath(path);
+    player.play();
   }
 
   //停止播放语音
   void stopPlayAudio() {
-    // flutterSound.stopPlayer();
-    _recorder.stopPlay();
+    player.stop();
   }
 
   String? getCorrectedLocalPath(String? localPath) {

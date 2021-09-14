@@ -19,6 +19,8 @@ dependencies:
   file_picker: ^4.0.2
   open_file: ^3.2.1
   #flutter_audio_recorder: ^0.5.5
+  record: ^3.0.0 
+  just_audio: ^0.9.11
   path_provider: ^2.0.3
   permission_handler: ^8.1.4+2
   flutter_sound: ^8.3.10
@@ -37,7 +39,6 @@ dependencies:
   flutter_cache_manager: ^3.1.2
   connectivity: ^3.0.6
   ffi: ^1.1.2
-  flutter_plugin_record: ^1.0.1
 
 
 dev_dependencies:
