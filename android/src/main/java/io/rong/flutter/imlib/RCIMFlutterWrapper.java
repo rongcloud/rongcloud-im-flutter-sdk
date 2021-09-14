@@ -27,6 +27,7 @@ import java.util.Map;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.rong.common.ExpansionUtils;
 import io.rong.common.RLog;
 import io.rong.common.fwlog.FwLog;
 import io.rong.flutter.imlib.forward.CombineMessage;
@@ -152,200 +153,205 @@ public class RCIMFlutterWrapper {
     }
 
     public void onFlutterMethodCall(MethodCall call, Result result) {
-        if (RCMethodList.MethodKeyInit.equalsIgnoreCase(call.method)) {
-            initRCIM(call.arguments);
-        } else if (RCMethodList.MethodKeyConfig.equalsIgnoreCase(call.method)) {
-            config(call.arguments);
-        } else if (RCMethodList.MethodKeySetServerInfo.equalsIgnoreCase(call.method)) {
-            setServerInfo(call.arguments);
-        } else if (RCMethodList.MethodKeyConnect.equalsIgnoreCase(call.method)) {
-            connect(call.arguments, result);
-        } else if (RCMethodList.MethodKeyDisconnect.equalsIgnoreCase(call.method)) {
-            disconnect(call.arguments);
-        } else if (RCMethodList.MethodKeyRefreshUserInfo.equalsIgnoreCase(call.method)) {
-            refreshUserInfo(call.arguments);
-        } else if (RCMethodList.MethodKeySendMessage.equalsIgnoreCase(call.method)) {
-            sendMessage(call.arguments, result);
-        } else if (RCMethodList.MethodKeyJoinChatRoom.equalsIgnoreCase(call.method)) {
-            joinChatRoom(call.arguments);
-        } else if (RCMethodList.MethodKeyJoinExistChatRoom.equalsIgnoreCase(call.method)) {
-            joinExitChatRoom(call.arguments);
-        } else if (RCMethodList.MethodKeyQuitChatRoom.equalsIgnoreCase(call.method)) {
-            quitChatRoom(call.arguments);
-        } else if (RCMethodList.MethodKeyGetHistoryMessage.equalsIgnoreCase(call.method)) {
-            getHistoryMessage(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetHistoryMessages.equalsIgnoreCase(call.method)) {
-            getHistoryMessages(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetMessage.equalsIgnoreCase(call.method)) {
-            getMessage(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetMessages.equalsIgnoreCase(call.method)) {
-            getMessages(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetConversationList.equalsIgnoreCase(call.method)) {
-            getConversationList(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetConversationListByPage.equalsIgnoreCase(call.method)) {
-            getConversationListByPage(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetConversation.equalsIgnoreCase(call.method)) {
-            getConversation(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetChatRoomInfo.equalsIgnoreCase(call.method)) {
-            getChatRoomInfo(call.arguments, result);
-        } else if (RCMethodList.MethodKeyClearMessagesUnreadStatus.equalsIgnoreCase(call.method)) {
-            clearMessagesUnreadStatus(call.arguments, result);
-        } else if (RCMethodList.MethodKeySetCurrentUserInfo.equalsIgnoreCase(call.method)) {
-            setCurrentUserInfo(call.arguments);
-        } else if (RCMethodList.MethodKeyInsertIncomingMessage.equalsIgnoreCase(call.method)) {
-            insertIncomingMessage(call.arguments, result);
-        } else if (RCMethodList.MethodKeyInsertOutgoingMessage.equalsIgnoreCase(call.method)) {
-            insertOutgoingMessage(call.arguments, result);
-        } else if (RCMethodList.MethodCallBackKeygetRemoteHistoryMessages.equalsIgnoreCase(call.method)) {
-            getRemoteHistoryMessages(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetTotalUnreadCount.equalsIgnoreCase(call.method)) {
-            getTotalUnreadCount(result);
-        } else if (RCMethodList.MethodKeyGetUnreadCountTargetId.equalsIgnoreCase(call.method)) {
-            getUnreadCountTargetId(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetUnreadCountConversationTypeList.equalsIgnoreCase(call.method)) {
-            getUnreadCountConversationTypeList(call.arguments, result);
-        } else if (RCMethodList.MethodKeySetConversationNotificationStatus.equalsIgnoreCase(call.method)) {
-            setConversationNotificationStatus(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetConversationNotificationStatus.equalsIgnoreCase(call.method)) {
-            getConversationNotificationStatus(call.arguments, result);
-        } else if (RCMethodList.MethodKeyRemoveConversation.equalsIgnoreCase(call.method)) {
-            removeConversation(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetBlockedConversationList.equalsIgnoreCase(call.method)) {
-            getBlockedConversationList(call.arguments, result);
-        } else if (RCMethodList.MethodKeySetConversationToTop.equalsIgnoreCase(call.method)) {
-            setConversationToTop(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetTopConversationList.equalsIgnoreCase(call.method)) {
-            // getTopConversationList(call.arguments,result);
-        } else if (RCMethodList.MethodKeyDeleteMessages.equalsIgnoreCase(call.method)) {
-            deleteMessages(call.arguments, result);
-        } else if (RCMethodList.MethodKeyDeleteMessageByIds.equalsIgnoreCase(call.method)) {
-            deleteMessageByIds(call.arguments, result);
-        } else if (RCMethodList.MethodKeyAddToBlackList.equalsIgnoreCase(call.method)) {
-            addToBlackList(call.arguments, result);
-        } else if (RCMethodList.MethodKeyRemoveFromBlackList.equalsIgnoreCase(call.method)) {
-            removeFromBlackList(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetBlackListStatus.equalsIgnoreCase(call.method)) {
-            getBlackListStatus(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetBlackList.equalsIgnoreCase(call.method)) {
-            getBlackList(result);
-        } else if (RCMethodList.MethodKeySendReadReceiptMessage.equalsIgnoreCase(call.method)) {
-            sendReadReceiptMessage(call.arguments, result);
-        } else if (RCMethodList.MethodKeyRecallMessage.equalsIgnoreCase(call.method)) {
-            recallMessage(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetTextMessageDraft.equalsIgnoreCase(call.method)) {
-            getTextMessageDraft(call.arguments, result);
-        } else if (RCMethodList.MethodKeySaveTextMessageDraft.equalsIgnoreCase(call.method)) {
-            saveTextMessageDraft(call.arguments, result);
-        } else if (RCMethodList.MethodKeyClearHistoryMessages.equalsIgnoreCase(call.method)) {
-            clearHistoryMessages(call.arguments, result);
-        } else if (RCMethodList.MethodKeySyncConversationReadStatus.equalsIgnoreCase(call.method)) {
-            syncConversationReadStatus(call.arguments, result);
-        } else if (RCMethodList.MethodKeySearchConversations.equalsIgnoreCase(call.method)) {
-            searchConversations(call.arguments, result);
-        } else if (RCMethodList.MethodKeySearchMessages.equalsIgnoreCase(call.method)) {
-            searchMessages(call.arguments, result);
-        } else if (RCMethodList.MethodKeySendTypingStatus.equalsIgnoreCase(call.method)) {
-            sendTypingStatus(call.arguments);
-        } else if (RCMethodList.MethodKeySendReadReceiptRequest.equalsIgnoreCase(call.method)) {
-            sendReadReceiptRequest(call.arguments, result);
-        } else if (RCMethodList.MethodKeySendReadReceiptResponse.equalsIgnoreCase(call.method)) {
-            sendReadReceiptResponse(call.arguments, result);
-        } else if (RCMethodList.MethodKeyDownloadMediaMessage.equalsIgnoreCase(call.method)) {
-            downloadMediaMessage(call.arguments);
-        } else if (RCMethodList.MethodKeySetChatRoomEntry.equalsIgnoreCase(call.method)) {
-            setChatRoomEntry(call.arguments, result);
-        } else if (RCMethodList.MethodKeyForceSetChatRoomEntry.equalsIgnoreCase(call.method)) {
-            forceSetChatRoomEntry(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetChatRoomEntry.equalsIgnoreCase(call.method)) {
-            getChatRoomEntry(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetAllChatRoomEntries.equalsIgnoreCase(call.method)) {
-            getAllChatRoomEntries(call.arguments, result);
-        } else if (RCMethodList.MethodKeyRemoveChatRoomEntry.equalsIgnoreCase(call.method)) {
-            removeChatRoomEntry(call.arguments, result);
-        } else if (RCMethodList.MethodKeyForceRemoveChatRoomEntry.equalsIgnoreCase(call.method)) {
-            forceRemoveChatRoomEntry(call.arguments, result);
-        } else if (RCMethodList.MethodKeySetNotificationQuietHours.equalsIgnoreCase(call.method)) {
-            setNotificationQuietHours(call.arguments, result);
-        } else if (RCMethodList.MethodKeyRemoveNotificationQuietHours.equalsIgnoreCase(call.method)) {
-            removeNotificationQuietHours(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetNotificationQuietHours.equalsIgnoreCase(call.method)) {
-            getNotificationQuietHours(result);
-        } else if (RCMethodList.MethodKeyGetUnreadMentionedMessages.equalsIgnoreCase(call.method)) {
-            getUnreadMentionedMessages(call.arguments, result);
-        } else if (RCMethodList.MethodKeySendDirectionalMessage.equalsIgnoreCase(call.method)) {
-            sendDirectionalMessage(call.arguments, result);
-        } else if (RCMethodList.MethodKeyForwardMessageByStep.equalsIgnoreCase(call.method)) {
-            forwardMessageByStep(call.arguments);
-        } else if (RCMethodList.MethodKeyMessageBeginDestruct.equalsIgnoreCase(call.method)) {
-            messageBeginDestruct(call.arguments);
-        } else if (RCMethodList.MethodKeyMessageStopDestruct.equalsIgnoreCase(call.method)) {
-            messageStopDestruct(call.arguments);
-        } else if (RCMethodList.MethodKeyDeleteRemoteMessages.equalsIgnoreCase(call.method)) {
-            deleteRemoteMessages(call.arguments, result);
-        } else if (RCMethodList.MethodKeyClearMessages.equalsIgnoreCase(call.method)) {
-            clearMessages(call.arguments, result);
-        } else if (RCMethodList.MethodKeySetMessageExtra.equalsIgnoreCase(call.method)) {
-            setMessageExtra(call.arguments, result);
-        } else if (RCMethodList.MethodKeySetMessageSentStatus.equalsIgnoreCase(call.method)) {
-            setMessageSentStatus(call.arguments, result);
-        } else if (RCMethodList.MethodKeySetMessageReceivedStatus.equalsIgnoreCase(call.method)) {
-            setMessageReceivedStatus(call.arguments, result);
-        } else if (RCMethodList.MethodKeyClearConversations.equalsIgnoreCase(call.method)) {
-            clearConversations(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetDeltaTime.equalsIgnoreCase(call.method)) {
-            getDeltaTime(result);
-        } else if (RCMethodList.MethodKeySetOfflineMessageDuration.equalsIgnoreCase(call.method)) {
-            setOfflineMessageDuration(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetOfflineMessageDuration.equalsIgnoreCase(call.method)) {
-            getOfflineMessageDuration(result);
-        } else if (RCMethodList.MethodKeySetReconnectKickEnable.equalsIgnoreCase(call.method)) {
-            setReconnectKickEnable(call.arguments);
-        } else if (RCMethodList.MethodKeyGetConnectionStatus.equalsIgnoreCase(call.method)) {
-            getConnectionStatus(result);
-        } else if (RCMethodList.MethodKeyCancelDownloadMediaMessage.equalsIgnoreCase(call.method)) {
-            cancelDownloadMediaMessage(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetRemoteChatRoomHistoryMessages.equalsIgnoreCase(call.method)) {
-            getRemoteChatRoomHistoryMessages(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetMessageByUId.equalsIgnoreCase(call.method)) {
-            getMessageByUId(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetFirstUnreadMessage.equalsIgnoreCase(call.method)) {
-            getFirstUnreadMessage(call.arguments, result);
-        } else if (RCMethodList.MethodKeySendIntactMessage.equalsIgnoreCase(call.method)) {
-            sendIntactMessage(call.arguments, result);
-        } else if (RCMethodList.MethodKeyUpdateMessageExpansion.equalsIgnoreCase(call.method)) {
-            updateMessageExpansion(call.arguments, result);
-        } else if (RCMethodList.MethodKeyRemoveMessageExpansionForKey.equalsIgnoreCase(call.method)) {
-            removeMessageExpansion(call.arguments, result);
-        } else if (RCMethodList.MethodKeyAddTag.equalsIgnoreCase(call.method)) {
-            addTag(call.arguments, result);
-        } else if (RCMethodList.MethodKeyRemoveTag.equalsIgnoreCase(call.method)) {
-            removeTag(call.arguments, result);
-        } else if (RCMethodList.MethodKeyUpdateTag.equalsIgnoreCase(call.method)) {
-            updateTag(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetTags.equalsIgnoreCase(call.method)) {
-            getTags(call.arguments, result);
-        } else if (RCMethodList.MethodKeyAddConversationsToTag.equalsIgnoreCase(call.method)) {
-            addConversationsToTag(call.arguments, result);
-        } else if (RCMethodList.MethodKeyRemoveConversationsFromTag.equalsIgnoreCase(call.method)) {
-            removeConversationsFromTag(call.arguments, result);
-        } else if (RCMethodList.MethodKeyRemoveTagsFromConversation.equalsIgnoreCase(call.method)) {
-            removeTagsFromConversation(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetTagsFromConversation.equalsIgnoreCase(call.method)) {
-            getTagsFromConversation(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetConversationsFromTagByPage.equalsIgnoreCase(call.method)) {
-            getConversationsFromTagByPage(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetUnreadCountByTag.equalsIgnoreCase(call.method)) {
-            getUnreadCountByTag(call.arguments, result);
-        } else if (RCMethodList.MethodKeySetConversationToTopInTag.equalsIgnoreCase(call.method)) {
-            setConversationToTopInTag(call.arguments, result);
-        } else if (RCMethodList.MethodKeyGetConversationTopStatusInTag.equalsIgnoreCase(call.method)) {
-            getConversationTopStatusInTag(call.arguments, result);
-        } else if (RCMethodList.MethodKeyBatchInsertMessage.equalsIgnoreCase(call.method)) {
-            batchInsertMessage(call.arguments, result);
-        } else if (RCMethodList.MethodKeySetAndroidPushConfig.equalsIgnoreCase(call.method)) {
-            setPushConfig(call.arguments);
-        } else {
-            result.notImplemented();
+        try {
+
+            if (RCMethodList.MethodKeyInit.equalsIgnoreCase(call.method)) {
+                initRCIM(call.arguments);
+            } else if (RCMethodList.MethodKeyConfig.equalsIgnoreCase(call.method)) {
+                config(call.arguments);
+            } else if (RCMethodList.MethodKeySetServerInfo.equalsIgnoreCase(call.method)) {
+                setServerInfo(call.arguments);
+            } else if (RCMethodList.MethodKeyConnect.equalsIgnoreCase(call.method)) {
+                connect(call.arguments, result);
+            } else if (RCMethodList.MethodKeyDisconnect.equalsIgnoreCase(call.method)) {
+                disconnect(call.arguments);
+            } else if (RCMethodList.MethodKeyRefreshUserInfo.equalsIgnoreCase(call.method)) {
+                refreshUserInfo(call.arguments);
+            } else if (RCMethodList.MethodKeySendMessage.equalsIgnoreCase(call.method)) {
+                sendMessage(call.arguments, result);
+            } else if (RCMethodList.MethodKeyJoinChatRoom.equalsIgnoreCase(call.method)) {
+                joinChatRoom(call.arguments);
+            } else if (RCMethodList.MethodKeyJoinExistChatRoom.equalsIgnoreCase(call.method)) {
+                joinExitChatRoom(call.arguments);
+            } else if (RCMethodList.MethodKeyQuitChatRoom.equalsIgnoreCase(call.method)) {
+                quitChatRoom(call.arguments);
+            } else if (RCMethodList.MethodKeyGetHistoryMessage.equalsIgnoreCase(call.method)) {
+                getHistoryMessage(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetHistoryMessages.equalsIgnoreCase(call.method)) {
+                getHistoryMessages(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetMessage.equalsIgnoreCase(call.method)) {
+                getMessage(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetMessages.equalsIgnoreCase(call.method)) {
+                getMessages(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetConversationList.equalsIgnoreCase(call.method)) {
+                getConversationList(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetConversationListByPage.equalsIgnoreCase(call.method)) {
+                getConversationListByPage(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetConversation.equalsIgnoreCase(call.method)) {
+                getConversation(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetChatRoomInfo.equalsIgnoreCase(call.method)) {
+                getChatRoomInfo(call.arguments, result);
+            } else if (RCMethodList.MethodKeyClearMessagesUnreadStatus.equalsIgnoreCase(call.method)) {
+                clearMessagesUnreadStatus(call.arguments, result);
+            } else if (RCMethodList.MethodKeySetCurrentUserInfo.equalsIgnoreCase(call.method)) {
+                setCurrentUserInfo(call.arguments);
+            } else if (RCMethodList.MethodKeyInsertIncomingMessage.equalsIgnoreCase(call.method)) {
+                insertIncomingMessage(call.arguments, result);
+            } else if (RCMethodList.MethodKeyInsertOutgoingMessage.equalsIgnoreCase(call.method)) {
+                insertOutgoingMessage(call.arguments, result);
+            } else if (RCMethodList.MethodCallBackKeygetRemoteHistoryMessages.equalsIgnoreCase(call.method)) {
+                getRemoteHistoryMessages(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetTotalUnreadCount.equalsIgnoreCase(call.method)) {
+                getTotalUnreadCount(result);
+            } else if (RCMethodList.MethodKeyGetUnreadCountTargetId.equalsIgnoreCase(call.method)) {
+                getUnreadCountTargetId(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetUnreadCountConversationTypeList.equalsIgnoreCase(call.method)) {
+                getUnreadCountConversationTypeList(call.arguments, result);
+            } else if (RCMethodList.MethodKeySetConversationNotificationStatus.equalsIgnoreCase(call.method)) {
+                setConversationNotificationStatus(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetConversationNotificationStatus.equalsIgnoreCase(call.method)) {
+                getConversationNotificationStatus(call.arguments, result);
+            } else if (RCMethodList.MethodKeyRemoveConversation.equalsIgnoreCase(call.method)) {
+                removeConversation(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetBlockedConversationList.equalsIgnoreCase(call.method)) {
+                getBlockedConversationList(call.arguments, result);
+            } else if (RCMethodList.MethodKeySetConversationToTop.equalsIgnoreCase(call.method)) {
+                setConversationToTop(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetTopConversationList.equalsIgnoreCase(call.method)) {
+                // getTopConversationList(call.arguments,result);
+            } else if (RCMethodList.MethodKeyDeleteMessages.equalsIgnoreCase(call.method)) {
+                deleteMessages(call.arguments, result);
+            } else if (RCMethodList.MethodKeyDeleteMessageByIds.equalsIgnoreCase(call.method)) {
+                deleteMessageByIds(call.arguments, result);
+            } else if (RCMethodList.MethodKeyAddToBlackList.equalsIgnoreCase(call.method)) {
+                addToBlackList(call.arguments, result);
+            } else if (RCMethodList.MethodKeyRemoveFromBlackList.equalsIgnoreCase(call.method)) {
+                removeFromBlackList(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetBlackListStatus.equalsIgnoreCase(call.method)) {
+                getBlackListStatus(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetBlackList.equalsIgnoreCase(call.method)) {
+                getBlackList(result);
+            } else if (RCMethodList.MethodKeySendReadReceiptMessage.equalsIgnoreCase(call.method)) {
+                sendReadReceiptMessage(call.arguments, result);
+            } else if (RCMethodList.MethodKeyRecallMessage.equalsIgnoreCase(call.method)) {
+                recallMessage(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetTextMessageDraft.equalsIgnoreCase(call.method)) {
+                getTextMessageDraft(call.arguments, result);
+            } else if (RCMethodList.MethodKeySaveTextMessageDraft.equalsIgnoreCase(call.method)) {
+                saveTextMessageDraft(call.arguments, result);
+            } else if (RCMethodList.MethodKeyClearHistoryMessages.equalsIgnoreCase(call.method)) {
+                clearHistoryMessages(call.arguments, result);
+            } else if (RCMethodList.MethodKeySyncConversationReadStatus.equalsIgnoreCase(call.method)) {
+                syncConversationReadStatus(call.arguments, result);
+            } else if (RCMethodList.MethodKeySearchConversations.equalsIgnoreCase(call.method)) {
+                searchConversations(call.arguments, result);
+            } else if (RCMethodList.MethodKeySearchMessages.equalsIgnoreCase(call.method)) {
+                searchMessages(call.arguments, result);
+            } else if (RCMethodList.MethodKeySendTypingStatus.equalsIgnoreCase(call.method)) {
+                sendTypingStatus(call.arguments);
+            } else if (RCMethodList.MethodKeySendReadReceiptRequest.equalsIgnoreCase(call.method)) {
+                sendReadReceiptRequest(call.arguments, result);
+            } else if (RCMethodList.MethodKeySendReadReceiptResponse.equalsIgnoreCase(call.method)) {
+                sendReadReceiptResponse(call.arguments, result);
+            } else if (RCMethodList.MethodKeyDownloadMediaMessage.equalsIgnoreCase(call.method)) {
+                downloadMediaMessage(call.arguments);
+            } else if (RCMethodList.MethodKeySetChatRoomEntry.equalsIgnoreCase(call.method)) {
+                setChatRoomEntry(call.arguments, result);
+            } else if (RCMethodList.MethodKeyForceSetChatRoomEntry.equalsIgnoreCase(call.method)) {
+                forceSetChatRoomEntry(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetChatRoomEntry.equalsIgnoreCase(call.method)) {
+                getChatRoomEntry(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetAllChatRoomEntries.equalsIgnoreCase(call.method)) {
+                getAllChatRoomEntries(call.arguments, result);
+            } else if (RCMethodList.MethodKeyRemoveChatRoomEntry.equalsIgnoreCase(call.method)) {
+                removeChatRoomEntry(call.arguments, result);
+            } else if (RCMethodList.MethodKeyForceRemoveChatRoomEntry.equalsIgnoreCase(call.method)) {
+                forceRemoveChatRoomEntry(call.arguments, result);
+            } else if (RCMethodList.MethodKeySetNotificationQuietHours.equalsIgnoreCase(call.method)) {
+                setNotificationQuietHours(call.arguments, result);
+            } else if (RCMethodList.MethodKeyRemoveNotificationQuietHours.equalsIgnoreCase(call.method)) {
+                removeNotificationQuietHours(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetNotificationQuietHours.equalsIgnoreCase(call.method)) {
+                getNotificationQuietHours(result);
+            } else if (RCMethodList.MethodKeyGetUnreadMentionedMessages.equalsIgnoreCase(call.method)) {
+                getUnreadMentionedMessages(call.arguments, result);
+            } else if (RCMethodList.MethodKeySendDirectionalMessage.equalsIgnoreCase(call.method)) {
+                sendDirectionalMessage(call.arguments, result);
+            } else if (RCMethodList.MethodKeyForwardMessageByStep.equalsIgnoreCase(call.method)) {
+                forwardMessageByStep(call.arguments);
+            } else if (RCMethodList.MethodKeyMessageBeginDestruct.equalsIgnoreCase(call.method)) {
+                messageBeginDestruct(call.arguments);
+            } else if (RCMethodList.MethodKeyMessageStopDestruct.equalsIgnoreCase(call.method)) {
+                messageStopDestruct(call.arguments);
+            } else if (RCMethodList.MethodKeyDeleteRemoteMessages.equalsIgnoreCase(call.method)) {
+                deleteRemoteMessages(call.arguments, result);
+            } else if (RCMethodList.MethodKeyClearMessages.equalsIgnoreCase(call.method)) {
+                clearMessages(call.arguments, result);
+            } else if (RCMethodList.MethodKeySetMessageExtra.equalsIgnoreCase(call.method)) {
+                setMessageExtra(call.arguments, result);
+            } else if (RCMethodList.MethodKeySetMessageSentStatus.equalsIgnoreCase(call.method)) {
+                setMessageSentStatus(call.arguments, result);
+            } else if (RCMethodList.MethodKeySetMessageReceivedStatus.equalsIgnoreCase(call.method)) {
+                setMessageReceivedStatus(call.arguments, result);
+            } else if (RCMethodList.MethodKeyClearConversations.equalsIgnoreCase(call.method)) {
+                clearConversations(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetDeltaTime.equalsIgnoreCase(call.method)) {
+                getDeltaTime(result);
+            } else if (RCMethodList.MethodKeySetOfflineMessageDuration.equalsIgnoreCase(call.method)) {
+                setOfflineMessageDuration(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetOfflineMessageDuration.equalsIgnoreCase(call.method)) {
+                getOfflineMessageDuration(result);
+            } else if (RCMethodList.MethodKeySetReconnectKickEnable.equalsIgnoreCase(call.method)) {
+                setReconnectKickEnable(call.arguments);
+            } else if (RCMethodList.MethodKeyGetConnectionStatus.equalsIgnoreCase(call.method)) {
+                getConnectionStatus(result);
+            } else if (RCMethodList.MethodKeyCancelDownloadMediaMessage.equalsIgnoreCase(call.method)) {
+                cancelDownloadMediaMessage(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetRemoteChatRoomHistoryMessages.equalsIgnoreCase(call.method)) {
+                getRemoteChatRoomHistoryMessages(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetMessageByUId.equalsIgnoreCase(call.method)) {
+                getMessageByUId(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetFirstUnreadMessage.equalsIgnoreCase(call.method)) {
+                getFirstUnreadMessage(call.arguments, result);
+            } else if (RCMethodList.MethodKeySendIntactMessage.equalsIgnoreCase(call.method)) {
+                sendIntactMessage(call.arguments, result);
+            } else if (RCMethodList.MethodKeyUpdateMessageExpansion.equalsIgnoreCase(call.method)) {
+                updateMessageExpansion(call.arguments, result);
+            } else if (RCMethodList.MethodKeyRemoveMessageExpansionForKey.equalsIgnoreCase(call.method)) {
+                removeMessageExpansion(call.arguments, result);
+            } else if (RCMethodList.MethodKeyAddTag.equalsIgnoreCase(call.method)) {
+                addTag(call.arguments, result);
+            } else if (RCMethodList.MethodKeyRemoveTag.equalsIgnoreCase(call.method)) {
+                removeTag(call.arguments, result);
+            } else if (RCMethodList.MethodKeyUpdateTag.equalsIgnoreCase(call.method)) {
+                updateTag(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetTags.equalsIgnoreCase(call.method)) {
+                getTags(call.arguments, result);
+            } else if (RCMethodList.MethodKeyAddConversationsToTag.equalsIgnoreCase(call.method)) {
+                addConversationsToTag(call.arguments, result);
+            } else if (RCMethodList.MethodKeyRemoveConversationsFromTag.equalsIgnoreCase(call.method)) {
+                removeConversationsFromTag(call.arguments, result);
+            } else if (RCMethodList.MethodKeyRemoveTagsFromConversation.equalsIgnoreCase(call.method)) {
+                removeTagsFromConversation(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetTagsFromConversation.equalsIgnoreCase(call.method)) {
+                getTagsFromConversation(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetConversationsFromTagByPage.equalsIgnoreCase(call.method)) {
+                getConversationsFromTagByPage(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetUnreadCountByTag.equalsIgnoreCase(call.method)) {
+                getUnreadCountByTag(call.arguments, result);
+            } else if (RCMethodList.MethodKeySetConversationToTopInTag.equalsIgnoreCase(call.method)) {
+                setConversationToTopInTag(call.arguments, result);
+            } else if (RCMethodList.MethodKeyGetConversationTopStatusInTag.equalsIgnoreCase(call.method)) {
+                getConversationTopStatusInTag(call.arguments, result);
+            } else if (RCMethodList.MethodKeyBatchInsertMessage.equalsIgnoreCase(call.method)) {
+                batchInsertMessage(call.arguments, result);
+            } else if (RCMethodList.MethodKeySetAndroidPushConfig.equalsIgnoreCase(call.method)) {
+                setPushConfig(call.arguments);
+            } else {
+                result.notImplemented();
+            }
+        } catch (IllegalStateException e) {
+            Log.e("===me==", e.getMessage());
         }
 
     }
@@ -717,6 +723,8 @@ public class RCIMFlutterWrapper {
             }
 
             Message message = map2Message(map);
+
+            filterSendMessage(message);
             RongCoreClient.getInstance().sendMessage(message, pushContent, pushData,
                     new IRongCoreCallback.ISendMessageCallback() {
                         @Override
@@ -822,6 +830,7 @@ public class RCIMFlutterWrapper {
             Message message = Message.obtain(targetId, type, content);
             message.setMessageConfig(new MessageConfig.Builder().setDisableNotification(disableNotification).build());
 
+            filterSendMessage(message);
             RongCoreClient.getInstance().sendMessage(message, pushContent, pushData,
                     new IRongCoreCallback.ISendMessageCallback() {
                         @Override
@@ -855,16 +864,21 @@ public class RCIMFlutterWrapper {
                         }
 
                         @Override
-                        public void onError(Message message, IRongCoreEnum.CoreErrorCode errorCode) {
-                            Map resultMap = new HashMap();
-                            resultMap.put("messageId", message.getMessageId());
-                            resultMap.put("status", 20);
-                            resultMap.put("code", errorCode.getValue());
-                            if (timestamp.longValue() > 0) {
-                                resultMap.put("timestamp", timestamp);
-                            }
-                            RCLog.e("[sendMessage] onError:" + resultMap.toString());
-                            mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
+                        public void onError(final Message message, final IRongCoreEnum.CoreErrorCode errorCode) {
+                            mMainHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Map resultMap = new HashMap();
+                                    resultMap.put("messageId", message.getMessageId());
+                                    resultMap.put("status", 20);
+                                    resultMap.put("code", errorCode.getValue());
+                                    if (timestamp.longValue() > 0) {
+                                        resultMap.put("timestamp", timestamp);
+                                    }
+                                    RCLog.e("[sendMessage] onError:" + resultMap.toString());
+                                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
+                                }
+                            });
                         }
 
                     });
@@ -1256,17 +1270,22 @@ public class RCIMFlutterWrapper {
                         }
 
                         @Override
-                        public void onError(Message message, IRongCoreEnum.CoreErrorCode errorCode) {
-                            RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
-                            Map resultMap = new HashMap();
-                            resultMap.put("messageId", message.getMessageId());
-                            resultMap.put("status", 20);
-                            resultMap.put("code", errorCode.getValue());
-                            if (timestamp.longValue() > 0) {
-                                resultMap.put("timestamp", timestamp);
-                            }
-                            RCLog.e("[sendMediaMessage] onError:" + resultMap.toString());
-                            mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
+                        public void onError(final Message message, final IRongCoreEnum.CoreErrorCode errorCode) {
+                            mMainHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
+                                    Map resultMap = new HashMap();
+                                    resultMap.put("messageId", message.getMessageId());
+                                    resultMap.put("status", 20);
+                                    resultMap.put("code", errorCode.getValue());
+                                    if (timestamp.longValue() > 0) {
+                                        resultMap.put("timestamp", timestamp);
+                                    }
+                                    RCLog.e("[sendMediaMessage] onError:" + resultMap.toString());
+                                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeySendMessage, resultMap);
+                                }
+                            });
                         }
                     });
         }
@@ -1614,6 +1633,8 @@ public class RCIMFlutterWrapper {
                 types[i] = type;
             }
 
+            final ResultRecord resultRecord = new ResultRecord();
+
             RongCoreClient.getInstance().getConversationList(new IRongCoreCallback.ResultCallback<List<Conversation>>() {
                 @Override
                 public void onSuccess(List<Conversation> conversations) {
@@ -1633,7 +1654,12 @@ public class RCIMFlutterWrapper {
                 @Override
                 public void onError(IRongCoreEnum.CoreErrorCode errorCode) {
                     RCLog.e("[getConversationList] onError:" + errorCode.getValue());
+                    if (resultRecord.isResultReturned) {
+                        RCLog.e("[getConversationList] onError: result is returned");
+                        return;
+                    }
                     result.success(null);
+                    resultRecord.isResultReturned = true;
                 }
             }, types);
         }
@@ -3352,6 +3378,7 @@ public class RCIMFlutterWrapper {
             Message forwardMessage = Message.obtain(targetId, Conversation.ConversationType.setValue(conversationType),
                     messageContent);
 
+            filterSendMessage(forwardMessage);
             RongCoreClient.getInstance().sendMessage(forwardMessage, "", "", new IRongCoreCallback.ISendMessageCallback() {
                 @Override
                 public void onAttached(Message message) {
@@ -4442,5 +4469,24 @@ public class RCIMFlutterWrapper {
 
     public static String getVersion() {
         return sdkVersion;
+    }
+
+    private void filterSendMessage(Message message) {
+        if (message == null) {
+            FwLog.write(FwLog.I, FwLog.IM, "Flutter_Error", "method|reason", "filterSendMessage", "message can't be null!");
+        } else if (message.getConversationType() == null) {
+            FwLog.write(FwLog.I, FwLog.IM, "Flutter_Error", "method|reason|message", "filterSendMessage", "conversation type can't be null!", message.toString());
+        } else if (message.getConversationType() == Conversation.ConversationType.SYSTEM) {
+            FwLog.write(FwLog.I, FwLog.IM, "Flutter_Error", "method|reason|message", "filterSendMessage", "conversation type can't be system!", message.toString());
+        } else if (TextUtils.isEmpty(message.getTargetId())) {
+            FwLog.write(FwLog.I, FwLog.IM, "Flutter_Error", "method|reason|message", "filterSendMessage", "targetId can't be null!", message.toString());
+        } else if (message.getContent() == null) {
+            FwLog.write(FwLog.I, FwLog.IM, "Flutter_Error", "method|reason|message", "filterSendMessage", "content can't be null!", message.toString());
+        } else {
+            Map<String, String> expansion = message.getExpansion();
+            if (ExpansionUtils.judgeKVIllegality(expansion)) {
+                FwLog.write(FwLog.I, FwLog.IM, "Flutter_Error", "method|reason|message", "filterSendMessage", ExpansionUtils.filterSendMessage(message).getMessage(), message.toString());
+            }
+        }
     }
 }
