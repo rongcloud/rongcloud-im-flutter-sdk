@@ -124,6 +124,14 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
     Map<String, String> map = {
       "key3": "value3",
       "key4": "value4",
+      "key5": "value5",
+      "key6": "value6",
+      "key7": "value7",
+      "key8": "value8",
+      "key9": "value9",
+      "key10": "value10",
+      "key11": "value11",
+      "key12": "value12",
     };
     RongIMClient.setChatRoomEntries(
       targetId,
@@ -140,6 +148,14 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
     List<String> list = [
       "key3",
       "key4",
+      "key5",
+      "key6",
+      "key7",
+      "key8",
+      "key9",
+      "key10",
+      "key11",
+      "key12",
     ];
     RongIMClient.removeChatRoomEntries(
       targetId,
