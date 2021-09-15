@@ -6,6 +6,7 @@ class FileUtil {
   static int kilobyte = 1024;
   static int megabyte = 1024 * 1024;
   static int gigabyte = 1024 * 1024 * 1024;
+
   static String formatFileSize(int size) {
     if (size < kilobyte) {
       return "$size B";
@@ -64,8 +65,7 @@ class FileUtil {
     return false;
   }
 
-  static Future<File> writeStringToFile(
-      String filePath, String fileName, String content) async {
+  static Future<File> writeStringToFile(String filePath, String fileName, String content) async {
     Directory file = Directory(filePath);
     if (!file.existsSync()) {
       file.create();

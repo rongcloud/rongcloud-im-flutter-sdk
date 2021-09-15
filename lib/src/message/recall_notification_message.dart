@@ -1,6 +1,7 @@
-import 'message_content.dart';
 import 'dart:convert' show json;
 import 'dart:developer' as developer;
+
+import 'message_content.dart';
 
 class RecallNotificationMessage extends MessageContent {
   static const String objectName = "RC:RcNtf";
@@ -16,9 +17,7 @@ class RecallNotificationMessage extends MessageContent {
   @override
   void decode(String? jsonStr) {
     if (jsonStr == null || jsonStr.isEmpty) {
-      developer.log(
-          "Flutter RecallNotificationMessage deocde error: no content",
-          name: "RongIMClient.RecallNotificationMessage");
+      developer.log("Flutter RecallNotificationMessage deocde error: no content", name: "RongIMClient.RecallNotificationMessage");
       return;
     }
     Map map = json.decode(jsonStr.toString());
@@ -28,8 +27,7 @@ class RecallNotificationMessage extends MessageContent {
     this.mAdmin = map["admin"];
     this.mDelete = map["delete"];
     this.recallContent = map["recallContent"];
-    this.recallActionTime =
-        map["recallActionTime"] != null ? map["recallActionTime"] : 0;
+    this.recallActionTime = map["recallActionTime"] != null ? map["recallActionTime"] : 0;
     Map? userMap = map["user"];
     super.decodeUserInfo(userMap);
     Map? menthionedMap = map["mentionedInfo"];

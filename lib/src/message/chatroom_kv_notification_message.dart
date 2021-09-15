@@ -1,6 +1,7 @@
-import 'message_content.dart';
 import 'dart:convert' show json;
 import 'dart:developer' as developer;
+
+import 'message_content.dart';
 
 // 聊天室自定义属性通知消息
 // 不要随意构造此类消息发送，调用设置或者删除接口时会自动构建。
@@ -15,9 +16,7 @@ class ChatroomKVNotificationMessage extends MessageContent {
   @override
   void decode(String? jsonStr) {
     if (jsonStr == null && jsonStr!.isEmpty) {
-      developer.log(
-          "Flutter ChatroomKVNotificationMessage deocde error: no content",
-          name: "RongIMClient.ChatroomKVNotificationMessage");
+      developer.log("Flutter ChatroomKVNotificationMessage deocde error: no content", name: "RongIMClient.ChatroomKVNotificationMessage");
       return;
     }
     Map map = json.decode(jsonStr.toString());
@@ -33,12 +32,7 @@ class ChatroomKVNotificationMessage extends MessageContent {
 
   @override
   String encode() {
-    Map map = {
-      "type": this.type,
-      "key": this.key,
-      "value": this.value,
-      "extra": this.extra
-    };
+    Map map = {"type": this.type, "key": this.key, "value": this.value, "extra": this.extra};
     if (this.sendUserInfo != null) {
       Map userMap = super.encodeUserInfo(this.sendUserInfo);
       map["user"] = userMap;

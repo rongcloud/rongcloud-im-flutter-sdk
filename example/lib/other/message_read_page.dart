@@ -1,12 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart' as prefix;
 
 import '../im/util/user_info_datesource.dart' as example;
 
 class MessageReadPage extends StatefulWidget {
   final prefix.Message message;
+
   const MessageReadPage({Key key, this.message}) : super(key: key);
 
   @override
@@ -15,10 +16,12 @@ class MessageReadPage extends StatefulWidget {
 
 class _MessageReadPageState extends State<MessageReadPage> {
   final prefix.Message message;
+
   _MessageReadPageState(this.message);
 
   List<Widget> widgetList = [];
   List<example.UserInfo> userList = [];
+
   @override
   void initState() {
     super.initState();
@@ -37,8 +40,7 @@ class _MessageReadPageState extends State<MessageReadPage> {
     Map userIdList = message.readReceiptInfo.userIdList;
     if (userIdList != null) {
       for (String key in userIdList.keys) {
-        example.UserInfo userInfo =
-            example.UserInfoDataSource.cachedUserMap[key];
+        example.UserInfo userInfo = example.UserInfoDataSource.cachedUserMap[key];
         if (userInfo == null) {
           userInfo = await example.UserInfoDataSource.getUserInfo(key);
         }

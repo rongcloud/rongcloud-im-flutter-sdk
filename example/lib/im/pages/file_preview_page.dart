@@ -1,14 +1,16 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:open_file/open_file.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'item/widget_util.dart';
+
 import '../../im/util/file.dart';
-import 'package:open_file/open_file.dart';
+import 'item/widget_util.dart';
 
 class FilePreviewPage extends StatefulWidget {
   final Message message;
+
   const FilePreviewPage({Key key, this.message}) : super(key: key);
 
   @override
@@ -25,6 +27,7 @@ class _FilePreviewState extends State<FilePreviewPage> {
   static const int DOWNLOAD_CANCELED = 20;
   int currentStatus = -1;
   int mProgress;
+
   _FilePreviewState(this.message);
 
   @override
@@ -49,46 +52,30 @@ class _FilePreviewState extends State<FilePreviewPage> {
         ),
         body: Container(
           alignment: Alignment.center,
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                    margin: EdgeInsets.only(top: 60),
-                    child: Image.asset(
-                      FileUtil.fileTypeImagePath(fileMessage.mName),
-                      width: 70,
-                      height: 70,
-                    )),
-                Container(
-                    margin: EdgeInsets.only(top: 15),
-                    child: Text(fileMessage.mName,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            fontSize: 16, color: const Color(0xff000000)))),
-                Container(
-                    margin: EdgeInsets.only(top: 15),
-                    child: Text(FileUtil.formatFileSize(fileMessage.mSize),
-                        style: TextStyle(
-                            fontSize: 12, color: const Color(0xff888888)))),
-                getProgress(),
-                Container(
-                    margin: EdgeInsets.fromLTRB(40, 50, 40, 0),
-                    width: double.infinity,
-                    height: 60,
-                    child: TextButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              Color(0xff4876FF)),
-                        ),
-                        onPressed: () {
-                          _fileButtonClick();
-                        },
-                        child: Text(fileStatuStr,
-                            style: TextStyle(
-                                fontSize: 16,
-                                color: const Color(0xFFFFFFFF))))),
-              ]),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: <Widget>[
+            Container(
+                margin: EdgeInsets.only(top: 60),
+                child: Image.asset(
+                  FileUtil.fileTypeImagePath(fileMessage.mName),
+                  width: 70,
+                  height: 70,
+                )),
+            Container(margin: EdgeInsets.only(top: 15), child: Text(fileMessage.mName, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 16, color: const Color(0xff000000)))),
+            Container(margin: EdgeInsets.only(top: 15), child: Text(FileUtil.formatFileSize(fileMessage.mSize), style: TextStyle(fontSize: 12, color: const Color(0xff888888)))),
+            getProgress(),
+            Container(
+                margin: EdgeInsets.fromLTRB(40, 50, 40, 0),
+                width: double.infinity,
+                height: 60,
+                child: TextButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(Color(0xff4876FF)),
+                    ),
+                    onPressed: () {
+                      _fileButtonClick();
+                    },
+                    child: Text(fileStatuStr, style: TextStyle(fontSize: 16, color: const Color(0xFFFFFFFF))))),
+          ]),
         ));
   }
 
@@ -115,8 +102,7 @@ class _FilePreviewState extends State<FilePreviewPage> {
   }
 
   _addIMHander() {
-    RongIMClient.onDownloadMediaMessageResponse =
-        (int code, int progress, int messageId, Message message) async {
+    RongIMClient.onDownloadMediaMessageResponse = (int code, int progress, int messageId, Message message) async {
       if (this.message.messageId == messageId) {
         if (code == DOWNLOAD_SUCCESS) {
           FileMessage content = message.content;

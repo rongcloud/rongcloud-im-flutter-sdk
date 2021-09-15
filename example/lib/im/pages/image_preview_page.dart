@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+
 import '../util/media_util.dart';
 
 class ImagePreviewPage extends StatefulWidget {
   final Message message;
+
   const ImagePreviewPage({Key key, this.message}) : super(key: key);
 
   @override
@@ -42,15 +44,11 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
         widget = Image.network(
           remoteUrl,
           fit: BoxFit.cover,
-          loadingBuilder: (BuildContext context, Widget child,
-              ImageChunkEvent loadingProgress) {
+          loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
             if (loadingProgress == null) return child;
             return Center(
               child: CircularProgressIndicator(
-                value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded /
-                        loadingProgress.expectedTotalBytes
-                    : null,
+                value: loadingProgress.expectedTotalBytes != null ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes : null,
               ),
             );
           },
@@ -60,15 +58,11 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
       widget = Image.network(
         remoteUrl,
         fit: BoxFit.cover,
-        loadingBuilder: (BuildContext context, Widget child,
-            ImageChunkEvent loadingProgress) {
+        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
           if (loadingProgress == null) return child;
           return Center(
             child: CircularProgressIndicator(
-              value: loadingProgress.expectedTotalBytes != null
-                  ? loadingProgress.cumulativeBytesLoaded /
-                      loadingProgress.expectedTotalBytes
-                  : null,
+              value: loadingProgress.expectedTotalBytes != null ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes : null,
             ),
           );
         },

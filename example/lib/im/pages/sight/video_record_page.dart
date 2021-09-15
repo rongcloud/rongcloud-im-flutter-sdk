@@ -1,32 +1,31 @@
-import 'dart:io';
 import 'dart:async'; //timer
-
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'dart:developer' as developer;
+import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:video_player/video_player.dart';
 
-import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'record_top_item.dart';
-import 'record_bottom_item.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
 import '../../util/style.dart';
-import 'dart:developer' as developer;
+import 'record_bottom_item.dart';
+import 'record_top_item.dart';
 
 class VideoRecordPage extends StatefulWidget {
   final Map arguments;
 
   VideoRecordPage({Key key, this.arguments}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     return _VideoRecordPageState(arguments: this.arguments);
   }
 }
 
-class _VideoRecordPageState extends State<VideoRecordPage>
-    implements VideoBottomToolBarDelegate, TopRecordItemDelegate {
+class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBottomToolBarDelegate, TopRecordItemDelegate {
   String pageName = "example.VideoRecordPage";
   Map arguments;
   int conversationType;
@@ -149,9 +148,7 @@ class _VideoRecordPageState extends State<VideoRecordPage>
 
   void resetData() {
     videoPath = null;
-    if (videoPlayerController != null &&
-        videoPlayerController.value != null &&
-        videoPlayerController.value.isPlaying) {
+    if (videoPlayerController != null && videoPlayerController.value != null && videoPlayerController.value.isPlaying) {
       videoPlayerController.pause();
     }
     videoPlayerController = null;
@@ -174,8 +171,7 @@ class _VideoRecordPageState extends State<VideoRecordPage>
               Container(
                 width: MediaQuery.of(context).size.width,
                 child: AspectRatio(
-                  aspectRatio: MediaQuery.of(context).size.width /
-                      MediaQuery.of(context).size.height,
+                  aspectRatio: MediaQuery.of(context).size.width / MediaQuery.of(context).size.height,
                   child: Center(
                       child: Stack(
                     children: <Widget>[_getCameraPreviewWidget(), topitem],
@@ -237,8 +233,7 @@ class _VideoRecordPageState extends State<VideoRecordPage>
     topitem.updateRecordState(RecordState.Recording);
     startVideoRecording().then((String filePath) {
       // if (mounted) setState(() {});
-      if (filePath != null)
-        developer.log("Saving video to $filePath", name: pageName);
+      if (filePath != null) developer.log("Saving video to $filePath", name: pageName);
     });
 
     startTimer();
@@ -269,14 +264,11 @@ class _VideoRecordPageState extends State<VideoRecordPage>
   void didFinishEvent() {
     developer.log("onFinishEvent", name: pageName);
     if (videoPath != null) {
-      developer.log("onFinishEvent con $conversationType targetId $targetId",
-          name: pageName);
+      developer.log("onFinishEvent con $conversationType targetId $targetId", name: pageName);
       SightMessage sightMessage = SightMessage.obtain(videoPath, recodeTime);
       if (sightMessage.duration != null && sightMessage.duration > 0) {
         if (conversationType == RCConversationType.Private) {
-          sightMessage.destructDuration = isSecretChat
-              ? RCDuration.MediaMessageBurnDuration + recodeTime
-              : 0;
+          sightMessage.destructDuration = isSecretChat ? RCDuration.MediaMessageBurnDuration + recodeTime : 0;
         }
         // Message message = Message();
         // message.conversationType = conversationType;

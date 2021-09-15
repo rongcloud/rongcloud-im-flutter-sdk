@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:path/path.dart';
-import 'user_info_datesource.dart';
 import 'package:sqflite/sqflite.dart';
+
+import 'user_info_datesource.dart';
 
 class DbManager {
   factory DbManager() => _getInstance();
+
   static DbManager get instance => _getInstance();
   static DbManager _instance;
   static Database database;
@@ -25,12 +27,9 @@ class DbManager {
   }
 
   Future<void> openDb() async {
-    database = await openDatabase(join(await getDatabasesPath(), dbName),
-        onCreate: (db, version) {
-      db.execute(
-          "CREATE TABLE $userTableName(userId TEXT PRIMARY KEY, name TEXT, portraitUrl TEXT) ");
-      db.execute(
-          "CREATE TABLE $groupTableName(groupId TEXT PRIMARY KEY, name TEXT, portraitUrl TEXT)");
+    database = await openDatabase(join(await getDatabasesPath(), dbName), onCreate: (db, version) {
+      db.execute("CREATE TABLE $userTableName(userId TEXT PRIMARY KEY, name TEXT, portraitUrl TEXT) ");
+      db.execute("CREATE TABLE $groupTableName(groupId TEXT PRIMARY KEY, name TEXT, portraitUrl TEXT)");
     }, version: 1);
   }
 
@@ -38,8 +37,7 @@ class DbManager {
     if (database == null) {
       await openDb();
     }
-    await database?.insert(userTableName, info.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
+    await database?.insert(userTableName, info.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<List<UserInfo>> getUserInfo({String userId}) async {
@@ -50,8 +48,7 @@ class DbManager {
     if (userId == null || userId.isEmpty) {
       maps = await database?.query(userTableName);
     } else {
-      maps = await database
-          ?.query(userTableName, where: 'userId = ?', whereArgs: [userId]);
+      maps = await database?.query(userTableName, where: 'userId = ?', whereArgs: [userId]);
     }
     List<UserInfo> infoList = [];
     if (maps.length > 0) {
@@ -70,8 +67,7 @@ class DbManager {
     if (database == null) {
       await openDb();
     }
-    await database?.insert(groupTableName, info.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
+    await database?.insert(groupTableName, info.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<List<GroupInfo>> getGroupInfo({String groupId}) async {
@@ -82,8 +78,7 @@ class DbManager {
     if (groupId == null || groupId.isEmpty) {
       maps = await database?.query(groupTableName);
     } else {
-      maps = await database
-          ?.query(groupTableName, where: 'groupId = ?', whereArgs: [groupId]);
+      maps = await database?.query(groupTableName, where: 'groupId = ?', whereArgs: [groupId]);
     }
     List<GroupInfo> infoList = [];
     if (maps.length > 0) {

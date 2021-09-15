@@ -44,8 +44,7 @@ class UserInfoDataSource {
       return cachedUserInfo;
     } else {
       UserInfo info;
-      List<UserInfo> infoList =
-          await DbManager.instance.getUserInfo(userId: userId);
+      List<UserInfo> infoList = await DbManager.instance.getUserInfo(userId: userId);
       if (infoList != null && infoList.length > 0) {
         info = infoList[0];
       }
@@ -109,8 +108,7 @@ class UserInfoDataSource {
       return cachedGroupInfo;
     } else {
       GroupInfo info;
-      List<GroupInfo> infoList =
-          await DbManager.instance.getGroupInfo(groupId: groupId);
+      List<GroupInfo> infoList = await DbManager.instance.getGroupInfo(groupId: groupId);
       if (infoList != null && infoList.length > 0) {
         info = infoList[0];
       }
@@ -138,48 +136,17 @@ class UserInfoDataSource {
   }
 
   static List _getCachedNameList() {
-    List names = [
-      "丁春秋",
-      "木婉清",
-      "包不同",
-      "王语嫣",
-      "云中鹤",
-      "天山童姥",
-      "乔峰",
-      "阿朱",
-      "阿紫",
-      "鸠摩智",
-      "段誉",
-      "段正淳",
-      "萧远山",
-      "虚竹"
-    ];
+    List names = ["丁春秋", "木婉清", "包不同", "王语嫣", "云中鹤", "天山童姥", "乔峰", "阿朱", "阿紫", "鸠摩智", "段誉", "段正淳", "萧远山", "虚竹"];
     return names;
   }
 
   static List _getCachedPortraitList() {
-    List urls = [
-      "http://b-ssl.duitang.com/uploads/item/201804/24/20180424214451_5lJat.png",
-      "http://i0.hdslb.com/bfs/article/64a47330d4c66553fe18bf6b63ab761099fd018c.jpg",
-      "http://img.mp.itc.cn/upload/20161205/545bbfda38bd4d738266189901a25a61_th.jpeg",
-      "http://b-ssl.duitang.com/uploads/item/201804/13/20180413141949_aFcZ3.png"
-    ];
+    List urls = ["http://b-ssl.duitang.com/uploads/item/201804/24/20180424214451_5lJat.png", "http://i0.hdslb.com/bfs/article/64a47330d4c66553fe18bf6b63ab761099fd018c.jpg", "http://img.mp.itc.cn/upload/20161205/545bbfda38bd4d738266189901a25a61_th.jpeg", "http://b-ssl.duitang.com/uploads/item/201804/13/20180413141949_aFcZ3.png"];
     return urls;
   }
 
   static List _getCachaGroupNameList() {
-    List names = [
-      "群组0",
-      "群组1",
-      "群组2",
-      "群组3",
-      "群组4",
-      "群组5",
-      "群组6",
-      "群组7",
-      "群组8",
-      "群组9"
-    ];
+    List names = ["群组0", "群组1", "群组2", "群组3", "群组4", "群组5", "群组6", "群组7", "群组8", "群组9"];
     return names;
   }
 }

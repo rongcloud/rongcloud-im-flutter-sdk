@@ -1,18 +1,19 @@
-import 'dart:ui';
-import 'package:flutter/material.dart';
 import 'dart:developer' as developer;
+
+import 'package:flutter/material.dart';
 
 class BottomRecordItem extends StatefulWidget {
   VideoBottomToolBarDelegate delegate;
+
   BottomRecordItem(VideoBottomToolBarDelegate delegate) {
     this.delegate = delegate;
   }
+
   @override
   _BottomRecordItemState createState() => _BottomRecordItemState(this.delegate);
 }
 
-class _BottomRecordItemState extends State<BottomRecordItem>
-    with TickerProviderStateMixin {
+class _BottomRecordItemState extends State<BottomRecordItem> with TickerProviderStateMixin {
   String pageName = "example.BottomRecordItem";
   VideoBottomToolBarDelegate delegate;
   bool isNarmal = true; //正常状态，选择状态
@@ -162,10 +163,13 @@ class _BottomRecordItemState extends State<BottomRecordItem>
 abstract class VideoBottomToolBarDelegate {
   //长按相机按钮
   void didLongPressCamera();
+
   //长按结束
   void didLongPressEndCamera();
+
   //取消发送
   void didCancelEvent();
+
   //发送
   void didFinishEvent();
 }

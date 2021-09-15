@@ -14,12 +14,8 @@ class MessageContentList extends StatefulWidget {
   List selectedMessageIds = [];
   _MessageContentListState state;
   Map burnMsgMap = Map();
-  MessageContentList(
-      List messageDataSource,
-      bool multiSelect,
-      List selectedMessageIds,
-      MessageContentListDelegate delegate,
-      Map burnMsgMap) {
+
+  MessageContentList(List messageDataSource, bool multiSelect, List selectedMessageIds, MessageContentListDelegate delegate, Map burnMsgMap) {
     this.delegate = delegate;
     this.messageDataSource = messageDataSource;
     this.multiSelect = multiSelect;
@@ -27,8 +23,7 @@ class MessageContentList extends StatefulWidget {
     this.burnMsgMap = burnMsgMap;
   }
 
-  void updateData(
-      List messageDataSource, bool multiSelect, List selectedMessageIds) {
+  void updateData(List messageDataSource, bool multiSelect, List selectedMessageIds) {
     // this.state._refreshUI(messageDataSource, multiSelect, selectedMessageIds);
     this.state.updateData(messageDataSource, multiSelect, selectedMessageIds);
   }
@@ -39,13 +34,11 @@ class MessageContentList extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return state = _MessageContentListState(messageDataSource, multiSelect,
-        selectedMessageIds, delegate, burnMsgMap);
+    return state = _MessageContentListState(messageDataSource, multiSelect, selectedMessageIds, delegate, burnMsgMap);
   }
 }
 
-class _MessageContentListState extends State<MessageContentList>
-    implements ConversationItemDelegate {
+class _MessageContentListState extends State<MessageContentList> implements ConversationItemDelegate {
   MessageContentListDelegate delegate;
   List messageDataSource = [];
   ScrollController _scrollController;
@@ -53,16 +46,12 @@ class _MessageContentListState extends State<MessageContentList>
   double mPosition = 0;
   List selectedMessageIds = [];
   MessageBloc _bloc;
+
   // StreamController<List> streamController = new StreamController();
   Map conversationItems = Map();
   Map burnMsgMap = Map();
 
-  _MessageContentListState(
-      List messageDataSource,
-      bool multiSelect,
-      List selectedMessageIds,
-      MessageContentListDelegate delegate,
-      Map burnMsgMap) {
+  _MessageContentListState(List messageDataSource, bool multiSelect, List selectedMessageIds, MessageContentListDelegate delegate, Map burnMsgMap) {
     this.delegate = delegate;
     this.messageDataSource = messageDataSource;
     this.multiSelect = multiSelect;
@@ -72,8 +61,7 @@ class _MessageContentListState extends State<MessageContentList>
     // updateData(messageDataSource);
   }
 
-  void updateData(
-      List messageDataSource, bool multiSelect, List selectedMessageIds) {
+  void updateData(List messageDataSource, bool multiSelect, List selectedMessageIds) {
     // streamController.sink.add(messageDataSource);
     _bloc.updateMessageList(messageDataSource);
     this.messageDataSource = messageDataSource;
@@ -125,26 +113,15 @@ class _MessageContentListState extends State<MessageContentList>
               controller: _scrollController,
               itemCount: messageDataSource.length,
               itemBuilder: (BuildContext context, int index) {
-                if (messageDataSource.length != null &&
-                    messageDataSource.length > 0) {
+                if (messageDataSource.length != null && messageDataSource.length > 0) {
                   Message tempMessage = messageDataSource[index];
                   // bool isSelected = selectedMessageIds.contains(tempMessage.messageId);
-                  int destructDuration = tempMessage.content != null &&
-                          tempMessage.content.destructDuration != null
-                      ? tempMessage.content.destructDuration
-                      : 0;
-                  ValueNotifier<int> time =
-                      ValueNotifier<int>(destructDuration);
+                  int destructDuration = tempMessage.content != null && tempMessage.content.destructDuration != null ? tempMessage.content.destructDuration : 0;
+                  ValueNotifier<int> time = ValueNotifier<int>(destructDuration);
                   if (burnMsgMap[tempMessage.messageId] != null) {
                     time.value = burnMsgMap[tempMessage.messageId];
                   }
-                  ConversationItem item = ConversationItem(
-                      this,
-                      tempMessage,
-                      _needShowTime(index, messageDataSource),
-                      this.multiSelect,
-                      selectedMessageIds,
-                      time);
+                  ConversationItem item = ConversationItem(this, tempMessage, _needShowTime(index, messageDataSource), this.multiSelect, selectedMessageIds, time);
                   conversationItems[tempMessage.messageId] = item;
                   return item;
                 } else {
@@ -164,8 +141,7 @@ class _MessageContentListState extends State<MessageContentList>
     _scrollController.addListener(() {
       mPosition = _scrollController.position.pixels;
       //此处要用 == 而不是 >= 否则会触发多次
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
+      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
         delegate.willpullMoreHistoryMessage();
         setState(() {});
       }
@@ -194,8 +170,7 @@ class _MessageContentListState extends State<MessageContentList>
     item?.refreshUI(msg);
   }
 
-  void _refreshUI(
-      List messageDataSource, bool multiSelect, List selectedMessageIds) {
+  void _refreshUI(List messageDataSource, bool multiSelect, List selectedMessageIds) {
     setState(() {
       this.messageDataSource = messageDataSource;
       this.multiSelect = multiSelect;

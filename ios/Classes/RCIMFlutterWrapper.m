@@ -55,7 +55,15 @@
                                content:(NSString *)content;
 @end
 
-@interface RCIMFlutterWrapper ()<RCIMClientReceiveMessageDelegate,RCConnectionStatusChangeDelegate,RCTypingStatusDelegate, RCMessageDestructDelegate, RCChatRoomKVStatusChangeDelegate, RCMessageExpansionDelegate, RCChatRoomStatusDelegate,RCTagDelegate>
+@interface RCIMFlutterWrapper () <RCIMClientReceiveMessageDelegate,
+                                  RCConnectionStatusChangeDelegate,
+                                  RCTypingStatusDelegate,
+                                  RCMessageDestructDelegate,
+                                  RCChatRoomKVStatusChangeDelegate,
+                                  RCMessageExpansionDelegate,
+                                  RCChatRoomStatusDelegate,
+                                  RCTagDelegate,
+                                  RCMessageBlockDelegate>
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 @property (nonatomic, strong) RCFlutterConfig *config;
 @property (nonatomic, strong) NSString *sdkVersion;
@@ -63,6 +71,11 @@
 @end
 
 @implementation RCIMFlutterWrapper
+
++ (void)load {
+//    [RCUtilities setModuleName:@"imflutter" version:[self getVersion]];
+}
+
 + (instancetype)sharedWrapper {
     static RCIMFlutterWrapper *wrapper = nil;
     static dispatch_once_t onceToken;
@@ -182,6 +195,10 @@
         [self removeChatRoomEntry:call.arguments result:result];
     }else if ([RCMethodKeyForceRemoveChatRoomEntry isEqualToString:call.method]) {
         [self forceRemoveChatRoomEntry:call.arguments result:result];
+    }else if ([RCMethodKeySetChatRoomEntries isEqualToString:call.method]) {
+        [self setChatRoomEntries:call.arguments result:result];
+    }else if ([RCMethodKeyRemoveChatRoomEntries isEqualToString:call.method]) {
+        [self removeChatRoomEntries:call.arguments result:result];
     }else if ([RCMethodKeySyncConversationReadStatus isEqualToString:call.method]) {
         [self syncConversationReadStatus:call.arguments result:result];
     }else if ([RCMethodKeyGetTextMessageDraft isEqualToString:call.method]) {
@@ -304,6 +321,7 @@
         [[RCChatRoomClient sharedChatRoomClient] setChatRoomStatusDelegate:self];
         [[RCIMClient sharedRCIMClient] setMessageExpansionDelegate:self];
         [RCCoreClient sharedCoreClient].tagDelegate = self;
+        [[RCCoreClient sharedCoreClient] setMessageBlockDelegate:self];
         self.sdkVersion = [conf objectForKey:@"version"];
     }else {
         [RCLog e:[NSString stringWithFormat:@"%@,非法参数",LOG_TAG]];
@@ -1314,6 +1332,16 @@
     [self.channel invokeMethod:RCMethodCallBackOnTagChanged arguments:nil];
 }
 
+#pragma mark -  敏感消息拦截监听
+- (void)messageDidBlock:(RCBlockedMessageInfo *)info {
+    NSDictionary *arguments = @{ @"conversationType" : @(info.type),
+                                 @"targetId" : info.targetId,
+                                 @"blockMsgUId" : info.blockedMsgUId,
+                                 @"blockType" : @(info.blockType),
+                                 @"extra" : info.extra ? info.extra : @"" };
+    [self.channel invokeMethod:RCMethodCallBackOnMessageBlocked arguments:arguments];
+}
+
 #pragma mark - 会话标签
 - (void)addTag:(id)arg result:(FlutterResult)result {
     NSString *LOG_TAG =  @"addTag";
@@ -2198,6 +2226,50 @@
         } error:^(RCErrorCode nErrorCode) {
             [RCLog e:[NSString stringWithFormat:@"%@, errorCode:%@",LOG_TAG,@(nErrorCode)]];
             result(@(nErrorCode));
+        }];
+    }
+}
+
+- (void)setChatRoomEntries:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"setChatRoomEntries";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        NSString *chatRoomId = param[@"chatRoomId"];
+        NSDictionary *chatRoomEntryMap = param[@"chatRoomEntryMap"];
+        BOOL autoRemove = [param[@"autoRemove"] boolValue];
+        BOOL overWrite = [param[@"overWrite"] boolValue];
+        
+        [[RCChatRoomClient sharedChatRoomClient] setChatRoomEntries:chatRoomId
+                                                            entries:chatRoomEntryMap
+                                                            isForce:overWrite
+                                                         autoDelete:autoRemove
+                                                            success:^{
+            result(@{@"code":@(0)});
+        }
+                                                              error:^(RCErrorCode nErrorCode, NSDictionary * _Nonnull entries) {
+            result(@{@"code":@(nErrorCode), @"errors":entries});
+        }];
+    }
+}
+
+- (void)removeChatRoomEntries:(id)arg result:(FlutterResult)result {
+    NSString *LOG_TAG = @"removeChatRoomEntries";
+    [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        NSString *chatRoomId = param[@"chatRoomId"];
+        NSArray *chatRoomEntryList = param[@"chatRoomEntryList"];
+        BOOL force = [param[@"force"] boolValue];
+        
+        [[RCChatRoomClient sharedChatRoomClient] removeChatRoomEntries:chatRoomId
+                                                                  keys:chatRoomEntryList
+                                                               isForce:force
+                                                               success:^{
+            result(@{@"code":@(0)});
+        }
+                                                                 error:^(RCErrorCode nErrorCode, NSDictionary * _Nonnull entries) {
+            result(@{@"code":@(nErrorCode), @"errors":entries});
         }];
     }
 }

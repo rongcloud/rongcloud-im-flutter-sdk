@@ -25,12 +25,9 @@ class RCMethodKey {
   static const String BatchInsertMessage = 'BatchInsertMessage';
   static const String GetTotalUnreadCount = 'getTotalUnreadCount';
   static const String GetUnreadCountTargetId = 'getUnreadCountTargetId';
-  static const String GetUnreadCountConversationTypeList =
-      'getUnreadCountConversationTypeList';
-  static const String SetConversationNotificationStatus =
-      'setConversationNotificationStatus';
-  static const String GetConversationNotificationStatus =
-      'getConversationNotificationStatus';
+  static const String GetUnreadCountConversationTypeList = 'getUnreadCountConversationTypeList';
+  static const String SetConversationNotificationStatus = 'setConversationNotificationStatus';
+  static const String GetConversationNotificationStatus = 'getConversationNotificationStatus';
   static const String RemoveConversation = 'RemoveConversation';
   static const String GetBlockedConversationList = 'getBlockedConversationList';
   static const String SetConversationToTop = 'setConversationToTop';
@@ -54,8 +51,7 @@ class RCMethodKey {
   static const String SendTypingStatus = 'sendTypingStatus';
   static const String DownloadMediaMessage = 'downloadMediaMessage';
   static const String SetNotificationQuietHours = 'setNotificationQuietHours';
-  static const String RemoveNotificationQuietHours =
-      'removeNotificationQuietHours';
+  static const String RemoveNotificationQuietHours = 'removeNotificationQuietHours';
   static const String GetNotificationQuietHours = 'getNotificationQuietHours';
   static const String GetUnreadMentionedMessages = 'getUnreadMentionedMessages';
   static const String SendDirectionalMessage = 'sendDirectionalMessage';
@@ -74,15 +70,13 @@ class RCMethodKey {
   static const String SetReconnectKickEnable = 'setReconnectKickEnable';
   static const String GetConnectionStatus = 'getConnectionStatus';
   static const String CancelDownloadMediaMessage = 'cancelDownloadMediaMessage';
-  static const String GetRemoteChatRoomHistoryMessages =
-      'getRemoteChatRoomHistoryMessages';
+  static const String GetRemoteChatRoomHistoryMessages = 'getRemoteChatRoomHistoryMessages';
   static const String GetMessageByUId = 'getMessageByUId';
   static const String GetFirstUnreadMessage = 'getFirstUnreadMessage';
   static const String SendIntactMessage = 'sendIntactMessage';
   static const String ImageCompressConfig = 'imageCompressConfig';
   static const String TypingUpdateSeconds = 'typingUpdateSeconds';
   static const String SetAndroidPushConfig = 'setAndroidPushConfig';
-
 
   // 聊天室状态存储
   static const String SetChatRoomEntry = 'SetChatRoomEntry';
@@ -91,23 +85,22 @@ class RCMethodKey {
   static const String GetAllChatRoomEntries = 'GetAllChatRoomEntries';
   static const String RemoveChatRoomEntry = 'RemoveChatRoomEntry';
   static const String ForceRemoveChatRoomEntry = 'ForceRemoveChatRoomEntry';
+  static const String SetChatRoomEntries = 'SetChatRoomEntries';
+  static const String RemoveChatRoomEntries = 'RemoveChatRoomEntries';
 
   // 消息扩展
   static const String UpdateMessageExpansion = 'updateMessageExpansion';
-  static const String RemoveMessageExpansionForKey =
-      'removeMessageExpansionForKey';
+  static const String RemoveMessageExpansionForKey = 'removeMessageExpansionForKey';
 
   // 会话标签
   static const String AddTag = 'addTag';
   static const String RemoveTag = 'removeTag';
   static const String UpdateTag = 'updateTag';
   static const String GetTags = 'getTags';
-  static const String GetConversationTopStatusInTag =
-      'getConversationTopStatusInTag';
+  static const String GetConversationTopStatusInTag = 'getConversationTopStatusInTag';
   static const String SetConversationToTopInTag = 'setConversationToTopInTag';
   static const String GetUnreadCountByTag = 'getUnreadCountByTag';
-  static const String GetConversationsFromTagByPage =
-      'getConversationsFromTagByPage';
+  static const String GetConversationsFromTagByPage = 'getConversationsFromTagByPage';
   static const String GetTagsFromConversation = 'getTagsFromConversation';
   static const String RemoveTagsFromConversation = 'removeTagsFromConversation';
   static const String RemoveConversationsFromTag = 'removeConversationsFromTag';
@@ -127,8 +120,7 @@ class RCMethodCallBackKey {
   static const String ChatRoomKVDidUpdate = 'chatRoomKVDidUpdateCallBack';
   static const String ChatRoomKVDidRemove = 'chatRoomKVDidRemoveCallBack';
   static const String UploadMediaProgress = 'uploadMediaProgressCallBack';
-  static const String GetRemoteHistoryMessages =
-      'getRemoteHistoryMessagesCallBack';
+  static const String GetRemoteHistoryMessages = 'getRemoteHistoryMessagesCallBack';
   static const String ConnectionStatusChange = 'ConnectionStatusChangeCallBack';
   static const String SendDataToFlutter = 'SendDataToFlutterCallBack';
   static const String ReceiveReadReceipt = 'ReceiveReadReceiptCallBack';
@@ -138,11 +130,10 @@ class RCMethodCallBackKey {
   static const String DownloadMediaMessage = 'DownloadMediaMessageCallBack';
   static const String RecallMessage = 'RecallMessageCallBack';
   static const String DestructMessage = 'DestructMessageCallBack';
-  static const String MessageExpansionDidUpdate =
-      'MessageExpansionDidUpdateCallBack';
-  static const String MessageExpansionDidRemove =
-      'MessageExpansionDidRemoveCallBack';
+  static const String MessageExpansionDidUpdate = 'MessageExpansionDidUpdateCallBack';
+  static const String MessageExpansionDidRemove = 'MessageExpansionDidRemoveCallBack';
   static const String DatabaseOpened = 'DatabaseOpenedCallBack';
   static const String ConversationTagChanged = 'ConversationTagChangedCallBack';
   static const String OnTagChanged = 'onTagChanged';
+  static const String OnMessageBlocked = 'onMessageBlocked';
 }

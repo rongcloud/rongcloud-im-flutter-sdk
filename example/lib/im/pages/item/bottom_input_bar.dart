@@ -1,26 +1,27 @@
 import 'dart:convert';
+import 'dart:developer' as developer;
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'widget_util.dart';
-import '../../widget/cachImage/cached_image_widget.dart';
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import '../../util/media_util.dart';
 import '../../util/style.dart';
-import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import '../../util/user_info_datesource.dart' as example;
-import 'dart:developer' as developer;
+import '../../widget/cachImage/cached_image_widget.dart';
+import 'widget_util.dart';
 
 class BottomInputBar extends StatefulWidget {
   BottomInputBarDelegate delegate;
   _BottomInputBarState state;
+
   BottomInputBar(BottomInputBarDelegate delegate) {
     this.delegate = delegate;
   }
+
   @override
-  _BottomInputBarState createState() =>
-      state = _BottomInputBarState(this.delegate);
+  _BottomInputBarState createState() => state = _BottomInputBarState(this.delegate);
 
   void setTextContent(String textContent) {
     this.state.setText(textContent);
@@ -62,8 +63,7 @@ class _BottomInputBarState extends State<BottomInputBar> {
     this.textField = TextField(
       onSubmitted: _clickSendMessage,
       controller: textEditingController,
-      decoration: InputDecoration(
-          border: InputBorder.none, hintText: RCString.BottomInputTextHint),
+      decoration: InputDecoration(border: InputBorder.none, hintText: RCString.BottomInputTextHint),
       focusNode: focusNode,
       autofocus: true,
       maxLines: null,
@@ -75,10 +75,8 @@ class _BottomInputBarState extends State<BottomInputBar> {
     if (textContent == null) {
       textContent = '';
     }
-    this.textEditingController.text =
-        this.textEditingController.text + textContent;
-    this.textEditingController.selection = TextSelection.fromPosition(
-        TextPosition(offset: textEditingController.text.length));
+    this.textEditingController.text = this.textEditingController.text + textContent;
+    this.textEditingController.selection = TextSelection.fromPosition(TextPosition(offset: textEditingController.text.length));
     _refreshUI();
   }
 
@@ -229,9 +227,7 @@ class _BottomInputBarState extends State<BottomInputBar> {
         children: <Widget>[
           Container(
             padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
-            decoration: BoxDecoration(
-                border: new Border.all(color: Colors.black54, width: 0.5),
-                borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(border: new Border.all(color: Colors.black54, width: 0.5), borderRadius: BorderRadius.circular(8)),
           ),
           widget
         ],
@@ -252,59 +248,55 @@ class _BottomInputBarState extends State<BottomInputBar> {
   Widget build(BuildContext context) {
     return Container(
         color: Colors.white,
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: <Widget>[
-              referenceMessage == null
-                  ? WidgetUtil.buildEmptyWidget()
-                  : _buildReferenceWidget(),
-              GestureDetector(
-                  onTap: () {
-                    switchPhrases();
-                  },
+        child: Column(crossAxisAlignment: CrossAxisAlignment.end, children: <Widget>[
+          referenceMessage == null ? WidgetUtil.buildEmptyWidget() : _buildReferenceWidget(),
+          GestureDetector(
+              onTap: () {
+                switchPhrases();
+              },
+              child: Container(
+                padding: EdgeInsets.fromLTRB(6, 6, 12, 6),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
                   child: Container(
-                    padding: EdgeInsets.fromLTRB(6, 6, 12, 6),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(5),
-                      child: Container(
-                        alignment: Alignment.center,
-                        width: 80,
-                        height: 22,
-                        color: Color(0xffC8C8C8),
-                        child: Text(
-                          RCString.BottomCommonPhrases,
-                          style: TextStyle(color: Colors.white, fontSize: 14),
-                        ),
-                      ),
+                    alignment: Alignment.center,
+                    width: 80,
+                    height: 22,
+                    color: Color(0xffC8C8C8),
+                    child: Text(
+                      RCString.BottomCommonPhrases,
+                      style: TextStyle(color: Colors.white, fontSize: 14),
                     ),
-                  )),
-              Row(
-                children: <Widget>[
-                  IconButton(
-                    icon: Icon(Icons.mic),
-                    iconSize: 32,
-                    onPressed: () {
-                      switchVoice();
-                    },
                   ),
-                  Expanded(child: _getMainInputField()),
-                  IconButton(
-                    icon: Icon(Icons.mood), // sentiment_ver
-                    iconSize: 32,
-                    onPressed: () {
-                      switchEmoji();
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.add),
-                    iconSize: 32,
-                    onPressed: () {
-                      switchExtention();
-                    },
-                  ),
-                ],
+                ),
+              )),
+          Row(
+            children: <Widget>[
+              IconButton(
+                icon: Icon(Icons.mic),
+                iconSize: 32,
+                onPressed: () {
+                  switchVoice();
+                },
               ),
-            ]));
+              Expanded(child: _getMainInputField()),
+              IconButton(
+                icon: Icon(Icons.mood), // sentiment_ver
+                iconSize: 32,
+                onPressed: () {
+                  switchEmoji();
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.add),
+                iconSize: 32,
+                onPressed: () {
+                  switchExtention();
+                },
+              ),
+            ],
+          ),
+        ]));
   }
 
   Widget _buildReferenceWidget() {
@@ -317,31 +309,23 @@ class _BottomInputBarState extends State<BottomInputBar> {
           thickness: 3,
         ),
         Expanded(
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-              Container(
-                  margin: EdgeInsets.only(top: 4, bottom: 2),
-                  child: Text(
-                      referenceUserInfo == null ? "" : referenceUserInfo.id,
-                      style: TextStyle(
-                          fontSize: RCFont.BottomReferenceNameSize,
-                          color: Color(RCColor.BottomReferenceNameColor)))),
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxHeight: 60.0,
-                ),
-                child: new SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    reverse: false,
-                    child: GestureDetector(
-                      child: _buildReferenceContent(),
-                      onTap: () {
-                        _clickContent();
-                      },
-                    )),
-              )
-            ])),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
+          Container(margin: EdgeInsets.only(top: 4, bottom: 2), child: Text(referenceUserInfo == null ? "" : referenceUserInfo.id, style: TextStyle(fontSize: RCFont.BottomReferenceNameSize, color: Color(RCColor.BottomReferenceNameColor)))),
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: 60.0,
+            ),
+            child: new SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                reverse: false,
+                child: GestureDetector(
+                  child: _buildReferenceContent(),
+                  onTap: () {
+                    _clickContent();
+                  },
+                )),
+          )
+        ])),
         Container(
             margin: EdgeInsets.only(right: 10),
             height: 30,
@@ -370,10 +354,7 @@ class _BottomInputBarState extends State<BottomInputBar> {
     } else if (referenceMessage.referMsg is RichContentMessage) {
       // 引用的消息为图文时的点击事件
       RichContentMessage richContentMessage = referenceMessage.referMsg;
-      Map param = {
-        "url": richContentMessage.url,
-        "title": richContentMessage.title
-      };
+      Map param = {"url": richContentMessage.url, "title": richContentMessage.title};
       Navigator.pushNamed(context, "/webview", arguments: param);
     } else {
       // 引用的消息为文本时的点击事件
@@ -385,10 +366,7 @@ class _BottomInputBarState extends State<BottomInputBar> {
     MessageContent messageContent = referenceMessage.referMsg;
     if (messageContent is TextMessage) {
       TextMessage textMessage = messageContent;
-      widget = Text(textMessage.content,
-          style: TextStyle(
-              fontSize: RCFont.BottomReferenceContentSize,
-              color: Color(RCColor.BottomReferenceContentColor)));
+      widget = Text(textMessage.content, style: TextStyle(fontSize: RCFont.BottomReferenceContentSize, color: Color(RCColor.BottomReferenceContentColor)));
     } else if (messageContent is ImageMessage) {
       ImageMessage imageMessage = messageContent;
       Widget imageWidget;
@@ -397,15 +375,13 @@ class _BottomInputBarState extends State<BottomInputBar> {
         imageWidget = Image.memory(bytes);
       } else {
         if (imageMessage.localPath != null) {
-          String path =
-              MediaUtil.instance.getCorrectedLocalPath(imageMessage.localPath);
+          String path = MediaUtil.instance.getCorrectedLocalPath(imageMessage.localPath);
           File file = File(path);
           if (file != null && file.existsSync()) {
             imageWidget = Image.file(file);
           } else {
             imageWidget = CachedNetworkImage(
-              progressIndicatorBuilder: (context, url, progress) =>
-                  CircularProgressIndicator(
+              progressIndicatorBuilder: (context, url, progress) => CircularProgressIndicator(
                 value: progress.progress,
               ),
               imageUrl: imageMessage.imageUri,
@@ -413,8 +389,7 @@ class _BottomInputBarState extends State<BottomInputBar> {
           }
         } else {
           imageWidget = CachedNetworkImage(
-            progressIndicatorBuilder: (context, url, progress) =>
-                CircularProgressIndicator(
+            progressIndicatorBuilder: (context, url, progress) => CircularProgressIndicator(
               value: progress.progress,
             ),
             imageUrl: imageMessage.imageUri,
@@ -429,29 +404,19 @@ class _BottomInputBarState extends State<BottomInputBar> {
       );
     } else if (messageContent is FileMessage) {
       FileMessage fileMessage = messageContent;
-      widget = Text("[文件] ${fileMessage.mName}",
-          style: TextStyle(
-              fontSize: RCFont.BottomReferenceContentSize,
-              color: Color(RCColor.BottomReferenceContentColorFile)));
+      widget = Text("[文件] ${fileMessage.mName}", style: TextStyle(fontSize: RCFont.BottomReferenceContentSize, color: Color(RCColor.BottomReferenceContentColorFile)));
     } else if (messageContent is RichContentMessage) {
       RichContentMessage richContentMessage = messageContent;
-      widget = Text("[图文] ${richContentMessage.title}",
-          style: TextStyle(
-              fontSize: RCFont.BottomReferenceContentSize,
-              color: Color(RCColor.BottomReferenceContentColorFile)));
+      widget = Text("[图文] ${richContentMessage.title}", style: TextStyle(fontSize: RCFont.BottomReferenceContentSize, color: Color(RCColor.BottomReferenceContentColorFile)));
     } else if (messageContent is ReferenceMessage) {
       ReferenceMessage referenceMessage = messageContent;
-      widget = Text(referenceMessage.content,
-          style: TextStyle(
-              fontSize: RCFont.BottomReferenceContentSize,
-              color: Color(RCColor.BottomReferenceContentColorFile)));
+      widget = Text(referenceMessage.content, style: TextStyle(fontSize: RCFont.BottomReferenceContentSize, color: Color(RCColor.BottomReferenceContentColorFile)));
     }
     return widget;
   }
 
   void setInfo(String userId) {
-    example.UserInfo userInfo =
-        example.UserInfoDataSource.cachedUserMap[userId];
+    example.UserInfo userInfo = example.UserInfoDataSource.cachedUserMap[userId];
     if (userInfo != null) {
       this.referenceUserInfo = userInfo;
     } else {

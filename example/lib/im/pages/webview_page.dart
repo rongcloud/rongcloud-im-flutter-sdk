@@ -1,26 +1,27 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
+import 'dart:developer' as developer;
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
-import 'dart:developer' as developer;
+import 'package:url_launcher/url_launcher.dart';
 
 class WebViewPage extends StatefulWidget {
   final Map arguments;
+
   const WebViewPage({Key key, this.arguments}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() =>
-      _WebViewPageState(arguments["url"], arguments["title"]);
+  State<StatefulWidget> createState() => _WebViewPageState(arguments["url"], arguments["title"]);
 }
 
 class _WebViewPageState extends State<WebViewPage> {
   String pageName = "example.WebViewPage";
   final String url;
   final String title;
+
   // final Completer<WebViewController> _controller =
   //     Completer<WebViewController>();
   _WebViewPageState(this.url, this.title);

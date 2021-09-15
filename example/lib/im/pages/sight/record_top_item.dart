@@ -1,6 +1,7 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
-import 'dart:developer' as developer;
 
 enum RecordState {
   //正常 [返回,切换摄像头]
@@ -14,6 +15,7 @@ enum RecordState {
 class TopRecordItem extends StatefulWidget {
   TopRecordItemDelegate delegate;
   _TopRecordItemState state;
+
   TopRecordItem(TopRecordItemDelegate delegate) {
     this.delegate = delegate;
     this.state = _TopRecordItemState(delegate);
@@ -70,9 +72,7 @@ class _TopRecordItemState extends State<TopRecordItem> {
             child: Container(
               width: 25,
               height: 25,
-              child: currentRecordState != RecordState.Recording
-                  ? Image.asset("assets/images/sight_top_toolbar_close.png")
-                  : Container(),
+              child: currentRecordState != RecordState.Recording ? Image.asset("assets/images/sight_top_toolbar_close.png") : Container(),
             ),
           ),
           SizedBox(
@@ -80,23 +80,17 @@ class _TopRecordItemState extends State<TopRecordItem> {
           ),
           Expanded(
             child: Container(
-              child: currentRecordState == RecordState.Recording
-                  ? recordLine()
-                  : Container(),
+              child: currentRecordState == RecordState.Recording ? recordLine() : Container(),
             ),
           ),
           GestureDetector(
             onTap: () {
-              currentRecordState == RecordState.Normal
-                  ? onSwitchCamera()
-                  : Container();
+              currentRecordState == RecordState.Normal ? onSwitchCamera() : Container();
             },
             child: Container(
               width: 35,
               height: 35,
-              child: currentRecordState == RecordState.Normal
-                  ? Image.asset("assets/images/sight_camera_switch.png")
-                  : Container(),
+              child: currentRecordState == RecordState.Normal ? Image.asset("assets/images/sight_camera_switch.png") : Container(),
             ),
           ),
           SizedBox(
@@ -132,6 +126,7 @@ class _TopRecordItemState extends State<TopRecordItem> {
 abstract class TopRecordItemDelegate {
   //点击叉号按钮
   void didPop();
+
   //切换摄像头
   void didSwitchCamera();
 }

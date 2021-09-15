@@ -76,8 +76,7 @@ class RCConnectionStatus {
   static const int UserBlocked = 5; //用户被封禁
   static const int DisConnected = 6; //用户主动断开
   static const int Suspend = 13; // 连接暂时挂起（多是由于网络问题导致），SDK 会在合适时机进行自动重连
-  static const int Timeout =
-      14; // 自动连接超时，SDK 将不会继续连接，用户需要做超时处理，再自行调用 connectWithToken 接口进行连接
+  static const int Timeout = 14; // 自动连接超时，SDK 将不会继续连接，用户需要做超时处理，再自行调用 connectWithToken 接口进行连接
 }
 
 ///错误码
@@ -152,4 +151,18 @@ class RCTimestampOrder {
 
   /// 升序, 按照时间戳从小到大
   static const int RC_Timestamp_Asc = 1;
+}
+
+class RCBlockType {
+  /// 未知类型
+  static const int Unkown = 0;
+
+  /// 全局敏感词：命中了融云内置的全局敏感词
+  static const int Global = 1;
+
+  /// 自定义敏感词拦截：命中了客户在融云自定义的敏感词
+  static const int Custom = 2;
+
+  /// 第三方审核拦截：命中了第三方（数美）或模板路由决定不下发的状态
+  static const int Thirdparty = 3;
 }

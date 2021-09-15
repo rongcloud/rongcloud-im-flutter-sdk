@@ -1,6 +1,7 @@
 import 'dart:convert';
-import 'message_content.dart';
 import 'dart:developer' as developer;
+
+import 'message_content.dart';
 
 class LocationMessage extends MessageContent {
   static const String objectName = "RC:LBSMsg";
@@ -10,8 +11,7 @@ class LocationMessage extends MessageContent {
   String? mBase64;
   String? mImgUri;
 
-  static LocationMessage obtain(
-      double lat, double lng, String poi, String imgUri) {
+  static LocationMessage obtain(double lat, double lng, String poi, String imgUri) {
     LocationMessage msg = LocationMessage();
     msg.mLat = lat;
     msg.mLng = lng;
@@ -23,8 +23,7 @@ class LocationMessage extends MessageContent {
   @override
   void decode(String? jsonStr) {
     if (jsonStr == null || jsonStr.isEmpty) {
-      developer.log("Flutter LocationMessage deocde error: no content",
-          name: "RongIMClient.LocationMessage");
+      developer.log("Flutter LocationMessage deocde error: no content", name: "RongIMClient.LocationMessage");
       return;
     }
     Map map = json.decode(jsonStr);
@@ -39,14 +38,7 @@ class LocationMessage extends MessageContent {
 
   @override
   String encode() {
-    Map map = {
-      "latitude": this.mLat,
-      "longitude": this.mLng,
-      "poi": mPoi,
-      "mBase64": mBase64,
-      "mImgUri": mImgUri,
-      "content": mBase64
-    };
+    Map map = {"latitude": this.mLat, "longitude": this.mLng, "poi": mPoi, "mBase64": mBase64, "mImgUri": mImgUri, "content": mBase64};
     if (this.sendUserInfo != null) {
       Map userMap = super.encodeUserInfo(this.sendUserInfo);
       map["user"] = userMap;
