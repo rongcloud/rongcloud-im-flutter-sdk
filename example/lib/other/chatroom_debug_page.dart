@@ -14,7 +14,7 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
   String pageName = "example.ChatRoomDebugPage";
   List titles;
   List<Function> functions;
-  String targetId = "kvchatroom1";
+  String targetId = "kvchatroom9920";
 
   _ChatRoomDebugPageState();
 
