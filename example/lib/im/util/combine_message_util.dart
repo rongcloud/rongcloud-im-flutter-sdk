@@ -3,12 +3,12 @@ import 'dart:developer' as developer;
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:sqflite/utils/utils.dart';
 
 import '../../main.dart';
 import 'file.dart';
@@ -19,9 +19,9 @@ import 'user_info_datesource.dart';
 class CombineMessageUtils {
   String pageName = "example.CombineMessageUtils";
   String style = "";
-  String uri;
-  bool isSameDay;
-  bool isSameYear;
+  String? uri;
+  late bool isSameDay;
+  late bool isSameYear;
   String portraitUri = "";
 
   static const String BASE64_PRE = "data:image/png;base64,";
@@ -79,13 +79,13 @@ class CombineMessageUtils {
   static const String MSG_LATITUDE = "{%latitude%}"; // 纬度
   static const String MSG_LONGITTUDE = "{%longitude%}"; // 经度
 
-  Future<CombineMessage> combineMessage(List<Message> messageList) async {
+  Future<CombineMessage?> combineMessage(List<Message>? messageList) async {
     if (messageList == null || messageList.length == 0) {
       developer.log("sendMessageByCombine param is null", name: pageName);
       return null;
     }
     String uri = await CombineMessageUtils().getUrlFromMessageList(messageList);
-    int conversationType = messageList[0].conversationType;
+    int? conversationType = messageList[0].conversationType;
     CombineMessage combine = CombineMessage.obtain(uri);
     combine.conversationType = conversationType;
     if (RCConversationType.Group != conversationType) {
@@ -97,8 +97,18 @@ class CombineMessageUtils {
   }
 
   // 是否为合并支持的消息类型
-  static bool allowForward(String objectName) {
-    List writeList = [TextMessage.objectName, VoiceMessage.objectName, ImageMessage.objectName, GifMessage.objectName, SightMessage.objectName, FileMessage.objectName, RichContentMessage.objectName, CombineMessage.objectName, RichContentMessage.objectName];
+  static bool allowForward(String? objectName) {
+    List writeList = [
+      TextMessage.objectName,
+      VoiceMessage.objectName,
+      ImageMessage.objectName,
+      GifMessage.objectName,
+      SightMessage.objectName,
+      FileMessage.objectName,
+      RichContentMessage.objectName,
+      CombineMessage.objectName,
+      RichContentMessage.objectName,
+    ];
     if (writeList.contains(objectName)) {
       return true;
     }
@@ -130,7 +140,7 @@ class CombineMessageUtils {
     String htmlTime = await getHtmlTime(messagesList);
     stringBuilder.write(htmlTime); // 加载html头部时间
     for (Message msg in messagesList) {
-      String htmlMessageContent = await getHtmlFromMessageContent(msg, msg.content);
+      String htmlMessageContent = await getHtmlFromMessageContent(msg, msg.content!);
       stringBuilder.write(htmlMessageContent);
     }
     String htmlBaseBottom = await getHtmlBaseBottom();
@@ -160,7 +170,7 @@ class CombineMessageUtils {
       type = TAG_VCSUMMARY;
     }
 
-    String html = DATA[type];
+    String? html = DATA[type];
     if (html == null || html.isEmpty) {
       developer.log("getHtmlFromType html is null, type: $type", name: pageName);
       return "";
@@ -175,7 +185,7 @@ class CombineMessageUtils {
   }
 
   Future<String> getJson() async {
-    String jsonStr = await DefaultAssetBundle.of(MyApp.getContext()).loadString("assets/combine.json");
+    String jsonStr = await DefaultAssetBundle.of(MyApp.getContext()!).loadString("assets/combine.json");
     return jsonStr;
   }
 
@@ -186,10 +196,10 @@ class CombineMessageUtils {
   }
 
   Future<String> getHtmlTime(List<Message> messagesList) async {
-    int first = messagesList[0].sentTime;
+    int first = messagesList[0].sentTime!;
     DateTime firstTime = DateTime.fromMillisecondsSinceEpoch(first);
 
-    int last = messagesList[messagesList.length - 1].sentTime;
+    int last = messagesList[messagesList.length - 1].sentTime!;
     DateTime lastTime = DateTime.fromMillisecondsSinceEpoch(last);
 
     isSameYear = firstTime.year == lastTime.year;
@@ -206,7 +216,7 @@ class CombineMessageUtils {
   }
 
   Future<String> getHtmlFromMessageContent(Message message, MessageContent content) async {
-    String objectName = content.getObjectName();
+    String? objectName = content.getObjectName();
     if (objectName == null || !objectName.startsWith("RC:")) {
       developer.log("getHtmlFromMessageContent tag is UnKnown, content: $content", name: pageName);
       return "";
@@ -216,8 +226,8 @@ class CombineMessageUtils {
     String html = await setUserInfo(htmlFromType, message);
     switch (type) {
       case TAG_TXT: // 文本
-        TextMessage text = content;
-        html = html.replaceAll(MSG_TEXT, text.content);
+        TextMessage text = content as TextMessage;
+        html = html.replaceAll(MSG_TEXT, text.content!);
         break;
       case TAG_IMG_TEXT: // 图文
       case TAG_VC: // 语音
@@ -238,22 +248,22 @@ class CombineMessageUtils {
         html = html.replaceAll(MSG_TEXT, RCString.RCMessageContentRp);
         break;
       case TAG_SIGHT: // 小视频
-        SightMessage sight = content;
-        html = html.replaceAll(MSG_FILE_NAME, sight.mName).replaceAll(MSG_SIZE, FileUtil.formatFileSize(sight.mSize)).replaceAll(MSG_FILE_URL, sight.remoteUrl == null ? "" : sight.remoteUrl);
+        SightMessage sight = content as SightMessage;
+        html = html.replaceAll(MSG_FILE_NAME, sight.mName!).replaceAll(MSG_SIZE, FileUtil.formatFileSize(sight.mSize!)).replaceAll(MSG_FILE_URL, sight.remoteUrl == null ? "" : sight.remoteUrl!);
         break;
       case TAG_IMG: // 图片
-        ImageMessage image = content;
+        ImageMessage image = content as ImageMessage;
         String base64 = await getBase64FromUrl(image.imageUri, message.messageId);
-        html = html.replaceAll(MSG_FILE_URL, image.imageUri == null ? "" : image.imageUri).replaceAll(MSG_IMAG_URL, base64);
+        html = html.replaceAll(MSG_FILE_URL, image.imageUri == null ? "" : image.imageUri!).replaceAll(MSG_IMAG_URL, base64);
         break;
       case TAG_GIF: // gif图片
-        GifMessage gif = content;
+        GifMessage gif = content as GifMessage;
         String gifBase64 = await getBase64FromUrl(gif.remoteUrl, message.messageId);
-        html = html.replaceAll(MSG_FILE_URL, gif.remoteUrl == null ? "" : gif.remoteUrl).replaceAll(MSG_IMAG_URL, gifBase64);
+        html = html.replaceAll(MSG_FILE_URL, gif.remoteUrl == null ? "" : gif.remoteUrl!).replaceAll(MSG_IMAG_URL, gifBase64);
         break;
       case TAG_FILE: // 文件
-        FileMessage file = content;
-        html = html.replaceAll(MSG_FILE_NAME, file.mName).replaceAll(MSG_SIZE, FileUtil.formatFileSize(file.mSize)).replaceAll(MSG_FILE_SIZE, "${file.mSize}").replaceAll(MSG_FILE_URL, file.mMediaUrl == null ? "" : file.mMediaUrl).replaceAll(MSG_FILE_TYPE, file.mType == null || file.mType.isEmpty ? getFileType(file.mName) : file.mType).replaceAll(MSG_FILE_ICON, await getBase64FromLocalPath(file.mName));
+        FileMessage file = content as FileMessage;
+        html = html.replaceAll(MSG_FILE_NAME, file.mName!).replaceAll(MSG_SIZE, FileUtil.formatFileSize(file.mSize!)).replaceAll(MSG_FILE_SIZE, "${file.mSize}").replaceAll(MSG_FILE_URL, file.mMediaUrl == null ? "" : file.mMediaUrl!).replaceAll(MSG_FILE_TYPE, file.mType == null || file.mType!.isEmpty ? getFileType(file.mName!) : file.mType!).replaceAll(MSG_FILE_ICON, await getBase64FromLocalPath(file.mName));
         break;
       // case TAG_LBS: // 位置
       // LocationMessage location = (LocationMessage) content;
@@ -262,14 +272,14 @@ class CombineMessageUtils {
       //         .replace(MSG_LONGITTUDE, String.valueOf(location.getLng()));
       // break;
       case TAG_COMBINE: // 合并
-        CombineMessage combine = content;
+        CombineMessage combine = content as CombineMessage;
         StringBuffer summary = new StringBuffer();
         String combineBody = await getHtmlFromType(TAG_MSG_COMBINE_BODY);
-        List<String> summarys = combine.summaryList;
+        List<String> summarys = combine.summaryList!;
         for (String sum in summarys) {
           summary.write(combineBody.replaceAll(MSG_TEXT, sum));
         }
-        html = html.replaceAll(MSG_FILE_URL, combine.mMediaUrl == null ? "" : combine.mMediaUrl).replaceAll(MSG_TITLE, getTitle(combine)).replaceAll(MSG_COMBINE_BODY, summary.toString()).replaceAll(MSG_FOOT, RCString.RCCombineChatHistory);
+        html = html.replaceAll(MSG_FILE_URL, combine.mMediaUrl == null ? "" : combine.mMediaUrl!).replaceAll(MSG_TITLE, getTitle(combine)).replaceAll(MSG_COMBINE_BODY, summary.toString()).replaceAll(MSG_FOOT, RCString.RCCombineChatHistory);
         break;
       default:
         developer.log("getHtmlFromMessageContent UnKnown type:$type", name: pageName);
@@ -283,7 +293,7 @@ class CombineMessageUtils {
   }
 
   Future<String> setUserInfo(String str, Message msg) async {
-    String portrait = (await UserInfoDataSource.getUserInfo(msg.senderUserId)).portraitUrl;
+    String? portrait = (await UserInfoDataSource.getUserInfo(msg.senderUserId)).portraitUrl;
     if (portrait == null || portrait == portraitUri) {
       developer.log("getUserPortrait is same uri:$uri", name: pageName);
       portrait = "";
@@ -292,11 +302,14 @@ class CombineMessageUtils {
     }
     portrait = await getBase64FromUrl(portrait, msg.messageId);
     String showUser = (portrait == null || portrait.isEmpty ? NO_USER : "");
-    return str.replaceAll(MSG_PORTRAIT, portrait).replaceAll(MSG_SHOW_USER, showUser).replaceAll(MSG_USER_NAMEM, (await UserInfoDataSource.getUserInfo(msg.senderUserId)).name).replaceAll(MSG_SEND_TIME, getSendTime(msg));
+    return str.replaceAll(MSG_PORTRAIT, portrait).replaceAll(MSG_SHOW_USER, showUser).replaceAll(MSG_USER_NAMEM, (await UserInfoDataSource.getUserInfo(msg.senderUserId)).name!).replaceAll(
+          MSG_SEND_TIME,
+          getSendTime(msg),
+        );
   }
 
   String getSendTime(Message msg) {
-    int dateMillis = msg.sentTime;
+    int dateMillis = msg.sentTime!;
     if (dateMillis <= 0) {
       return "";
     }
@@ -313,12 +326,12 @@ class CombineMessageUtils {
   }
 
   String getSpannable(MessageContent content) {
-    String spannable = content.conversationDigest();
+    String? spannable = content.conversationDigest();
     if (spannable == null) return "";
     return spannable;
   }
 
-  Future<String> getBase64FromUrl(String uri, int messageId) async {
+  Future<String> getBase64FromUrl(String? uri, int? messageId) async {
     if (uri == null || uri.isEmpty) return "";
     if (!uri.startsWith("http")) {
       File localFile = new File(uri);
@@ -351,10 +364,10 @@ class CombineMessageUtils {
   String generateMd5(String data) {
     var content = new Utf8Encoder().convert(data);
     var digest = md5.convert(content);
-    return hex.encode(digest.bytes);
+    return hex(digest.bytes);
   }
 
-  Future<String> getBase64FromLocalPath(String fileName) async {
+  Future<String> getBase64FromLocalPath(String? fileName) async {
     String filePath = FileUtil.fileTypeImagePath(fileName);
     var bytes;
     if (filePath.startsWith("assets")) {
@@ -375,7 +388,7 @@ class CombineMessageUtils {
     List<String> names = [];
     for (Message msg in messages) {
       if (names.length == 2) return names;
-      String name = (await UserInfoDataSource.getUserInfo(msg.senderUserId)).name;
+      String? name = (await UserInfoDataSource.getUserInfo(msg.senderUserId)).name;
       if (name != null && !names.contains(name)) {
         names.add(name);
       }
@@ -389,7 +402,7 @@ class CombineMessageUtils {
     if (RCConversationType.Group == content.conversationType) {
       title = RCString.RCCombineGroupChatHistory;
     } else if (RCConversationType.Private == content.conversationType) {
-      List<String> nameList = content.nameList;
+      List<String>? nameList = content.nameList;
       if (nameList == null) return title;
 
       if (nameList.length == 1) {
@@ -404,18 +417,18 @@ class CombineMessageUtils {
 
   Future<List<String>> getSummaryList(List<Message> messages) async {
     List<String> summaryList = [];
-    int conversationType = messages[0].conversationType;
+    int? conversationType = messages[0].conversationType;
     for (int i = 0; i < messages.length && i < SUMMARY_MAX_SIZE; i++) {
       Message message = messages[i];
-      MessageContent content = message.content;
+      MessageContent content = message.content!;
       // UserInfo userInfo = RongUserInfoManager.getInstance().getUserInfo(message.getSenderUserId());
-      String userName = "";
+      String? userName = "";
       if (RCConversationType.Group == conversationType) {
         userName = (await UserInfoDataSource.getUserInfo(message.senderUserId)).name;
       }
 
-      String text;
-      String objectName = content.getObjectName();
+      String? text;
+      String? objectName = content.getObjectName();
       if ("RC:CardMsg" == objectName) {
         text = RCString.RCMessageContentCard;
       } else if ("RC:StkMsg" == objectName) {
@@ -428,13 +441,13 @@ class CombineMessageUtils {
         text = content.conversationDigest();
       }
 
-      summaryList.add(userName + " : " + text);
+      summaryList.add(userName! + " : " + text!);
     }
     return summaryList;
   }
 
-  void downLoadHtml(String url) async {
-    if (url == null && url.isEmpty) {
+  void downLoadHtml(String? url) async {
+    if (url == null && url!.isEmpty) {
       developer.log("downLoadHtml url is null", name: pageName);
       return;
     }

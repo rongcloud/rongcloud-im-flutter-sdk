@@ -5,30 +5,30 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 typedef Widget ImageWidgetBuilder(BuildContext context, ImageProvider imageProvider);
 typedef Widget PlaceholderWidgetBuilder(BuildContext context, String url);
-typedef Widget ProgressIndicatorBuilder(BuildContext context, String url, DownloadProgress progress);
+typedef Widget ProgressIndicatorBuilder(BuildContext context, String url, DownloadProgress? progress);
 typedef Widget LoadingErrorWidgetBuilder(BuildContext context, String url, dynamic error);
 
 class CachedNetworkImage extends StatefulWidget {
   /// Option to use cachemanager with other settings
-  final BaseCacheManager cacheManager;
+  final BaseCacheManager? cacheManager;
 
   /// The target image that is displayed.
   final String imageUrl;
 
   /// Optional builder to further customize the display of the image.
-  final ImageWidgetBuilder imageBuilder;
+  final ImageWidgetBuilder? imageBuilder;
 
   /// Widget displayed while the target [imageUrl] is loading.
-  final PlaceholderWidgetBuilder placeholder;
+  final PlaceholderWidgetBuilder? placeholder;
 
   /// Widget displayed while the target [imageUrl] is loading.
-  final ProgressIndicatorBuilder progressIndicatorBuilder;
+  final ProgressIndicatorBuilder? progressIndicatorBuilder;
 
   /// Widget displayed while the target [imageUrl] failed loading.
-  final LoadingErrorWidgetBuilder errorWidget;
+  final LoadingErrorWidgetBuilder? errorWidget;
 
   /// The duration of the fade-in animation for the [placeholder].
-  final Duration placeholderFadeInDuration;
+  final Duration? placeholderFadeInDuration;
 
   /// The duration of the fade-out animation for the [placeholder].
   final Duration fadeOutDuration;
@@ -48,7 +48,7 @@ class CachedNetworkImage extends StatefulWidget {
   /// aspect ratio. This may result in a sudden change if the size of the
   /// placeholder widget does not match that of the target image. The size is
   /// also affected by the scale factor.
-  final double width;
+  final double? width;
 
   /// If non-null, require the image to have this height.
   ///
@@ -56,13 +56,13 @@ class CachedNetworkImage extends StatefulWidget {
   /// aspect ratio. This may result in a sudden change if the size of the
   /// placeholder widget does not match that of the target image. The size is
   /// also affected by the scale factor.
-  final double height;
+  final double? height;
 
   /// How to inscribe the image into the space allocated during layout.
   ///
   /// The default varies based on the other fields. See the discussion at
   /// [paintImage].
-  final BoxFit fit;
+  final BoxFit? fit;
 
   /// How to align the image within its bounds.
   ///
@@ -109,14 +109,14 @@ class CachedNetworkImage extends StatefulWidget {
   final bool matchTextDirection;
 
   // Optional headers for the http request of the image url
-  final Map<String, String> httpHeaders;
+  final Map<String, String>? httpHeaders;
 
   /// When set to true it will animate from the old image to the new image
   /// if the url changes.
   final bool useOldImageOnUrlChange;
 
   /// If non-null, this color is blended with each image pixel using [colorBlendMode].
-  final Color color;
+  final Color? color;
 
   /// Used to combine [color] with this image.
   ///
@@ -126,7 +126,7 @@ class CachedNetworkImage extends StatefulWidget {
   /// See also:
   ///
   ///  * [BlendMode], which includes an illustration of the effect of each blend mode.
-  final BlendMode colorBlendMode;
+  final BlendMode? colorBlendMode;
 
   /// Target the interpolation quality for image scaling.
   ///
@@ -134,8 +134,8 @@ class CachedNetworkImage extends StatefulWidget {
   final FilterQuality filterQuality;
 
   CachedNetworkImage({
-    Key key,
-    @required this.imageUrl,
+    Key? key,
+    required this.imageUrl,
     this.imageBuilder,
     this.placeholder,
     this.progressIndicatorBuilder,
@@ -175,24 +175,24 @@ class CachedNetworkImage extends StatefulWidget {
 }
 
 class _ImageTransitionHolder {
-  final FileInfo image;
-  final DownloadProgress progress;
-  AnimationController animationController;
-  final Object error;
+  final FileInfo? image;
+  final DownloadProgress? progress;
+  AnimationController? animationController;
+  final Object? error;
   Curve curve;
   final TickerFuture forwardTickerFuture;
 
   _ImageTransitionHolder({
     this.image,
     this.progress,
-    @required this.animationController,
+    required AnimationController this.animationController,
     this.error,
     this.curve = Curves.easeIn,
   }) : forwardTickerFuture = animationController.forward();
 
   void dispose() {
     if (animationController != null) {
-      animationController.dispose();
+      animationController!.dispose();
       animationController = null;
     }
   }
@@ -201,8 +201,8 @@ class _ImageTransitionHolder {
 class CachedNetworkImageState extends State<CachedNetworkImage> with TickerProviderStateMixin {
   final _imageHolders = <_ImageTransitionHolder>[];
   Key _streamBuilderKey = UniqueKey();
-  Stream<FileResponse> _fileResponseStream;
-  FileInfo _fromMemory;
+  Stream<FileResponse>? _fileResponseStream;
+  FileInfo? _fromMemory;
 
   @override
   Widget build(BuildContext context) {
@@ -235,7 +235,7 @@ class CachedNetworkImageState extends State<CachedNetworkImage> with TickerProvi
   }
 
   void _createFileStream() {
-    _fromMemory = _cacheManager().getFileFromMemory(widget.imageUrl);
+    _fromMemory = _cacheManager().getFileFromMemory(widget.imageUrl) as FileInfo;
 
     _fileResponseStream = _cacheManager()
         .getFileStream(
@@ -247,7 +247,7 @@ class CachedNetworkImageState extends State<CachedNetworkImage> with TickerProvi
         .handleError(() {}, test: (_) => !mounted)
         .where((f) {
       if (f is FileInfo) {
-        return f?.originalUrl != _fromMemory?.originalUrl || f?.validTill != _fromMemory?.validTill;
+        return f.originalUrl != _fromMemory?.originalUrl || f.validTill != _fromMemory?.validTill;
       }
       return true;
     });
@@ -259,7 +259,7 @@ class CachedNetworkImageState extends State<CachedNetworkImage> with TickerProvi
     }
   }
 
-  void _addImage({FileInfo image, DownloadProgress progress, Object error, Duration duration}) {
+  void _addImage({FileInfo? image, DownloadProgress? progress, Object? error, Duration? duration}) {
     if (_imageHolders.isNotEmpty) {
       var lastHolder = _imageHolders.last;
       if (lastHolder.progress != null && progress != null) {
@@ -270,16 +270,16 @@ class CachedNetworkImageState extends State<CachedNetworkImage> with TickerProvi
             return;
           }
           if (widget.fadeOutDuration != null) {
-            lastHolder.animationController.duration = widget.fadeOutDuration;
+            lastHolder.animationController!.duration = widget.fadeOutDuration;
           } else {
-            lastHolder.animationController.duration = const Duration(seconds: 1);
+            lastHolder.animationController!.duration = const Duration(seconds: 1);
           }
           if (widget.fadeOutCurve != null) {
             lastHolder.curve = widget.fadeOutCurve;
           } else {
             lastHolder.curve = Curves.easeOut;
           }
-          lastHolder.animationController.reverse().then((_) {
+          lastHolder.animationController!.reverse().then((_) {
             _imageHolders.remove(lastHolder);
             if (mounted) setState(() {});
             return null;
@@ -294,7 +294,7 @@ class CachedNetworkImageState extends State<CachedNetworkImage> with TickerProvi
         progress: progress,
         animationController: AnimationController(
           vsync: this,
-          duration: duration ?? (widget.fadeInDuration ?? const Duration(milliseconds: 500)),
+          duration: duration ?? (widget.fadeInDuration),
         ),
       ),
     );
@@ -316,7 +316,7 @@ class CachedNetworkImageState extends State<CachedNetworkImage> with TickerProvi
           if (fileResponse == null) {
             // placeholder
             if (_imageHolders.isEmpty || _imageHolders.last.image != null) {
-              DownloadProgress progress;
+              DownloadProgress? progress;
               if (widget.progressIndicatorBuilder != null) {
                 progress = DownloadProgress(widget.imageUrl, null, 0);
               }
@@ -341,9 +341,9 @@ class CachedNetworkImageState extends State<CachedNetworkImage> with TickerProvi
           } else if (holder.progress != null) {
             children.add(_transitionWidget(
                 holder: holder,
-                child: widget.progressIndicatorBuilder(
+                child: widget.progressIndicatorBuilder!(
                   context,
-                  holder.progress.originalUrl,
+                  holder.progress!.originalUrl,
                   holder.progress,
                 )));
           } else if (holder.image == null) {
@@ -352,10 +352,10 @@ class CachedNetworkImageState extends State<CachedNetworkImage> with TickerProvi
             children.add(_transitionWidget(
                 holder: holder,
                 child: KeyedSubtree(
-                  key: Key(holder.image.file.path),
+                  key: Key(holder.image!.file.path),
                   child: _image(
                     context,
-                    FileImage(holder.image.file),
+                    FileImage(holder.image!.file),
                   ),
                 )));
           }
@@ -370,9 +370,9 @@ class CachedNetworkImageState extends State<CachedNetworkImage> with TickerProvi
     );
   }
 
-  Widget _transitionWidget({_ImageTransitionHolder holder, Widget child}) {
+  Widget _transitionWidget({required _ImageTransitionHolder holder, Widget? child}) {
     return FadeTransition(
-      opacity: CurvedAnimation(curve: holder.curve, parent: holder.animationController),
+      opacity: CurvedAnimation(curve: holder.curve, parent: holder.animationController!),
       child: child,
     );
   }
@@ -383,7 +383,7 @@ class CachedNetworkImageState extends State<CachedNetworkImage> with TickerProvi
 
   Widget _image(BuildContext context, ImageProvider imageProvider) {
     return widget.imageBuilder != null
-        ? widget.imageBuilder(context, imageProvider)
+        ? widget.imageBuilder!(context, imageProvider)
         : Image(
             image: imageProvider,
             fit: widget.fit,
@@ -400,14 +400,14 @@ class CachedNetworkImageState extends State<CachedNetworkImage> with TickerProvi
 
   Widget _placeholder(BuildContext context) {
     return widget.placeholder != null
-        ? widget.placeholder(context, widget.imageUrl)
+        ? widget.placeholder!(context, widget.imageUrl)
         : SizedBox(
             width: widget.width,
             height: widget.height,
           );
   }
 
-  Widget _errorWidget(BuildContext context, Object error) {
-    return widget.errorWidget != null ? widget.errorWidget(context, widget.imageUrl, error) : _placeholder(context);
+  Widget _errorWidget(BuildContext context, Object? error) {
+    return widget.errorWidget != null ? widget.errorWidget!(context, widget.imageUrl, error) : _placeholder(context);
   }
 }

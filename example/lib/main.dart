@@ -6,6 +6,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart' as prefix;
 import 'package:rongcloud_im_plugin_example/test_message.dart';
 
 import 'im/util/event_bus.dart';
+import 'location_message.dart';
 import 'other/home_page.dart';
 import 'router.dart';
 import 'user_data.dart';
@@ -16,7 +17,7 @@ class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
 
-  static BuildContext getContext() {
+  static BuildContext? getContext() {
     return _MyAppState.getContext();
   }
 }
@@ -24,11 +25,11 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   String pageName = "example.main";
   AppLifecycleState currentState = AppLifecycleState.resumed;
-  DateTime notificationQuietEndTime;
-  DateTime notificationQuietStartTime;
-  static BuildContext appContext;
+  DateTime? notificationQuietEndTime;
+  DateTime? notificationQuietStartTime;
+  static BuildContext? appContext;
 
-  static BuildContext getContext() {
+  static BuildContext? getContext() {
     return appContext;
   }
 
@@ -58,68 +59,79 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     //1.初始化 im SDK
     prefix.RongIMClient.init(RongAppKey);
     //注册自定义消息
-    prefix.RongIMClient.addMessageDecoder(TestMessage.objectName, (content) {
-      TestMessage msg = new TestMessage();
-      msg.decode(content);
-      return msg;
-    });
+    _registerCustomMessage();
+
     // _initUserInfoCache();
 
-    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance!.addObserver(this);
 
-    EventBus.instance.addListener(EventKeys.UpdateNotificationQuietStatus, (map) {
+    EventBus.instance!.addListener(EventKeys.UpdateNotificationQuietStatus, (map) {
       _getNotificationQuietHours();
     });
 
-    prefix.RongIMClient.onMessageReceivedWrapper = (prefix.Message msg, int left, bool hasPackage, bool offline) {
-      String hasP = hasPackage ? "true" : "false";
-      String off = offline ? "true" : "false";
-      if (msg.content != null) {
-        developer.log("object onMessageReceivedWrapper objName:" + msg.content.getObjectName() + " msgContent:" + msg.content.encode() + " left:" + left.toString() + " hasPackage:" + hasP + " offline:" + off, name: pageName);
+    prefix.RongIMClient.onMessageReceivedWrapper = (prefix.Message? msg, int? left, bool? hasPackage, bool? offline) {
+      String hasP = hasPackage! ? "true" : "false";
+      String off = offline! ? "true" : "false";
+      if (msg!.content != null) {
+        developer.log("object onMessageReceivedWrapper objName:" + msg.content!.getObjectName()! + " msgContent:" + msg.content!.encode()! + " left:" + left.toString() + " hasPackage:" + hasP + " offline:" + off, name: pageName);
       } else {
         developer.log("object onMessageReceivedWrapper objName: ${msg.objectName} content is null left:${left.toString()} hasPackage:$hasP offline:$off", name: pageName);
       }
       if (currentState == AppLifecycleState.paused && !checkNoficationQuietStatus()) {
-        EventBus.instance.commit(EventKeys.ReceiveMessage, {"message": msg, "left": left, "hasPackage": hasPackage});
-        prefix.RongIMClient.getConversationNotificationStatus(msg.conversationType, msg.targetId, (int status, int code) {
+        EventBus.instance!.commit(EventKeys.ReceiveMessage, {"message": msg, "left": left, "hasPackage": hasPackage});
+        prefix.RongIMClient.getConversationNotificationStatus(msg.conversationType!, msg.targetId!, (int? status, int? code) {
           if (status == 1) {
             _postLocalNotification(msg, left);
           }
         });
       } else {
         //通知其他页面收到消息
-        EventBus.instance.commit(EventKeys.ReceiveMessage, {"message": msg, "left": left, "hasPackage": hasPackage});
+        EventBus.instance!.commit(EventKeys.ReceiveMessage, {"message": msg, "left": left, "hasPackage": hasPackage});
       }
     };
 
-    prefix.RongIMClient.onDataReceived = (Map map) {
+    prefix.RongIMClient.onDataReceived = (Map? map) {
       developer.log("object onDataReceived " + map.toString(), name: pageName);
     };
 
-    prefix.RongIMClient.onMessageReceiptRequest = (Map map) {
-      EventBus.instance.commit(EventKeys.ReceiveReceiptRequest, map);
+    prefix.RongIMClient.onMessageReceiptRequest = (Map? map) {
+      EventBus.instance!.commit(EventKeys.ReceiveReceiptRequest, map);
       developer.log("object onMessageReceiptRequest " + map.toString(), name: pageName);
     };
 
-    prefix.RongIMClient.onMessageReceiptResponse = (Map map) {
-      EventBus.instance.commit(EventKeys.ReceiveReceiptResponse, map);
+    prefix.RongIMClient.onMessageReceiptResponse = (Map? map) {
+      EventBus.instance!.commit(EventKeys.ReceiveReceiptResponse, map);
       developer.log("object onMessageReceiptResponse " + map.toString(), name: pageName);
     };
 
-    prefix.RongIMClient.onReceiveReadReceipt = (Map map) {
-      EventBus.instance.commit(EventKeys.ReceiveReadReceipt, map);
+    prefix.RongIMClient.onReceiveReadReceipt = (Map? map) {
+      EventBus.instance!.commit(EventKeys.ReceiveReadReceipt, map);
       developer.log("object onReceiveReadReceipt " + map.toString(), name: pageName);
     };
 
     prefix.RongIMClient.onMessageBlocked = (info) {
-      EventBus.instance.commit(EventKeys.BlockMessage, info);
+      EventBus.instance!.commit(EventKeys.BlockMessage, info);
       developer.log("object onReceiveReadReceipt " + info.toString(), name: pageName);
     };
   }
 
+  void _registerCustomMessage() {
+    prefix.RongIMClient.addMessageDecoder(TestMessage.objectName, (content) {
+      TestMessage msg = new TestMessage();
+      msg.decode(content);
+      return msg;
+    });
+
+    prefix.RongIMClient.addMessageDecoder(LocationMessage.objectName, (content) {
+      LocationMessage msg = new LocationMessage();
+      msg.decode(content);
+      return msg;
+    });
+  }
+
   void _getNotificationQuietHours() {
-    prefix.RongIMClient.getNotificationQuietHours((int code, String startTime, int spansMin) {
-      if (startTime != null && startTime.length > 0 && spansMin > 0) {
+    prefix.RongIMClient.getNotificationQuietHours((int? code, String? startTime, int? spansMin) {
+      if (startTime != null && startTime.length > 0 && spansMin! > 0) {
         DateTime now = DateTime.now();
         String nowString = now.year.toString() + "-" + now.month.toString().padLeft(2, '0') + "-" + now.day.toString().padLeft(2, '0') + " " + startTime;
         DateTime start = DateTime.parse(nowString);
@@ -136,23 +148,23 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     bool isNotificationQuiet = false;
 
     DateTime now = DateTime.now();
-    if (notificationQuietStartTime != null && notificationQuietEndTime != null && now.isAfter(notificationQuietStartTime) && now.isBefore(notificationQuietEndTime)) {
+    if (notificationQuietStartTime != null && notificationQuietEndTime != null && now.isAfter(notificationQuietStartTime!) && now.isBefore(notificationQuietEndTime!)) {
       isNotificationQuiet = true;
     }
 
     return isNotificationQuiet;
   }
 
-  void _postLocalNotification(prefix.Message msg, int left) async {
+  void _postLocalNotification(prefix.Message? msg, int? left) async {
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
     var initializationSettingsAndroid = new AndroidInitializationSettings("app_icon"); // app_icon 所在目录为 res/drawable/
     var initializationSettingsIOS = new IOSInitializationSettings(requestAlertPermission: true, requestSoundPermission: true);
-    var initializationSettings = new InitializationSettings(initializationSettingsAndroid, initializationSettingsIOS);
+    var initializationSettings = new InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
     flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: null);
 
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails('your channel id', 'your channel name', 'your channel description', importance: Importance.Max, priority: Priority.High, ticker: '本地通知');
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails('your channel id', 'your channel name', 'your channel description', importance: Importance.max, priority: Priority.high, ticker: '本地通知');
 
-    var platformChannelSpecifics = NotificationDetails(androidPlatformChannelSpecifics, null);
+    var platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics, iOS: null);
 
     String content = "测试本地通知";
 

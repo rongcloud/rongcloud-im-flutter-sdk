@@ -9,9 +9,9 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import '../im/util/dialog_util.dart';
 
 class ChatDebugPage extends StatefulWidget {
-  final Map arguments;
+  final Map? arguments;
 
-  ChatDebugPage({Key key, this.arguments}) : super(key: key);
+  ChatDebugPage({Key? key, this.arguments}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _ChatDebugPageState(arguments: this.arguments);
@@ -19,20 +19,41 @@ class ChatDebugPage extends StatefulWidget {
 
 class _ChatDebugPageState extends State<ChatDebugPage> {
   String pageName = "example.ChatDebugPage";
-  Map arguments;
-  List titles;
-  int conversationType;
-  String targetId;
-  bool isPrivate;
+  Map? arguments;
+  late List titles;
+  int? conversationType;
+  String? targetId;
+  bool? isPrivate;
 
   _ChatDebugPageState({this.arguments});
 
   @override
   void initState() {
     super.initState();
-    conversationType = arguments["coversationType"];
-    targetId = arguments["targetId"];
-    titles = ["设置免打扰", "取消免打扰", "查看免打扰", "搜索会话消息记录", "通过UId获取消息", "批量插入数据库消息", "设置缩略图配置", "添加标签", "移除标签", "更新标签", "获取标签列表", "添加会话到一个标签", "删除指定一个标签中会话", "获取指定会话下的所有标签", "删除指定会话中的某些标签", "分页获取本地指定标签下会话列表", "按标签获取未读消息数", "设置标签中会话置顶状态", "获取指定会话下的标签置顶状态", "消息断档新接口"];
+    conversationType = arguments!["coversationType"];
+    targetId = arguments!["targetId"];
+    titles = [
+      "设置免打扰",
+      "取消免打扰",
+      "查看免打扰",
+      "搜索会话消息记录",
+      "通过UId获取消息",
+      "批量插入数据库消息",
+      "设置缩略图配置",
+      "添加标签",
+      "移除标签",
+      "更新标签",
+      "获取标签列表",
+      "添加会话到一个标签",
+      "删除指定一个标签中会话",
+      "获取指定会话下的所有标签",
+      "删除指定会话中的某些标签",
+      "分页获取本地指定标签下会话列表",
+      "按标签获取未读消息数",
+      "设置标签中会话置顶状态",
+      "获取指定会话下的标签置顶状态",
+      "消息断档新接口",
+    ];
     if (conversationType == RCConversationType.Private) {
       List onlyPrivateTitles = [
         "加入黑名单",
@@ -49,7 +70,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     }
 
     RongIMClient.onTagChanged = () {
-      Fluttertoast.showToast(msg: "会话标签变化收到监听", timeInSecForIos: 2);
+      Fluttertoast.showToast(msg: "会话标签变化收到监听", timeInSecForIosWeb: 2);
     };
   }
 
@@ -136,7 +157,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
 
   void _addBlackList() {
     developer.log("_addBlackList", name: pageName);
-    RongIMClient.addToBlackList(targetId, (int code) {
+    RongIMClient.addToBlackList(targetId!, (int? code) {
       String toast = code == 0 ? "加入黑名单成功" : "加入黑名单失败， $code";
       developer.log(toast, name: pageName);
       DialogUtil.showAlertDiaLog(context, toast);
@@ -145,7 +166,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
 
   void _removeBalckList() {
     developer.log("_removeBalckList", name: pageName);
-    RongIMClient.removeFromBlackList(targetId, (int code) {
+    RongIMClient.removeFromBlackList(targetId!, (int? code) {
       String toast = code == 0 ? "取消黑名单成功" : "取消黑名单失败，错误码: $code";
       developer.log(toast, name: pageName);
       DialogUtil.showAlertDiaLog(context, toast);
@@ -154,34 +175,34 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
 
   void _getBlackStatus() {
     developer.log("_getBlackStatus", name: pageName);
-    RongIMClient.getBlackListStatus(targetId, (int blackStatus, int code) {
+    RongIMClient.getBlackListStatus(targetId!, (int? blackStatus, int? code) {
       if (0 == code) {
         if (RCBlackListStatus.In == blackStatus) {
-          developer.log("用户:" + targetId + " 在黑名单中", name: pageName);
-          DialogUtil.showAlertDiaLog(context, "用户:" + targetId + " 在黑名单中");
+          developer.log("用户:" + targetId! + " 在黑名单中", name: pageName);
+          DialogUtil.showAlertDiaLog(context, "用户:" + targetId! + " 在黑名单中");
         } else {
-          developer.log("用户:" + targetId + " 不在黑名单中", name: pageName);
-          DialogUtil.showAlertDiaLog(context, "用户:" + targetId + " 不在黑名单中");
+          developer.log("用户:" + targetId! + " 不在黑名单中", name: pageName);
+          DialogUtil.showAlertDiaLog(context, "用户:" + targetId! + " 不在黑名单中");
         }
       } else {
-        developer.log("用户:" + targetId + " 黑名单状态查询失败" + code.toString(), name: pageName);
-        DialogUtil.showAlertDiaLog(context, "用户:" + targetId + " 黑名单状态查询失败" + code.toString());
+        developer.log("用户:" + targetId! + " 黑名单状态查询失败" + code.toString(), name: pageName);
+        DialogUtil.showAlertDiaLog(context, "用户:" + targetId! + " 黑名单状态查询失败" + code.toString());
       }
     });
   }
 
   void _getBlackList() {
     developer.log("_getBlackList", name: pageName);
-    RongIMClient.getBlackList((List/*<String>*/ userIdList, int code) {
+    RongIMClient.getBlackList((List? /*<String>*/ userIdList, int? code) {
       DialogUtil.showAlertDiaLog(context, "获取黑名单列表:\n userId 列表:" + userIdList.toString() + (code == 0 ? "" : "\n获取失败，错误码 code:" + code.toString()));
-      userIdList.forEach((userId) {
+      userIdList!.forEach((userId) {
         developer.log("userId:" + userId, name: pageName);
       });
     });
   }
 
   void _setConStatusEnable() {
-    RongIMClient.setConversationNotificationStatus(conversationType, targetId, true, (int status, int code) {
+    RongIMClient.setConversationNotificationStatus(conversationType!, targetId!, true, (int? status, int? code) {
       developer.log("setConversationNotificationStatus1 status " + status.toString(), name: pageName);
       String toast = code == 0 ? "设置免打扰成功" : "设置免打扰失败，错误码: $code";
       DialogUtil.showAlertDiaLog(context, toast);
@@ -189,7 +210,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   }
 
   void _setConStatusDisanable() {
-    RongIMClient.setConversationNotificationStatus(conversationType, targetId, false, (int status, int code) {
+    RongIMClient.setConversationNotificationStatus(conversationType!, targetId!, false, (int? status, int? code) {
       developer.log("setConversationNotificationStatus2 status " + status.toString(), name: pageName);
       String toast = code == 0 ? "取消免打扰成功" : "取消免打扰失败，错误码: $code";
       DialogUtil.showAlertDiaLog(context, toast);
@@ -197,7 +218,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   }
 
   void _getConStatus() {
-    RongIMClient.getConversationNotificationStatus(conversationType, targetId, (int status, int code) {
+    RongIMClient.getConversationNotificationStatus(conversationType!, targetId!, (int? status, int? code) {
       String toast = "免打扰状态:" + (status == 0 ? "免打扰" : "有消息提醒");
       developer.log(toast, name: pageName);
       DialogUtil.showAlertDiaLog(context, toast);
@@ -210,27 +231,27 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   }
 
   void _getMessageByUId() async {
-    List msgs = await RongIMClient.getHistoryMessage(conversationType, targetId, 0, 20);
-    if (msgs.length <= 0) {
+    List? msgs = await RongIMClient.getHistoryMessage(conversationType!, targetId!, 0, 20);
+    if (msgs!.length <= 0) {
       return;
     }
     Message message = msgs[(Random().nextInt(msgs.length - 1))];
-    String uId = message.messageUId;
-    Message msg = await RongIMClient.getMessageByUId(uId);
+    String uId = message.messageUId!;
+    Message? msg = await RongIMClient.getMessageByUId(uId);
     DialogUtil.showAlertDiaLog(context, "${msg.toString()}");
   }
 
   void _batchInsertMessage() async {
-    List msgs = await RongIMClient.getHistoryMessage(conversationType, targetId, 0, 20);
-    if (msgs.length <= 0) {
+    List? msgs = await RongIMClient.getHistoryMessage(conversationType!, targetId!, 0, 20);
+    if (msgs!.length <= 0) {
       return;
     }
-    Message message = msgs[(Random().nextInt(msgs.length - 1))];
-    RongIMClient.batchInsertMessage([message], (bool result, int code) {
+    Message? message = msgs[(Random().nextInt(msgs.length - 1))];
+    RongIMClient.batchInsertMessage([message!], (bool? result, int? code) {
       if (code != 0) {
         DialogUtil.showAlertDiaLog(context, "插入数据库消息失败");
       } else {
-        if (result) {
+        if (result!) {
           DialogUtil.showAlertDiaLog(context, "插入数据库消息成功");
         } else {
           DialogUtil.showAlertDiaLog(context, "插入数据库消息失败");
@@ -248,15 +269,15 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   }
 
   void _getMessages() async {
-    List msgs = await RongIMClient.getHistoryMessage(conversationType, targetId, 0, 20);
-    if (msgs.length <= 0) {
+    List? msgs = await RongIMClient.getHistoryMessage(conversationType!, targetId!, 0, 20);
+    if (msgs!.length <= 0) {
       return;
     }
     Message message = msgs[msgs.length - 1];
-    int timestamps = message.sentTime;
+    int timestamps = message.sentTime!;
     HistoryMessageOption option = HistoryMessageOption(20, timestamps, 0);
-    RongIMClient.getMessages(conversationType, targetId, option, (msgList, code) {
-      String toast = code == 0 ? "断档消息获取成功:" + msgList.length.toString() : "断档消息获取失败， $code";
+    RongIMClient.getMessages(conversationType!, targetId!, option, (msgList, code) {
+      String toast = code == 0 ? "断档消息获取成功:" + msgList!.length.toString() : "断档消息获取失败， $code";
       developer.log(toast, name: pageName);
       DialogUtil.showAlertDiaLog(context, toast);
     });
@@ -274,7 +295,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     DateTime time = DateTime.now();
     int timestamps = time.millisecondsSinceEpoch;
     tagInfo.timestamp = timestamps;
-    RongIMClient.addTag(tagInfo, (int code) {
+    RongIMClient.addTag(tagInfo, (int? code) {
       String toast = code == 0 ? "添加标签成功" : "添加标签失败， $code";
       developer.log(toast, name: pageName);
       DialogUtil.showAlertDiaLog(context, toast);
@@ -282,7 +303,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   }
 
   void _removeTag() {
-    RongIMClient.removeTag(targetId, (int code) {
+    RongIMClient.removeTag(targetId, (int? code) {
       String toast = code == 0 ? "删除标签成功" : "删除标签失败， $code";
       developer.log(toast, name: pageName);
       DialogUtil.showAlertDiaLog(context, toast);
@@ -297,7 +318,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     DateTime time = DateTime.now();
     int timestamp = time.millisecondsSinceEpoch;
     tagInfo.timestamp = timestamp;
-    RongIMClient.updateTag(tagInfo, (int code) {
+    RongIMClient.updateTag(tagInfo, (int? code) {
       String toast = code == 0 ? "更新标签成功" : "更新标签失败， $code";
       developer.log(toast, name: pageName);
       DialogUtil.showAlertDiaLog(context, toast);
@@ -305,7 +326,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   }
 
   void _getTags() async {
-    List tags = await RongIMClient.getTags((int code, List tags) {
+    List? tags = await RongIMClient.getTags((int? code, List tags) {
       int count = tags.length;
       String toast = "标签个数 :  $count";
       developer.log(toast, name: pageName);
@@ -341,12 +362,12 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
 
   void _getTagsFromConversation() async {
     String toast = "";
-    await RongIMClient.getTagsFromConversation(conversationType, targetId, (int code, List conversationList) {
+    await RongIMClient.getTagsFromConversation(conversationType, targetId, (int? code, List conversationList) {
       if (conversationList == null || conversationList.length == 0) {
         toast = "tags is null";
       } else {
-        for (ConversationTagInfo info in conversationList) {
-          toast = toast + "[isTop:${info.isTop},tagId:${info.tagInfo.tagId},tagName:${info.tagInfo.tagName},count:${info.tagInfo.count},timestamp:${info.tagInfo.timestamp}] ";
+        for (ConversationTagInfo? info in conversationList as Iterable<ConversationTagInfo?>) {
+          toast = toast + "[isTop:${info!.isTop},tagId:${info.tagInfo!.tagId},tagName:${info.tagInfo!.tagName},count:${info.tagInfo!.count},timestamp:${info.tagInfo!.timestamp}] ";
         }
       }
       developer.log(toast, name: pageName);
@@ -368,8 +389,8 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
       if (conversationList == null || conversationList.length == 0) {
         toast = "tags is null";
       } else {
-        for (Conversation con in conversationList) {
-          toast = toast + "[targetId:${con.conversationType},conversationType:${con.conversationType}}";
+        for (Conversation? con in conversationList as Iterable<Conversation?>) {
+          toast = toast + "[targetId:${con!.conversationType},conversationType:${con.conversationType}}";
         }
       }
       developer.log(toast, name: pageName);
@@ -378,7 +399,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   }
 
   void _getUnreadCountByTag() async {
-    RongIMClient.getUnreadCountByTag(targetId, true, (int result, int code) {
+    RongIMClient.getUnreadCountByTag(targetId, true, (int? result, int? code) {
       String toast = code == 0 ? "获取成功未读数:$code" : "获取成功 $code";
       developer.log(toast, name: pageName);
       DialogUtil.showAlertDiaLog(context, toast);

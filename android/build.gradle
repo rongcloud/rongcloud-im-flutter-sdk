@@ -17,7 +17,6 @@ rootProject.allprojects {
         google()
         jcenter()
         mavenCentral()
-        maven {url  "https://dl.bintray.com/rongcloud/maven"}
         maven {url  "http://maven.rongcloud.cn/repository/maven-releases/"}
         maven {url 'http://developer.huawei.com/repo/'}
     }

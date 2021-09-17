@@ -6,16 +6,16 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart' as prefix;
 import '../im/util/user_info_datesource.dart' as example;
 
 class MessageReadPage extends StatefulWidget {
-  final prefix.Message message;
+  final prefix.Message? message;
 
-  const MessageReadPage({Key key, this.message}) : super(key: key);
+  const MessageReadPage({Key? key, this.message}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _MessageReadPageState(message);
 }
 
 class _MessageReadPageState extends State<MessageReadPage> {
-  final prefix.Message message;
+  final prefix.Message? message;
 
   _MessageReadPageState(this.message);
 
@@ -37,10 +37,10 @@ class _MessageReadPageState extends State<MessageReadPage> {
   }
 
   Future<void> _getRandomUserInfos() async {
-    Map userIdList = message.readReceiptInfo.userIdList;
+    Map? userIdList = message!.readReceiptInfo!.userIdList;
     if (userIdList != null) {
-      for (String key in userIdList.keys) {
-        example.UserInfo userInfo = example.UserInfoDataSource.cachedUserMap[key];
+      for (String? key in userIdList.keys as Iterable<String?>) {
+        example.UserInfo? userInfo = example.UserInfoDataSource.cachedUserMap[key];
         if (userInfo == null) {
           userInfo = await example.UserInfoDataSource.getUserInfo(key);
         }
@@ -58,7 +58,7 @@ class _MessageReadPageState extends State<MessageReadPage> {
       color: Colors.white,
       child: InkWell(
         child: new ListTile(
-          title: new Text(user.id),
+          title: new Text(user.id!),
           leading: Container(
             width: 36,
             height: 36,
@@ -66,7 +66,7 @@ class _MessageReadPageState extends State<MessageReadPage> {
               borderRadius: BorderRadius.circular(5),
               child: CachedNetworkImage(
                 fit: BoxFit.fill,
-                imageUrl: user.portraitUrl,
+                imageUrl: user.portraitUrl!,
               ),
             ),
           ),

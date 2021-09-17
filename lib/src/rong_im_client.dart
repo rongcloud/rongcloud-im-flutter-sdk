@@ -640,6 +640,10 @@ class RongIMClient {
     }
     Map map = {"targetId": targetId, "memeberCount": memeberCount, "memberOrder": memberOrder};
     Map resultMap = await _channel.invokeMethod(RCMethodKey.GetChatRoomInfo, map);
+    // ignore: unnecessary_null_comparison
+    if (resultMap == null) {
+      return null;
+    }
     return MessageFactory.instance!.map2ChatRoomInfo(resultMap);
   }
 

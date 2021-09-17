@@ -1,6 +1,6 @@
 class CodeUtil {
   /// 具体业务错误码
-  static String codeString(int code) {
+  static String? codeString(int? code) {
     String key = code.toString() != null ? code.toString() : "";
     return codeMap[key];
   }

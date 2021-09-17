@@ -1,7 +1,6 @@
+import 'message_content.dart';
 import 'dart:convert' show json;
 import 'dart:developer' as developer;
-
-import 'message_content.dart';
 
 //Gif消息
 class GifMessage extends MessageContent {

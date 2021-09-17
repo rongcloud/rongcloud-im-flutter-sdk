@@ -12,8 +12,8 @@ class ChatRoomDebugPage extends StatefulWidget {
 
 class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
   String pageName = "example.ChatRoomDebugPage";
-  List titles;
-  List<Function> functions;
+  late List titles;
+  late List<Function> functions;
   String targetId = "kvchatroom9920";
 
   _ChatRoomDebugPageState();
@@ -55,31 +55,31 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
       // _sendXXMessage,
     ];
 
-    RongIMClient.onJoinChatRoom = (String targetId, int status) {
-      Fluttertoast.showToast(msg: "加入聊天室 $targetId " + (status == 0 ? "成功" : "失败"), timeInSecForIos: 2);
+    RongIMClient.onJoinChatRoom = (String? targetId, int? status) {
+      Fluttertoast.showToast(msg: "加入聊天室 $targetId " + (status == 0 ? "成功" : "失败"), timeInSecForIosWeb: 2);
     };
 
-    RongIMClient.onQuitChatRoom = (String targetId, int status) {
-      Fluttertoast.showToast(msg: "退出聊天室 $targetId " + (status == 0 ? "成功" : "失败"), timeInSecForIos: 2);
+    RongIMClient.onQuitChatRoom = (String? targetId, int? status) {
+      Fluttertoast.showToast(msg: "退出聊天室 $targetId " + (status == 0 ? "成功" : "失败"), timeInSecForIosWeb: 2);
     };
 
-    RongIMClient.onChatRoomReset = (String targetId) {
-      Fluttertoast.showToast(msg: "聊天室被重制 $targetId ", timeInSecForIos: 2);
+    RongIMClient.onChatRoomReset = (String? targetId) {
+      Fluttertoast.showToast(msg: "聊天室被重制 $targetId ", timeInSecForIosWeb: 2);
     };
 
-    RongIMClient.onChatRoomDestroyed = (String targetId, int type) {
-      Fluttertoast.showToast(msg: "聊天室被销毁 $targetId " + (type == 0 ? "开发者主动销毁" : "聊天室长时间不活跃，被系统自动回收"), timeInSecForIos: 2);
+    RongIMClient.onChatRoomDestroyed = (String? targetId, int? type) {
+      Fluttertoast.showToast(msg: "聊天室被销毁 $targetId " + (type == 0 ? "开发者主动销毁" : "聊天室长时间不活跃，被系统自动回收"), timeInSecForIosWeb: 2);
     };
 
-    RongIMClient.chatRoomKVDidSync = (String roomId) {
+    RongIMClient.chatRoomKVDidSync = (String? roomId) {
       DialogUtil.showAlertDiaLog(context, "chatRoomKVDidSync $roomId ");
     };
 
-    RongIMClient.chatRoomKVDidUpdate = (String roomId, Map entry) {
+    RongIMClient.chatRoomKVDidUpdate = (String? roomId, Map? entry) {
       DialogUtil.showAlertDiaLog(context, "chatRoomKVDidUpdate $roomId $entry");
     };
 
-    RongIMClient.chatRoomKVDidRemove = (String roomId, Map entry) {
+    RongIMClient.chatRoomKVDidRemove = (String? roomId, Map? entry) {
       DialogUtil.showAlertDiaLog(context, "chatRoomKVDidRemove $roomId $entry");
     };
   }
@@ -97,26 +97,26 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
   }
 
   void _setEntry() {
-    RongIMClient.setChatRoomEntry(targetId, "key1", "value1", true, true, "notificationExtra", (int code) {
-      DialogUtil.showAlertDiaLog(context, "设置 KV：{key1: value1}, 发送通知，退出时删除，code：" + CodeUtil.codeString(code));
+    RongIMClient.setChatRoomEntry(targetId, "key1", "value1", true, true, "notificationExtra", (int? code) {
+      DialogUtil.showAlertDiaLog(context, "设置 KV：{key1: value1}, 发送通知，退出时删除，code：" + CodeUtil.codeString(code)!);
     });
   }
 
   void _forceSetEntry() {
-    RongIMClient.forceSetChatRoomEntry(targetId, "key2", "value2", false, false, "notificationExtra", (int code) {
-      DialogUtil.showAlertDiaLog(context, "强制删除 KV：{key2: value2}, 不发送通知，退出时不删除，code：" + CodeUtil.codeString(code));
+    RongIMClient.forceSetChatRoomEntry(targetId, "key2", "value2", false, false, "notificationExtra", (int? code) {
+      DialogUtil.showAlertDiaLog(context, "强制删除 KV：{key2: value2}, 不发送通知，退出时不删除，code：" + CodeUtil.codeString(code)!);
     });
   }
 
   void _removeEntry() {
-    RongIMClient.removeChatRoomEntry(targetId, "key1", true, "notificationExtra", (int code) {
-      DialogUtil.showAlertDiaLog(context, "删除 KV：key1, 发送通知，code：" + CodeUtil.codeString(code));
+    RongIMClient.removeChatRoomEntry(targetId, "key1", true, "notificationExtra", (int? code) {
+      DialogUtil.showAlertDiaLog(context, "删除 KV：key1, 发送通知，code：" + CodeUtil.codeString(code)!);
     });
   }
 
   void _forceRemoveEntry() {
-    RongIMClient.forceRemoveChatRoomEntry(targetId, "key2", false, "notificationExtra", (int code) {
-      DialogUtil.showAlertDiaLog(context, "强制删除 KV：key2, 不发送通知，code：" + CodeUtil.codeString(code));
+    RongIMClient.forceRemoveChatRoomEntry(targetId, "key2", false, "notificationExtra", (int? code) {
+      DialogUtil.showAlertDiaLog(context, "强制删除 KV：key2, 不发送通知，code：" + CodeUtil.codeString(code)!);
     });
   }
 
@@ -139,7 +139,7 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
       true,
       true,
       (code, errors) {
-        DialogUtil.showAlertDiaLog(context, "设置 KV：$map, 退出时删除，覆盖，code：" + CodeUtil.codeString(code));
+        DialogUtil.showAlertDiaLog(context, "设置 KV：$map, 退出时删除，覆盖，code：" + CodeUtil.codeString(code)!);
       },
     );
   }
@@ -162,20 +162,20 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
       list,
       true,
       (code, errors) {
-        DialogUtil.showAlertDiaLog(context, "删除 KV：$list, 强制，code：" + CodeUtil.codeString(code));
+        DialogUtil.showAlertDiaLog(context, "删除 KV：$list, 强制，code：" + CodeUtil.codeString(code)!);
       },
     );
   }
 
   void _getEntry() {
-    RongIMClient.getChatRoomEntry(targetId, "key1", (Map entry, int code) {
-      DialogUtil.showAlertDiaLog(context, "获取单个 KV：key1, code：" + CodeUtil.codeString(code) + "，entry：$entry");
+    RongIMClient.getChatRoomEntry(targetId, "key1", (Map? entry, int? code) {
+      DialogUtil.showAlertDiaLog(context, "获取单个 KV：key1, code：" + CodeUtil.codeString(code)! + "，entry：$entry");
     });
   }
 
   void _getAllEntry() {
-    RongIMClient.getAllChatRoomEntries(targetId, (Map entry, int code) {
-      DialogUtil.showAlertDiaLog(context, "获取所有 KV：code：" + CodeUtil.codeString(code) + "，entry：$entry");
+    RongIMClient.getAllChatRoomEntries(targetId, (Map? entry, int? code) {
+      DialogUtil.showAlertDiaLog(context, "获取所有 KV：code：" + CodeUtil.codeString(code)! + "，entry：$entry");
     });
   }
 
@@ -186,12 +186,16 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
   void _sendChatMessage() async {
     TextMessage msg = new TextMessage();
     msg.content = "测试文本消息携带用户信息";
-    Message message = await RongIMClient.sendMessage(RCConversationType.ChatRoom, targetId, msg);
+    Message? message = await RongIMClient.sendMessage(RCConversationType.ChatRoom, targetId, msg);
   }
 
   void _getChatRoomHistoryMessage() {
-    RongIMClient.getRemoteChatRoomHistoryMessages(targetId, 0, 20, RCTimestampOrder.RC_Timestamp_Desc, (List/*<Message>*/ msgList, int syncTime, int code) {
-      DialogUtil.showAlertDiaLog(context, "获取聊天室历史消息：code：" + CodeUtil.codeString(code) + "，msgListCount：${msgList.length} 条消息\n" + "，msgList：$msgList" + "，syncTime：$syncTime");
+    RongIMClient.getRemoteChatRoomHistoryMessages(targetId, 0, 20, RCTimestampOrder.RC_Timestamp_Desc, (
+      List? /*<Message>*/ msgList,
+      int? syncTime,
+      int? code,
+    ) {
+      DialogUtil.showAlertDiaLog(context, "获取聊天室历史消息：code：" + CodeUtil.codeString(code)! + "，msgListCount：${msgList!.length} 条消息\n" + "，msgList：$msgList" + "，syncTime：$syncTime");
     });
   }
 

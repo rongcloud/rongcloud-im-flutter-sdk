@@ -4,9 +4,11 @@ import android.content.Context;
 import android.os.Bundle;
 
 
+import com.example.rongcloud_im_plugin_example.message.LocationMessage;
 
-import io.flutter.app.FlutterActivity;
+import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.plugins.GeneratedPluginRegistrant;
+import io.rong.flutter.imlib.RCIMFlutterWrapper;
 
 public class MainActivity extends FlutterActivity {
     @Override
@@ -14,6 +16,7 @@ public class MainActivity extends FlutterActivity {
         super.onCreate(savedInstanceState);
         GeneratedPluginRegistrant.registerWith(this);
         Context con = getApplicationContext();
+        RCIMFlutterWrapper.getInstance().registerMessage(LocationMessage.class);
         //Android 注册自定义消息必须在 init 之后
         //如果注册了自定义消息，但是没有注册消息模板，无法进入 SDK 的聊天页面
         //https://www.rongcloud.cn/docs/android.html 参见文档的"消息自定义"
@@ -30,4 +33,9 @@ public class MainActivity extends FlutterActivity {
 //      }
 //    },500);
     }
+
+    @Override
+  public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
+    GeneratedPluginRegistrant.registerWith(flutterEngine);
+  }
 }

@@ -27,8 +27,8 @@ class _LoginPageState extends State<LoginPage> {
 
   initPlatformState() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String phone = prefs.get("phone");
-    String password = prefs.get("password");
+    String phone = prefs.get("phone") as String;
+    String password = prefs.get("password") as String;
 
     _assount.text = phone;
     _password.text = password;
@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
     HttpUtil.post("http://api.sealtalk.im/user/login", (data) {
       if (data != null) {
         Map body = data;
-        int errorCode = body["code"];
+        int? errorCode = body["code"];
         if (errorCode == 200) {
           Map result = body["result"];
           String id = result["id"];
