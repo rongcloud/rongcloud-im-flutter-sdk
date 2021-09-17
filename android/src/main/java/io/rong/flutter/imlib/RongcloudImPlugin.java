@@ -1,5 +1,12 @@
 package io.rong.flutter.imlib;
 
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -33,43 +40,6 @@ public class RongcloudImPlugin implements MethodCallHandler {
     } else {
       result.notImplemented();
     }
-  }
-
-  //// FlutterPlugin 的两个 方法
-  @Override
-  public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-    Log.e("onAttachedToEngine", "onAttachedToEngine");
-    channel = new MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "flutter_plugin_test_new");
-    channel.setMethodCallHandler(new FlutterPluginTestNewPlugin());
-  }
-
-  @Override
-  public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-    Log.e("onDetachedFromEngine", "onDetachedFromEngine");
-  }
-
-
-  ///activity 生命周期
-  @Override
-  public void onAttachedToActivity(ActivityPluginBinding activityPluginBinding) {
-    Log.e("onAttachedToActivity", "onAttachedToActivity");
-
-  }
-
-  @Override
-  public void onDetachedFromActivityForConfigChanges() {
-    Log.e("onDetachedFromActivityForConfigChanges", "onDetachedFromActivityForConfigChanges");
-
-  }
-
-  @Override
-  public void onReattachedToActivityForConfigChanges(ActivityPluginBinding activityPluginBinding) {
-    Log.e("onReattachedToActivityForConfigChanges", "onReattachedToActivityForConfigChanges");
-  }
-
-  @Override
-  public void onDetachedFromActivity() {
-    Log.e("onDetachedFromActivity", "onDetachedFromActivity");
   }
 
 }
