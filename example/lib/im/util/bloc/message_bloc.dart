@@ -3,10 +3,10 @@ import 'package:rxdart/subjects.dart';
 import 'bloc_provider.dart';
 
 class MessageBloc extends BlocBase {
-  MessageInfoWrapState? warpInfo;
+  MessageInfoWrapState warpInfo;
 
   // 列表数据
-  BehaviorSubject<MessageInfoWrapState?> _listDataController = BehaviorSubject<MessageInfoWrapState?>(sync: true);
+  BehaviorSubject<MessageInfoWrapState> _listDataController = BehaviorSubject<MessageInfoWrapState>(sync: true);
 
   Sink get inListData => _listDataController.sink;
 
@@ -26,5 +26,5 @@ class MessageBloc extends BlocBase {
 class MessageInfoWrapState {
   MessageInfoWrapState({this.messageList});
 
-  List? messageList;
+  List messageList;
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class DialogUtil {
-  static void showAlertDiaLog(BuildContext context, String content, {String title = '', TextButton? confirmButton}) {
+  static void showAlertDiaLog(BuildContext context, String content, {String title = '', TextButton confirmButton}) {
     showDialog(
         barrierDismissible: false, // 设置点击 dialog 外部不取消 dialog，默认能够取消
         context: context,

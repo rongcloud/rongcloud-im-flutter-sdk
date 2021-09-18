@@ -9,18 +9,18 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class WebViewPage extends StatefulWidget {
-  final Map? arguments;
+  final Map arguments;
 
-  const WebViewPage({Key? key, this.arguments}) : super(key: key);
+  const WebViewPage({Key key, this.arguments}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _WebViewPageState(arguments!["url"], arguments!["title"]);
+  State<StatefulWidget> createState() => _WebViewPageState(arguments["url"], arguments["title"]);
 }
 
 class _WebViewPageState extends State<WebViewPage> {
   String pageName = "example.WebViewPage";
-  final String? url;
-  final String? title;
+  final String url;
+  final String title;
 
   // final Completer<WebViewController> _controller =
   //     Completer<WebViewController>();
@@ -58,11 +58,11 @@ class _WebViewPageState extends State<WebViewPage> {
     //     ),
     //   ),
     // );
-    String correctUrl = _getCorrectLocalPath(this.url!);
+    String correctUrl = _getCorrectLocalPath(this.url);
     return WebviewScaffold(
         url: correctUrl,
         appBar: AppBar(
-          title: Text(title == null && title!.isEmpty ? this.url! : this.title!),
+          title: Text(title == null && title.isEmpty ? this.url : this.title),
         ),
         withZoom: true,
         hidden: true,
@@ -99,12 +99,12 @@ class _WebViewPageState extends State<WebViewPage> {
   void handleInfo(String jsonStr, BuildContext context) {
     if (jsonStr != null && jsonStr.isNotEmpty) {
       Map map = json.decode(jsonStr);
-      String? type = map["type"];
+      String type = map["type"];
       switch (type) {
         case FileMessage.objectName:
           developer.log("FileMessage click coming", name: pageName);
-          String? fileName = map["fileName"];
-          String? fileUrl = map["fileUrl"];
+          String fileName = map["fileName"];
+          String fileUrl = map["fileUrl"];
           String fileSize = map["fileSize"];
           FileMessage fileMessage = FileMessage.obtain("");
           fileMessage.mName = fileName;
@@ -121,7 +121,7 @@ class _WebViewPageState extends State<WebViewPage> {
           // _openLink(link, context);
           break;
         case "phone":
-          int? phoneNumber = map["phoneNum"];
+          int phoneNumber = map["phoneNum"];
           _openPhone(phoneNumber, context);
           break;
       }
@@ -138,7 +138,7 @@ class _WebViewPageState extends State<WebViewPage> {
     }
   }
 
-  void _openPhone(int? phone, BuildContext context) async {
+  void _openPhone(int phone, BuildContext context) async {
     String url = 'tel:$phone';
     if (await canLaunch(url)) {
       await launch(url);

@@ -23,7 +23,7 @@ class FileUtil {
   }
 
   // 根据文件类型选择对应图片
-  static String fileTypeImagePath(String? fileName) {
+  static String fileTypeImagePath(String fileName) {
     String imagePath;
     if (checkSuffix(fileName, FileSuffix.ImageFileSuffix))
       imagePath = "assets/images/file_message_icon_picture.png";
@@ -54,8 +54,8 @@ class FileUtil {
     return imagePath;
   }
 
-  static bool checkSuffix(String? fileName, List fileSuffix) {
-    for (String suffix in fileSuffix as Iterable<String>) {
+  static bool checkSuffix(String fileName, List fileSuffix) {
+    for (String suffix in fileSuffix) {
       if (fileName != null) {
         if (fileName.toLowerCase().endsWith(suffix)) {
           return true;

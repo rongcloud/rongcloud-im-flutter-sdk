@@ -15,7 +15,7 @@ class CachedNetworkImageProvider extends ImageProvider<CachedNetworkImageProvide
       : assert(url != null),
         assert(scale != null);
 
-  final BaseCacheManager? cacheManager;
+  final BaseCacheManager cacheManager;
 
   /// Web url of the image to load
   final String url;
@@ -24,10 +24,10 @@ class CachedNetworkImageProvider extends ImageProvider<CachedNetworkImageProvide
   final double scale;
 
   /// Listener to be called when images fails to load.
-  final ErrorListener? errorListener;
+  final ErrorListener errorListener;
 
   // Set headers for the image provider, for example for authentication
-  final Map<String, String>? headers;
+  final Map<String, String> headers;
 
   @override
   Future<CachedNetworkImageProvider> obtainKey(ImageConfiguration configuration) {
@@ -51,9 +51,9 @@ class CachedNetworkImageProvider extends ImageProvider<CachedNetworkImageProvide
 
   Future<ui.Codec> _loadAsync(CachedNetworkImageProvider key) async {
     var mngr = cacheManager ?? DefaultCacheManager();
-    var file = await mngr.getSingleFile(url, headers: headers!);
+    var file = await mngr.getSingleFile(url, headers: headers);
     if (file == null) {
-      if (errorListener != null) errorListener!();
+      if (errorListener != null) errorListener();
       throw Exception('Couldn\'t download or retrieve file: $url');
     }
     return _loadAsyncFromFile(key, file);
@@ -65,7 +65,7 @@ class CachedNetworkImageProvider extends ImageProvider<CachedNetworkImageProvide
     final bytes = await file.readAsBytes();
 
     if (bytes.lengthInBytes == 0) {
-      if (errorListener != null) errorListener!();
+      if (errorListener != null) errorListener();
       throw Exception('File was empty');
     }
 

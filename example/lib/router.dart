@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'im/pages/file_preview_page.dart';
+import 'other/search_message_page.dart';
 
 import 'im/pages/conversation_page.dart';
-import 'im/pages/file_preview_page.dart';
 import 'im/pages/image_preview_page.dart';
 import 'im/pages/sight/video_play_page.dart';
 import 'im/pages/sight/video_record_page.dart';
 import 'im/pages/webview_page.dart';
+
+import 'other/home_page.dart';
+import 'other/debug_page.dart';
+import 'other/message_read_page.dart';
 import 'other/chat_debug_page.dart';
 import 'other/chatroom_debug_page.dart';
-import 'other/debug_page.dart';
-import 'other/home_page.dart';
-import 'other/message_read_page.dart';
-import 'other/search_message_page.dart';
 import 'other/select_conversation_page.dart';
 
 final routes = {
@@ -32,8 +33,8 @@ final routes = {
 
 var onGenerateRoute = (RouteSettings settings) {
   // 统一处理
-  final String? name = settings.name;
-  final Function? pageContentBuilder = routes[name!];
+  final String name = settings.name;
+  final Function pageContentBuilder = routes[name];
   if (pageContentBuilder != null) {
     if (settings.arguments != null) {
       final Route route = MaterialPageRoute(builder: (context) => pageContentBuilder(context, arguments: settings.arguments));

@@ -9,15 +9,15 @@ import 'message_item_factory.dart';
 import 'widget_util.dart';
 
 class ConversationItem extends StatefulWidget {
-  late prefix.Message message;
-  ConversationItemDelegate? delegate;
-  bool? showTime;
-  bool? multiSelect = false;
-  List? selectedMessageIds;
-  late _ConversationItemState state;
-  ValueNotifier<int?> time = ValueNotifier<int?>(0);
+  prefix.Message message;
+  ConversationItemDelegate delegate;
+  bool showTime;
+  bool multiSelect = false;
+  List selectedMessageIds;
+  _ConversationItemState state;
+  ValueNotifier<int> time = ValueNotifier<int>(0);
 
-  ConversationItem(ConversationItemDelegate delegate, prefix.Message msg, bool showTime, bool? multiSelect, List selectedMessageIds, ValueNotifier<int?> time) {
+  ConversationItem(ConversationItemDelegate delegate, prefix.Message msg, bool showTime, bool multiSelect, List selectedMessageIds, ValueNotifier<int> time) {
     this.message = msg;
     this.delegate = delegate;
     this.showTime = showTime;
@@ -39,20 +39,20 @@ class ConversationItem extends StatefulWidget {
 
 class _ConversationItemState extends State<ConversationItem> {
   String pageName = "example.ConversationItem";
-  prefix.Message? message;
-  ConversationItemDelegate? delegate;
-  bool? showTime;
-  example.UserInfo? user;
-  Offset? tapPos;
-  bool? multiSelect;
+  prefix.Message message;
+  ConversationItemDelegate delegate;
+  bool showTime;
+  example.UserInfo user;
+  Offset tapPos;
+  bool multiSelect;
   bool isSeleceted = false;
-  List? selectedMessageIds;
-  SelectIcon? icon;
+  List selectedMessageIds;
+  SelectIcon icon;
 
-  ValueNotifier<int?> time = ValueNotifier<int>(0);
+  ValueNotifier<int> time = ValueNotifier<int>(0);
   bool needShowMessage = true;
 
-  _ConversationItemState(ConversationItemDelegate? delegate, prefix.Message msg, bool? showTime, bool? multiSelect, List? selectedMessageIds, ValueNotifier<int?> time) {
+  _ConversationItemState(ConversationItemDelegate delegate, prefix.Message msg, bool showTime, bool multiSelect, List selectedMessageIds, ValueNotifier<int> time) {
     this.message = msg;
     this.delegate = delegate;
     this.showTime = showTime;
@@ -60,12 +60,12 @@ class _ConversationItemState extends State<ConversationItem> {
     this.multiSelect = multiSelect;
     this.selectedMessageIds = selectedMessageIds;
     this.time = time;
-    setInfo(message!.senderUserId);
-    needShowMessage = !(msg.messageDirection == prefix.RCMessageDirection.Receive && msg.content != null && msg.content!.destructDuration != null && msg.content!.destructDuration! > 0 && time.value == msg.content!.destructDuration);
+    setInfo(message.senderUserId);
+    needShowMessage = !(msg.messageDirection == prefix.RCMessageDirection.Receive && msg.content != null && msg.content.destructDuration != null && msg.content.destructDuration > 0 && time.value == msg.content.destructDuration);
   }
 
-  void setInfo(String? targetId) {
-    example.UserInfo? userInfo = example.UserInfoDataSource.cachedUserMap[targetId];
+  void setInfo(String targetId) {
+    example.UserInfo userInfo = example.UserInfoDataSource.cachedUserMap[targetId];
     if (userInfo != null) {
       this.user = userInfo;
     } else {
@@ -80,7 +80,7 @@ class _ConversationItemState extends State<ConversationItem> {
   @override
   void initState() {
     super.initState();
-    bool isSelected = selectedMessageIds!.contains(message!.messageId);
+    bool isSelected = selectedMessageIds.contains(message.messageId);
     icon = SelectIcon(isSelected);
   }
 
@@ -99,14 +99,14 @@ class _ConversationItemState extends State<ConversationItem> {
     return Container(
       padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
       child: Column(
-        children: <Widget>[this.showTime! ? WidgetUtil.buildMessageTimeWidget(message!.sentTime!) : WidgetUtil.buildEmptyWidget(), showMessage()],
+        children: <Widget>[this.showTime ? WidgetUtil.buildMessageTimeWidget(message.sentTime) : WidgetUtil.buildEmptyWidget(), showMessage()],
       ),
     );
   }
 
   Widget showMessage() {
     //属于通知类型的消息
-    if (message!.content is prefix.RecallNotificationMessage) {
+    if (message.content is prefix.RecallNotificationMessage) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(5),
         child: Container(
@@ -141,7 +141,7 @@ class _ConversationItemState extends State<ConversationItem> {
   }
 
   Widget subContent() {
-    if (message!.messageDirection == prefix.RCMessageDirection.Send) {
+    if (message.messageDirection == prefix.RCMessageDirection.Send) {
       return Expanded(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -153,7 +153,7 @@ class _ConversationItemState extends State<ConversationItem> {
                   Container(
                     alignment: Alignment.centerRight,
                     padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
-                    child: Text((this.user == null || this.user!.id == null ? "" : this.user!.id!), style: TextStyle(fontSize: RCFont.MessageNameFont, color: Color(RCColor.MessageNameBgColor))),
+                    child: Text((this.user == null || this.user.id == null ? "" : this.user.id), style: TextStyle(fontSize: RCFont.MessageNameFont, color: Color(RCColor.MessageNameBgColor))),
                   ),
                   buildMessageWidget(),
                   Container(
@@ -167,7 +167,7 @@ class _ConversationItemState extends State<ConversationItem> {
                       onTap: () {
                         __onTapedReadRequest();
                       },
-                      child: message!.content != null && message!.content!.destructDuration != null && message!.content!.destructDuration! > 0 ? Text("") : buildReadInfo(),
+                      child: message.content != null && message.content.destructDuration != null && message.content.destructDuration > 0 ? Text("") : buildReadInfo(),
                     ),
                   ),
                 ],
@@ -182,7 +182,7 @@ class _ConversationItemState extends State<ConversationItem> {
           ],
         ),
       );
-    } else if (message!.messageDirection == prefix.RCMessageDirection.Receive) {
+    } else if (message.messageDirection == prefix.RCMessageDirection.Receive) {
       return Expanded(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -204,7 +204,7 @@ class _ConversationItemState extends State<ConversationItem> {
                     alignment: Alignment.centerLeft,
                     padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
                     child: Text(
-                      (this.user == null || this.user!.id == null ? "" : this.user!.id!),
+                      (this.user == null || this.user.id == null ? "" : this.user.id),
                       style: TextStyle(color: Color(RCColor.MessageNameBgColor)),
                     ),
                   ),
@@ -232,9 +232,9 @@ class _ConversationItemState extends State<ConversationItem> {
 
   void __onTapedItem() {
     if (delegate != null) {
-      delegate!.didTapItem(message);
-      bool isSelected = selectedMessageIds!.contains(message!.messageId);
-      icon!.updateUI(isSelected);
+      delegate.didTapItem(message);
+      bool isSelected = selectedMessageIds.contains(message.messageId);
+      icon.updateUI(isSelected);
     } else {
       developer.log("没有实现 ConversationItemDelegate", name: pageName);
     }
@@ -242,21 +242,21 @@ class _ConversationItemState extends State<ConversationItem> {
 
   void __onTapedMesssage() {
     if (multiSelect == false) {
-      prefix.RongIMClient.messageBeginDestruct(message!);
+      prefix.RongIMClient.messageBeginDestruct(message);
     }
     // return;
     if (delegate != null) {
       if (multiSelect == true) {
         //多选模式下修改为didTapItem处理
-        delegate!.didTapItem(message);
-        bool isSelected = selectedMessageIds!.contains(message!.messageId);
-        icon!.updateUI(isSelected);
+        delegate.didTapItem(message);
+        bool isSelected = selectedMessageIds.contains(message.messageId);
+        icon.updateUI(isSelected);
       } else {
         if (!needShowMessage) {
           needShowMessage = true;
           setState(() {});
         }
-        delegate!.didTapMessageItem(message);
+        delegate.didTapMessageItem(message);
       }
     } else {
       developer.log("没有实现 ConversationItemDelegate", name: pageName);
@@ -265,19 +265,19 @@ class _ConversationItemState extends State<ConversationItem> {
 
   void __onTapedReadRequest() {
     if (delegate != null) {
-      if (message!.readReceiptInfo != null && message!.readReceiptInfo!.isReceiptRequestMessage!) {
-        delegate!.didTapMessageReadInfo(message);
+      if (message.readReceiptInfo != null && message.readReceiptInfo.isReceiptRequestMessage) {
+        delegate.didTapMessageReadInfo(message);
       } else {
-        delegate!.didSendMessageRequest(message);
+        delegate.didSendMessageRequest(message);
       }
     } else {
       developer.log("没有实现 ConversationItemDelegate", name: pageName);
     }
   }
 
-  void __onLongPressMessage(Offset? tapPos) {
+  void __onLongPressMessage(Offset tapPos) {
     if (delegate != null) {
-      delegate!.didLongPressMessageItem(message, tapPos);
+      delegate.didLongPressMessageItem(message, tapPos);
     } else {
       developer.log("没有实现 ConversationItemDelegate", name: pageName);
     }
@@ -285,9 +285,9 @@ class _ConversationItemState extends State<ConversationItem> {
 
   void __onTapedUserPortrait() {}
 
-  void __onLongPressUserPortrait(Offset? tapPos) {
+  void __onLongPressUserPortrait(Offset tapPos) {
     if (delegate != null) {
-      delegate!.didLongPressUserPortrait(this.user!.id, tapPos);
+      delegate.didLongPressUserPortrait(this.user.id, tapPos);
     } else {
       developer.log("没有实现 ConversationItemDelegate", name: pageName);
     }
@@ -299,15 +299,15 @@ class _ConversationItemState extends State<ConversationItem> {
         Expanded(
           child: Container(
             padding: EdgeInsets.fromLTRB(15, 6, 15, 10),
-            alignment: message!.messageDirection == prefix.RCMessageDirection.Send ? Alignment.centerRight : Alignment.centerLeft,
-            child: Row(mainAxisAlignment: message!.messageDirection == prefix.RCMessageDirection.Send ? MainAxisAlignment.end : MainAxisAlignment.start, children: <Widget>[
-              message!.messageDirection == prefix.RCMessageDirection.Send && message!.content != null && message!.content!.destructDuration != null && message!.content!.destructDuration! > 0
+            alignment: message.messageDirection == prefix.RCMessageDirection.Send ? Alignment.centerRight : Alignment.centerLeft,
+            child: Row(mainAxisAlignment: message.messageDirection == prefix.RCMessageDirection.Send ? MainAxisAlignment.end : MainAxisAlignment.start, children: <Widget>[
+              message.messageDirection == prefix.RCMessageDirection.Send && message.content != null && message.content.destructDuration != null && message.content.destructDuration > 0
                   ? ValueListenableBuilder(
-                      builder: (BuildContext context, int? value, Widget? child) {
+                      builder: (BuildContext context, int value, Widget child) {
                         return Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: <Widget>[
-                            value! > 0
+                            value > 0
                                 ? Text(
                                     "$value ",
                                     style: TextStyle(color: Colors.red),
@@ -320,7 +320,7 @@ class _ConversationItemState extends State<ConversationItem> {
                     )
                   : Text(""),
               // sentStatus = 20 为发送失败
-              message!.messageDirection == prefix.RCMessageDirection.Send && message!.sentStatus == 20
+              message.messageDirection == prefix.RCMessageDirection.Send && message.sentStatus == 20
                   ? Container(
                       padding: EdgeInsets.fromLTRB(6, 6, 6, 6),
                       child: GestureDetector(
@@ -328,11 +328,11 @@ class _ConversationItemState extends State<ConversationItem> {
                             if (delegate != null) {
                               if (multiSelect == true) {
                                 //多选模式下修改为didTapItem处理
-                                delegate!.didTapItem(message);
-                                bool isSelected = selectedMessageIds!.contains(message!.messageId);
-                                icon!.updateUI(isSelected);
+                                delegate.didTapItem(message);
+                                bool isSelected = selectedMessageIds.contains(message.messageId);
+                                icon.updateUI(isSelected);
                               } else {
-                                delegate!.didTapReSendMessage(message);
+                                delegate.didTapReSendMessage(message);
                               }
                             }
                           },
@@ -360,13 +360,13 @@ class _ConversationItemState extends State<ConversationItem> {
                   ),
                 ),
               ),
-              message!.messageDirection == prefix.RCMessageDirection.Receive && message!.content != null && message!.content!.destructDuration != null && message!.content!.destructDuration! > 0
+              message.messageDirection == prefix.RCMessageDirection.Receive && message.content != null && message.content.destructDuration != null && message.content.destructDuration > 0
                   ? ValueListenableBuilder(
-                      builder: (BuildContext context, int? value, Widget? child) {
+                      builder: (BuildContext context, int value, Widget child) {
                         return Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: <Widget>[
-                            value! > 0
+                            value > 0
                                 ? Text(
                                     " $value",
                                     style: TextStyle(color: Colors.red),
@@ -385,16 +385,16 @@ class _ConversationItemState extends State<ConversationItem> {
     );
   }
 
-  Text? buildReadInfo() {
-    if (message!.conversationType == prefix.RCConversationType.Private) {
-      if (message!.sentStatus == 50) {
+  Text buildReadInfo() {
+    if (message.conversationType == prefix.RCConversationType.Private) {
+      if (message.sentStatus == 50) {
         return Text("已读");
       }
       return Text("");
-    } else if (message!.conversationType == prefix.RCConversationType.Group) {
-      if (message!.readReceiptInfo != null && message!.readReceiptInfo!.isReceiptRequestMessage!) {
-        if (message!.readReceiptInfo!.userIdList != null) {
-          return Text("${message!.readReceiptInfo!.userIdList!.length}人已读");
+    } else if (message.conversationType == prefix.RCConversationType.Group) {
+      if (message.readReceiptInfo != null && message.readReceiptInfo.isReceiptRequestMessage) {
+        if (message.readReceiptInfo.userIdList != null) {
+          return Text("${message.readReceiptInfo.userIdList.length}人已读");
         }
         return Text("0人已读");
       } else {
@@ -409,7 +409,7 @@ class _ConversationItemState extends State<ConversationItem> {
   bool canSendMessageReqdRequest() {
     DateTime time = DateTime.now();
     int nowTime = time.millisecondsSinceEpoch;
-    if (nowTime - message!.sentTime! < 120 * 1000) {
+    if (nowTime - message.sentTime < 120 * 1000) {
       return true;
     }
     return false;
@@ -418,34 +418,34 @@ class _ConversationItemState extends State<ConversationItem> {
 
 abstract class ConversationItemDelegate {
   //点击 item
-  void didTapItem(prefix.Message? message);
+  void didTapItem(prefix.Message message);
 
   //点击消息
-  void didTapMessageItem(prefix.Message? message);
+  void didTapMessageItem(prefix.Message message);
 
   //长按消息
-  void didLongPressMessageItem(prefix.Message? message, Offset? tapPos);
+  void didLongPressMessageItem(prefix.Message message, Offset tapPos);
 
   //点击用户头像
   void didTapUserPortrait(String userId);
 
   //长按用户头像
-  void didLongPressUserPortrait(String? userId, Offset? tapPos);
+  void didLongPressUserPortrait(String userId, Offset tapPos);
 
   //发送消息已读回执请求
-  void didSendMessageRequest(prefix.Message? message);
+  void didSendMessageRequest(prefix.Message message);
 
   //点击消息已读人数
-  void didTapMessageReadInfo(prefix.Message? message);
+  void didTapMessageReadInfo(prefix.Message message);
 
   //点击消息已读人数
-  void didTapReSendMessage(prefix.Message? message);
+  void didTapReSendMessage(prefix.Message message);
 }
 
 // 多选模式下 cell 显示的 Icon
 class SelectIcon extends StatefulWidget {
-  bool? isSelected;
-  late _SelectIconState state;
+  bool isSelected;
+  _SelectIconState state;
 
   SelectIcon(bool isSelected) {
     this.isSelected = isSelected;
@@ -460,9 +460,9 @@ class SelectIcon extends StatefulWidget {
 }
 
 class _SelectIconState extends State<SelectIcon> {
-  bool? isSelected;
+  bool isSelected;
 
-  _SelectIconState(bool? isSelected) {
+  _SelectIconState(bool isSelected) {
     this.isSelected = isSelected;
   }
 
@@ -475,7 +475,7 @@ class _SelectIconState extends State<SelectIcon> {
   @override
   Widget build(BuildContext context) {
     return Icon(
-      isSelected! ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+      isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
       size: 20,
     );
   }

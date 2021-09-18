@@ -3,7 +3,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 
 class BottomRecordItem extends StatefulWidget {
-  VideoBottomToolBarDelegate? delegate;
+  VideoBottomToolBarDelegate delegate;
 
   BottomRecordItem(VideoBottomToolBarDelegate delegate) {
     this.delegate = delegate;
@@ -15,10 +15,10 @@ class BottomRecordItem extends StatefulWidget {
 
 class _BottomRecordItemState extends State<BottomRecordItem> with TickerProviderStateMixin {
   String pageName = "example.BottomRecordItem";
-  VideoBottomToolBarDelegate? delegate;
+  VideoBottomToolBarDelegate delegate;
   bool isNarmal = true; //正常状态，选择状态
 
-  _BottomRecordItemState(VideoBottomToolBarDelegate? delegate) {
+  _BottomRecordItemState(VideoBottomToolBarDelegate delegate) {
     this.delegate = delegate;
   }
 
@@ -114,7 +114,7 @@ class _BottomRecordItemState extends State<BottomRecordItem> with TickerProvider
 
   onLongPressCamera() {
     if (delegate != null) {
-      delegate!.didLongPressCamera();
+      delegate.didLongPressCamera();
     } else {
       developer.log("没有实现 didLongPressCamera", name: pageName);
     }
@@ -125,7 +125,7 @@ class _BottomRecordItemState extends State<BottomRecordItem> with TickerProvider
       isNarmal = false;
     });
     if (delegate != null) {
-      delegate!.didLongPressEndCamera();
+      delegate.didLongPressEndCamera();
     } else {
       developer.log("没有实现 didLongPressEndCamera", name: pageName);
     }
@@ -135,7 +135,7 @@ class _BottomRecordItemState extends State<BottomRecordItem> with TickerProvider
 
   onCancelEvent() {
     if (delegate != null) {
-      delegate!.didCancelEvent();
+      delegate.didCancelEvent();
     } else {
       developer.log("没有实现 didLongPressEndCamera", name: pageName);
     }
@@ -146,7 +146,7 @@ class _BottomRecordItemState extends State<BottomRecordItem> with TickerProvider
 
   onFinishEvent() {
     if (delegate != null) {
-      delegate!.didFinishEvent();
+      delegate.didFinishEvent();
     } else {
       developer.log("没有实现 didLongPressEndCamera", name: pageName);
     }

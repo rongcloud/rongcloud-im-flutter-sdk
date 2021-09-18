@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 class HttpUtil {
   static Dio dio = Dio();
 
-  static void get(String url, Function callback, {Map? params, Function? errorCallback}) async {
+  static void get(String url, Function callback, {Map params, Function errorCallback}) async {
     if (params != null && params.isNotEmpty) {
       StringBuffer buffer = new StringBuffer("?");
       params.forEach((key, value) {
@@ -29,7 +29,7 @@ class HttpUtil {
     }
   }
 
-  static void post(String url, Function callback, {Map? params, Function? errorCallback}) async {
+  static void post(String url, Function callback, {Map params, Function errorCallback}) async {
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.none) {
       Map body = {"code": -1};

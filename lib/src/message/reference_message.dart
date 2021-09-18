@@ -1,9 +1,10 @@
+import 'dart:convert' show json;
+import 'dart:developer' as developer;
+
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
-import 'message_content.dart';
-import 'dart:convert' show json;
 import '../util/message_factory.dart';
-import 'dart:developer' as developer;
+import 'message_content.dart';
 
 //Gif消息
 class ReferenceMessage extends MessageContent {

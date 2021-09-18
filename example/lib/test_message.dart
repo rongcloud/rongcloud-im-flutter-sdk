@@ -6,21 +6,21 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 class TestMessage extends MessageContent {
   static const String objectName = "RCD:TstMsg";
 
-  String? content;
-  String? extra;
+  String content;
+  String extra;
 
   @override
-  void decode(String? jsonStr) {
+  void decode(String jsonStr) {
     Map map = json.decode(jsonStr.toString());
     this.content = map["content"];
     this.extra = map["extra"];
 
     // decode 消息内容中携带的发送者的用户信息
-    Map? userMap = map["user"];
+    Map userMap = map["user"];
     super.decodeUserInfo(userMap);
 
     // decode 消息中的 @ 提醒信息；消息需要携带 @ 信息时添加此方法
-    Map? menthionedMap = map["mentionedInfo"];
+    Map menthionedMap = map["mentionedInfo"];
     super.decodeMentionedInfo(menthionedMap);
   }
 
@@ -43,7 +43,7 @@ class TestMessage extends MessageContent {
   }
 
   @override
-  String? conversationDigest() {
+  String conversationDigest() {
     return content;
   }
 

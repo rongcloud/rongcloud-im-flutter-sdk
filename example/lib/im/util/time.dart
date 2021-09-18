@@ -27,7 +27,7 @@ class TimeUtil {
   }
 
   ///是否需要显示时间，相差 5 分钟
-  static bool needShowTime(int? sentTime1, int? sentTime2) {
+  static bool needShowTime(int sentTime1, int sentTime2) {
     if (sentTime1 == null || sentTime2 == null) {
       return false;
     }

@@ -1,11 +1,10 @@
-import 'dart:convert' show json;
 import 'dart:core';
-import 'dart:developer' as developer;
-
-import 'package:rongcloud_im_plugin/src/info/tag_info.dart';
+import 'dart:convert' show json;
 
 import '../../rongcloud_im_plugin.dart';
 import '../util/type_util.dart';
+import 'dart:developer' as developer;
+import 'package:rongcloud_im_plugin/src/info/tag_info.dart';
 
 class MessageFactory extends Object {
   factory MessageFactory() => _getInstance()!;
