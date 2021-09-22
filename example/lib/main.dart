@@ -6,6 +6,7 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart' as prefix;
 import 'package:rongcloud_im_plugin_example/test_message.dart';
 
 import 'im/util/event_bus.dart';
+import 'location_message.dart';
 import 'other/home_page.dart';
 import 'router.dart';
 import 'user_data.dart';
@@ -58,11 +59,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     //1.初始化 im SDK
     prefix.RongIMClient.init(RongAppKey);
     //注册自定义消息
-    prefix.RongIMClient.addMessageDecoder(TestMessage.objectName, (content) {
-      TestMessage msg = new TestMessage();
-      msg.decode(content);
-      return msg;
-    });
+    _registerCustomMessage();
+
     // _initUserInfoCache();
 
     WidgetsBinding.instance.addObserver(this);
@@ -115,6 +113,20 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       EventBus.instance.commit(EventKeys.BlockMessage, info);
       developer.log("object onReceiveReadReceipt " + info.toString(), name: pageName);
     };
+  }
+
+  void _registerCustomMessage() {
+    prefix.RongIMClient.addMessageDecoder(TestMessage.objectName, (content) {
+      TestMessage msg = new TestMessage();
+      msg.decode(content);
+      return msg;
+    });
+
+    prefix.RongIMClient.addMessageDecoder(LocationMessage.objectName, (content) {
+      LocationMessage msg = new LocationMessage();
+      msg.decode(content);
+      return msg;
+    });
   }
 
   void _getNotificationQuietHours() {

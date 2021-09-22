@@ -1,7 +1,6 @@
 import 'dart:convert';
-import 'dart:developer' as developer;
-
 import 'message_content.dart';
+import 'dart:developer' as developer;
 
 class FileMessage extends MessageContent {
   static const String objectName = "RC:FileMsg";

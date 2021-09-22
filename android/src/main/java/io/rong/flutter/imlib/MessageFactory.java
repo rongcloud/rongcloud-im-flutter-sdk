@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.rong.imlib.location.message.LocationMessage;
 import io.rong.imlib.model.ChatRoomInfo;
 import io.rong.imlib.model.ChatRoomMemberInfo;
 import io.rong.imlib.model.Conversation;
@@ -72,28 +71,28 @@ public class MessageFactory {
         MessagePushConfig messagePushConfig = message.getMessagePushConfig();
         if (messagePushConfig != null) {
             HashMap messagePushConfigMap = new HashMap();
-            messagePushConfigMap.put("pushTitle",messagePushConfig.getPushTitle());
-            messagePushConfigMap.put("pushContent",messagePushConfig.getPushContent());
-            messagePushConfigMap.put("pushData",messagePushConfig.getPushData());
-            messagePushConfigMap.put("forceShowDetailContent",messagePushConfig.isForceShowDetailContent());
-            messagePushConfigMap.put("disablePushTitle",messagePushConfig.isDisablePushTitle());
-            messagePushConfigMap.put("templateId",messagePushConfig.getTemplateId());
-            if (messagePushConfig.getAndroidConfig() != null){
+            messagePushConfigMap.put("pushTitle", messagePushConfig.getPushTitle());
+            messagePushConfigMap.put("pushContent", messagePushConfig.getPushContent());
+            messagePushConfigMap.put("pushData", messagePushConfig.getPushData());
+            messagePushConfigMap.put("forceShowDetailContent", messagePushConfig.isForceShowDetailContent());
+            messagePushConfigMap.put("disablePushTitle", messagePushConfig.isDisablePushTitle());
+            messagePushConfigMap.put("templateId", messagePushConfig.getTemplateId());
+            if (messagePushConfig.getAndroidConfig() != null) {
                 HashMap androidConfigMap = new HashMap();
-                androidConfigMap.put("notificationId",messagePushConfig.getAndroidConfig().getNotificationId());
-                androidConfigMap.put("channelIdMi",messagePushConfig.getAndroidConfig().getChannelIdMi());
-                androidConfigMap.put("channelIdHW",messagePushConfig.getAndroidConfig().getChannelIdHW());
-                androidConfigMap.put("channelIdOPPO",messagePushConfig.getAndroidConfig().getChannelIdOPPO());
-                androidConfigMap.put("typeVivo",messagePushConfig.getAndroidConfig().getTypeVivo());
-                messagePushConfigMap.put("androidConfig",androidConfigMap);
+                androidConfigMap.put("notificationId", messagePushConfig.getAndroidConfig().getNotificationId());
+                androidConfigMap.put("channelIdMi", messagePushConfig.getAndroidConfig().getChannelIdMi());
+                androidConfigMap.put("channelIdHW", messagePushConfig.getAndroidConfig().getChannelIdHW());
+                androidConfigMap.put("channelIdOPPO", messagePushConfig.getAndroidConfig().getChannelIdOPPO());
+                androidConfigMap.put("typeVivo", messagePushConfig.getAndroidConfig().getTypeVivo());
+                messagePushConfigMap.put("androidConfig", androidConfigMap);
             }
-            if (messagePushConfig.getIOSConfig() != null){
+            if (messagePushConfig.getIOSConfig() != null) {
                 HashMap iosConfigMap = new HashMap();
-                iosConfigMap.put("thread_id",messagePushConfig.getIOSConfig().getThread_id());
-                iosConfigMap.put("apns_collapse_id",messagePushConfig.getIOSConfig().getApns_collapse_id());
-                messagePushConfigMap.put("iOSConfig",iosConfigMap);
+                iosConfigMap.put("thread_id", messagePushConfig.getIOSConfig().getThread_id());
+                iosConfigMap.put("apns_collapse_id", messagePushConfig.getIOSConfig().getApns_collapse_id());
+                messagePushConfigMap.put("iOSConfig", iosConfigMap);
             }
-            map.put("messagePushConfig",messagePushConfigMap);
+            map.put("messagePushConfig", messagePushConfigMap);
         }
         map.put("sentTime", message.getSentTime());
         map.put("objectName", message.getObjectName());
@@ -113,8 +112,6 @@ public class MessageFactory {
             RCMessageHandler.encodeSightMessage(message);
         } else if (message.getContent() instanceof GIFMessage) {
             RCMessageHandler.encodeGifMessage(message);
-        } else if (message.getContent() instanceof LocationMessage) {
-            RCMessageHandler.encodeLocationMessage(message);
         } else if (message.getContent() instanceof ReferenceMessage) {
             // 引用消息的引用内容的类型需要判断
             RCMessageHandler.encodeReferenceMessage(message);
@@ -171,8 +168,8 @@ public class MessageFactory {
         map.put("latestMessageId", conversation.getLatestMessageId());
         map.put("mentionedCount", conversation.getMentionedCount());
         map.put("draft", conversation.getDraft());
-        if (conversation.getNotificationStatus()!= null){
-            map.put("blockStatus",conversation.getNotificationStatus().getValue());
+        if (conversation.getNotificationStatus() != null) {
+            map.put("blockStatus", conversation.getNotificationStatus().getValue());
         }
         map.put("receivedTime", conversation.getReceivedTime());
 
@@ -194,8 +191,8 @@ public class MessageFactory {
         return jStr;
     }
 
-    public String conversationTagInfo2String(ConversationTagInfo conversationTagInfo){
-        if (conversationTagInfo == null){
+    public String conversationTagInfo2String(ConversationTagInfo conversationTagInfo) {
+        if (conversationTagInfo == null) {
             return "";
         }
         Map map = new HashMap();
@@ -207,15 +204,15 @@ public class MessageFactory {
         return jStr;
     }
 
-    public String tagInfo2String(TagInfo tagInfo){
-        if (tagInfo == null){
+    public String tagInfo2String(TagInfo tagInfo) {
+        if (tagInfo == null) {
             return "";
         }
         Map map = new HashMap();
-        map.put("tagId",tagInfo.getTagId());
-        map.put("tagName",tagInfo.getTagName());
-        map.put("count",tagInfo.getCount());
-        map.put("timestamp",tagInfo.getTimestamp());
+        map.put("tagId", tagInfo.getTagId());
+        map.put("tagName", tagInfo.getTagName());
+        map.put("count", tagInfo.getCount());
+        map.put("timestamp", tagInfo.getTimestamp());
 
         JSONObject jObj = new JSONObject(map);
 

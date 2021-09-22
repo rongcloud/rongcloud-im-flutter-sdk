@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
-import '../../util/style.dart';
 import 'dart:developer' as developer;
+
+import 'package:flutter/material.dart';
+
+import '../../util/style.dart';
 
 class BottomToolBar extends StatefulWidget {
   BottomToolBarDelegate delegate;

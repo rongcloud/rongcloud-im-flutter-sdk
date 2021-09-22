@@ -1,7 +1,8 @@
 #include "AppDelegate.h"
 #include "GeneratedPluginRegistrant.h"
-#import <RongIMLib/RongIMLib.h>
+#import <RongIMLibCore/RongIMLibCore.h>
 #import "RCDTestMessage.h"
+#import "RCDLocationMessage.h"
 #import <rongcloud_im_plugin/RCIMFlutterWrapper.h>
 
 @implementation AppDelegate
@@ -13,6 +14,7 @@
      用户只需要调用以下方法注册自定义消息。SDK 内部会在 connectWithToken: 方法里，链接 IM 之前 把所有自定义消息注册到底层 SDK。
      */
     [[RCIMFlutterWrapper sharedWrapper] registerMessageType:[RCDTestMessage class]];
+    [[RCIMFlutterWrapper sharedWrapper] registerMessageType:[RCDLocationMessage class]];
     
     /**
      * 推送处理1 (申请推送权限)
@@ -55,7 +57,7 @@
  */
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
    // 如果您的 SDK 版本已升级到 2.9.25，请使用下面这种方式:
-    [[RCIMClient sharedRCIMClient] setDeviceTokenData:deviceToken];
+    [[RCCoreClient sharedCoreClient] setDeviceTokenData:deviceToken];
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo{

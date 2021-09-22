@@ -252,7 +252,7 @@
         message.messagePushConfig.pushContent = messagePushConfig[@"pushContent"];
         message.messagePushConfig.pushData = messagePushConfig[@"pushData"];
         message.messagePushConfig.templateId = messagePushConfig[@"templateId"];
-        message.messagePushConfig.disablePushTitle = messagePushConfig[@"disablePushTitle"];
+        message.messagePushConfig.disablePushTitle = [messagePushConfig[@"disablePushTitle"] boolValue];
         if (messagePushConfig[@"forceShowDetailContent"] && ![messagePushConfig[@"forceShowDetailContent"] isKindOfClass:[NSNull class]]) {
             message.messagePushConfig.forceShowDetailContent = [messagePushConfig[@"forceShowDetailContent"] boolValue];
         }
