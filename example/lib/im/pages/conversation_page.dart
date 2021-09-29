@@ -205,11 +205,12 @@ class _ConversationPageState extends State<ConversationPage>
       _refreshUI();
     });
 
-    RongIMClient.onMessageSend = (int? messageId, int? status, int? code) async {
+    RongIMClient.onMessageSend =
+        (int? messageId, int? status, int? code) async {
       developer.log("messageId:$messageId status:$status code:$code",
           name: pageName);
-      Message msg = await (RongIMClient.getMessage(messageId!) as Future<Message>);
-      if (msg.targetId == this.targetId) {
+      Message? msg = await RongIMClient.getMessage(messageId!);
+      if (msg!.targetId == this.targetId) {
         _insertOrReplaceMessage(msg);
       }
     };
@@ -311,7 +312,7 @@ class _ConversationPageState extends State<ConversationPage>
 
     RongIMClient.getRemoteHistoryMessages(
         conversationType!, targetId!, recordTime!, 20,
-        (List?/*<Message>*/ msgList, int? code) {
+        (List? /*<Message>*/ msgList, int? code) {
       if (code == 0 && msgList != null) {
         msgList.sort((a, b) => b.sentTime.compareTo(a.sentTime));
         messageDataSource += msgList;
@@ -455,7 +456,8 @@ class _ConversationPageState extends State<ConversationPage>
     if (conversationType == RCConversationType.Private) {
       int duration = contentStr.length <= 20
           ? RCDuration.TextMessageBurnDuration
-          : (RCDuration.TextMessageBurnDuration + ((contentStr.length - 20) / 2 as int));
+          : (RCDuration.TextMessageBurnDuration +
+              ((contentStr.length - 20) / 2 as int));
       msg.destructDuration = isSecretChat ? duration : 0;
     }
 
@@ -520,8 +522,8 @@ class _ConversationPageState extends State<ConversationPage>
           gifMsg.destructDuration =
               isSecretChat ? RCDuration.MediaMessageBurnDuration : 0;
         }
-        Message? msg =
-            await RongIMClient.sendMessage(conversationType!, targetId!, gifMsg);
+        Message? msg = await RongIMClient.sendMessage(
+            conversationType!, targetId!, gifMsg);
         _insertOrReplaceMessage(msg);
       } else {
         ImageMessage imgMsg = ImageMessage.obtain(imgPath);
@@ -553,8 +555,8 @@ class _ConversationPageState extends State<ConversationPage>
         //     message, "", "", (int messageId, int status, int code) {
         //   String result = "messageId:$messageId status:$status code:$code";
         // });
-        Message? msg =
-            await RongIMClient.sendMessage(conversationType!, targetId!, imgMsg);
+        Message? msg = await RongIMClient.sendMessage(
+            conversationType!, targetId!, imgMsg);
         _insertOrReplaceMessage(msg);
       }
     });
@@ -902,7 +904,8 @@ class _ConversationPageState extends State<ConversationPage>
         Navigator.pushNamed(context, "/file_preview", arguments: tempMsg);
       } else if (msg.referMsg is RichContentMessage) {
         // 引用的消息为图文时的点击事件
-        RichContentMessage richContentMessage = msg.referMsg as RichContentMessage;
+        RichContentMessage richContentMessage =
+            msg.referMsg as RichContentMessage;
         Map param = {
           "url": richContentMessage.url,
           "title": richContentMessage.title
@@ -1017,7 +1020,8 @@ class _ConversationPageState extends State<ConversationPage>
   void willSendText(String text) async {
     MessageContent msg;
     if (bottomInputBar!.getReferenceMessage() != null) {
-      ReferenceMessage referenceMessage = bottomInputBar!.getReferenceMessage()!;
+      ReferenceMessage referenceMessage =
+          bottomInputBar!.getReferenceMessage()!;
       referenceMessage.content = text;
       msg = referenceMessage;
     } else {
