@@ -2,16 +2,16 @@ typedef void EventCallback(arg);
 
 //事件总线
 class EventBus {
-  factory EventBus() => _getInstance();
+  factory EventBus() => _getInstance()!;
 
-  static EventBus get instance => _getInstance();
-  static EventBus _instance;
+  static EventBus? get instance => _getInstance();
+  static EventBus? _instance;
 
   EventBus._internal() {
     // 初始化
   }
 
-  static EventBus _getInstance() {
+  static EventBus? _getInstance() {
     if (_instance == null) {
       _instance = new EventBus._internal();
     }
@@ -33,9 +33,9 @@ class EventBus {
   }
 
   //提交事件
-  void commit(String eventKey, Object arg) {
+  void commit(String eventKey, Object? arg) {
     if (eventKey == null) return;
-    EventCallback callback = _events[eventKey];
+    EventCallback? callback = _events[eventKey];
     if (callback != null) {
       callback(arg);
     }

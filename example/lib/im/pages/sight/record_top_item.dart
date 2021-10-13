@@ -13,8 +13,8 @@ enum RecordState {
 }
 
 class TopRecordItem extends StatefulWidget {
-  TopRecordItemDelegate delegate;
-  _TopRecordItemState state;
+  TopRecordItemDelegate? delegate;
+  late _TopRecordItemState state;
 
   TopRecordItem(TopRecordItemDelegate delegate) {
     this.delegate = delegate;
@@ -31,7 +31,7 @@ class TopRecordItem extends StatefulWidget {
 
 class _TopRecordItemState extends State<TopRecordItem> {
   String pageName = "example.TopRecordItem";
-  TopRecordItemDelegate delegate;
+  TopRecordItemDelegate? delegate;
 
   RecordState currentRecordState = RecordState.Normal;
 
@@ -103,7 +103,7 @@ class _TopRecordItemState extends State<TopRecordItem> {
 
   void onPop() {
     if (delegate != null) {
-      delegate.didPop();
+      delegate!.didPop();
     } else {
       developer.log("没有实现 didPop", name: pageName);
     }
@@ -111,7 +111,7 @@ class _TopRecordItemState extends State<TopRecordItem> {
 
   void onSwitchCamera() {
     if (delegate != null) {
-      delegate.didSwitchCamera();
+      delegate!.didSwitchCamera();
     } else {
       developer.log("没有实现 didSwitchCamera", name: pageName);
     }

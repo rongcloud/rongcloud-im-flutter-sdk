@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.1'
+        classpath 'com.android.tools.build:gradle:3.5.4'
     }
 }
 
@@ -17,8 +17,8 @@ rootProject.allprojects {
         google()
         jcenter()
         mavenCentral()
-        maven {url  "http://maven.rongcloud.cn/repository/maven-releases/"}
-        maven {url 'http://developer.huawei.com/repo/'}
+        maven { url "https://maven.rongcloud.cn/repository/maven-releases/" }
+        maven { url 'https://developer.huawei.com/repo/' }
     }
 }
 
@@ -29,7 +29,6 @@ android {
 
     defaultConfig {
         minSdkVersion 16
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
         disable 'InvalidPackage'
@@ -37,6 +36,5 @@ android {
 }
 
 dependencies {
-    api 'cn.rongcloud.sdk:im_libcore:5.1.4.1'
-    api 'cn.rongcloud.sdk:im_chatroom:5.1.4.1'
+    api 'cn.rongcloud.sdk:im_lib:5.1.4.1'
 }

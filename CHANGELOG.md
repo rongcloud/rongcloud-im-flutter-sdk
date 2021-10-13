@@ -5,7 +5,8 @@
 * 2.修复 Android 层调用 SDK 偶尔产生的崩溃异常
 
 **Demo: **
-* 1.在 Demo 层注册 LocationMessage
+* 1.支持 null-safety
+* 2.支持在 Demo 层注册 LocationMessage
 
 
 ## 5.1.4

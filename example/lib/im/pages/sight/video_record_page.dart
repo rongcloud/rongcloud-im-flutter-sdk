@@ -15,9 +15,9 @@ import 'record_bottom_item.dart';
 import 'record_top_item.dart';
 
 class VideoRecordPage extends StatefulWidget {
-  final Map arguments;
+  final Map? arguments;
 
-  VideoRecordPage({Key key, this.arguments}) : super(key: key);
+  VideoRecordPage({Key? key, this.arguments}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -27,27 +27,27 @@ class VideoRecordPage extends StatefulWidget {
 
 class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBottomToolBarDelegate, TopRecordItemDelegate {
   String pageName = "example.VideoRecordPage";
-  Map arguments;
-  int conversationType;
-  String targetId;
+  Map? arguments;
+  int? conversationType;
+  String? targetId;
   int recodeTime = 0;
-  Timer timer;
-  bool isSecretChat = false;
+  Timer? timer;
+  bool? isSecretChat = false;
 
-  CameraController cameraController;
-  VideoPlayerController videoPlayerController;
-  List<CameraDescription> cameras;
-  String videoPath;
-  TopRecordItem topitem;
+  CameraController? cameraController;
+  VideoPlayerController? videoPlayerController;
+  late List<CameraDescription> cameras;
+  String? videoPath;
+  TopRecordItem? topitem;
 
   _VideoRecordPageState({this.arguments});
 
   @override
   void initState() {
     super.initState();
-    conversationType = arguments["coversationType"];
-    targetId = arguments["targetId"];
-    isSecretChat = arguments["isSecretChat"];
+    conversationType = arguments!["coversationType"];
+    targetId = arguments!["targetId"];
+    isSecretChat = arguments!["isSecretChat"];
     initCamera();
     topitem = TopRecordItem(this);
   }
@@ -62,7 +62,7 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
   void initCamera() async {
     cameras = await availableCameras();
     cameraController = CameraController(cameras[0], ResolutionPreset.medium);
-    cameraController.initialize().then((_) {
+    cameraController!.initialize().then((_) {
       if (!mounted) {
         return;
       }
@@ -78,18 +78,18 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
 
   void onSwitchCamera() async {
     developer.log("onSwitchCamera", name: pageName);
-    CameraDescription curDes = cameraController.description;
+    CameraDescription curDes = cameraController!.description;
     CameraDescription targetDes = cameras[0];
     if (cameras[0].name == curDes.name) {
       targetDes = cameras[1];
     }
     if (cameraController != null) {
-      await cameraController.dispose();
+      await cameraController!.dispose();
     }
 
     cameraController = CameraController(targetDes, ResolutionPreset.medium);
 
-    cameraController.initialize().then((_) {
+    cameraController!.initialize().then((_) {
       if (!mounted) {
         return;
       }
@@ -97,8 +97,8 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
     });
   }
 
-  Future<String> startVideoRecording() async {
-    if (!cameraController.value.isInitialized) {
+  Future<String?> startVideoRecording() async {
+    if (!cameraController!.value.isInitialized) {
       developer.log("Error: select a camera first.", name: pageName);
       return null;
     }
@@ -108,14 +108,15 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
     await Directory(dirPath).create(recursive: true);
     final String filePath = '$dirPath/${timestamp()}.mp4';
 
-    if (cameraController.value.isRecordingVideo) {
+    if (cameraController!.value.isRecordingVideo) {
       // A recording is already started, do nothing.
       return null;
     }
 
     try {
       videoPath = filePath;
-      await cameraController.startVideoRecording(filePath);
+      // await cameraController.startVideoRecording(filePath);
+      await cameraController!.startVideoRecording();
     } on CameraException catch (e) {
       developer.log(e.toString(), name: pageName);
       return null;
@@ -124,12 +125,12 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
   }
 
   Future<void> stopVideoRecording() async {
-    if (!cameraController.value.isRecordingVideo) {
+    if (!cameraController!.value.isRecordingVideo) {
       return null;
     }
 
     try {
-      await cameraController.stopVideoRecording();
+      await cameraController!.stopVideoRecording();
     } on CameraException catch (e) {
       developer.log(e.toString(), name: pageName);
       return null;
@@ -137,10 +138,10 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
 
     developer.log("rc videoPath $videoPath", name: pageName);
 
-    videoPlayerController = VideoPlayerController.file(File(videoPath));
+    videoPlayerController = VideoPlayerController.file(File(videoPath!));
 //    await videoPlayerController.setLooping(true);
-    await videoPlayerController.initialize();
-    await videoPlayerController.play();
+    await videoPlayerController!.initialize();
+    await videoPlayerController!.play();
     setState(() {});
   }
 
@@ -148,8 +149,8 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
 
   void resetData() {
     videoPath = null;
-    if (videoPlayerController != null && videoPlayerController.value != null && videoPlayerController.value.isPlaying) {
-      videoPlayerController.pause();
+    if (videoPlayerController != null && videoPlayerController!.value != null && videoPlayerController!.value.isPlaying) {
+      videoPlayerController!.pause();
     }
     videoPlayerController = null;
   }
@@ -159,7 +160,7 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
     if (cameraController == null) {
       return Container();
     }
-    if (!cameraController.value.isInitialized) {
+    if (!cameraController!.value.isInitialized) {
       return Container();
     }
 
@@ -174,7 +175,7 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
                   aspectRatio: MediaQuery.of(context).size.width / MediaQuery.of(context).size.height,
                   child: Center(
                       child: Stack(
-                    children: <Widget>[_getCameraPreviewWidget(), topitem],
+                    children: <Widget>[_getCameraPreviewWidget(), topitem!],
                   )),
                 ),
               ),
@@ -194,15 +195,15 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
   }
 
   Widget _getCameraPreviewWidget() {
-    Widget widget = CameraPreview(cameraController);
+    Widget widget = CameraPreview(cameraController!);
     if (videoPath != null) {
-      widget = VideoPlayer(videoPlayerController);
+      widget = VideoPlayer(videoPlayerController!);
     }
     return Transform.scale(
-      scale: 1 / cameraController.value.aspectRatio,
+      scale: 1 / cameraController!.value.aspectRatio,
       child: Center(
         child: AspectRatio(
-          aspectRatio: cameraController.value.aspectRatio,
+          aspectRatio: cameraController!.value.aspectRatio,
           child: widget,
         ),
       ),
@@ -222,7 +223,7 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
   }
 
   void stopTimer() {
-    timer.cancel();
+    timer!.cancel();
   }
 
   @override
@@ -230,8 +231,8 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
     developer.log("onLongPressCamera", name: pageName);
     videoPath = null;
 
-    topitem.updateRecordState(RecordState.Recording);
-    startVideoRecording().then((String filePath) {
+    topitem!.updateRecordState(RecordState.Recording);
+    startVideoRecording().then((String? filePath) {
       // if (mounted) setState(() {});
       if (filePath != null) developer.log("Saving video to $filePath", name: pageName);
     });
@@ -241,7 +242,7 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
 
   @override
   void didLongPressEndCamera() {
-    topitem.updateRecordState(RecordState.Preview);
+    topitem!.updateRecordState(RecordState.Preview);
     developer.log("onLongPressEndCamera", name: pageName);
     stopVideoRecording().then((_) {
       // if (mounted) setState(() {});
@@ -254,7 +255,7 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
   @override
   void didCancelEvent() {
     developer.log("onCancelEvent", name: pageName);
-    topitem.updateRecordState(RecordState.Normal);
+    topitem!.updateRecordState(RecordState.Normal);
     resetData();
     setState(() {});
   }
@@ -265,10 +266,10 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
     developer.log("onFinishEvent", name: pageName);
     if (videoPath != null) {
       developer.log("onFinishEvent con $conversationType targetId $targetId", name: pageName);
-      SightMessage sightMessage = SightMessage.obtain(videoPath, recodeTime);
-      if (sightMessage.duration != null && sightMessage.duration > 0) {
+      SightMessage sightMessage = SightMessage.obtain(videoPath!, recodeTime);
+      if (sightMessage.duration != null && sightMessage.duration! > 0) {
         if (conversationType == RCConversationType.Private) {
-          sightMessage.destructDuration = isSecretChat ? RCDuration.MediaMessageBurnDuration + recodeTime : 0;
+          sightMessage.destructDuration = isSecretChat! ? RCDuration.MediaMessageBurnDuration + recodeTime : 0;
         }
         // Message message = Message();
         // message.conversationType = conversationType;
@@ -279,8 +280,8 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
         //     (int messageId, int status, int code) {
         //   String result = "messageId:$messageId status:$status code:$code";
         // });
-        RongIMClient.sendMessage(conversationType, targetId, sightMessage);
-        _saveVideo(videoPath);
+        RongIMClient.sendMessage(conversationType!, targetId!, sightMessage);
+        _saveVideo(videoPath!);
       } else {
         developer.log("sightMessage duration is 0", name: pageName);
       }
