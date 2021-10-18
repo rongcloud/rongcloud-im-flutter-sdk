@@ -5,6 +5,8 @@ buildscript {
     repositories {
         google()
         jcenter()
+        maven { url "https://maven.rongcloud.cn/repository/maven-releases/" }
+        maven { url 'https://developer.huawei.com/repo/' }
     }
 
     dependencies {
@@ -16,7 +18,6 @@ rootProject.allprojects {
     repositories {
         google()
         jcenter()
-        mavenCentral()
         maven { url "https://maven.rongcloud.cn/repository/maven-releases/" }
         maven { url 'https://developer.huawei.com/repo/' }
     }

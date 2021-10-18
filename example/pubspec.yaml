@@ -33,7 +33,7 @@ dependencies:
   shared_preferences: ^2.0.7
   flutter_webview_plugin: ^0.4.0
   webview_flutter: ^2.0.12
-  image_gallery_saver: ^1.6.9
+  image_gallery_saver: ^1.7.1
   url_launcher: ^6.0.10
   rxdart: ^0.27.2
   flutter_cache_manager: ^3.1.2
