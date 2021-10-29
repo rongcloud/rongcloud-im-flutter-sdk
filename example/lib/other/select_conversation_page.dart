@@ -125,7 +125,7 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
   void sendMessage(List<Message>? selectMessages, {bool isCombineMsg = false}) async {
     Future.delayed(Duration(milliseconds: 400), () {
       for (Message msg in selectMessages!) {
-        for (Conversation con in selectConList as Iterable<Conversation>) {
+        for (Conversation con in selectConList) {
           // 转发时去掉消息原先携带的 sendUserInfo 和 mentionedInfo
           msg.content!.sendUserInfo = null;
           msg.content!.mentionedInfo = null;

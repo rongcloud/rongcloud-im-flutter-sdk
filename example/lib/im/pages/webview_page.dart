@@ -22,8 +22,6 @@ class _WebViewPageState extends State<WebViewPage> {
   final String? url;
   final String? title;
 
-  // final Completer<WebViewController> _controller =
-  //     Completer<WebViewController>();
   _WebViewPageState(this.url, this.title);
 
   @override
@@ -33,22 +31,19 @@ class _WebViewPageState extends State<WebViewPage> {
 
   @override
   Widget build(BuildContext context) {
-    // return
-    // Scaffold(
+    String correctUrl = _getCorrectLocalPath(this.url!);
+    // return Scaffold(
     //   appBar: AppBar(
-    //     title: Text(title == null || title.isEmpty ? this.url : title),
+    //     title: Text('WebView'),
     //   ),
     //   body: Container(
     //     child: WebView(
-    //       initialUrl: url,
+    //       initialUrl: correctUrl,
     //       //JS执行模式 是否允许JS执行
     //       javascriptMode: JavascriptMode.unrestricted,
     //       javascriptChannels: <JavascriptChannel>[
     //         _getJavascriptChannel(context),
     //       ].toSet(),
-    //       onWebViewCreated: (controller) {
-    //         _controller.complete(controller);
-    //       },
     //       onPageStarted: (String url) {
     //         print('Page started loading: $url');
     //       },
@@ -58,7 +53,6 @@ class _WebViewPageState extends State<WebViewPage> {
     //     ),
     //   ),
     // );
-    String correctUrl = _getCorrectLocalPath(this.url!);
     return WebviewScaffold(
         url: correctUrl,
         appBar: AppBar(
@@ -97,7 +91,7 @@ class _WebViewPageState extends State<WebViewPage> {
   }
 
   void handleInfo(String jsonStr, BuildContext context) {
-    if (jsonStr != null && jsonStr.isNotEmpty) {
+    if (jsonStr.isNotEmpty) {
       Map map = json.decode(jsonStr);
       String? type = map["type"];
       switch (type) {

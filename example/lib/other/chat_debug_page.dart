@@ -363,10 +363,10 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   void _getTagsFromConversation() async {
     String toast = "";
     await RongIMClient.getTagsFromConversation(conversationType, targetId, (int? code, List conversationList) {
-      if (conversationList == null || conversationList.length == 0) {
+      if (conversationList.length == 0) {
         toast = "tags is null";
       } else {
-        for (ConversationTagInfo? info in conversationList as Iterable<ConversationTagInfo?>) {
+        for (ConversationTagInfo? info in conversationList) {
           toast = toast + "[isTop:${info!.isTop},tagId:${info.tagInfo!.tagId},tagName:${info.tagInfo!.tagName},count:${info.tagInfo!.count},timestamp:${info.tagInfo!.timestamp}] ";
         }
       }
@@ -389,7 +389,7 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
       if (conversationList == null || conversationList.length == 0) {
         toast = "tags is null";
       } else {
-        for (Conversation? con in conversationList as Iterable<Conversation?>) {
+        for (Conversation? con in conversationList) {
           toast = toast + "[targetId:${con!.conversationType},conversationType:${con.conversationType}}";
         }
       }

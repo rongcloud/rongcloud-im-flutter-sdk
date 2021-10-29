@@ -64,15 +64,14 @@ class _ConversationItemState extends State<ConversationItem> {
     needShowMessage = !(msg.messageDirection == prefix.RCMessageDirection.Receive && msg.content != null && msg.content!.destructDuration != null && msg.content!.destructDuration! > 0 && time.value == msg.content!.destructDuration);
   }
 
-  void setInfo(String? targetId) {
+  void setInfo(String? targetId) async {
     example.UserInfo? userInfo = example.UserInfoDataSource.cachedUserMap[targetId];
     if (userInfo != null) {
       this.user = userInfo;
     } else {
-      example.UserInfoDataSource.getUserInfo(targetId).then((onValue) {
-        setState(() {
-          this.user = onValue;
-        });
+      example.UserInfo? userInfo = await example.UserInfoDataSource.getUserInfo(targetId);
+      setState(() {
+        this.user = userInfo;
       });
     }
   }

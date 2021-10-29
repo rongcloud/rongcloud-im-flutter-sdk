@@ -56,7 +56,7 @@ class MediaUtil {
 
   //从相册选照片，成功则返回照片的本地路径，注：Android 必须要加 file:// 头
   Future<String?> pickImage() async {
-    File? imgfile = await ImagePicker().pickImage(source: ImageSource.gallery) as File?;
+    XFile? imgfile = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (imgfile == null) {
       return null;
     }
@@ -69,7 +69,8 @@ class MediaUtil {
 
   //选择本地文件，成功返回文件信息
   Future<List<File>?> pickFiles() async {
-    List<File>? files = (await FilePicker.platform.getDirectoryPath()) as List<File>?;
+    FilePickerResult? result = await FilePicker.platform.pickFiles(allowMultiple: true);
+    List<File>? files = result?.paths.map((path) => File(path!)).toList();
     return files;
   }
 

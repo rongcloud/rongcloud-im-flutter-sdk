@@ -15,8 +15,8 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.3
   cached_network_image: ^3.1.0
-  image_picker: ^0.8.4
-  file_picker: ^4.0.2
+  image_picker: ^0.8.4+3
+  file_picker: ^4.1.6
   open_file: ^3.2.1
   #flutter_audio_recorder: ^0.5.5
   record: ^3.0.0
@@ -32,7 +32,7 @@ dependencies:
   dio: ^4.0.0
   shared_preferences: ^2.0.7
   flutter_webview_plugin: ^0.4.0
-  webview_flutter: ^2.0.12
+  webview_flutter: ^2.1.2
   image_gallery_saver: ^1.7.1
   url_launcher: ^6.0.10
   rxdart: ^0.27.2

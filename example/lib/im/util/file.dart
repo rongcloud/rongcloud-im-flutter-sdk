@@ -55,7 +55,7 @@ class FileUtil {
   }
 
   static bool checkSuffix(String? fileName, List fileSuffix) {
-    for (String suffix in fileSuffix as Iterable<String>) {
+    for (String suffix in fileSuffix) {
       if (fileName != null) {
         if (fileName.toLowerCase().endsWith(suffix)) {
           return true;

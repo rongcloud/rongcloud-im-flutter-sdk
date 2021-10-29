@@ -39,14 +39,12 @@ class _MessageReadPageState extends State<MessageReadPage> {
   Future<void> _getRandomUserInfos() async {
     Map? userIdList = message!.readReceiptInfo!.userIdList;
     if (userIdList != null) {
-      for (String? key in userIdList.keys as Iterable<String?>) {
+      for (String? key in userIdList.keys) {
         example.UserInfo? userInfo = example.UserInfoDataSource.cachedUserMap[key];
         if (userInfo == null) {
           userInfo = await example.UserInfoDataSource.getUserInfo(key);
         }
-        if (userInfo != null) {
-          this.userList.add(userInfo);
-        }
+        this.userList.add(userInfo);
       }
       // return this.userList;
     }
