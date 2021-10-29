@@ -35,7 +35,7 @@ class _ContactsPageState extends State<ContactsPage> {
   }
 
   void _refreshUI() {
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   Future<List<example.UserInfo>> _getRandomUserInfos() async {
