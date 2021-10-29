@@ -70,9 +70,11 @@ class _ConversationItemState extends State<ConversationItem> {
       this.user = userInfo;
     } else {
       example.UserInfo? userInfo = await example.UserInfoDataSource.getUserInfo(targetId);
-      setState(() {
-        this.user = userInfo;
-      });
+      if (mounted) {
+        setState(() {
+          this.user = userInfo;
+        });
+      }
     }
   }
 
