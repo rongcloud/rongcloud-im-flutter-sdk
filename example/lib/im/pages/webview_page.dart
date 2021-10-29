@@ -4,9 +4,11 @@ import 'dart:developer' as developer;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+
+// import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewPage extends StatefulWidget {
   final Map? arguments;
@@ -32,45 +34,43 @@ class _WebViewPageState extends State<WebViewPage> {
   @override
   Widget build(BuildContext context) {
     String correctUrl = _getCorrectLocalPath(this.url!);
-    // return Scaffold(
-    //   appBar: AppBar(
-    //     title: Text('WebView'),
-    //   ),
-    //   body: Container(
-    //     child: WebView(
-    //       initialUrl: correctUrl,
-    //       //JS执行模式 是否允许JS执行
-    //       javascriptMode: JavascriptMode.unrestricted,
-    //       javascriptChannels: <JavascriptChannel>[
-    //         _getJavascriptChannel(context),
-    //       ].toSet(),
-    //       onPageStarted: (String url) {
-    //         print('Page started loading: $url');
-    //       },
-    //       onPageFinished: (url) {
-    //         print('Page finished loading: $url');
-    //       },
-    //     ),
-    //   ),
-    // );
-    return WebviewScaffold(
-        url: correctUrl,
-        appBar: AppBar(
-          title: Text(title == null && title!.isEmpty ? this.url! : this.title!),
+    return Scaffold(
+      appBar: AppBar(),
+      body: Container(
+        child: WebView(
+          initialUrl: correctUrl,
+          //JS执行模式 是否允许JS执行
+          javascriptMode: JavascriptMode.unrestricted,
+          javascriptChannels: <JavascriptChannel>[
+            _getJavascriptChannel(context),
+          ].toSet(),
+          onPageStarted: (String url) {
+            print('Page started loading: $url');
+          },
+          onPageFinished: (url) {
+            print('Page finished loading: $url');
+          },
         ),
-        withZoom: true,
-        hidden: true,
-        withLocalStorage: true,
-        withJavascript: true,
-        javascriptChannels: <JavascriptChannel>[
-          _getJavascriptChannel(context),
-        ].toSet(),
-        initialChild: Center(
-          child: CupertinoActivityIndicator(
-            radius: 15.0,
-            animating: true,
-          ),
-        ));
+      ),
+    );
+    // return WebviewScaffold(
+    //     url: correctUrl,
+    //     appBar: AppBar(
+    //       title: Text(title == null && title!.isEmpty ? this.url! : this.title!),
+    //     ),
+    //     withZoom: true,
+    //     hidden: true,
+    //     withLocalStorage: true,
+    //     withJavascript: true,
+    //     javascriptChannels: <JavascriptChannel>[
+    //       _getJavascriptChannel(context),
+    //     ].toSet(),
+    //     initialChild: Center(
+    //       child: CupertinoActivityIndicator(
+    //         radius: 15.0,
+    //         animating: true,
+    //       ),
+    //     ));
   }
 
   String _getCorrectLocalPath(String url) {
