@@ -1,11 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="io.rong.flutter.imlib">
+    package="io.rong.flutter.imlib">
+
     <application
         android:allowBackup="true"
         android:supportsRtl="true">
 
-        <!--会话界面-->
+        <meta-data
+            android:name="rc.imflutter"
+            android:value="io.rong.flutter.imlib.Version" />
 
-        <!--会话列表界面-->
     </application>
+
 </manifest>
