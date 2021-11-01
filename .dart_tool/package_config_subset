@@ -70,10 +70,6 @@ vector_math
 2.12
 file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/vector_math-2.1.0/
 file:///Users/panmingda/.pub-cache/hosted/pub.flutter-io.cn/vector_math-2.1.0/lib/
-rongcloud_im_plugin
-2.12
-file:///Users/panmingda/Documents/Publish/rongcloud-im-flutter-sdk/
-file:///Users/panmingda/Documents/Publish/rongcloud-im-flutter-sdk/lib/
 sky_engine
 2.12
 file:///Users/panmingda/Documents/Software/flutter/bin/cache/pkg/sky_engine/
@@ -86,4 +82,8 @@ flutter_test
 2.12
 file:///Users/panmingda/Documents/Software/flutter/packages/flutter_test/
 file:///Users/panmingda/Documents/Software/flutter/packages/flutter_test/lib/
+rongcloud_im_plugin
+2.12
+file:///Users/panmingda/Documents/Workspace/ios-sealdev/flutter-im-plugin/
+file:///Users/panmingda/Documents/Workspace/ios-sealdev/flutter-im-plugin/lib/
 2
