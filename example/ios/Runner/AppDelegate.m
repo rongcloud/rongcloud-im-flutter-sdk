@@ -52,14 +52,6 @@
     [application registerForRemoteNotifications];
 }
 
-/**
- * 推送处理3
- */
-- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-   // 如果您的 SDK 版本已升级到 2.9.25，请使用下面这种方式:
-    [[RCCoreClient sharedCoreClient] setDeviceTokenData:deviceToken];
-}
-
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo{
     
 //    [[RCIMFlutterWrapper sharedWrapper] sendDataToFlutter:userInfo];
