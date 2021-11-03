@@ -188,7 +188,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
     super.initState();
   }
 
-  void setInfo() {
+  void setInfo() async {
     String? targetId = conversation!.targetId;
     example.UserInfo? userInfo = example.UserInfoDataSource.cachedUserMap[targetId];
     example.GroupInfo? groupInfo = example.UserInfoDataSource.cachedGroupMap[targetId];
@@ -196,21 +196,23 @@ class _ConversationListItemState extends State<ConversationListItem> {
       if (userInfo != null) {
         this.info = userInfo;
       } else {
-        example.UserInfoDataSource.getUserInfo(targetId).then((onValue) {
+        example.UserInfo userInfo = await example.UserInfoDataSource.getUserInfo(targetId);
+        if (mounted) {
           setState(() {
-            this.info = onValue;
+            this.info = userInfo;
           });
-        });
+        }
       }
     } else {
       if (groupInfo != null) {
         this.info = groupInfo;
       } else {
-        example.UserInfoDataSource.getGroupInfo(targetId).then((onValue) {
+        example.GroupInfo groupInfo = await example.UserInfoDataSource.getGroupInfo(targetId);
+        if (mounted) {
           setState(() {
-            this.info = onValue;
+            this.info = groupInfo;
           });
-        });
+        }
       }
     }
   }

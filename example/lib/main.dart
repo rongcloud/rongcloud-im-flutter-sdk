@@ -36,7 +36,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    _init();
+  }
 
+  void _init() async {
     prefix.PushConfig pushConfig = prefix.PushConfig();
     // pushConfig.enableHWPush = true;
     // pushConfig.enableVivoPush = true;
@@ -53,11 +56,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     // pushConfig.mzAppKey = "11111802ac4bd5843d694517307896";
     // pushConfig.mzAppId = "222288";
     // pushConfig.enableFCM = true;
-
-    prefix.RongIMClient.setAndroidPushConfig(pushConfig);
+    await prefix.RongIMClient.setAndroidPushConfig(pushConfig);
 
     //1.初始化 im SDK
     prefix.RongIMClient.init(RongAppKey);
+
     //注册自定义消息
     _registerCustomMessage();
 
@@ -113,6 +116,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       EventBus.instance!.commit(EventKeys.BlockMessage, info);
       developer.log("object onReceiveReadReceipt " + info.toString(), name: pageName);
     };
+
+    if (mounted) setState(() {});
   }
 
   void _registerCustomMessage() {

@@ -41,13 +41,13 @@ class RongIMClient {
   ///设置推送配置(Android 第三方推送配置)
   ///
   ///[pushConfig] 推送配置
-  static void setAndroidPushConfig(PushConfig pushConfig) async {
+  static Future<void> setAndroidPushConfig(PushConfig pushConfig) async {
     if (pushConfig == null) {
       developer.log("setAndroidPushConfig fail: pushConfig is null", name: "RongIMClient");
       return;
     }
     Map paramMap = MessageFactory.instance!.pushConfig2Map(pushConfig);
-    _channel.invokeMethod(RCMethodKey.SetAndroidPushConfig, paramMap);
+    return _channel.invokeMethod(RCMethodKey.SetAndroidPushConfig, paramMap);
   }
 
   ///注册Flutter端自定义消息

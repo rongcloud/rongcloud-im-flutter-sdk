@@ -349,7 +349,7 @@ public class RCIMFlutterWrapper {
         } else if (RCMethodList.MethodKeyBatchInsertMessage.equalsIgnoreCase(call.method)) {
             batchInsertMessage(call.arguments, result);
         } else if (RCMethodList.MethodKeySetAndroidPushConfig.equalsIgnoreCase(call.method)) {
-            setPushConfig(call.arguments);
+            setPushConfig(call.arguments, result);
         } else {
             result.notImplemented();
         }
@@ -364,47 +364,43 @@ public class RCIMFlutterWrapper {
         return appkey;
     }
 
-    public void setPushConfig(Object arg) {
+    public void setPushConfig(Object arg, Result result) {
         if (arg instanceof Map) {
-            final Map paramMap = (Map) arg;
-            mMainHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    PushConfig.Builder configBuilder = new PushConfig.Builder();
-                    if (paramMap.get("enableHWPush") != null) {
-                        configBuilder.enableHWPush((boolean) paramMap.get("enableHWPush"));
-                    }
-                    if (paramMap.get("enableFCM") != null) {
-                        configBuilder.enableFCM((boolean) paramMap.get("enableFCM"));
-                    }
-                    if (paramMap.get("enableVivoPush") != null) {
-                        configBuilder.enableVivoPush((boolean) paramMap.get("enableVivoPush"));
-                    }
-                    if (paramMap.get("miAppId") != null && paramMap.get("miAppKey") != null) {
-                        String miAppId = (String) paramMap.get("miAppId");
-                        String miAppKey = (String) paramMap.get("miAppKey");
-                        if (!TextUtils.isEmpty(miAppId) && !TextUtils.isEmpty(miAppKey)) {
-                            configBuilder.enableMiPush(miAppId, miAppKey);
-                        }
-                    }
-                    if (paramMap.get("mzAppId") != null && paramMap.get("mzAppKey") != null) {
-                        String mzAppId = (String) paramMap.get("mzAppId");
-                        String mzAppKey = (String) paramMap.get("mzAppKey");
-                        if (!TextUtils.isEmpty(mzAppId) && !TextUtils.isEmpty(mzAppKey)) {
-                            configBuilder.enableMeiZuPush(mzAppId, mzAppKey);
-                        }
-                    }
-                    if (paramMap.get("oppoAppKey") != null && paramMap.get("oppoAppSecret") != null) {
-                        String oppoAppKey = (String) paramMap.get("oppoAppKey");
-                        String oppoAppSecret = (String) paramMap.get("oppoAppSecret");
-                        if (!TextUtils.isEmpty(oppoAppKey) && !TextUtils.isEmpty(oppoAppSecret)) {
-                            configBuilder.enableOppoPush(oppoAppKey, oppoAppSecret);
-                        }
-                    }
-                    RongPushClient.setPushConfig(configBuilder.build());
+            Map paramMap = (Map) arg;
+            PushConfig.Builder configBuilder = new PushConfig.Builder();
+            if (paramMap.get("enableHWPush") != null) {
+                configBuilder.enableHWPush((boolean) paramMap.get("enableHWPush"));
+            }
+            if (paramMap.get("enableFCM") != null) {
+                configBuilder.enableFCM((boolean) paramMap.get("enableFCM"));
+            }
+            if (paramMap.get("enableVivoPush") != null) {
+                configBuilder.enableVivoPush((boolean) paramMap.get("enableVivoPush"));
+            }
+            if (paramMap.get("miAppId") != null && paramMap.get("miAppKey") != null) {
+                String miAppId = (String) paramMap.get("miAppId");
+                String miAppKey = (String) paramMap.get("miAppKey");
+                if (!TextUtils.isEmpty(miAppId) && !TextUtils.isEmpty(miAppKey)) {
+                    configBuilder.enableMiPush(miAppId, miAppKey);
                 }
-            });
+            }
+            if (paramMap.get("mzAppId") != null && paramMap.get("mzAppKey") != null) {
+                String mzAppId = (String) paramMap.get("mzAppId");
+                String mzAppKey = (String) paramMap.get("mzAppKey");
+                if (!TextUtils.isEmpty(mzAppId) && !TextUtils.isEmpty(mzAppKey)) {
+                    configBuilder.enableMeiZuPush(mzAppId, mzAppKey);
+                }
+            }
+            if (paramMap.get("oppoAppKey") != null && paramMap.get("oppoAppSecret") != null) {
+                String oppoAppKey = (String) paramMap.get("oppoAppKey");
+                String oppoAppSecret = (String) paramMap.get("oppoAppSecret");
+                if (!TextUtils.isEmpty(oppoAppKey) && !TextUtils.isEmpty(oppoAppSecret)) {
+                    configBuilder.enableOppoPush(oppoAppKey, oppoAppSecret);
+                }
+            }
+            RongPushClient.setPushConfig(configBuilder.build());
         }
+        result.success(null);
     }
 
 
