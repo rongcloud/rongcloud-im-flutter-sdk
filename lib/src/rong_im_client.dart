@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:rongcloud_im_plugin/src/info/history_message_option.dart';
@@ -42,10 +43,7 @@ class RongIMClient {
   ///
   ///[pushConfig] 推送配置
   static Future<void> setAndroidPushConfig(PushConfig pushConfig) async {
-    if (pushConfig == null) {
-      developer.log("setAndroidPushConfig fail: pushConfig is null", name: "RongIMClient");
-      return;
-    }
+    if (!Platform.isAndroid) return;
     Map paramMap = MessageFactory.instance!.pushConfig2Map(pushConfig);
     return _channel.invokeMethod(RCMethodKey.SetAndroidPushConfig, paramMap);
   }

@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -11,7 +12,13 @@ import 'other/home_page.dart';
 import 'router.dart';
 import 'user_data.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  prefix.PushConfig pushConfig = prefix.PushConfig();
+  if (Platform.isAndroid)
+    prefix.RongIMClient.setAndroidPushConfig(pushConfig).then((value) => runApp(MyApp()));
+  else
+    runApp(MyApp());
+}
 
 class MyApp extends StatefulWidget {
   @override
@@ -36,28 +43,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    _init();
-  }
-
-  void _init() async {
-    prefix.PushConfig pushConfig = prefix.PushConfig();
-    // pushConfig.enableHWPush = true;
-    // pushConfig.enableVivoPush = true;
-
-    // 小米推送，请填入自己申请的 appkey 和 id
-    // pushConfig.miAppKey = "1111147338625";
-    // pushConfig.miAppId = "2222203761517473625";
-
-    // oppo 推送，请填入自己申请的 appkey 和 secret
-    // pushConfig.oppoAppKey = "11111146d261446dbd3c94bb04d322de";
-    // pushConfig.oppoAppSecret = "2222223d5ce1414ea4b6d75c880a3031";
-
-    //魅族推送 请填入自己申请的 appkey 和 id
-    // pushConfig.mzAppKey = "11111802ac4bd5843d694517307896";
-    // pushConfig.mzAppId = "222288";
-    // pushConfig.enableFCM = true;
-    await prefix.RongIMClient.setAndroidPushConfig(pushConfig);
-
     //1.初始化 im SDK
     prefix.RongIMClient.init(RongAppKey);
 
@@ -116,8 +101,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       EventBus.instance!.commit(EventKeys.BlockMessage, info);
       developer.log("object onReceiveReadReceipt " + info.toString(), name: pageName);
     };
-
-    if (mounted) setState(() {});
   }
 
   void _registerCustomMessage() {
