@@ -1,14 +1,13 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
-// import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_plus/webview_flutter_plus.dart';
 
 class WebViewPage extends StatefulWidget {
   final Map? arguments;
@@ -35,10 +34,19 @@ class _WebViewPageState extends State<WebViewPage> {
   Widget build(BuildContext context) {
     String correctUrl = _getCorrectLocalPath(this.url!);
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text(title == null && title!.isEmpty ? this.url! : this.title!),
+      ),
       body: Container(
-        child: WebView(
-          initialUrl: correctUrl,
+        child: WebViewPlus(
+          initialUrl: '',
+          onWebViewCreated: (controller) {
+            if (Platform.isIOS) {
+              controller.loadUrl(this.url!);
+            } else {
+              controller.loadUrl(correctUrl);
+            }
+          },
           //JS执行模式 是否允许JS执行
           javascriptMode: JavascriptMode.unrestricted,
           javascriptChannels: <JavascriptChannel>[

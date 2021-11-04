@@ -12,13 +12,7 @@ import 'other/home_page.dart';
 import 'router.dart';
 import 'user_data.dart';
 
-void main() {
-  prefix.PushConfig pushConfig = prefix.PushConfig();
-  if (Platform.isAndroid)
-    prefix.RongIMClient.setAndroidPushConfig(pushConfig).then((value) => runApp(MyApp()));
-  else
-    runApp(MyApp());
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
   @override
@@ -36,6 +30,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   DateTime? notificationQuietStartTime;
   static BuildContext? appContext;
 
+  bool _ready = false;
+
   static BuildContext? getContext() {
     return appContext;
   }
@@ -43,6 +39,34 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+
+    if (Platform.isAndroid) {
+      // android 推送配置
+      prefix.PushConfig pushConfig = prefix.PushConfig();
+      // pushConfig.enableHWPush = true;
+      // pushConfig.enableVivoPush = true;
+
+      // 小米推送，请填入自己申请的 appkey 和 id
+      // pushConfig.miAppKey = "1111147338625";
+      // pushConfig.miAppId = "2222203761517473625";
+
+      // oppo 推送，请填入自己申请的 appkey 和 secret
+      // pushConfig.oppoAppKey = "11111146d261446dbd3c94bb04d322de";
+      // pushConfig.oppoAppSecret = "2222223d5ce1414ea4b6d75c880a3031";
+
+      //魅族推送 请填入自己申请的 appkey 和 id
+      // pushConfig.mzAppKey = "11111802ac4bd5843d694517307896";
+      // pushConfig.mzAppId = "222288";
+      // pushConfig.enableFCM = true;
+      prefix.RongIMClient.setAndroidPushConfig(pushConfig).then((value) {
+        _init();
+      });
+    } else {
+      _init();
+    }
+  }
+
+  void _init() {
     //1.初始化 im SDK
     prefix.RongIMClient.init(RongAppKey);
 
@@ -101,6 +125,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       EventBus.instance!.commit(EventKeys.BlockMessage, info);
       developer.log("object onReceiveReadReceipt " + info.toString(), name: pageName);
     };
+
+    setState(() {
+      _ready = true;
+    });
   }
 
   void _registerCustomMessage() {
@@ -165,7 +193,20 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     return MaterialApp(
       onGenerateRoute: onGenerateRoute,
       theme: ThemeData(primaryColor: Colors.blue),
-      home: HomePage(),
+      home: _ready ? HomePage() : _loading(context),
+    );
+  }
+
+  Widget _loading(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      color: Colors.white,
+      child: Center(
+        child: CircularProgressIndicator(
+          color: Colors.grey,
+        ),
+      ),
     );
   }
 

@@ -359,6 +359,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.7.0"
+  mime:
+    dependency: transitive
+    description:
+      name: mime
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.1"
   nested:
     dependency: transitive
     description:
@@ -736,7 +743,7 @@ packages:
     source: hosted
     version: "2.0.4"
   webview_flutter:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: webview_flutter
       url: "https://pub.flutter-io.cn"
@@ -756,6 +763,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.2.0"
+  webview_flutter_plus:
+    dependency: "direct main"
+    description:
+      name: webview_flutter_plus
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.2.3"
   webview_flutter_wkwebview:
     dependency: transitive
     description:
