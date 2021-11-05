@@ -73,7 +73,7 @@
 @implementation RCIMFlutterWrapper
 
 + (void)load {
-//    [RCUtilities setModuleName:@"imflutter" version:[self getVersion]];
+    [RCUtilities setModuleName:@"imflutter" version:[RCIMFlutterWrapper getVersion]];
 }
 
 + (instancetype)sharedWrapper {
