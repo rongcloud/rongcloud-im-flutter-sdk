@@ -36,15 +36,15 @@ class _VideoPlayPageState extends State<VideoPlayPage> {
   }
 
   void initVideoController() async {
-    sightMessage = message!.content as SightMessage?;
-    if (sightMessage!.localPath != null && sightMessage!.localPath != "") {
+    sightMessage = message?.content as SightMessage?;
+    if (sightMessage?.localPath != null && sightMessage?.localPath != "") {
       videoPlayerController = VideoPlayerController.file(File(sightMessage!.localPath!));
     } else {
       //TODO 是否需要做缓存？ VideoPlayerController.network 每次都会下载一遍视频
       videoPlayerController = VideoPlayerController.network(sightMessage!.remoteUrl!);
     }
-    videoPlayerController!.initialize();
-    await videoPlayerController!.play();
+    await videoPlayerController?.initialize();
+    await videoPlayerController?.play();
     setState(() {});
   }
 

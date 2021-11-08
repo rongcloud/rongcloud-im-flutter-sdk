@@ -6,7 +6,6 @@ import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:video_player/video_player.dart';
 
@@ -97,16 +96,16 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
     });
   }
 
-  Future<String?> startVideoRecording() async {
+  Future<void> startVideoRecording() async {
     if (!cameraController!.value.isInitialized) {
       developer.log("Error: select a camera first.", name: pageName);
       return null;
     }
 
-    final Directory extDir = await getTemporaryDirectory();
-    final String dirPath = '${extDir.path}/Movies/flutter_test';
-    await Directory(dirPath).create(recursive: true);
-    final String filePath = '$dirPath/${timestamp()}.mp4';
+    // final Directory extDir = await getTemporaryDirectory();
+    // final String dirPath = '${extDir.path}/Movies/flutter_test';
+    // await Directory(dirPath).create(recursive: true);
+    // final String filePath = '$dirPath/${timestamp()}.mp4';
 
     if (cameraController!.value.isRecordingVideo) {
       // A recording is already started, do nothing.
@@ -114,14 +113,16 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
     }
 
     try {
-      videoPath = filePath;
+      // videoPath = filePath;
       // await cameraController.startVideoRecording(filePath);
-      await cameraController!.startVideoRecording();
+      await cameraController?.startVideoRecording();
     } on CameraException catch (e) {
       developer.log(e.toString(), name: pageName);
       return null;
     }
-    return filePath;
+
+    return null;
+    // return filePath;
   }
 
   Future<void> stopVideoRecording() async {
@@ -130,7 +131,8 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
     }
 
     try {
-      await cameraController!.stopVideoRecording();
+      XFile? file = await cameraController?.stopVideoRecording();
+      videoPath = file?.path;
     } on CameraException catch (e) {
       developer.log(e.toString(), name: pageName);
       return null;
@@ -232,11 +234,7 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
     videoPath = null;
 
     topitem!.updateRecordState(RecordState.Recording);
-    startVideoRecording().then((String? filePath) {
-      // if (mounted) setState(() {});
-      if (filePath != null) developer.log("Saving video to $filePath", name: pageName);
-    });
-
+    startVideoRecording();
     startTimer();
   }
 
