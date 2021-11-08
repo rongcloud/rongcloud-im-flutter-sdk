@@ -1,10 +1,24 @@
+## 5.1.5
+
+**SDK：**
+* 1.修复 Android 设置推送配置时序问题
+* 2.iOS 自动设置推送令牌
+* 3.升级 SDK 版本到 5.1.5
+
+**Demo：**
+* 1.适配 Android embedding v2
+* 2.修复发送文件问题
+* 3.修复合并转发问题
+* 4.替换 Web View 第三方库
+
+
 ## 5.1.4+1
 
 **SDK：**
 * 1.适配 Android embedding v2
 * 2.修复 Android 层调用 SDK 偶尔产生的崩溃异常
 
-**Demo: **
+**Demo：**
 * 1.支持 null-safety
 * 2.支持在 Demo 层注册 LocationMessage
 
