@@ -2439,7 +2439,7 @@
             result(@{@"status":@(bizStatus),@"code":@(0)});
         } error:^(RCErrorCode status) {
             [RCLog e:[NSString stringWithFormat:@"%@, %@",LOG_TAG,@(status)]];
-            result(@{@"status":@(1),@"code":@(status)});
+            result(@{@"status":@(status),@"code":@(status)});
         }];
     }
 }

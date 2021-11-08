@@ -1410,7 +1410,7 @@ public class RCIMFlutterWrapper {
                 public void onError(IRongCoreEnum.CoreErrorCode errorCode) {
                     Map callBackMap = new HashMap();
                     callBackMap.put("targetId", targetId);
-                    callBackMap.put("status", 1);
+                    callBackMap.put("status", errorCode.getValue());
                     RCLog.e("[joinChatRoom] onError: " + errorCode.getValue());
                     mChannel.invokeMethod(RCMethodList.MethodCallBackKeyJoinChatRoom, callBackMap);
                 }
@@ -1442,7 +1442,7 @@ public class RCIMFlutterWrapper {
                     RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
                     Map callBackMap = new HashMap();
                     callBackMap.put("targetId", targetId);
-                    callBackMap.put("status", 1);
+                    callBackMap.put("status", errorCode.getValue());
                     RCLog.e("[joinExitChatRoom] onError:" + errorCode.getValue());
                     mChannel.invokeMethod(RCMethodList.MethodCallBackKeyJoinChatRoom, callBackMap);
                 }
@@ -1468,7 +1468,7 @@ public class RCIMFlutterWrapper {
                 public void onError(IRongCoreEnum.CoreErrorCode errorCode) {
                     Map callBackMap = new HashMap();
                     callBackMap.put("targetId", targetId);
-                    callBackMap.put("status", 1);
+                    callBackMap.put("status", errorCode.getValue());
                     RCLog.e("[quitChatRoom] onError:" + errorCode.getValue());
                     mChannel.invokeMethod(RCMethodList.MethodCallBackKeyQuitChatRoom, callBackMap);
                 }
@@ -2314,7 +2314,7 @@ public class RCIMFlutterWrapper {
                         @Override
                         public void onError(IRongCoreEnum.CoreErrorCode errorCode) {
                             Map resultMap = new HashMap();
-                            resultMap.put("status", 1);
+                            resultMap.put("status", errorCode.getValue());
                             resultMap.put("code", errorCode.getValue());
                             RCLog.e("[getBlackListStatus] onError:" + resultMap.toString());
                             result.success(resultMap);
