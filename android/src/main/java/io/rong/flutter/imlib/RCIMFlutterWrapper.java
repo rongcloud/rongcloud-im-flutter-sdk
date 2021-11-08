@@ -1635,8 +1635,13 @@ public class RCIMFlutterWrapper {
             RongCoreClient.getInstance().getConversationList(new IRongCoreCallback.ResultCallback<List<Conversation>>() {
                 @Override
                 public void onSuccess(List<Conversation> conversations) {
+                    if (resultRecord.isResultReturned) {
+                        RCLog.e("[getConversationList] onSuccess: result is returned");
+                        return;
+                    }
                     if (conversations == null) {
                         result.success(null);
+                        resultRecord.isResultReturned = true;
                         return;
                     }
                     List l = new ArrayList();
@@ -1646,6 +1651,7 @@ public class RCIMFlutterWrapper {
                     }
                     RCLog.i("[getConversationList] onSuccess:");
                     result.success(l);
+                    resultRecord.isResultReturned = true;
                 }
 
                 @Override
