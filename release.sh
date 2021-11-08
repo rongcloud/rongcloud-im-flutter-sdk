@@ -49,10 +49,10 @@ elif [ "$platform" == "ios" ]; then
   flutter pub get
 
   cd ios
-  /Library/Ruby/Gems/2.6.0/gems/cocoapods-1.10.1/bin/pod update
-  /Library/Ruby/Gems/2.6.0/gems/cocoapods-1.10.1/bin/pod install
-  # pod update
-  # pod install
+#  /Library/Ruby/Gems/2.6.0/gems/cocoapods-1.10.1/bin/pod update
+#  /Library/Ruby/Gems/2.6.0/gems/cocoapods-1.10.1/bin/pod install
+  pod update
+  pod install
 
   xcodebuild archive \
              -workspace "./Runner.xcworkspace" \
