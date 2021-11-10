@@ -120,14 +120,12 @@ class _BottomRecordItemState extends State<BottomRecordItem> with TickerProvider
     }
   }
 
-  onLongPressEndCamera() {
-    setState(() {
-      isNarmal = false;
-    });
-    if (delegate != null) {
-      delegate!.didLongPressEndCamera();
-    } else {
-      developer.log("没有实现 didLongPressEndCamera", name: pageName);
+  onLongPressEndCamera() async {
+    bool normal = await delegate?.didLongPressEndCamera() ?? false;
+    if (mounted) {
+      setState(() {
+        isNarmal = normal;
+      });
     }
   }
 
@@ -165,7 +163,7 @@ abstract class VideoBottomToolBarDelegate {
   void didLongPressCamera();
 
   //长按结束
-  void didLongPressEndCamera();
+  Future<bool> didLongPressEndCamera();
 
   //取消发送
   void didCancelEvent();
