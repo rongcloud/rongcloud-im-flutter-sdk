@@ -6,6 +6,8 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 enum RecordState {
   //正常 [返回,切换摄像头]
   Normal,
+  // 录制前加载
+  RecordLoading,
   //录制 [返回,进度条]
   Recording,
   //预览 [返回]
@@ -72,7 +74,7 @@ class _TopRecordItemState extends State<TopRecordItem> {
             child: Container(
               width: 25,
               height: 25,
-              child: currentRecordState != RecordState.Recording ? Image.asset("assets/images/sight_top_toolbar_close.png") : Container(),
+              child: currentRecordState != RecordState.Recording && currentRecordState != RecordState.RecordLoading ? Image.asset("assets/images/sight_top_toolbar_close.png") : Container(),
             ),
           ),
           SizedBox(
