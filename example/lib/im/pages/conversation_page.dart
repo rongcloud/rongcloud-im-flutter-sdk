@@ -803,9 +803,9 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
     if (message.content is VoiceMessage) {
       VoiceMessage msg = message.content as VoiceMessage;
       if (msg.localPath != null && msg.localPath!.isNotEmpty && File(msg.localPath!).existsSync()) {
-        MediaUtil.instance!.startPlayAudio(msg.localPath!);
+        MediaUtil.instance!.startPlayAudioFile(msg.localPath!);
       } else {
-        MediaUtil.instance!.startPlayAudio(msg.remoteUrl!);
+        MediaUtil.instance!.startPlayAudioUrl(msg.remoteUrl!);
         RongIMClient.downloadMediaMessage(message);
       }
     } else if (message.content is ImageMessage || message.content is GifMessage) {
