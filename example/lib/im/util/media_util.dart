@@ -20,8 +20,6 @@ class MediaUtil {
   static MediaUtil? get instance => _getInstance();
   static MediaUtil? _instance;
 
-  AudioPlayer player = AudioPlayer();
-
   MediaUtil._internal() {
     // 初始化
   }
@@ -83,7 +81,10 @@ class MediaUtil {
     if (hasPermission) {
       developer.log("debug 录音权限已开启", name: pageName);
       Directory tempDir = await getTemporaryDirectory();
-      String tempPath = tempDir.path + "/" + DateTime.now().millisecondsSinceEpoch.toString() + ".aac";
+      String tempPath = tempDir.path + "/" + DateTime
+          .now()
+          .millisecondsSinceEpoch
+          .toString() + ".aac";
       developer.log("debug 开始录音", name: pageName);
       // Start recording
       await Record().start(
@@ -106,6 +107,8 @@ class MediaUtil {
   //录音结束，通过 finished 返回本地路径和语音时长，注：Android 必须要加 file:// 头
   void stopRecordAudio(Function(String? path, int? duration) finished) async {
     String? audioPath = await Record().stop();
+
+    AudioPlayer player = AudioPlayer();
     Duration? durationA = await player.setFilePath(audioPath!);
 
     int duration = durationA!.inSeconds;
@@ -134,13 +137,22 @@ class MediaUtil {
     }
   }
 
+  AudioPlayer player = AudioPlayer();
+
   //播放语音
-  void startPlayAudio(String path) {
+  void startPlayAudioFile(String path) {
     if (player.playing) {
       stopPlayAudio();
     }
-    player.setFilePath(path);
-    player.play();
+    player.setFilePath(path).then((_) => player.play());
+  }
+
+  //播放语音
+  void startPlayAudioUrl(String path) {
+    if (player.playing) {
+      stopPlayAudio();
+    }
+    player.setUrl(path).then((_) => player.play());
   }
 
   //停止播放语音

@@ -62,7 +62,7 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
   }
 
   void _renfreshUI() {
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   addIMhandler() {
