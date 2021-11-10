@@ -197,13 +197,13 @@ class _BottomInputBarState extends State<BottomInputBar> {
         alignment: Alignment.center,
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
-          child: Text(RCString.BottomTapSpeak, textAlign: TextAlign.center),
-          onLongPress: () {
-            _onVoiceGesLongPress();
-          },
-          onLongPressEnd: (LongPressEndDetails details) {
-            _onVoiceGesLongPressEnd();
-          },
+          child: Text(
+            RCString.BottomTapSpeak,
+            textAlign: TextAlign.center,
+          ),
+          onTap: () {},
+          onLongPress: () => _onVoiceGesLongPress(),
+          onLongPressEnd: (_) => _onVoiceGesLongPressEnd(),
         ),
       );
     } else {
@@ -227,9 +227,15 @@ class _BottomInputBarState extends State<BottomInputBar> {
         children: <Widget>[
           Container(
             padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
-            decoration: BoxDecoration(border: new Border.all(color: Colors.black54, width: 0.5), borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.black54,
+                width: 0.5,
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
-          widget
+          widget,
         ],
       ),
     );
@@ -247,29 +253,32 @@ class _BottomInputBarState extends State<BottomInputBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        color: Colors.white,
-        child: Column(crossAxisAlignment: CrossAxisAlignment.end, children: <Widget>[
+      color: Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: <Widget>[
           referenceMessage == null ? WidgetUtil.buildEmptyWidget() : _buildReferenceWidget(),
           GestureDetector(
-              onTap: () {
-                switchPhrases();
-              },
-              child: Container(
-                padding: EdgeInsets.fromLTRB(6, 6, 12, 6),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(5),
-                  child: Container(
-                    alignment: Alignment.center,
-                    width: 80,
-                    height: 22,
-                    color: Color(0xffC8C8C8),
-                    child: Text(
-                      RCString.BottomCommonPhrases,
-                      style: TextStyle(color: Colors.white, fontSize: 14),
-                    ),
+            onTap: () {
+              switchPhrases();
+            },
+            child: Container(
+              padding: EdgeInsets.fromLTRB(6, 6, 12, 6),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: Container(
+                  alignment: Alignment.center,
+                  width: 80,
+                  height: 22,
+                  color: Color(0xffC8C8C8),
+                  child: Text(
+                    RCString.BottomCommonPhrases,
+                    style: TextStyle(color: Colors.white, fontSize: 14),
                   ),
                 ),
-              )),
+              ),
+            ),
+          ),
           Row(
             children: <Widget>[
               IconButton(
@@ -296,7 +305,9 @@ class _BottomInputBarState extends State<BottomInputBar> {
               ),
             ],
           ),
-        ]));
+        ],
+      ),
+    );
   }
 
   Widget _buildReferenceWidget() {
