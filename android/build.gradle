@@ -37,5 +37,6 @@ android {
 }
 
 dependencies {
-    api 'cn.rongcloud.sdk:im_lib:5.1.5'
+    api 'cn.rongcloud.sdk:im_libcore:5.1.5'
+    api 'cn.rongcloud.sdk:im_chatroom:5.1.5'
 }
