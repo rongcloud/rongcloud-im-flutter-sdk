@@ -67,6 +67,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 
   void _init() {
+    prefix.RongIMClient.setServerInfo(
+      'https://106.75.54.12:8444',
+      'https://106.75.54.12:8446/',
+    );
+
     //1.初始化 im SDK
     prefix.RongIMClient.init(RongAppKey);
 

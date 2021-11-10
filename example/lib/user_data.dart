@@ -1,7 +1,7 @@
 //融云 appkey
-String RongAppKey = 'n19jmcy59f1q9';
+String RongAppKey = 'pgyu6aty832bu';
 //用户 id
-String CurrentUserId = 'android';
+String CurrentUserId = '';
 
 //通过用户 id 生成的对应融云 token
-String RongIMToken = '/GAO1QE3NeKdxZ8EFWZnXSBpWcymqs7mr0LfCBn63cWXAWvMuW73BKKASyaZmGFGhVYuRiYRxSacloyurITSuw==';
+String RongIMToken = '';

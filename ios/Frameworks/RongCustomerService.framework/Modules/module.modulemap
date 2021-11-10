@@ -1,0 +1,6 @@
+framework module RongCustomerService {
+  umbrella header "RongCustomerService.h"
+
+  export *
+  module * { export * }
+}

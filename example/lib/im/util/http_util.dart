@@ -35,19 +35,10 @@ class HttpUtil {
       Map body = {"code": -1};
       callback(body);
     } else {
-// try {
       Response response;
       response = await Dio().post(url, data: params);
       print(response);
-      if (callback != null) {
-        callback(response.data);
-      }
-      // } catch (e) {
-      //   print(e);
-      //   if (errorCallback != null) {
-      //     errorCallback(e);
-      //   }
-      // }
+      callback(response.data);
     }
   }
 

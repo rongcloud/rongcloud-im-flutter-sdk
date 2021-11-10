@@ -76,6 +76,10 @@ android {
             }
         }
     }
+
+    packagingOptions {
+        merge "classes.jar"
+    }
 }
 
 flutter {

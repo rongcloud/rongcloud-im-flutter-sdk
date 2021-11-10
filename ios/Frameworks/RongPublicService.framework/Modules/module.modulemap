@@ -1,0 +1,6 @@
+framework module RongPublicService {
+  umbrella header "RongPublicService.h"
+
+  export *
+  module * { export * }
+}
