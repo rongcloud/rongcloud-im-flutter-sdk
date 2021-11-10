@@ -43,7 +43,7 @@ class MediaUtil {
 
   //拍照，成功则返回照片的本地路径，注：Android 必须要加 file:// 头
   Future<String?> takePhoto() async {
-    File? imgfile = (await ImagePicker().pickImage(source: ImageSource.camera)) as File?;
+    XFile? imgfile = await ImagePicker().pickImage(source: ImageSource.camera);
     if (imgfile == null) {
       return null;
     }
