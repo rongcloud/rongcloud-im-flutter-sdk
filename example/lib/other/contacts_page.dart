@@ -39,9 +39,10 @@ class _ContactsPageState extends State<ContactsPage> {
   }
 
   Future<List<example.UserInfo>> _getRandomUserInfos() async {
-    this.userList.add(await example.UserInfoDataSource.getUserInfo("SealTalk"));
-    this.userList.add(await example.UserInfoDataSource.getUserInfo("RongRTC"));
-    this.userList.add(await example.UserInfoDataSource.getUserInfo("RongIM"));
+    this.userList.add(await example.UserInfoDataSource.getUserInfo("222"));
+    this.userList.add(await example.UserInfoDataSource.getUserInfo("333"));
+    this.userList.add(await example.UserInfoDataSource.getUserInfo("555"));
+    this.userList.add(await example.UserInfoDataSource.getUserInfo("666"));
     return this.userList;
   }
 
