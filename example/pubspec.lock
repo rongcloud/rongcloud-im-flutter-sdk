@@ -49,7 +49,7 @@ packages:
       name: camera
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.9.4+3"
+    version: "0.9.2+2"
   camera_platform_interface:
     dependency: transitive
     description:
@@ -57,13 +57,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.1"
-  camera_web:
-    dependency: transitive
-    description:
-      name: camera_web
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.2.1+1"
   characters:
     dependency: transitive
     description:
@@ -134,13 +127,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.0.1"
-  csslib:
-    dependency: transitive
-    description:
-      name: csslib
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.17.1"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -154,7 +140,7 @@ packages:
       name: dio
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "4.0.1"
+    version: "4.0.0"
   fake_async:
     dependency: transitive
     description:
@@ -182,7 +168,7 @@ packages:
       name: file_picker
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "4.2.0"
+    version: "4.1.6"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -208,7 +194,7 @@ packages:
       name: flutter_local_notifications
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "8.2.0"
+    version: "8.1.1+2"
   flutter_local_notifications_platform_interface:
     dependency: transitive
     description:
@@ -229,21 +215,21 @@ packages:
       name: flutter_sound
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "8.4.1+1"
+    version: "8.3.10"
   flutter_sound_platform_interface:
     dependency: transitive
     description:
       name: flutter_sound_platform_interface
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "8.4.1"
+    version: "8.3.10"
   flutter_sound_web:
     dependency: transitive
     description:
       name: flutter_sound_web
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "8.4.1"
+    version: "8.3.10"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -261,13 +247,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "8.0.8"
-  html:
-    dependency: transitive
-    description:
-      name: html
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.15.0"
   http:
     dependency: transitive
     description:
@@ -295,7 +274,7 @@ packages:
       name: image_picker
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.8.4+4"
+    version: "0.8.4+3"
   image_picker_for_web:
     dependency: transitive
     description:
@@ -400,7 +379,7 @@ packages:
       name: path_provider
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "2.0.6"
+    version: "2.0.3"
   path_provider_linux:
     dependency: transitive
     description:
@@ -442,14 +421,14 @@ packages:
       name: percent_indicator
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "3.4.0"
+    version: "3.0.1"
   permission_handler:
     dependency: "direct main"
     description:
       name: permission_handler
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "8.2.5"
+    version: "8.1.4+2"
   permission_handler_platform_interface:
     dependency: transitive
     description:
@@ -540,7 +519,7 @@ packages:
       name: shared_preferences
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "2.0.8"
+    version: "2.0.7"
   shared_preferences_linux:
     dependency: transitive
     description:
@@ -671,7 +650,7 @@ packages:
       name: url_launcher
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "6.0.12"
+    version: "6.0.10"
   url_launcher_linux:
     dependency: transitive
     description:
@@ -727,7 +706,7 @@ packages:
       name: video_player
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "2.2.6"
+    version: "2.1.15"
   video_player_platform_interface:
     dependency: transitive
     description:
