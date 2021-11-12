@@ -17,18 +17,29 @@ class ContactsPage extends StatefulWidget {
 class _ContactsPageState extends State<ContactsPage> {
   List<Widget> widgetList = [];
   List<example.UserInfo> userList = [];
+  List<example.GroupInfo> groupList = [];
 
   @override
   void initState() {
     super.initState();
     _addFriends();
+    _addGroups();
   }
 
   void _addFriends() {
     // List users = await _getRandomUserInfos();
     _getRandomUserInfos().then((users) {
       for (example.UserInfo u in users) {
-        this.widgetList.add(getWidget(u));
+        this.widgetList.add(_getUserWidget(u));
+        _refreshUI();
+      }
+    });
+  }
+
+  void _addGroups() {
+    _getRandomGroupInfos().then((groups) {
+      for (example.GroupInfo g in groups) {
+        this.widgetList.add(_getGroupWidget(g));
         _refreshUI();
       }
     });
@@ -43,11 +54,24 @@ class _ContactsPageState extends State<ContactsPage> {
     this.userList.add(await example.UserInfoDataSource.getUserInfo("333"));
     this.userList.add(await example.UserInfoDataSource.getUserInfo("555"));
     this.userList.add(await example.UserInfoDataSource.getUserInfo("666"));
+    this.userList.add(await example.UserInfoDataSource.getUserInfo("Lno_B2cKRKEkbg_gVyk_YU"));
+    this.userList.add(await example.UserInfoDataSource.getUserInfo("Z2CvBJNvQp4iPWy2P_VaG4"));
     return this.userList;
+  }
+
+  Future<List<example.GroupInfo>> _getRandomGroupInfos() async {
+    this.groupList.add(await example.UserInfoDataSource.getGroupInfo("chOjozEWTl4s8eQYZhri0c"));
+    this.groupList.add(await example.UserInfoDataSource.getGroupInfo("9EYmQ_QUTEktP9Z8jTWL_c"));
+    return this.groupList;
   }
 
   void _onTapUser(example.UserInfo user) {
     Map arg = {"coversationType": prefix.RCConversationType.Private, "targetId": user.id};
+    Navigator.pushNamed(context, "/conversation", arguments: arg);
+  }
+
+  void _onTapGroup(example.GroupInfo group) {
+    Map arg = {"coversationType": prefix.RCConversationType.Group, "targetId": group.id};
     Navigator.pushNamed(context, "/conversation", arguments: arg);
   }
 
@@ -62,7 +86,7 @@ class _ContactsPageState extends State<ContactsPage> {
     Navigator.of(context).pushAndRemoveUntil(new MaterialPageRoute(builder: (context) => new LoginPage()), (route) => route == null);
   }
 
-  Widget getWidget(example.UserInfo user) {
+  Widget _getUserWidget(example.UserInfo user) {
     return Container(
       height: 50.0,
       color: Colors.white,
@@ -80,6 +104,32 @@ class _ContactsPageState extends State<ContactsPage> {
               child: CachedNetworkImage(
                 fit: BoxFit.fill,
                 imageUrl: user.portraitUrl!,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _getGroupWidget(example.GroupInfo group) {
+    return Container(
+      height: 50.0,
+      color: Colors.white,
+      child: InkWell(
+        onTap: () {
+          _onTapGroup(group);
+        },
+        child: new ListTile(
+          title: new Text(group.id!),
+          leading: Container(
+            width: 36,
+            height: 36,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(5),
+              child: CachedNetworkImage(
+                fit: BoxFit.fill,
+                imageUrl: group.portraitUrl!,
               ),
             ),
           ),
