@@ -349,7 +349,7 @@ public class RCIMFlutterWrapper {
         } else if (RCMethodList.MethodKeyBatchInsertMessage.equalsIgnoreCase(call.method)) {
             batchInsertMessage(call.arguments, result);
         } else if (RCMethodList.MethodKeySetAndroidPushConfig.equalsIgnoreCase(call.method)) {
-            setPushConfig(call.arguments);
+            setPushConfig(call.arguments, result);
         } else {
             result.notImplemented();
         }
@@ -364,47 +364,43 @@ public class RCIMFlutterWrapper {
         return appkey;
     }
 
-    public void setPushConfig(Object arg) {
+    public void setPushConfig(Object arg, Result result) {
         if (arg instanceof Map) {
-            final Map paramMap = (Map) arg;
-            mMainHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    PushConfig.Builder configBuilder = new PushConfig.Builder();
-                    if (paramMap.get("enableHWPush") != null) {
-                        configBuilder.enableHWPush((boolean) paramMap.get("enableHWPush"));
-                    }
-                    if (paramMap.get("enableFCM") != null) {
-                        configBuilder.enableFCM((boolean) paramMap.get("enableFCM"));
-                    }
-                    if (paramMap.get("enableVivoPush") != null) {
-                        configBuilder.enableVivoPush((boolean) paramMap.get("enableVivoPush"));
-                    }
-                    if (paramMap.get("miAppId") != null && paramMap.get("miAppKey") != null) {
-                        String miAppId = (String) paramMap.get("miAppId");
-                        String miAppKey = (String) paramMap.get("miAppKey");
-                        if (!TextUtils.isEmpty(miAppId) && !TextUtils.isEmpty(miAppKey)) {
-                            configBuilder.enableMiPush(miAppId, miAppKey);
-                        }
-                    }
-                    if (paramMap.get("mzAppId") != null && paramMap.get("mzAppKey") != null) {
-                        String mzAppId = (String) paramMap.get("mzAppId");
-                        String mzAppKey = (String) paramMap.get("mzAppKey");
-                        if (!TextUtils.isEmpty(mzAppId) && !TextUtils.isEmpty(mzAppKey)) {
-                            configBuilder.enableMeiZuPush(mzAppId, mzAppKey);
-                        }
-                    }
-                    if (paramMap.get("oppoAppKey") != null && paramMap.get("oppoAppSecret") != null) {
-                        String oppoAppKey = (String) paramMap.get("oppoAppKey");
-                        String oppoAppSecret = (String) paramMap.get("oppoAppSecret");
-                        if (!TextUtils.isEmpty(oppoAppKey) && !TextUtils.isEmpty(oppoAppSecret)) {
-                            configBuilder.enableOppoPush(oppoAppKey, oppoAppSecret);
-                        }
-                    }
-                    RongPushClient.setPushConfig(configBuilder.build());
+            Map paramMap = (Map) arg;
+            PushConfig.Builder configBuilder = new PushConfig.Builder();
+            if (paramMap.get("enableHWPush") != null) {
+                configBuilder.enableHWPush((boolean) paramMap.get("enableHWPush"));
+            }
+            if (paramMap.get("enableFCM") != null) {
+                configBuilder.enableFCM((boolean) paramMap.get("enableFCM"));
+            }
+            if (paramMap.get("enableVivoPush") != null) {
+                configBuilder.enableVivoPush((boolean) paramMap.get("enableVivoPush"));
+            }
+            if (paramMap.get("miAppId") != null && paramMap.get("miAppKey") != null) {
+                String miAppId = (String) paramMap.get("miAppId");
+                String miAppKey = (String) paramMap.get("miAppKey");
+                if (!TextUtils.isEmpty(miAppId) && !TextUtils.isEmpty(miAppKey)) {
+                    configBuilder.enableMiPush(miAppId, miAppKey);
                 }
-            });
+            }
+            if (paramMap.get("mzAppId") != null && paramMap.get("mzAppKey") != null) {
+                String mzAppId = (String) paramMap.get("mzAppId");
+                String mzAppKey = (String) paramMap.get("mzAppKey");
+                if (!TextUtils.isEmpty(mzAppId) && !TextUtils.isEmpty(mzAppKey)) {
+                    configBuilder.enableMeiZuPush(mzAppId, mzAppKey);
+                }
+            }
+            if (paramMap.get("oppoAppKey") != null && paramMap.get("oppoAppSecret") != null) {
+                String oppoAppKey = (String) paramMap.get("oppoAppKey");
+                String oppoAppSecret = (String) paramMap.get("oppoAppSecret");
+                if (!TextUtils.isEmpty(oppoAppKey) && !TextUtils.isEmpty(oppoAppSecret)) {
+                    configBuilder.enableOppoPush(oppoAppKey, oppoAppSecret);
+                }
+            }
+            RongPushClient.setPushConfig(configBuilder.build());
         }
+        result.success(null);
     }
 
 
@@ -1414,7 +1410,7 @@ public class RCIMFlutterWrapper {
                 public void onError(IRongCoreEnum.CoreErrorCode errorCode) {
                     Map callBackMap = new HashMap();
                     callBackMap.put("targetId", targetId);
-                    callBackMap.put("status", 1);
+                    callBackMap.put("status", errorCode.getValue());
                     RCLog.e("[joinChatRoom] onError: " + errorCode.getValue());
                     mChannel.invokeMethod(RCMethodList.MethodCallBackKeyJoinChatRoom, callBackMap);
                 }
@@ -1446,7 +1442,7 @@ public class RCIMFlutterWrapper {
                     RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
                     Map callBackMap = new HashMap();
                     callBackMap.put("targetId", targetId);
-                    callBackMap.put("status", 1);
+                    callBackMap.put("status", errorCode.getValue());
                     RCLog.e("[joinExitChatRoom] onError:" + errorCode.getValue());
                     mChannel.invokeMethod(RCMethodList.MethodCallBackKeyJoinChatRoom, callBackMap);
                 }
@@ -1472,7 +1468,7 @@ public class RCIMFlutterWrapper {
                 public void onError(IRongCoreEnum.CoreErrorCode errorCode) {
                     Map callBackMap = new HashMap();
                     callBackMap.put("targetId", targetId);
-                    callBackMap.put("status", 1);
+                    callBackMap.put("status", errorCode.getValue());
                     RCLog.e("[quitChatRoom] onError:" + errorCode.getValue());
                     mChannel.invokeMethod(RCMethodList.MethodCallBackKeyQuitChatRoom, callBackMap);
                 }
@@ -1639,8 +1635,13 @@ public class RCIMFlutterWrapper {
             RongCoreClient.getInstance().getConversationList(new IRongCoreCallback.ResultCallback<List<Conversation>>() {
                 @Override
                 public void onSuccess(List<Conversation> conversations) {
+                    if (resultRecord.isResultReturned) {
+                        RCLog.e("[getConversationList] onSuccess: result is returned");
+                        return;
+                    }
                     if (conversations == null) {
                         result.success(null);
+                        resultRecord.isResultReturned = true;
                         return;
                     }
                     List l = new ArrayList();
@@ -1650,6 +1651,7 @@ public class RCIMFlutterWrapper {
                     }
                     RCLog.i("[getConversationList] onSuccess:");
                     result.success(l);
+                    resultRecord.isResultReturned = true;
                 }
 
                 @Override
@@ -2318,7 +2320,7 @@ public class RCIMFlutterWrapper {
                         @Override
                         public void onError(IRongCoreEnum.CoreErrorCode errorCode) {
                             Map resultMap = new HashMap();
-                            resultMap.put("status", 1);
+                            resultMap.put("status", errorCode.getValue());
                             resultMap.put("code", errorCode.getValue());
                             RCLog.e("[getBlackListStatus] onError:" + resultMap.toString());
                             result.success(resultMap);

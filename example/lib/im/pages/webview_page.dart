@@ -1,29 +1,28 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter_plus/webview_flutter_plus.dart';
 
 class WebViewPage extends StatefulWidget {
-  final Map arguments;
+  final Map? arguments;
 
-  const WebViewPage({Key key, this.arguments}) : super(key: key);
+  const WebViewPage({Key? key, this.arguments}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _WebViewPageState(arguments["url"], arguments["title"]);
+  State<StatefulWidget> createState() => _WebViewPageState(arguments!["url"], arguments!["title"]);
 }
 
 class _WebViewPageState extends State<WebViewPage> {
   String pageName = "example.WebViewPage";
-  final String url;
-  final String title;
+  final String? url;
+  final String? title;
 
-  // final Completer<WebViewController> _controller =
-  //     Completer<WebViewController>();
   _WebViewPageState(this.url, this.title);
 
   @override
@@ -33,50 +32,53 @@ class _WebViewPageState extends State<WebViewPage> {
 
   @override
   Widget build(BuildContext context) {
-    // return
-    // Scaffold(
-    //   appBar: AppBar(
-    //     title: Text(title == null || title.isEmpty ? this.url : title),
-    //   ),
-    //   body: Container(
-    //     child: WebView(
-    //       initialUrl: url,
-    //       //JS执行模式 是否允许JS执行
-    //       javascriptMode: JavascriptMode.unrestricted,
-    //       javascriptChannels: <JavascriptChannel>[
-    //         _getJavascriptChannel(context),
-    //       ].toSet(),
-    //       onWebViewCreated: (controller) {
-    //         _controller.complete(controller);
-    //       },
-    //       onPageStarted: (String url) {
-    //         print('Page started loading: $url');
-    //       },
-    //       onPageFinished: (url) {
-    //         print('Page finished loading: $url');
-    //       },
-    //     ),
-    //   ),
-    // );
-    String correctUrl = _getCorrectLocalPath(this.url);
-    return WebviewScaffold(
-        url: correctUrl,
-        appBar: AppBar(
-          title: Text(title == null && title.isEmpty ? this.url : this.title),
+    String correctUrl = _getCorrectLocalPath(this.url!);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title == null && title!.isEmpty ? this.url! : this.title!),
+      ),
+      body: Container(
+        child: WebViewPlus(
+          initialUrl: '',
+          onWebViewCreated: (controller) {
+            if (Platform.isIOS) {
+              controller.loadUrl(this.url!);
+            } else {
+              controller.loadUrl(correctUrl);
+            }
+          },
+          //JS执行模式 是否允许JS执行
+          javascriptMode: JavascriptMode.unrestricted,
+          javascriptChannels: <JavascriptChannel>[
+            _getJavascriptChannel(context),
+          ].toSet(),
+          onPageStarted: (String url) {
+            print('Page started loading: $url');
+          },
+          onPageFinished: (url) {
+            print('Page finished loading: $url');
+          },
         ),
-        withZoom: true,
-        hidden: true,
-        withLocalStorage: true,
-        withJavascript: true,
-        javascriptChannels: <JavascriptChannel>[
-          _getJavascriptChannel(context),
-        ].toSet(),
-        initialChild: Center(
-          child: CupertinoActivityIndicator(
-            radius: 15.0,
-            animating: true,
-          ),
-        ));
+      ),
+    );
+    // return WebviewScaffold(
+    //     url: correctUrl,
+    //     appBar: AppBar(
+    //       title: Text(title == null && title!.isEmpty ? this.url! : this.title!),
+    //     ),
+    //     withZoom: true,
+    //     hidden: true,
+    //     withLocalStorage: true,
+    //     withJavascript: true,
+    //     javascriptChannels: <JavascriptChannel>[
+    //       _getJavascriptChannel(context),
+    //     ].toSet(),
+    //     initialChild: Center(
+    //       child: CupertinoActivityIndicator(
+    //         radius: 15.0,
+    //         animating: true,
+    //       ),
+    //     ));
   }
 
   String _getCorrectLocalPath(String url) {
@@ -97,14 +99,14 @@ class _WebViewPageState extends State<WebViewPage> {
   }
 
   void handleInfo(String jsonStr, BuildContext context) {
-    if (jsonStr != null && jsonStr.isNotEmpty) {
+    if (jsonStr.isNotEmpty) {
       Map map = json.decode(jsonStr);
-      String type = map["type"];
+      String? type = map["type"];
       switch (type) {
         case FileMessage.objectName:
           developer.log("FileMessage click coming", name: pageName);
-          String fileName = map["fileName"];
-          String fileUrl = map["fileUrl"];
+          String? fileName = map["fileName"];
+          String? fileUrl = map["fileUrl"];
           String fileSize = map["fileSize"];
           FileMessage fileMessage = FileMessage.obtain("");
           fileMessage.mName = fileName;
@@ -121,7 +123,7 @@ class _WebViewPageState extends State<WebViewPage> {
           // _openLink(link, context);
           break;
         case "phone":
-          int phoneNumber = map["phoneNum"];
+          int? phoneNumber = map["phoneNum"];
           _openPhone(phoneNumber, context);
           break;
       }
@@ -138,7 +140,7 @@ class _WebViewPageState extends State<WebViewPage> {
     }
   }
 
-  void _openPhone(int phone, BuildContext context) async {
+  void _openPhone(int? phone, BuildContext context) async {
     String url = 'tel:$phone';
     if (await canLaunch(url)) {
       await launch(url);

@@ -13,37 +13,37 @@ import '../im/util/style.dart';
 
 class SelectConversationPage extends StatefulWidget {
   // final List selectMessages;
-  final Map arguments;
+  final Map? arguments;
 
-  const SelectConversationPage({Key key, this.arguments}) : super(key: key);
+  const SelectConversationPage({Key? key, this.arguments}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _SelectConversationPageState(this.arguments);
 }
 
 class _SelectConversationPageState extends State<SelectConversationPage> {
-  final Map arguments;
+  final Map? arguments;
 
   _SelectConversationPageState(this.arguments);
 
   String pageName = "example.SelectConversationPage";
-  List<Message> selectMessages;
-  int forwardType; // 0:逐条转发，1:合并转发
+  List<Message>? selectMessages;
+  int? forwardType; // 0:逐条转发，1:合并转发
   List conList = [];
   List<int> displayConversationType = [RCConversationType.Private, RCConversationType.Group];
-  ScrollController _scrollController;
+  ScrollController? _scrollController;
   List selectConList = [];
 
   @override
   void initState() {
     super.initState();
-    selectMessages = List<Message>.from(arguments["selectMessages"]);
-    forwardType = arguments["forwardType"];
+    selectMessages = List<Message>.from(arguments!["selectMessages"]);
+    forwardType = arguments!["forwardType"];
     updateConversationList();
   }
 
   updateConversationList() async {
-    List list = await RongIMClient.getConversationList(displayConversationType);
+    List? list = await RongIMClient.getConversationList(displayConversationType);
     if (list != null) {
       conList = list;
     }
@@ -83,7 +83,7 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
         color: Colors.white,
         child: InkWell(
           child: new ListTile(
-            title: new Text((con.conversationType == RCConversationType.Private ? "单聊：" : "群聊：") + con.targetId),
+            title: new Text((con.conversationType == RCConversationType.Private ? "单聊：" : "群聊：") + con.targetId!),
           ),
         ),
       ),
@@ -105,7 +105,7 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
   }
 
   void sendMessageByCombine() async {
-    CombineMessage combineMessage = await CombineMessageUtils().combineMessage(selectMessages);
+    CombineMessage? combineMessage = await CombineMessageUtils().combineMessage(selectMessages);
     List<Message> messageList = [];
     Message message = Message();
     message.content = combineMessage;
@@ -122,17 +122,17 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
     sendMessage(selectMessages);
   }
 
-  void sendMessage(List<Message> selectMessages, {bool isCombineMsg = false}) async {
+  void sendMessage(List<Message>? selectMessages, {bool isCombineMsg = false}) async {
     Future.delayed(Duration(milliseconds: 400), () {
-      for (Message msg in selectMessages) {
+      for (Message msg in selectMessages!) {
         for (Conversation con in selectConList) {
           // 转发时去掉消息原先携带的 sendUserInfo 和 mentionedInfo
-          msg.content.sendUserInfo = null;
-          msg.content.mentionedInfo = null;
+          msg.content!.sendUserInfo = null;
+          msg.content!.mentionedInfo = null;
           if (TargetPlatform.android == defaultTargetPlatform && !isCombineMsg) {
-            RongIMClient.forwardMessageByStep(con.conversationType, con.targetId, msg);
+            RongIMClient.forwardMessageByStep(con.conversationType!, con.targetId!, msg);
           } else {
-            RongIMClient.sendMessage(con.conversationType, con.targetId, msg.content);
+            RongIMClient.sendMessage(con.conversationType!, con.targetId!, msg.content!);
           }
 
           // 延迟400秒，防止过渡频繁的发送消息导致发送失败的问题
@@ -142,7 +142,7 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
       selectConList.clear();
       Navigator.pop(context);
       Navigator.pop(context);
-      EventBus.instance.commit(EventKeys.ForwardMessageEnd, null);
+      EventBus.instance!.commit(EventKeys.ForwardMessageEnd, null);
     });
   }
 

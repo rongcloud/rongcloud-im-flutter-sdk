@@ -5,8 +5,8 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:video_player/video_player.dart';
 
@@ -15,9 +15,9 @@ import 'record_bottom_item.dart';
 import 'record_top_item.dart';
 
 class VideoRecordPage extends StatefulWidget {
-  final Map arguments;
+  final Map? arguments;
 
-  VideoRecordPage({Key key, this.arguments}) : super(key: key);
+  VideoRecordPage({Key? key, this.arguments}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -27,27 +27,27 @@ class VideoRecordPage extends StatefulWidget {
 
 class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBottomToolBarDelegate, TopRecordItemDelegate {
   String pageName = "example.VideoRecordPage";
-  Map arguments;
-  int conversationType;
-  String targetId;
+  Map? arguments;
+  int? conversationType;
+  String? targetId;
   int recodeTime = 0;
-  Timer timer;
-  bool isSecretChat = false;
+  Timer? timer;
+  bool? isSecretChat = false;
 
-  CameraController cameraController;
-  VideoPlayerController videoPlayerController;
-  List<CameraDescription> cameras;
-  String videoPath;
-  TopRecordItem topitem;
+  CameraController? cameraController;
+  VideoPlayerController? videoPlayerController;
+  late List<CameraDescription> cameras;
+  String? videoPath;
+  TopRecordItem? topitem;
 
   _VideoRecordPageState({this.arguments});
 
   @override
   void initState() {
     super.initState();
-    conversationType = arguments["coversationType"];
-    targetId = arguments["targetId"];
-    isSecretChat = arguments["isSecretChat"];
+    conversationType = arguments!["coversationType"];
+    targetId = arguments!["targetId"];
+    isSecretChat = arguments!["isSecretChat"];
     initCamera();
     topitem = TopRecordItem(this);
   }
@@ -62,7 +62,7 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
   void initCamera() async {
     cameras = await availableCameras();
     cameraController = CameraController(cameras[0], ResolutionPreset.medium);
-    cameraController.initialize().then((_) {
+    cameraController!.initialize().then((_) {
       if (!mounted) {
         return;
       }
@@ -78,18 +78,17 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
 
   void onSwitchCamera() async {
     developer.log("onSwitchCamera", name: pageName);
-    CameraDescription curDes = cameraController.description;
+    CameraDescription curDes = cameraController!.description;
     CameraDescription targetDes = cameras[0];
     if (cameras[0].name == curDes.name) {
       targetDes = cameras[1];
     }
-    if (cameraController != null) {
-      await cameraController.dispose();
-    }
+
+    cameraController?.dispose();
 
     cameraController = CameraController(targetDes, ResolutionPreset.medium);
 
-    cameraController.initialize().then((_) {
+    cameraController?.initialize().then((_) {
       if (!mounted) {
         return;
       }
@@ -97,69 +96,61 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
     });
   }
 
-  Future<String> startVideoRecording() async {
-    if (!cameraController.value.isInitialized) {
+  Future<void> startVideoRecording() async {
+    if (!cameraController!.value.isInitialized) {
       developer.log("Error: select a camera first.", name: pageName);
-      return null;
+      return;
     }
 
-    final Directory extDir = await getTemporaryDirectory();
-    final String dirPath = '${extDir.path}/Movies/flutter_test';
-    await Directory(dirPath).create(recursive: true);
-    final String filePath = '$dirPath/${timestamp()}.mp4';
-
-    if (cameraController.value.isRecordingVideo) {
+    if (cameraController!.value.isRecordingVideo) {
       // A recording is already started, do nothing.
-      return null;
+      return;
     }
 
     try {
-      videoPath = filePath;
-      await cameraController.startVideoRecording(filePath);
+      await cameraController?.startVideoRecording();
     } on CameraException catch (e) {
       developer.log(e.toString(), name: pageName);
-      return null;
+      return;
     }
-    return filePath;
+
+    return;
   }
 
   Future<void> stopVideoRecording() async {
-    if (!cameraController.value.isRecordingVideo) {
-      return null;
+    if (!cameraController!.value.isRecordingVideo) {
+      return;
     }
 
     try {
-      await cameraController.stopVideoRecording();
+      XFile? file = await cameraController?.stopVideoRecording();
+      videoPath = file?.path;
     } on CameraException catch (e) {
       developer.log(e.toString(), name: pageName);
-      return null;
+      return;
     }
 
     developer.log("rc videoPath $videoPath", name: pageName);
 
-    videoPlayerController = VideoPlayerController.file(File(videoPath));
-//    await videoPlayerController.setLooping(true);
-    await videoPlayerController.initialize();
-    await videoPlayerController.play();
+    videoPlayerController = VideoPlayerController.file(File(videoPath!));
+    await videoPlayerController?.initialize();
+    await videoPlayerController?.play();
     setState(() {});
+    return;
   }
 
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
 
   void resetData() {
+    recodeTime = 0;
     videoPath = null;
-    if (videoPlayerController != null && videoPlayerController.value != null && videoPlayerController.value.isPlaying) {
-      videoPlayerController.pause();
-    }
+    videoPlayerController?.pause();
     videoPlayerController = null;
   }
 
   @override
   Widget build(BuildContext context) {
-    if (cameraController == null) {
-      return Container();
-    }
-    if (!cameraController.value.isInitialized) {
+    if (cameraController == null || !cameraController!.value.isInitialized) {
       return Container();
     }
 
@@ -174,7 +165,7 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
                   aspectRatio: MediaQuery.of(context).size.width / MediaQuery.of(context).size.height,
                   child: Center(
                       child: Stack(
-                    children: <Widget>[_getCameraPreviewWidget(), topitem],
+                    children: <Widget>[_getCameraPreviewWidget(), topitem!],
                   )),
                 ),
               ),
@@ -194,15 +185,15 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
   }
 
   Widget _getCameraPreviewWidget() {
-    Widget widget = CameraPreview(cameraController);
+    Widget widget = CameraPreview(cameraController!);
     if (videoPath != null) {
-      widget = VideoPlayer(videoPlayerController);
+      widget = VideoPlayer(videoPlayerController!);
     }
     return Transform.scale(
-      scale: 1 / cameraController.value.aspectRatio,
+      scale: 1 / cameraController!.value.aspectRatio,
       child: Center(
         child: AspectRatio(
-          aspectRatio: cameraController.value.aspectRatio,
+          aspectRatio: cameraController!.value.aspectRatio,
           child: widget,
         ),
       ),
@@ -211,6 +202,7 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
 
   void startTimer() {
     if (timer == null) {
+      recodeTime++;
       timer = Timer.periodic(Duration(milliseconds: 1000), (timer) {
         recodeTime++;
         developer.log("!!!!timer + $recodeTime", name: pageName);
@@ -222,39 +214,48 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
   }
 
   void stopTimer() {
-    timer.cancel();
+    timer?.cancel();
+    timer = null;
   }
 
+  bool _stoped = false;
+
   @override
-  void didLongPressCamera() {
+  void didLongPressCamera() async {
+    _stoped = false;
     developer.log("onLongPressCamera", name: pageName);
+    topitem?.updateRecordState(RecordState.RecordLoading);
     videoPath = null;
-
-    topitem.updateRecordState(RecordState.Recording);
-    startVideoRecording().then((String filePath) {
-      // if (mounted) setState(() {});
-      if (filePath != null) developer.log("Saving video to $filePath", name: pageName);
-    });
-
-    startTimer();
+    await startVideoRecording();
+    if (!_stoped) {
+      startTimer();
+      topitem?.updateRecordState(RecordState.Recording);
+    }
   }
 
   @override
-  void didLongPressEndCamera() {
-    topitem.updateRecordState(RecordState.Preview);
+  Future<bool> didLongPressEndCamera() async {
+    _stoped = true;
     developer.log("onLongPressEndCamera", name: pageName);
-    stopVideoRecording().then((_) {
-      // if (mounted) setState(() {});
-      developer.log("Video recorded to: $videoPath", name: pageName);
-    });
+    await stopVideoRecording();
     stopTimer();
+    if (recodeTime <= 0) {
+      Fluttertoast.showToast(msg: "录制时间太短！");
+      resetData();
+      topitem?.updateRecordState(RecordState.Normal);
+      return true;
+    } else {
+      topitem?.updateRecordState(RecordState.Preview);
+      return false;
+    }
   }
 
   //录制视频后取消
   @override
   void didCancelEvent() {
     developer.log("onCancelEvent", name: pageName);
-    topitem.updateRecordState(RecordState.Normal);
+    topitem?.updateRecordState(RecordState.Normal);
+    stopTimer();
     resetData();
     setState(() {});
   }
@@ -265,24 +266,16 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
     developer.log("onFinishEvent", name: pageName);
     if (videoPath != null) {
       developer.log("onFinishEvent con $conversationType targetId $targetId", name: pageName);
-      SightMessage sightMessage = SightMessage.obtain(videoPath, recodeTime);
-      if (sightMessage.duration != null && sightMessage.duration > 0) {
+      SightMessage sightMessage = SightMessage.obtain(videoPath!, recodeTime);
+      if (sightMessage.duration != null && sightMessage.duration! > 0) {
         if (conversationType == RCConversationType.Private) {
-          sightMessage.destructDuration = isSecretChat ? RCDuration.MediaMessageBurnDuration + recodeTime : 0;
+          sightMessage.destructDuration = isSecretChat! ? RCDuration.MediaMessageBurnDuration + recodeTime : 0;
         }
-        // Message message = Message();
-        // message.conversationType = conversationType;
-        // message.targetId = targetId;
-        // message.objectName = SightMessage.objectName;
-        // message.content = sightMessage;
-        // RongIMClient.sendIntactMessageWithCallBack(message, "", "",
-        //     (int messageId, int status, int code) {
-        //   String result = "messageId:$messageId status:$status code:$code";
-        // });
-        RongIMClient.sendMessage(conversationType, targetId, sightMessage);
-        _saveVideo(videoPath);
+        RongIMClient.sendMessage(conversationType!, targetId!, sightMessage);
+        _saveVideo(videoPath!);
       } else {
         developer.log("sightMessage duration is 0", name: pageName);
+        Fluttertoast.showToast(msg: "视频时长太短！");
       }
       onPop();
     } else {

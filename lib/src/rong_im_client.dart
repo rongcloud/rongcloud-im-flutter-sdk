@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:rongcloud_im_plugin/src/info/history_message_option.dart';
@@ -23,7 +24,7 @@ class RongIMClient {
   static final MethodChannel _channel = const MethodChannel('rongcloud_im_plugin');
 
   static Map sendMessageCallbacks = Map();
-  static final String sdkVersion = "5.1.4+1";
+  static final String sdkVersion = "5.1.5";
 
   static Map<String, MessageDecoder> messageDecoders = Map<String, MessageDecoder>();
 
@@ -41,13 +42,10 @@ class RongIMClient {
   ///设置推送配置(Android 第三方推送配置)
   ///
   ///[pushConfig] 推送配置
-  static void setAndroidPushConfig(PushConfig pushConfig) async {
-    if (pushConfig == null) {
-      developer.log("setAndroidPushConfig fail: pushConfig is null", name: "RongIMClient");
-      return;
-    }
+  static Future<void> setAndroidPushConfig(PushConfig pushConfig) async {
+    if (!Platform.isAndroid) return;
     Map paramMap = MessageFactory.instance!.pushConfig2Map(pushConfig);
-    _channel.invokeMethod(RCMethodKey.SetAndroidPushConfig, paramMap);
+    return _channel.invokeMethod(RCMethodKey.SetAndroidPushConfig, paramMap);
   }
 
   ///注册Flutter端自定义消息

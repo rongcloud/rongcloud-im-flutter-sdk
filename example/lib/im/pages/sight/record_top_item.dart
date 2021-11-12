@@ -6,6 +6,8 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 enum RecordState {
   //正常 [返回,切换摄像头]
   Normal,
+  // 录制前加载
+  RecordLoading,
   //录制 [返回,进度条]
   Recording,
   //预览 [返回]
@@ -13,8 +15,8 @@ enum RecordState {
 }
 
 class TopRecordItem extends StatefulWidget {
-  TopRecordItemDelegate delegate;
-  _TopRecordItemState state;
+  TopRecordItemDelegate? delegate;
+  late _TopRecordItemState state;
 
   TopRecordItem(TopRecordItemDelegate delegate) {
     this.delegate = delegate;
@@ -31,7 +33,7 @@ class TopRecordItem extends StatefulWidget {
 
 class _TopRecordItemState extends State<TopRecordItem> {
   String pageName = "example.TopRecordItem";
-  TopRecordItemDelegate delegate;
+  TopRecordItemDelegate? delegate;
 
   RecordState currentRecordState = RecordState.Normal;
 
@@ -72,7 +74,7 @@ class _TopRecordItemState extends State<TopRecordItem> {
             child: Container(
               width: 25,
               height: 25,
-              child: currentRecordState != RecordState.Recording ? Image.asset("assets/images/sight_top_toolbar_close.png") : Container(),
+              child: currentRecordState != RecordState.Recording && currentRecordState != RecordState.RecordLoading ? Image.asset("assets/images/sight_top_toolbar_close.png") : Container(),
             ),
           ),
           SizedBox(
@@ -103,7 +105,7 @@ class _TopRecordItemState extends State<TopRecordItem> {
 
   void onPop() {
     if (delegate != null) {
-      delegate.didPop();
+      delegate!.didPop();
     } else {
       developer.log("没有实现 didPop", name: pageName);
     }
@@ -111,7 +113,7 @@ class _TopRecordItemState extends State<TopRecordItem> {
 
   void onSwitchCamera() {
     if (delegate != null) {
-      delegate.didSwitchCamera();
+      delegate!.didSwitchCamera();
     } else {
       developer.log("没有实现 didSwitchCamera", name: pageName);
     }

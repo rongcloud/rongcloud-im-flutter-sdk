@@ -4,8 +4,11 @@
     <application
         android:allowBackup="true"
         android:supportsRtl="true">
+
         <meta-data
             android:name="rc.imflutter"
             android:value="io.rong.flutter.imlib.Version" />
+
     </application>
+
 </manifest>

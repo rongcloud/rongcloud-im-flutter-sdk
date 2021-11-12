@@ -127,7 +127,7 @@ class RCString {
   static const String ForwardHint = "目前转发仅支持文本、语音、图片、Gif、视频、文件和图文消息，其他无法识别的消息类型暂不支持转发。";
   static const String ChatRecord = "聊天记录";
   static const String GroupChatRecord = "群聊的聊天记录";
-  static const String ExtSecretChat = "阅后即焚";
+  // static const String ExtSecretChat = "阅后即焚";
 
   // 合并消息
   static const String RCMessageContentImage = "[图片]";
