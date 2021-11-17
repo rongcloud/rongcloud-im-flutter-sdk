@@ -2251,12 +2251,12 @@ class RongIMClient {
       case RCMethodCallBackKey.SendMessage:
         {
           Map argMap = call.arguments;
-          int? msgId = argMap["messageId"];
-          int? status = argMap["status"];
-          int? code = argMap["code"];
+          int msgId = argMap["messageId"];
+          int status = argMap["status"];
+          int code = argMap["code"];
           int? timestamp = argMap["timestamp"];
           if (timestamp != null && timestamp > 0) {
-            Function(int? messageId, int? status, int? code)? finished = sendMessageCallbacks[timestamp];
+            Function(int messageId, int status, int code)? finished = sendMessageCallbacks[timestamp];
             if (finished != null) {
               finished(msgId, status, code);
               sendMessageCallbacks.remove(timestamp);
