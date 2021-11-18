@@ -133,7 +133,7 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
     EventBus.instance!.removeListener(EventKeys.ReceiveReadReceipt);
     EventBus.instance!.removeListener(EventKeys.ReceiveReceiptRequest);
     EventBus.instance!.removeListener(EventKeys.ReceiveReceiptResponse);
-    EventBus.instance!.removeListener(EventKeys.BlockMessage);
+    // EventBus.instance!.removeListener(EventKeys.BlockMessage);
     MediaUtil.instance!.stopPlayAudio();
   }
 
@@ -257,12 +257,12 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
       }
     };
 
-    EventBus.instance!.addListener(EventKeys.BlockMessage, (info) {
-      Fluttertoast.showToast(
-        msg: "敏感词被拦截,拦截类型:${info.blockType},会话类型:${info.conversationType},目标ID:${info.targetId},消息UID:${info.blockMsgUId},扩展信息:${info.extra}",
-        timeInSecForIosWeb: 5,
-      );
-    });
+    // EventBus.instance!.addListener(EventKeys.BlockMessage, (info) {
+    //   Fluttertoast.showToast(
+    //     msg: "敏感词被拦截,拦截类型:${info.blockType},会话类型:${info.conversationType},目标ID:${info.targetId},消息UID:${info.blockMsgUId},扩展信息:${info.extra}",
+    //     timeInSecForIosWeb: 5,
+    //   );
+    // });
   }
 
   onGetHistoryMessages() async {

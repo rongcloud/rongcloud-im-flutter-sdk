@@ -10,7 +10,6 @@ import 'package:rongcloud_im_plugin/src/util/type_util.dart';
 
 import '../rongcloud_im_plugin.dart';
 import 'common_define.dart';
-import 'info/blocked_message_info.dart';
 import 'info/connection_status_convert.dart';
 import 'method_key.dart';
 import 'util/message_factory.dart';
@@ -1343,76 +1342,76 @@ class RongIMClient {
     }
   }
 
-  /// 批量设置聊天室自定义属性
-  /// [chatRoomId] 聊天室 ID
-  /// [chatRoomEntryMap] 聊天室属性
-  ///                    1. chatRoomEntryMap集合大小最大限制为 10,超过限制返回错误码 23429
-  ///                    2. key 支持大小写英文字母、数字、部分特殊符号 + = - _ 的组合方式，最大长度 128 个字符
-  ///                       value 聊天室属性对应的值，最大长度 4096 个字符
-  /// [autoRemove] 用户掉线或退出时，是否自动删除该 Key、Value 值
-  /// [overWrite] 是否强制覆盖
-  /// [finished] 设置聊天室属性的回调
-  ///            当 code 为 23428 的时候，errors 才会有值（key标识设置失败的 key,value 标识该 key 对应的错误码）
-  static void setChatRoomEntries(
-    String chatRoomId,
-    Map<String, String> chatRoomEntryMap,
-    bool autoRemove,
-    bool overWrite,
-    Function(int code, Map<String, int>? errors) finished,
-  ) async {
-    Map arguments = {
-      "chatRoomId": chatRoomId,
-      "chatRoomEntryMap": chatRoomEntryMap,
-      "autoRemove": autoRemove,
-      "overWrite": overWrite,
-    };
-    Map<dynamic, dynamic>? result = await _channel.invokeMapMethod(RCMethodKey.SetChatRoomEntries, arguments);
-    if (result != null) {
-      int code = result['code'];
-      Map<dynamic, dynamic>? errors = result['errors'];
-      if (errors != null) {
-        finished(code, Map<String, int>.from(errors));
-      } else {
-        finished(code, null);
-      }
-    } else {
-      finished(-1, null);
-    }
-  }
+  // /// 批量设置聊天室自定义属性
+  // /// [chatRoomId] 聊天室 ID
+  // /// [chatRoomEntryMap] 聊天室属性
+  // ///                    1. chatRoomEntryMap集合大小最大限制为 10,超过限制返回错误码 23429
+  // ///                    2. key 支持大小写英文字母、数字、部分特殊符号 + = - _ 的组合方式，最大长度 128 个字符
+  // ///                       value 聊天室属性对应的值，最大长度 4096 个字符
+  // /// [autoRemove] 用户掉线或退出时，是否自动删除该 Key、Value 值
+  // /// [overWrite] 是否强制覆盖
+  // /// [finished] 设置聊天室属性的回调
+  // ///            当 code 为 23428 的时候，errors 才会有值（key标识设置失败的 key,value 标识该 key 对应的错误码）
+  // static void setChatRoomEntries(
+  //   String chatRoomId,
+  //   Map<String, String> chatRoomEntryMap,
+  //   bool autoRemove,
+  //   bool overWrite,
+  //   Function(int code, Map<String, int>? errors) finished,
+  // ) async {
+  //   Map arguments = {
+  //     "chatRoomId": chatRoomId,
+  //     "chatRoomEntryMap": chatRoomEntryMap,
+  //     "autoRemove": autoRemove,
+  //     "overWrite": overWrite,
+  //   };
+  //   Map<dynamic, dynamic>? result = await _channel.invokeMapMethod(RCMethodKey.SetChatRoomEntries, arguments);
+  //   if (result != null) {
+  //     int code = result['code'];
+  //     Map<dynamic, dynamic>? errors = result['errors'];
+  //     if (errors != null) {
+  //       finished(code, Map<String, int>.from(errors));
+  //     } else {
+  //       finished(code, null);
+  //     }
+  //   } else {
+  //     finished(-1, null);
+  //   }
+  // }
 
-  /// 批量删除聊天室自定义属性
-  /// [chatRoomId] 聊天室 ID
-  /// [chatRoomEntryList] 聊天室属性
-  ///                     1. chatRoomEntryMap集合大小最大限制为 10,超过限制返回错误码 23429
-  ///                     2. key 支持大小写英文字母、数字、部分特殊符号 + = - _ 的组合方式，最大长度 128 个字符
-  ///                        value 聊天室属性对应的值，最大长度 4096 个字符
-  /// [force] 是否强制覆盖
-  /// [finished] 设置聊天室属性的回调
-  ///            当 code 为 23428 的时候，errors 才会有值（key标识设置失败的 key,value 标识该 key 对应的错误码）
-  static void removeChatRoomEntries(
-    String chatRoomId,
-    List<String> chatRoomEntryList,
-    bool force,
-    Function(int code, Map<String, int>? errors) finished,
-  ) async {
-    Map arguments = {
-      "chatRoomId": chatRoomId,
-      "chatRoomEntryList": chatRoomEntryList,
-      "force": force,
-    };
-    Map<String, dynamic>? result = await _channel.invokeMapMethod(RCMethodKey.RemoveChatRoomEntries, arguments);
-    if (result != null) {
-      int code = result['code'];
-      Map<dynamic, dynamic>? errors = result['errors'];
-      if (errors != null) {
-        finished(code, Map<String, int>.from(errors));
-      } else {
-        finished(code, null);
-      }
-    } else {
-      finished(-1, null);
-    }
-  }
+  // /// 批量删除聊天室自定义属性
+  // /// [chatRoomId] 聊天室 ID
+  // /// [chatRoomEntryList] 聊天室属性
+  // ///                     1. chatRoomEntryMap集合大小最大限制为 10,超过限制返回错误码 23429
+  // ///                     2. key 支持大小写英文字母、数字、部分特殊符号 + = - _ 的组合方式，最大长度 128 个字符
+  // ///                        value 聊天室属性对应的值，最大长度 4096 个字符
+  // /// [force] 是否强制覆盖
+  // /// [finished] 设置聊天室属性的回调
+  // ///            当 code 为 23428 的时候，errors 才会有值（key标识设置失败的 key,value 标识该 key 对应的错误码）
+  // static void removeChatRoomEntries(
+  //   String chatRoomId,
+  //   List<String> chatRoomEntryList,
+  //   bool force,
+  //   Function(int code, Map<String, int>? errors) finished,
+  // ) async {
+  //   Map arguments = {
+  //     "chatRoomId": chatRoomId,
+  //     "chatRoomEntryList": chatRoomEntryList,
+  //     "force": force,
+  //   };
+  //   Map<String, dynamic>? result = await _channel.invokeMapMethod(RCMethodKey.RemoveChatRoomEntries, arguments);
+  //   if (result != null) {
+  //     int code = result['code'];
+  //     Map<dynamic, dynamic>? errors = result['errors'];
+  //     if (errors != null) {
+  //       finished(code, Map<String, int>.from(errors));
+  //     } else {
+  //       finished(code, null);
+  //     }
+  //   } else {
+  //     finished(-1, null);
+  //   }
+  // }
 
   ///撤回消息
   ///
@@ -2093,8 +2092,8 @@ class RongIMClient {
   ///
   static Function()? onTagChanged;
 
-  /// 发送含有敏感词消息被拦截的回调
-  static Function(BlockedMessageInfo info)? onMessageBlocked;
+  // /// 发送含有敏感词消息被拦截的回调
+  // static Function(BlockedMessageInfo info)? onMessageBlocked;
 
   ///连接状态发生变更
   ///
@@ -2481,9 +2480,9 @@ class RongIMClient {
           onTagChanged!();
         }
         break;
-      case RCMethodCallBackKey.OnMessageBlocked:
-        onMessageBlocked?.call(BlockedMessageInfo.fromMap(call.arguments));
-        break;
+      // case RCMethodCallBackKey.OnMessageBlocked:
+      //   onMessageBlocked?.call(BlockedMessageInfo.fromMap(call.arguments));
+      //   break;
     }
   }
 }

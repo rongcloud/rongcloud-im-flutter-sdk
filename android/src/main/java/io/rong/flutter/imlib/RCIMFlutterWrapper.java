@@ -266,11 +266,13 @@ public class RCIMFlutterWrapper {
             removeChatRoomEntry(call.arguments, result);
         } else if (RCMethodList.MethodKeyForceRemoveChatRoomEntry.equalsIgnoreCase(call.method)) {
             forceRemoveChatRoomEntry(call.arguments, result);
-        } else if (RCMethodList.MethodKeySetChatRoomEntries.equalsIgnoreCase(call.method)) {
-            setChatRoomEntries(call, result);
-        } else if (RCMethodList.MethodKeyRemoveChatRoomEntries.equalsIgnoreCase(call.method)) {
-            removeChatRoomEntries(call, result);
-        } else if (RCMethodList.MethodKeySetNotificationQuietHours.equalsIgnoreCase(call.method)) {
+        }
+//        else if (RCMethodList.MethodKeySetChatRoomEntries.equalsIgnoreCase(call.method)) {
+//            setChatRoomEntries(call, result);
+//        } else if (RCMethodList.MethodKeyRemoveChatRoomEntries.equalsIgnoreCase(call.method)) {
+//            removeChatRoomEntries(call, result);
+//        }
+        else if (RCMethodList.MethodKeySetNotificationQuietHours.equalsIgnoreCase(call.method)) {
             setNotificationQuietHours(call.arguments, result);
         } else if (RCMethodList.MethodKeyRemoveNotificationQuietHours.equalsIgnoreCase(call.method)) {
             removeNotificationQuietHours(call.arguments, result);
@@ -553,7 +555,7 @@ public class RCIMFlutterWrapper {
             setConversationTagListener();
             setTagListenerListener();
             setChatRoomAdvancedActionListener();
-            setMessageBlockListener();
+//            setMessageBlockListener();
         } else {
             Log.e("RCIM flutter init", "非法参数");
         }
@@ -2638,25 +2640,25 @@ public class RCIMFlutterWrapper {
         });
     }
 
-    private void setMessageBlockListener() {
-        RongCoreClient.getInstance().setMessageBlockListener(new IRongCoreListener.MessageBlockListener() {
-            @Override
-            public void onMessageBlock(final BlockedMessageInfo info) {
-                mMainHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Map<String, Object> arguments = new HashMap<>();
-                        arguments.put("conversationType", info.getConversationType().getValue());
-                        arguments.put("targetId", info.getTargetId());
-                        arguments.put("blockMsgUId", info.getBlockMsgUId());
-                        arguments.put("blockType", info.getType().value);
-                        arguments.put("extra", info.getExtra());
-                        mChannel.invokeMethod(RCMethodList.MethodCallBackMessageBlocked, arguments);
-                    }
-                });
-            }
-        });
-    }
+//    private void setMessageBlockListener() {
+//        RongCoreClient.getInstance().setMessageBlockListener(new IRongCoreListener.MessageBlockListener() {
+//            @Override
+//            public void onMessageBlock(final BlockedMessageInfo info) {
+//                mMainHandler.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Map<String, Object> arguments = new HashMap<>();
+//                        arguments.put("conversationType", info.getConversationType().getValue());
+//                        arguments.put("targetId", info.getTargetId());
+//                        arguments.put("blockMsgUId", info.getBlockMsgUId());
+//                        arguments.put("blockType", info.getType().value);
+//                        arguments.put("extra", info.getExtra());
+//                        mChannel.invokeMethod(RCMethodList.MethodCallBackMessageBlocked, arguments);
+//                    }
+//                });
+//            }
+//        });
+//    }
 
     private boolean isLocalPathEmpty(String contentStr) {
         JSONObject jsonObject = null;
@@ -3222,59 +3224,59 @@ public class RCIMFlutterWrapper {
         }
     }
 
-    private void setChatRoomEntries(MethodCall call, final Result result) {
-        String chatRoomId = call.argument("chatRoomId");
-        Map<String, String> chatRoomEntryMap = call.argument("chatRoomEntryMap");
-        Boolean autoRemove = call.argument("autoRemove");
-        assert autoRemove != null;
-        Boolean overWrite = call.argument("overWrite");
-        assert overWrite != null;
-        RongChatRoomClient.getInstance().setChatRoomEntries(chatRoomId, chatRoomEntryMap, autoRemove, overWrite, new IRongCoreCallback.SetChatRoomKVCallback() {
-            @Override
-            public void onSuccess() {
-                Map<String, Object> map = new HashMap<>();
-                map.put("code", 0);
-                result.success(map);
-            }
+//    private void setChatRoomEntries(MethodCall call, final Result result) {
+//        String chatRoomId = call.argument("chatRoomId");
+//        Map<String, String> chatRoomEntryMap = call.argument("chatRoomEntryMap");
+//        Boolean autoRemove = call.argument("autoRemove");
+//        assert autoRemove != null;
+//        Boolean overWrite = call.argument("overWrite");
+//        assert overWrite != null;
+//        RongChatRoomClient.getInstance().setChatRoomEntries(chatRoomId, chatRoomEntryMap, autoRemove, overWrite, new IRongCoreCallback.SetChatRoomKVCallback() {
+//            @Override
+//            public void onSuccess() {
+//                Map<String, Object> map = new HashMap<>();
+//                map.put("code", 0);
+//                result.success(map);
+//            }
+//
+//            @Override
+//            public void onError(IRongCoreEnum.CoreErrorCode code, Map<String, IRongCoreEnum.CoreErrorCode> errors) {
+//                Map<String, Object> map = new HashMap<>();
+//                map.put("code", code.getValue());
+//                map.put("errors", errors);
+//                result.success(map);
+//            }
+//        });
+//    }
 
-            @Override
-            public void onError(IRongCoreEnum.CoreErrorCode code, Map<String, IRongCoreEnum.CoreErrorCode> errors) {
-                Map<String, Object> map = new HashMap<>();
-                map.put("code", code.getValue());
-                map.put("errors", errors);
-                result.success(map);
-            }
-        });
-    }
-
-    private void removeChatRoomEntries(MethodCall call, final Result result) {
-        String chatRoomId = call.argument("chatRoomId");
-        List<String> chatRoomEntryList = call.argument("chatRoomEntryList");
-        Boolean force = call.argument("force");
-        assert force != null;
-        RongChatRoomClient.getInstance().deleteChatRoomEntries(chatRoomId, chatRoomEntryList, force, new IRongCoreCallback.SetChatRoomKVCallback() {
-            @Override
-            public void onSuccess() {
-                Map<String, Object> map = new HashMap<>();
-                map.put("code", 0);
-                result.success(map);
-            }
-
-            @Override
-            public void onError(IRongCoreEnum.CoreErrorCode code, Map<String, IRongCoreEnum.CoreErrorCode> errors) {
-                Map<String, Object> map = new HashMap<>();
-                map.put("code", code.getValue());
-                if (errors != null) {
-                    Map<String, Integer> errorMap = new HashMap<>();
-                    for (String key : errors.keySet()) {
-                        errorMap.put(key, errors.get(key).getValue());
-                    }
-                    map.put("errors", errorMap);
-                }
-                result.success(map);
-            }
-        });
-    }
+//    private void removeChatRoomEntries(MethodCall call, final Result result) {
+//        String chatRoomId = call.argument("chatRoomId");
+//        List<String> chatRoomEntryList = call.argument("chatRoomEntryList");
+//        Boolean force = call.argument("force");
+//        assert force != null;
+//        RongChatRoomClient.getInstance().deleteChatRoomEntries(chatRoomId, chatRoomEntryList, force, new IRongCoreCallback.SetChatRoomKVCallback() {
+//            @Override
+//            public void onSuccess() {
+//                Map<String, Object> map = new HashMap<>();
+//                map.put("code", 0);
+//                result.success(map);
+//            }
+//
+//            @Override
+//            public void onError(IRongCoreEnum.CoreErrorCode code, Map<String, IRongCoreEnum.CoreErrorCode> errors) {
+//                Map<String, Object> map = new HashMap<>();
+//                map.put("code", code.getValue());
+//                if (errors != null) {
+//                    Map<String, Integer> errorMap = new HashMap<>();
+//                    for (String key : errors.keySet()) {
+//                        errorMap.put(key, errors.get(key).getValue());
+//                    }
+//                    map.put("errors", errorMap);
+//                }
+//                result.success(map);
+//            }
+//        });
+//    }
 
     // 设置消息通知免打扰时间
     private void setNotificationQuietHours(Object arg, final Result result) {

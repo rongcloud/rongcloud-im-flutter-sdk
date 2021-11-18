@@ -27,8 +27,8 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
       "强制设置 KV",
       "删除 KV",
       "强制删除 KV",
-      "设置 KV 列表",
-      "删除 KV 列表",
+      // "设置 KV 列表",
+      // "删除 KV 列表",
       "获取单个 KV",
       "获取所有 KV",
       "退出聊天室 1",
@@ -44,8 +44,8 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
       _forceSetEntry,
       _removeEntry,
       _forceRemoveEntry,
-      _setEntries,
-      _removeEntries,
+      // _setEntries,
+      // _removeEntries,
       _getEntry,
       _getAllEntry,
       _quitChatRoom,
@@ -120,52 +120,52 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
     });
   }
 
-  void _setEntries() {
-    Map<String, String> map = {
-      "key3": "value3",
-      "key4": "value4",
-      "key5": "value5",
-      "key6": "value6",
-      "key7": "value7",
-      "key8": "value8",
-      "key9": "value9",
-      "key10": "value10",
-      "key11": "value11",
-      "key12": "value12",
-    };
-    RongIMClient.setChatRoomEntries(
-      targetId,
-      map,
-      true,
-      true,
-      (code, errors) {
-        DialogUtil.showAlertDiaLog(context, "设置 KV：$map, 退出时删除，覆盖，code：" + CodeUtil.codeString(code)!);
-      },
-    );
-  }
+  // void _setEntries() {
+  //   Map<String, String> map = {
+  //     "key3": "value3",
+  //     "key4": "value4",
+  //     "key5": "value5",
+  //     "key6": "value6",
+  //     "key7": "value7",
+  //     "key8": "value8",
+  //     "key9": "value9",
+  //     "key10": "value10",
+  //     "key11": "value11",
+  //     "key12": "value12",
+  //   };
+  //   RongIMClient.setChatRoomEntries(
+  //     targetId,
+  //     map,
+  //     true,
+  //     true,
+  //     (code, errors) {
+  //       DialogUtil.showAlertDiaLog(context, "设置 KV：$map, 退出时删除，覆盖，code：" + CodeUtil.codeString(code)!);
+  //     },
+  //   );
+  // }
 
-  void _removeEntries() {
-    List<String> list = [
-      "key3",
-      "key4",
-      "key5",
-      "key6",
-      "key7",
-      "key8",
-      "key9",
-      "key10",
-      "key11",
-      "key12",
-    ];
-    RongIMClient.removeChatRoomEntries(
-      targetId,
-      list,
-      true,
-      (code, errors) {
-        DialogUtil.showAlertDiaLog(context, "删除 KV：$list, 强制，code：" + CodeUtil.codeString(code)!);
-      },
-    );
-  }
+  // void _removeEntries() {
+  //   List<String> list = [
+  //     "key3",
+  //     "key4",
+  //     "key5",
+  //     "key6",
+  //     "key7",
+  //     "key8",
+  //     "key9",
+  //     "key10",
+  //     "key11",
+  //     "key12",
+  //   ];
+  //   RongIMClient.removeChatRoomEntries(
+  //     targetId,
+  //     list,
+  //     true,
+  //     (code, errors) {
+  //       DialogUtil.showAlertDiaLog(context, "删除 KV：$list, 强制，code：" + CodeUtil.codeString(code)!);
+  //     },
+  //   );
+  // }
 
   void _getEntry() {
     RongIMClient.getChatRoomEntry(targetId, "key1", (Map? entry, int? code) {

@@ -102,8 +102,8 @@ static NSString *RCMethodKeyGetChatRoomEntry = @"GetChatRoomEntry";
 static NSString *RCMethodKeyGetAllChatRoomEntries = @"GetAllChatRoomEntries";
 static NSString *RCMethodKeyRemoveChatRoomEntry = @"RemoveChatRoomEntry";
 static NSString *RCMethodKeyForceRemoveChatRoomEntry = @"ForceRemoveChatRoomEntry";
-static NSString *RCMethodKeySetChatRoomEntries = @"SetChatRoomEntries";
-static NSString *RCMethodKeyRemoveChatRoomEntries = @"RemoveChatRoomEntries";
+//static NSString *RCMethodKeySetChatRoomEntries = @"SetChatRoomEntries";
+//static NSString *RCMethodKeyRemoveChatRoomEntries = @"RemoveChatRoomEntries";
 
 //callback iOS 通知 flutter
 static NSString *RCMethodCallBackKeySendMessage = @"sendMessageCallBack";
@@ -131,4 +131,4 @@ static NSString *RCMethodCallBackKeyMessageExpansionDidUpdate = @"MessageExpansi
 static NSString *RCMethodCallBackKeyMessageExpansionDidRemove = @"MessageExpansionDidRemoveCallBack";
 static NSString *RCMethodCallBackDatabaseOpened = @"DatabaseOpenedCallBack";
 static NSString *RCMethodCallBackOnTagChanged = @"onTagChanged";
-static NSString *RCMethodCallBackOnMessageBlocked = @"onMessageBlocked";
+//static NSString *RCMethodCallBackOnMessageBlocked = @"onMessageBlocked";

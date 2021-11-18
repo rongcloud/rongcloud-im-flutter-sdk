@@ -85,8 +85,8 @@ class RCMethodKey {
   static const String GetAllChatRoomEntries = 'GetAllChatRoomEntries';
   static const String RemoveChatRoomEntry = 'RemoveChatRoomEntry';
   static const String ForceRemoveChatRoomEntry = 'ForceRemoveChatRoomEntry';
-  static const String SetChatRoomEntries = 'SetChatRoomEntries';
-  static const String RemoveChatRoomEntries = 'RemoveChatRoomEntries';
+  // static const String SetChatRoomEntries = 'SetChatRoomEntries';
+  // static const String RemoveChatRoomEntries = 'RemoveChatRoomEntries';
 
   // 消息扩展
   static const String UpdateMessageExpansion = 'updateMessageExpansion';
@@ -135,5 +135,5 @@ class RCMethodCallBackKey {
   static const String DatabaseOpened = 'DatabaseOpenedCallBack';
   static const String ConversationTagChanged = 'ConversationTagChangedCallBack';
   static const String OnTagChanged = 'onTagChanged';
-  static const String OnMessageBlocked = 'onMessageBlocked';
+  // static const String OnMessageBlocked = 'onMessageBlocked';
 }

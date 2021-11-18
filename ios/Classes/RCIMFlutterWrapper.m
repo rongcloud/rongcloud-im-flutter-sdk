@@ -62,8 +62,12 @@
                                   RCChatRoomKVStatusChangeDelegate,
                                   RCMessageExpansionDelegate,
                                   RCChatRoomStatusDelegate,
-                                  RCTagDelegate,
-                                  RCMessageBlockDelegate>
+                                  RCTagDelegate
+                                  /*
+                                  ,
+                                  RCMessageBlockDelegate
+                                  */
+                                  >
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 @property (nonatomic, strong) RCFlutterConfig *config;
 @property (nonatomic, strong) NSString *sdkVersion;
@@ -195,11 +199,15 @@
         [self removeChatRoomEntry:call.arguments result:result];
     }else if ([RCMethodKeyForceRemoveChatRoomEntry isEqualToString:call.method]) {
         [self forceRemoveChatRoomEntry:call.arguments result:result];
-    }else if ([RCMethodKeySetChatRoomEntries isEqualToString:call.method]) {
+    }
+    /*
+    else if ([RCMethodKeySetChatRoomEntries isEqualToString:call.method]) {
         [self setChatRoomEntries:call.arguments result:result];
     }else if ([RCMethodKeyRemoveChatRoomEntries isEqualToString:call.method]) {
         [self removeChatRoomEntries:call.arguments result:result];
-    }else if ([RCMethodKeySyncConversationReadStatus isEqualToString:call.method]) {
+    }
+    */
+    else if ([RCMethodKeySyncConversationReadStatus isEqualToString:call.method]) {
         [self syncConversationReadStatus:call.arguments result:result];
     }else if ([RCMethodKeyGetTextMessageDraft isEqualToString:call.method]) {
         [self getTextMessageDraft:call.arguments result:result];
@@ -321,7 +329,7 @@
         [[RCChatRoomClient sharedChatRoomClient] setChatRoomStatusDelegate:self];
         [[RCCoreClient sharedCoreClient] setMessageExpansionDelegate:self];
         [RCCoreClient sharedCoreClient].tagDelegate = self;
-        [[RCCoreClient sharedCoreClient] setMessageBlockDelegate:self];
+        //[[RCCoreClient sharedCoreClient] setMessageBlockDelegate:self];
         self.sdkVersion = [conf objectForKey:@"version"];
     }else {
         [RCLog e:[NSString stringWithFormat:@"%@,非法参数",LOG_TAG]];
@@ -1300,6 +1308,7 @@
     [self.channel invokeMethod:RCMethodCallBackOnTagChanged arguments:nil];
 }
 
+/*
 #pragma mark -  敏感消息拦截监听
 - (void)messageDidBlock:(RCBlockedMessageInfo *)info {
     NSDictionary *arguments = @{ @"conversationType" : @(info.type),
@@ -1309,6 +1318,7 @@
                                  @"extra" : info.extra ? info.extra : @"" };
     [self.channel invokeMethod:RCMethodCallBackOnMessageBlocked arguments:arguments];
 }
+*/
 
 #pragma mark - 会话标签
 - (void)addTag:(id)arg result:(FlutterResult)result {
@@ -2198,6 +2208,7 @@
     }
 }
 
+/*
 - (void)setChatRoomEntries:(id)arg result:(FlutterResult)result {
     NSString *LOG_TAG = @"setChatRoomEntries";
     [RCLog i:[NSString stringWithFormat:@"%@ start param:%@",LOG_TAG,arg]];
@@ -2241,6 +2252,7 @@
         }];
     }
 }
+*/
 
 - (void)chatRoomKVDidSync:(NSString *)roomId {
     if (roomId) {
