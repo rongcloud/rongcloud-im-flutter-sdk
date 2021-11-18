@@ -1,6 +1,0 @@
-framework module RongDiscussion {
-  umbrella header "RongDiscussion.h"
-
-  export *
-  module * { export * }
-}

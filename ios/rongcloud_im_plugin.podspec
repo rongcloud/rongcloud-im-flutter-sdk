@@ -17,9 +17,9 @@ A new flutter plugin project.
   s.static_framework = true
   s.dependency 'Flutter'
 
-  s.vendored_frameworks = 'Frameworks/*.framework'
+  #s.vendored_frameworks = 'Frameworks/*.framework'
 
-  #s.dependency 'RongCloudIM/IMLib', '5.1.5.2'
+  s.dependency 'RongCloudIM/IMLib', '5.1.5.2'
 
   s.ios.deployment_target = '8.0'
 end
