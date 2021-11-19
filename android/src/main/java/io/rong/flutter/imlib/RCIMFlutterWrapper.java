@@ -40,7 +40,6 @@ import io.rong.imlib.NativeClient;
 import io.rong.imlib.RongCoreClient;
 import io.rong.imlib.chatroom.base.RongChatRoomClient;
 import io.rong.imlib.model.AndroidConfig;
-import io.rong.imlib.model.BlockedMessageInfo;
 import io.rong.imlib.model.ChatRoomInfo;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.ConversationIdentifier;
@@ -1295,8 +1294,7 @@ public class RCIMFlutterWrapper {
             JSONObject contentObject = new JSONObject(contentStr);
             if (contentObject.has("conversationType")) {
                 int conversationType = (int) contentObject.get("conversationType");
-                ((CombineMessage) content)
-                        .setConversationType(Conversation.ConversationType.setValue(conversationType));
+                ((CombineMessage) content).setConversationType(Conversation.ConversationType.setValue(conversationType));
             }
             if (contentObject.has("nameList")) {
                 Object nameListObj = contentObject.get("nameList");
