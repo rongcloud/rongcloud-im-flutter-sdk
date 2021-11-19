@@ -76,9 +76,9 @@
 
 @implementation RCIMFlutterWrapper
 
-+ (void)load {
-    [RCUtilities setModuleName:@"imflutter" version:[RCIMFlutterWrapper getVersion]];
-}
+//+ (void)load {
+//    [RCUtilities setModuleName:@"imflutter" version:[RCIMFlutterWrapper getVersion]];
+//}
 
 + (instancetype)sharedWrapper {
     static RCIMFlutterWrapper *wrapper = nil;

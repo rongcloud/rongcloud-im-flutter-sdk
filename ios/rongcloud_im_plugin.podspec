@@ -17,9 +17,11 @@ A new flutter plugin project.
   s.static_framework = true
   s.dependency 'Flutter'
 
-  s.dependency 'RongCloudIM/IMLibCore', '5.1.5.2'
-  s.dependency 'RongCloudIM/ChatRoom', '5.1.5.2'
-  s.dependency 'RongCloudIM/PublicService', '5.1.5.2'
+  s.vendored_frameworks = 'Frameworks/*.xcframework'
+
+  #s.dependency 'RongCloudIM/IMLibCore', '5.1.5.2'
+  #s.dependency 'RongCloudIM/ChatRoom', '5.1.5.2'
+  #s.dependency 'RongCloudIM/PublicService', '5.1.5.2'
 
   s.ios.deployment_target = '8.0'
 end
