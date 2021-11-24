@@ -84,7 +84,7 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
       targetDes = cameras[1];
     }
 
-    cameraController?.dispose();
+    await cameraController?.dispose();
 
     cameraController = CameraController(targetDes, ResolutionPreset.medium);
 
