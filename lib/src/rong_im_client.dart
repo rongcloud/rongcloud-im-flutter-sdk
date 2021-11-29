@@ -24,7 +24,7 @@ class RongIMClient {
   static final MethodChannel _channel = const MethodChannel('rongcloud_im_plugin');
 
   static Map sendMessageCallbacks = Map();
-  static final String sdkVersion = "5.1.5";
+  static final String sdkVersion = "5.1.6";
 
   static Map<String, MessageDecoder> messageDecoders = Map<String, MessageDecoder>();
 
@@ -2251,12 +2251,12 @@ class RongIMClient {
       case RCMethodCallBackKey.SendMessage:
         {
           Map argMap = call.arguments;
-          int? msgId = argMap["messageId"];
-          int? status = argMap["status"];
-          int? code = argMap["code"];
+          int msgId = argMap["messageId"];
+          int status = argMap["status"];
+          int code = argMap["code"];
           int? timestamp = argMap["timestamp"];
           if (timestamp != null && timestamp > 0) {
-            Function(int? messageId, int? status, int? code)? finished = sendMessageCallbacks[timestamp];
+            Function(int messageId, int status, int code)? finished = sendMessageCallbacks[timestamp];
             if (finished != null) {
               finished(msgId, status, code);
               sendMessageCallbacks.remove(timestamp);
