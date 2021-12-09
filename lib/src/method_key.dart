@@ -77,6 +77,7 @@ class RCMethodKey {
   static const String ImageCompressConfig = 'imageCompressConfig';
   static const String TypingUpdateSeconds = 'typingUpdateSeconds';
   static const String SetAndroidPushConfig = 'setAndroidPushConfig';
+  static const String SetStatisticServer = 'setStatisticServer';
 
   // 聊天室状态存储
   static const String SetChatRoomEntry = 'SetChatRoomEntry';
