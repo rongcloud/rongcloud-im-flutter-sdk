@@ -5,5 +5,5 @@ package io.rong.flutter.imlib;
  * @date 2021/9/7
  */
 public class Version {
-    public static final String SDK_VERSION = "5.1.5";
+    public static final String SDK_VERSION = "5.1.6";
 }

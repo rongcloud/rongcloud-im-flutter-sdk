@@ -24,7 +24,7 @@ class RongIMClient {
   static final MethodChannel _channel = const MethodChannel('rongcloud_im_plugin');
 
   static Map sendMessageCallbacks = Map();
-  static final String sdkVersion = "5.1.4";
+  static final String sdkVersion = "5.1.6";
 
   static Map<String, MessageDecoder> messageDecoders = Map<String, MessageDecoder>();
 
