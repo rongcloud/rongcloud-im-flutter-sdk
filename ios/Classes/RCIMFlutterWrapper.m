@@ -295,19 +295,22 @@
         [self getConversationTopStatusInTag:call.arguments result:result];
     }else if ([RCMethodKeySetAndroidPushConfig isEqualToString:call.method]){
         //配合安卓做的安卓推送。这里不写会抛异常。所以写了个空方法
-    }
-    else {
+    }else if ([RCMethodKeySetStatisticServer isEqualToString:call.method]) {
+        [self setStatisticServer:call.arguments];
+    }else {
         result(FlutterMethodNotImplemented);
     }
     
 }
 
 #pragma mark - selector
+    
 - (void)initWithRCIMAppKey:(id)arg {
     NSString *LOG_TAG =  @"initWithRCIMAppKey";
     if([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *conf = (NSDictionary *)arg;
         NSString *appkey = [conf objectForKey:@"appkey"];
+        [RCChannelClient sharedChannelManager];
         [[RCCoreClient sharedCoreClient] initWithAppKey:appkey];
         
         /// imlib 默认检测到小视频 SDK，才会注册小视频消息，但是这里没有小视频 SDK
@@ -359,6 +362,18 @@
         NSString *fileServer = dic[@"fileServer"];
         [[RCCoreClient sharedCoreClient] setServerInfo:naviServer fileServer:fileServer];
     }
+}
+
+- (void)setStatisticServer:(id)arg {
+    NSString *LOG_TAG = @"setStatisticServer";
+    [RCLog i:[NSString stringWithFormat:@"%@, start param:%@",LOG_TAG,arg]];
+    if(![arg isKindOfClass:[NSDictionary class]]) {
+        [RCLog e:@"arguments invalid"];
+        return;
+    }
+    NSDictionary *dic = (NSDictionary *)arg;
+        NSString *statisticServer = dic[@"statisticServer"];
+        [[RCCoreClient sharedCoreClient] setStatisticServer:statisticServer];
 }
 
 - (void)connectWithToken:(id)arg result:(FlutterResult)result {

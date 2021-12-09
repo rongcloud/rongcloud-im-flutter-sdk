@@ -350,7 +350,9 @@ public class RCIMFlutterWrapper {
             batchInsertMessage(call.arguments, result);
         } else if (RCMethodList.MethodKeySetAndroidPushConfig.equalsIgnoreCase(call.method)) {
             setPushConfig(call.arguments, result);
-        } else {
+        } else if (RCMethodList.MethodKeySetStatisticServer.equalsIgnoreCase(call.method)) {
+            setStatisticServer(call.arguments);
+        }else {
             result.notImplemented();
         }
 
@@ -583,6 +585,15 @@ public class RCIMFlutterWrapper {
             String naviServer = (String) map.get("naviServer");
             String fileServer = (String) map.get("fileServer");
             RongCoreClient.setServerInfo(naviServer, fileServer);
+        }
+    }
+
+    private void setStatisticServer(Object arg) {
+        String LOG_TAG = "setStatisticServer";
+        if (arg instanceof Map) {
+            Map params = (Map)arg;
+            String statisticServer = (String)params.get("statisticServer");
+            RongCoreClient.setStatisticDomain(statisticServer);
         }
     }
 

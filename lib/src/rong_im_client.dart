@@ -163,9 +163,25 @@ class RongIMClient {
   ///1、如果使用https，则设置为https://cn.xxx.com:port或https://cn.xxx.com格式，其中域名部分也可以是IP，如果不指定端口，将默认使用443端口。
   ///2、如果使用http，则设置为cn.xxx.com:port或cn.xxx.com格式，其中域名部分也可以是IP，如果不指定端口，将默认使用80端口。
   ///
-  static void setServerInfo(String naviServer, String fileServer) {
+  static Future<void> setServerInfo(String naviServer, String fileServer) {
     Map map = {"naviServer": naviServer, "fileServer": fileServer};
-    _channel.invokeMethod(RCMethodKey.SetServerInfo, map);
+    return _channel.invokeMethod(RCMethodKey.SetServerInfo, map);
+  }
+
+  /// 设置统计服务器的信息 仅限独立数据中心使用，使用前必须先联系商务开通。必须在 SDK [init] 和 [setDeviceTokenData] 之前进行设置。
+  ///
+  /// [statisticServer]  统计服务器地址，必须为有效的服务器地址，否则会造成推送等业务不能正常使用。
+  ///
+  /// 格式说明：
+  ///
+  /// 1. 如果使用 https，则设置为 https://cn.xxx.com:port 或 https://cn.xxx.com 格式，
+  /// 其中域名部分也可以是 IP，如果不指定端口，将默认使用 443 端口。
+  ///
+  /// 2. 如果使用 http，则设置为 cn.xxx.com:port 或 cn.xxx.com 格式，
+  ///
+  /// 其中域名部分也可以是 IP，如果不指定端口，将默认使用 80 端口。（iOS 默认只能使⽤ HTTPS 协议。如果您使⽤ http 协议，请参考 iOS 开发⽂档中的 ATS 设置说明。链接如下：https://support.rongcloud.cn/ks/OTQ1 ）
+  static Future<void> setStatisticServer(String statisticServer) {
+    return _channel.invokeMethod(RCMethodKey.SetStatisticServer, <String, String>{"statisticServer": statisticServer});
   }
 
   ///更新当前用户信息
