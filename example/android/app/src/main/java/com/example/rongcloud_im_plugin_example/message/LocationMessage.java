@@ -231,7 +231,7 @@ public final class LocationMessage extends MessageContent {
      */
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        ParcelUtils.writeToParcel(dest, extra);
+        ParcelUtils.writeToParcel(dest, getExtra());
         ParcelUtils.writeToParcel(dest, mLat);
         ParcelUtils.writeToParcel(dest, mLng);
         ParcelUtils.writeToParcel(dest, mPoi);
@@ -243,7 +243,7 @@ public final class LocationMessage extends MessageContent {
     }
 
     public LocationMessage(Parcel in) {
-        extra = ParcelUtils.readFromParcel(in);
+        setExtra(ParcelUtils.readFromParcel(in));
         mLat = ParcelUtils.readDoubleFromParcel(in);
         mLng = ParcelUtils.readDoubleFromParcel(in);
         mPoi = ParcelUtils.readFromParcel(in);

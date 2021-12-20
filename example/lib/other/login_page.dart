@@ -1,13 +1,8 @@
-import 'dart:developer' as developer;
-
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../im/util/http_util.dart';
+import '../user_data.dart';
 import 'home_page.dart';
-
-const String loginUrl = "http://api-sealtalk.rongcloud.cn/user/login";
 
 class LoginPage extends StatefulWidget {
   @override
@@ -17,9 +12,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  static const String pageName = "example.LoginPage";
-  TextEditingController _assount = TextEditingController();
-  TextEditingController _password = TextEditingController();
+  String pageName = "example.LoginPage";
+  TextEditingController _id = TextEditingController();
+  TextEditingController _token = TextEditingController();
 
   @override
   void initState() {
@@ -29,53 +24,24 @@ class _LoginPageState extends State<LoginPage> {
 
   initPlatformState() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? phone = prefs.getString("phone");
-    String? password = prefs.getString("password");
+    String id = prefs.getString("id") ?? CurrentUserId;
+    String token = prefs.getString("token") ?? RongIMToken;
 
-    if (phone == null || password == null) return;
-    _assount.text = phone;
-    _password.text = password;
+    _id.text = id;
+    _token.text = token;
   }
 
-  void _loginAction() {
-    Map map = new Map();
-    map["region"] = 86;
-    map["phone"] = int.parse(_assount.text);
-    map["password"] = _password.text;
-
-    HttpUtil.post(loginUrl,map,callback: _response);
+  void _loginAction() async {
+    String id = _id.text;
+    String token = _token.text;
+    await _saveUserInfo(id, token);
+    Navigator.of(context).pushAndRemoveUntil(new MaterialPageRoute(builder: (context) => new HomePage()), (route) => false);
   }
 
-  void _response(Map params, Map? data) {
-    if (data == null) {
-      developer.log("data is null", name: pageName);
-      return;
-    }
-
-    Map body = data;
-    int? errorCode = body["code"];
-    if (errorCode == 200) {
-      Map result = body["result"];
-      String? id = result["id"];
-      String? token = result["token"];
-      if (id != null && token != null)  _saveUserInfo(id, token);
-      developer.log("Login Success, $params", name: pageName);
-      Navigator.of(context).pushAndRemoveUntil(
-          new MaterialPageRoute(builder: (context) => new HomePage()),
-          (route) => false);
-    } else if (errorCode == -1) {
-      Fluttertoast.showToast(msg: "网络未连接，请连接网络重试");
-    } else {
-      Fluttertoast.showToast(msg: "服务器登录失败，errorCode： $errorCode");
-    }
-  }
-
-  void _saveUserInfo(String id, String token) async {
+  Future<void> _saveUserInfo(String id, String token) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString("id", id);
     prefs.setString("token", token);
-    prefs.setString("phone", _assount.text);
-    prefs.setString("password", _password.text);
   }
 
   @override
@@ -89,18 +55,30 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
 
-    final account = TextFormField(
-      keyboardType: TextInputType.number,
+    final id = TextFormField(
+      keyboardType: TextInputType.text,
       autofocus: false,
-      controller: _assount,
-      decoration: InputDecoration(hintText: 'SealTalk 账号', contentPadding: new EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0), border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
+      controller: _id,
+      decoration: InputDecoration(
+        hintText: 'User Id',
+        contentPadding: new EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(32.0),
+        ),
+      ),
     );
 
-    final password = TextFormField(
+    final token = TextFormField(
+      keyboardType: TextInputType.text,
       autofocus: false,
-      obscureText: true,
-      controller: _password,
-      decoration: InputDecoration(hintText: 'SealTalk 密码', contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0), border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
+      controller: _token,
+      decoration: InputDecoration(
+        hintText: 'User Token',
+        contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(32.0),
+        ),
+      ),
     );
 
     final loginButton = Padding(
@@ -130,11 +108,11 @@ class _LoginPageState extends State<LoginPage> {
         children: <Widget>[
           logo,
           SizedBox(height: 48.0),
-          account,
+          id,
           SizedBox(
             height: 8.0,
           ),
-          password,
+          token,
           SizedBox(
             height: 24.0,
           ),

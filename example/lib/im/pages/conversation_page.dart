@@ -201,7 +201,7 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
     RongIMClient.onMessageSend = (int? messageId, int? status, int? code) async {
       developer.log("messageId:$messageId status:$status code:$code", name: pageName);
       Message? msg = await RongIMClient.getMessage(messageId!);
-      if (msg!.targetId == this.targetId) {
+      if (msg?.targetId == this.targetId) {
         _insertOrReplaceMessage(msg);
       }
     };
