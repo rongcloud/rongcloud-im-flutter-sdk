@@ -30,11 +30,11 @@ class RongIMClient {
   ///初始化 SDK
   ///
   ///[appkey] appkey
-  static void init(String appkey) async {
+  static Future<void> init(String appkey) async {
     _registerMessage();
 
     Map map = {"appkey": appkey, "version": sdkVersion};
-    _channel.invokeMethod(RCMethodKey.Init, map);
+    await _channel.invokeMethod(RCMethodKey.Init, map);
     _addNativeMethodCallHandler();
   }
 
