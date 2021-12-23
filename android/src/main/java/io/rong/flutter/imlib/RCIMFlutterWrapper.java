@@ -155,7 +155,7 @@ public class RCIMFlutterWrapper {
 
     public void onFlutterMethodCall(MethodCall call, Result result) {
         if (RCMethodList.MethodKeyInit.equalsIgnoreCase(call.method)) {
-            initRCIM(call.arguments);
+            initRCIM(call.arguments, result);
         } else if (RCMethodList.MethodKeyConfig.equalsIgnoreCase(call.method)) {
             config(call.arguments);
         } else if (RCMethodList.MethodKeySetServerInfo.equalsIgnoreCase(call.method)) {
@@ -534,7 +534,7 @@ public class RCIMFlutterWrapper {
     }
 
     // private method
-    private void initRCIM(Object arg) {
+    private void initRCIM(Object arg, Result result) {
         String LOG_TAG = "init";
 //        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
@@ -561,6 +561,8 @@ public class RCIMFlutterWrapper {
         } else {
             Log.e("RCIM flutter init", "非法参数");
         }
+
+        result.success(null);
     }
 
     private void config(Object arg) {
