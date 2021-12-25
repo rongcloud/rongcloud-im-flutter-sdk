@@ -1616,7 +1616,7 @@ public class RCIMFlutterWrapper {
             RongCoreClient.getInstance().getMessages(type, targetId, new HistoryMessageOption(time, count, pullOrder), new IRongCoreCallback.IGetMessageCallback() {
                 @Override
                 public void onComplete(List<Message> list, IRongCoreEnum.CoreErrorCode coreErrorCode) {
-                    Map resultMap = new HashMap();
+                    final Map resultMap = new HashMap();
                     resultMap.put("code", coreErrorCode.getValue());
                     List<String> messageList = new ArrayList<>();
                     if (list != null) {
@@ -1625,7 +1625,12 @@ public class RCIMFlutterWrapper {
                         }
                     }
                     resultMap.put("messages", messageList);
-                    result.success(resultMap);
+                    mMainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            result.success(resultMap);
+                        }
+                    });
                 }
             });
         }
