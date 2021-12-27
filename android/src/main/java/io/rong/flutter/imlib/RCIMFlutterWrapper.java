@@ -155,7 +155,7 @@ public class RCIMFlutterWrapper {
 
     public void onFlutterMethodCall(MethodCall call, Result result) {
         if (RCMethodList.MethodKeyInit.equalsIgnoreCase(call.method)) {
-            initRCIM(call.arguments);
+            initRCIM(call.arguments, result);
         } else if (RCMethodList.MethodKeyConfig.equalsIgnoreCase(call.method)) {
             config(call.arguments);
         } else if (RCMethodList.MethodKeySetServerInfo.equalsIgnoreCase(call.method)) {
@@ -532,7 +532,7 @@ public class RCIMFlutterWrapper {
     }
 
     // private method
-    private void initRCIM(Object arg) {
+    private void initRCIM(Object arg, Result result) {
         String LOG_TAG = "init";
 //        RCLog.i(LOG_TAG + " start param:" + arg.toString());
         if (arg instanceof Map) {
@@ -559,6 +559,8 @@ public class RCIMFlutterWrapper {
         } else {
             Log.e("RCIM flutter init", "非法参数");
         }
+
+        result.success(null);
     }
 
     private void config(Object arg) {
@@ -1614,7 +1616,7 @@ public class RCIMFlutterWrapper {
             RongCoreClient.getInstance().getMessages(type, targetId, new HistoryMessageOption(time, count, pullOrder), new IRongCoreCallback.IGetMessageCallback() {
                 @Override
                 public void onComplete(List<Message> list, IRongCoreEnum.CoreErrorCode coreErrorCode) {
-                    Map resultMap = new HashMap();
+                    final Map resultMap = new HashMap();
                     resultMap.put("code", coreErrorCode.getValue());
                     List<String> messageList = new ArrayList<>();
                     if (list != null) {
@@ -1623,7 +1625,12 @@ public class RCIMFlutterWrapper {
                         }
                     }
                     resultMap.put("messages", messageList);
-                    result.success(resultMap);
+                    mMainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            result.success(resultMap);
+                        }
+                    });
                 }
             });
         }

@@ -24,18 +24,18 @@ class RongIMClient {
   static final MethodChannel _channel = const MethodChannel('rongcloud_im_plugin');
 
   static Map sendMessageCallbacks = Map();
-  static final String sdkVersion = "5.1.6";
+  static final String sdkVersion = "5.1.7";
 
   static Map<String, MessageDecoder> messageDecoders = Map<String, MessageDecoder>();
 
   ///初始化 SDK
   ///
   ///[appkey] appkey
-  static void init(String appkey) async {
+  static Future<void> init(String appkey) async {
     _registerMessage();
 
     Map map = {"appkey": appkey, "version": sdkVersion};
-    _channel.invokeMethod(RCMethodKey.Init, map);
+    await _channel.invokeMethod(RCMethodKey.Init, map);
     _addNativeMethodCallHandler();
   }
 
