@@ -34,6 +34,12 @@
 * 4.替换 Web View 第三方库
 
 
+## 5.1.4+4
+
+**SDK：**
+* 1.调整fetchAllMessageMapper调用时机
+
+
 ## 5.1.4+3
 
 **SDK：**
