@@ -609,6 +609,7 @@ public class RCIMFlutterWrapper {
             RongCoreClient.connect(token, new IRongCoreCallback.ConnectCallback() {
                 @Override
                 public void onSuccess(final String userId) {
+                    fetchAllMessageMapper();
                     mMainHandler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -628,6 +629,7 @@ public class RCIMFlutterWrapper {
 
                 @Override
                 public void onError(IRongCoreEnum.ConnectionErrorCode connectionErrorCode) {
+                    fetchAllMessageMapper();
                     final IRongCoreEnum.ConnectionErrorCode code = connectionErrorCode;
                     mMainHandler.post(new Runnable() {
                         @Override
@@ -661,8 +663,6 @@ public class RCIMFlutterWrapper {
                     });
                 }
             });
-
-            fetchAllMessageMapper();
         } else {
 
         }
