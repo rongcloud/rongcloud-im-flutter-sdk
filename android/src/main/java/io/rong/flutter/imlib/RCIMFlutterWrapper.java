@@ -545,6 +545,7 @@ public class RCIMFlutterWrapper {
             RongCoreClient.registerMessageType(SightMessage.class);
             // 因为合并消息 定义和注册都写在 kit 里面
             RongCoreClient.registerMessageType(CombineMessage.class);
+
             setReceiveMessageListener();
             setConnectStatusListener();
             setTypingStatusListener();
@@ -616,6 +617,7 @@ public class RCIMFlutterWrapper {
             RongCoreClient.connect(token, new IRongCoreCallback.ConnectCallback() {
                 @Override
                 public void onSuccess(final String userId) {
+                    fetchAllMessageMapper();
                     mMainHandler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -635,6 +637,7 @@ public class RCIMFlutterWrapper {
 
                 @Override
                 public void onError(IRongCoreEnum.ConnectionErrorCode connectionErrorCode) {
+                    fetchAllMessageMapper();
                     final IRongCoreEnum.ConnectionErrorCode code = connectionErrorCode;
                     mMainHandler.post(new Runnable() {
                         @Override
@@ -668,8 +671,6 @@ public class RCIMFlutterWrapper {
                     });
                 }
             });
-
-            fetchAllMessageMapper();
         } else {
 
         }
@@ -2377,7 +2378,6 @@ public class RCIMFlutterWrapper {
 
     // util
     private void fetchAllMessageMapper() {
-
         RongCoreClient client = RongCoreClient.getInstance();
         Field field = null;
         try {
