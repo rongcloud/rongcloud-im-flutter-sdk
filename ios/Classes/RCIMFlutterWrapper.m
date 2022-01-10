@@ -98,6 +98,10 @@
     self.channel = channel;
 }
 
+- (void)removeFlutterChannel {
+    self.channel = nil;
+}
+
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     if([RCMethodKeyInit isEqualToString:call.method]){
         [self initWithRCIMAppKey:call.arguments];
