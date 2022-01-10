@@ -101,24 +101,32 @@
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     if([RCMethodKeyInit isEqualToString:call.method]){
         [self initWithRCIMAppKey:call.arguments];
+        result(nil);
     }else if([RCMethodKeyConfig isEqualToString:call.method]){
         [self config:call.arguments];
+        result(nil);
     }else if([RCMethodKeySetServerInfo isEqualToString:call.method]) {
         [self setServerInfo:call.arguments];
+        result(nil);
     }else if([RCMethodKeyConnect isEqualToString:call.method]) {
         [self connectWithToken:call.arguments result:result];
     }else if([RCMethodKeyDisconnect isEqualToString:call.method]) {
         [self disconnect:call.arguments];
+        result(nil);
     }else if([RCMethodKeyRefreshUserInfo isEqualToString:call.method]) {
         [self refreshUserInfo:call.arguments];
+        result(nil);
     }else if([RCMethodKeySendMessage isEqualToString:call.method]) {
         [self sendMessage:call.arguments result:result];
     }else if([RCMethodKeyJoinChatRoom isEqualToString:call.method]) {
         [self joinChatRoom:call.arguments];
+        result(nil);
     }else if([RCMethodKeyJoinExistChatRoom isEqualToString:call.method]) {
         [self joinExistChatRoom:call.arguments];
+        result(nil);
     }else if([RCMethodKeyQuitChatRoom isEqualToString:call.method]) {
         [self quitChatRoom:call.arguments];
+        result(nil);
     }else if([RCMethodKeyGetHistoryMessage isEqualToString:call.method]) {
         [self getHistoryMessage:call.arguments result:result];
     }else if([RCMethodKeyGetHistoryMessages.lowercaseString isEqualToString:call.method.lowercaseString]) {
@@ -141,6 +149,7 @@
         [self getRemoteHistoryMessages:call.arguments result:result];
     }else if ([RCMethodKeySetCurrentUserInfo isEqualToString:call.method]) {
         [self setCurrentUserInfo:call.arguments];
+        result(nil);
     }else if ([RCMethodKeyInsertIncomingMessage isEqualToString:call.method]) {
         [self insertIncomingMessage:call.arguments result:result];
     }else if ([RCMethodKeyInsertOutgoingMessage isEqualToString:call.method]) {
@@ -295,8 +304,10 @@
         [self getConversationTopStatusInTag:call.arguments result:result];
     }else if ([RCMethodKeySetAndroidPushConfig isEqualToString:call.method]){
         //配合安卓做的安卓推送。这里不写会抛异常。所以写了个空方法
+        result(nil);
     }else if ([RCMethodKeySetStatisticServer isEqualToString:call.method]) {
         [self setStatisticServer:call.arguments];
+        result(nil);
     }else {
         result(FlutterMethodNotImplemented);
     }

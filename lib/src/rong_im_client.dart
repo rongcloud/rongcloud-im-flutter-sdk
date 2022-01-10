@@ -128,8 +128,8 @@ class RongIMClient {
   ///配置 SDK
   ///
   ///[conf] 具体配置
-  static void config(Map conf) {
-    _channel.invokeMethod(RCMethodKey.Config, conf);
+  static Future<void> config(Map conf) async {
+    await _channel.invokeMethod(RCMethodKey.Config, conf);
   }
 
   ///连接 SDK
@@ -137,7 +137,7 @@ class RongIMClient {
   ///[token] 融云 im token
   ///
   ///[finished] 返回 [RCErrorCode] 以及 userId
-  static void connect(String token, Function(int? code, String? userId)? finished) async {
+  static Future<void> connect(String token, Function(int? code, String? userId)? finished) async {
     Map resultMap = await _channel.invokeMethod(RCMethodKey.Connect, token);
     int? code = resultMap["code"];
     String? userId = resultMap["userId"];
@@ -149,8 +149,8 @@ class RongIMClient {
   ///断开连接
   ///
   ///[needPush] 断开连接之后是否需要远程推送
-  static void disconnect(bool needPush) {
-    _channel.invokeMethod(RCMethodKey.Disconnect, needPush);
+  static Future<void> disconnect(bool needPush) async {
+    await _channel.invokeMethod(RCMethodKey.Disconnect, needPush);
   }
 
   ///设置服务器地址，仅限独立数据中心使用，使用前必须先联系商务开通，必须在 [init] 前调用
@@ -192,9 +192,9 @@ class RongIMClient {
   ///
   ///[portraitUrl] 用户头像
   /// 此方法只针对iOS生效
-  static void updateCurrentUserInfo(String userId, String name, String portraitUrl) {
+  static Future<void> updateCurrentUserInfo(String userId, String name, String portraitUrl) async {
     Map map = {"userId": userId, "name": name, "portraitUrl": portraitUrl};
-    _channel.invokeMethod(RCMethodKey.SetCurrentUserInfo, map);
+    await _channel.invokeMethod(RCMethodKey.SetCurrentUserInfo, map);
   }
 
   ///发送消息
@@ -471,7 +471,7 @@ class RongIMClient {
   ///[finished] 回调结果
   ///
   /// 此方法可以清除服务器端历史消息和本地消息，如果清除服务器端消息必须先开通历史消息云存储功能。例如，您不想从服务器上获取更多的历史消息，通过指定 recordTime 并设置 clearRemote 为 YES 清除消息，成功后只能获取该时间戳之后的历史消息。如果 clearRemote 传 NO，只会清除本地消息。
-  static clearHistoryMessages(int? conversationType, String? targetId, int recordTime, bool clearRemote, Function(int? code)? finished) async {
+  static Future<void> clearHistoryMessages(int? conversationType, String? targetId, int recordTime, bool clearRemote, Function(int? code)? finished) async {
     if (conversationType == null || targetId == null) {
       developer.log("clearHistoryMessages error: conversationType or targetId null", name: "RongIMClient");
       return null;
@@ -579,7 +579,7 @@ class RongIMClient {
   ///[targetId] 会话 id
   ///
   ///[finished] 回调结果，告知结果成功与否
-  static void removeConversation(int conversationType, String targetId, Function(bool? success)? finished) async {
+  static Future<void> removeConversation(int conversationType, String targetId, Function(bool? success)? finished) async {
     Map map = {'conversationType': conversationType, 'targetId': targetId};
     bool? success = await _channel.invokeMethod(RCMethodKey.RemoveConversation, map);
     if (finished != null) {
@@ -607,9 +607,9 @@ class RongIMClient {
   /// 0 代表默认 10 条
   ///
   /// 会通过 [onJoinChatRoom] 回调加入的结果
-  static void joinChatRoom(String targetId, int messageCount) {
+  static Future<void> joinChatRoom(String targetId, int messageCount) async {
     Map map = {"targetId": targetId, "messageCount": messageCount};
-    _channel.invokeMethod(RCMethodKey.JoinChatRoom, map);
+    await _channel.invokeMethod(RCMethodKey.JoinChatRoom, map);
   }
 
   ///加入已存在的聊天室
@@ -621,13 +621,13 @@ class RongIMClient {
   /// 0 代表默认 10 条
   ///
   /// 会通过 [onJoinChatRoom] 回调加入的结果
-  static void joinExistChatRoom(String? targetId, int? messageCount) {
+  static Future<void> joinExistChatRoom(String? targetId, int? messageCount) async {
     if (targetId == null || messageCount == null) {
       developer.log("send message fail: targetId or messageCount is null", name: "RongIMClient");
       return;
     }
     Map map = {"targetId": targetId, "messageCount": messageCount};
-    _channel.invokeMethod(RCMethodKey.JoinExistChatRoom, map);
+    await _channel.invokeMethod(RCMethodKey.JoinExistChatRoom, map);
   }
 
   ///退出聊天室
@@ -635,9 +635,9 @@ class RongIMClient {
   ///[targetId] 聊天室 id
   ///
   /// 会通过 [onQuitChatRoom] 回调退出的结果
-  static void quitChatRoom(String targetId) {
+  static Future<void> quitChatRoom(String targetId) async {
     Map map = {"targetId": targetId};
-    _channel.invokeMethod(RCMethodKey.QuitChatRoom, map);
+    await _channel.invokeMethod(RCMethodKey.QuitChatRoom, map);
   }
 
   ///获取聊天室信息
@@ -676,7 +676,7 @@ class RongIMClient {
   ///
   /// 此方法从服务器端获取之前的历史消息，但是必须先开通历史消息云存储功能。
   /// 例如，本地会话中有10条消息，您想拉取更多保存在服务器的消息的话，recordTime应传入最早的消息的发送时间戳，count传入1~20之间的数值。
-  static void getRemoteHistoryMessages(int conversationType, String targetId, int recordTime, int count, Function(List? /*<Message>*/ msgList, int? code)? finished) async {
+  static Future<void> getRemoteHistoryMessages(int conversationType, String targetId, int recordTime, int count, Function(List? /*<Message>*/ msgList, int? code)? finished) async {
     Map map = {'conversationType': conversationType, 'targetId': targetId, 'recordTime': recordTime, 'count': count};
     Map resultMap = await _channel.invokeMethod(RCMethodCallBackKey.GetRemoteHistoryMessages, map);
     int? code = resultMap["code"];
@@ -715,7 +715,7 @@ class RongIMClient {
 //  此方法先从本地获取历史消息，本地有缺失的情况下会从服务端同步缺失的部分。
 //  从服务端同步失败的时候会返回非 0 的 errorCode，同时把本地能取到的消息回调上去。
 
-  static void getMessages(int conversationType, String targetId, HistoryMessageOption option, Function(List? /*<Message>*/ msgList, int? code)? finished) async {
+  static Future<void> getMessages(int conversationType, String targetId, HistoryMessageOption option, Function(List? /*<Message>*/ msgList, int? code)? finished) async {
     Map paramMap = {
       'conversationType': conversationType,
       'targetId': targetId,
@@ -763,7 +763,7 @@ class RongIMClient {
   /// [sendTime] 发送时间
   ///
   /// [finished] 回调结果，会告知具体的消息和对应的错�����码
-  static void insertIncomingMessage(int conversationType, String targetId, String senderUserId, int receivedStatus, MessageContent content, int sendTime, Function(Message? msg, int? code)? finished) async {
+  static Future<void> insertIncomingMessage(int conversationType, String targetId, String senderUserId, int receivedStatus, MessageContent content, int sendTime, Function(Message? msg, int? code)? finished) async {
     String? jsonStr = content.encode();
     String? objName = content.getObjectName();
     Map map = {"conversationType": conversationType, "targetId": targetId, "senderUserId": senderUserId, "rececivedStatus": receivedStatus, "objectName": objName, "content": jsonStr, "sendTime": sendTime};
@@ -795,7 +795,7 @@ class RongIMClient {
   /// [sendTime] 发送时间
   ///
   /// [finished] 回调结果，会告知具体的消息和对应的错误码
-  static void insertOutgoingMessage(int conversationType, String targetId, int sendStatus, MessageContent content, int sendTime, Function(Message? msg, int? code)? finished) async {
+  static Future<void> insertOutgoingMessage(int conversationType, String targetId, int sendStatus, MessageContent content, int sendTime, Function(Message? msg, int? code)? finished) async {
     String? jsonStr = content.encode();
     String? objName = content.getObjectName();
     Map map = {"conversationType": conversationType, "targetId": targetId, "sendStatus": sendStatus, "objectName": objName, "content": jsonStr, "sendTime": sendTime};
@@ -832,7 +832,7 @@ class RongIMClient {
 
  @remarks 消息操作
  */
-  static void batchInsertMessage(List<Message> msgs, Function(bool? result, int? code)? finished) async {
+  static Future<void> batchInsertMessage(List<Message> msgs, Function(bool? result, int? code)? finished) async {
     List messageMaps = [];
     for (Message message in msgs) {
       Map messageMap = MessageFactory.instance!.message2Map(message);
@@ -852,7 +852,7 @@ class RongIMClient {
   /// [conversationType] 会话类型，参见枚举 [RCConversationType]
   ///
   /// [targetId] 会话 id
-  static void deleteMessages(int conversationType, String targetId, Function(int? code)? finished) async {
+  static Future<void> deleteMessages(int conversationType, String targetId, Function(int? code)? finished) async {
     Map map = {"conversationType": conversationType, "targetId": targetId};
     int? code = await _channel.invokeMethod(RCMethodKey.DeleteMessages, map);
     if (finished != null) {
@@ -863,7 +863,7 @@ class RongIMClient {
   /// 批量删除消息
   ///
   /// [messageIds] 需要删除的 messageId List
-  static void deleteMessageByIds(List<int> messageIds, Function(int? code)? finished) async {
+  static Future<void> deleteMessageByIds(List<int> messageIds, Function(int? code)? finished) async {
     Map map = {"messageIds": messageIds};
     int? code = await _channel.invokeMethod(RCMethodKey.DeleteMessageByIds, map);
     if (finished != null) {
@@ -888,7 +888,7 @@ class RongIMClient {
   /// 获取所有的未读数
   ///
   /// [finished] 回调结果，code 为 0 代表正常
-  static void getTotalUnreadCount(Function(int? count, int? code)? finished) async {
+  static Future<void> getTotalUnreadCount(Function(int? count, int? code)? finished) async {
     Map? map = await _channel.invokeMethod(RCMethodKey.GetTotalUnreadCount);
     if (finished != null) {
       finished(map!["count"], map["code"]);
@@ -902,7 +902,7 @@ class RongIMClient {
   /// [targetId] 会话 id
   ///
   /// [finished] 回调结果，code 为 0 代表正常
-  static void getUnreadCount(int conversationType, String targetId, Function(int? count, int? code)? finished) async {
+  static Future<void> getUnreadCount(int conversationType, String targetId, Function(int? count, int? code)? finished) async {
     Map map = {"conversationType": conversationType, "targetId": targetId};
     Map? unreadMap = await _channel.invokeMethod(RCMethodKey.GetUnreadCountTargetId, map);
     if (finished != null) {
@@ -917,7 +917,7 @@ class RongIMClient {
   /// [isContain] 是否包含免打扰会话
   ///
   /// [finished] 回调结果，code 为 0 代表正常
-  static void getUnreadCountConversationTypeList(List<int> conversationTypeList, bool isContain, Function(int? count, int? code)? finished) async {
+  static Future<void> getUnreadCountConversationTypeList(List<int> conversationTypeList, bool isContain, Function(int? count, int? code)? finished) async {
     Map map = {"conversationTypeList": conversationTypeList, "isContain": isContain};
     Map? unreadMap = await _channel.invokeMethod(RCMethodKey.GetUnreadCountConversationTypeList, map);
     if (finished != null) {
@@ -932,7 +932,7 @@ class RongIMClient {
   /// [targetId] 会话 id
   ///
   /// [finished] 回调结果，status 参见 [RCConversationNotificationStatus]，code 为 0 代表正常
-  static void setConversationNotificationStatus(int conversationType, String targetId, bool isBlocked, Function(int? status, int? code)? finished) async {
+  static Future<void> setConversationNotificationStatus(int conversationType, String targetId, bool isBlocked, Function(int? status, int? code)? finished) async {
     Map map = {"conversationType": conversationType, "targetId": targetId, "isBlocked": isBlocked};
     Map? statusMap = await _channel.invokeMethod(RCMethodKey.SetConversationNotificationStatus, map);
     if (finished != null) {
@@ -947,7 +947,7 @@ class RongIMClient {
   /// [targetId] 会话 id
   ///
   /// [finished] 回调结果，status 参见 [RCConversationNotificationStatus]，code 为 0 代表正常
-  static void getConversationNotificationStatus(int conversationType, String targetId, Function(int? status, int? code)? finished) async {
+  static Future<void> getConversationNotificationStatus(int conversationType, String targetId, Function(int? status, int? code)? finished) async {
     Map map = {"conversationType": conversationType, "targetId": targetId};
     Map? statusMap = await _channel.invokeMethod(RCMethodKey.GetConversationNotificationStatus, map);
     if (finished != null) {
@@ -960,7 +960,7 @@ class RongIMClient {
   /// [conversationTypeList] 会话类型数组，参见枚举 [RCConversationType]
   ///
   /// [finished] 回调结果，code 为 0 代表正常
-  static void getBlockedConversationList(List<int> conversationTypeList, Function(List? /*<Conversation>*/ convertionList, int? code)? finished) async {
+  static Future<void> getBlockedConversationList(List<int> conversationTypeList, Function(List? /*<Conversation>*/ convertionList, int? code)? finished) async {
     Map map = {"conversationTypeList": conversationTypeList};
     Map conversationMap = await _channel.invokeMethod(RCMethodKey.GetBlockedConversationList, map);
 
@@ -990,7 +990,7 @@ class RongIMClient {
   /// [isTop] 是否设置置顶
   ///
   /// [finished] 回调结果，code 为 0 代表正常
-  static void setConversationToTop(int conversationType, String targetId, bool isTop, Function(bool? status, int? code)? finished) async {
+  static Future<void> setConversationToTop(int conversationType, String targetId, bool isTop, Function(bool? status, int? code)? finished) async {
     Map map = {"conversationType": conversationType, "targetId": targetId, "isTop": isTop};
     Map? conversationMap = await _channel.invokeMethod(RCMethodKey.SetConversationToTop, map);
     if (finished != null) {
@@ -1022,7 +1022,7 @@ class RongIMClient {
   /// [userId] 需要加入黑名单的用户 id
   ///
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
-  static void addToBlackList(String userId, Function(int? code)? finished) async {
+  static Future<void> addToBlackList(String userId, Function(int? code)? finished) async {
     Map map = {"userId": userId};
     int? code = await _channel.invokeMethod(RCMethodKey.AddToBlackList, map);
     if (finished != null) {
@@ -1035,7 +1035,7 @@ class RongIMClient {
   /// [userId] 需要移除黑名单的用户 id
   ///
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
-  static void removeFromBlackList(String userId, Function(int? code)? finished) async {
+  static Future<void> removeFromBlackList(String userId, Function(int? code)? finished) async {
     Map map = {"userId": userId};
     int? code = await _channel.invokeMethod(RCMethodKey.RemoveFromBlackList, map);
     if (finished != null) {
@@ -1050,7 +1050,7 @@ class RongIMClient {
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   ///
   /// [blackListStatus] 黑名单状态，0 代表在黑名单，1 代表不在黑名单，详细参见 [RCBlackListStatus]
-  static void getBlackListStatus(String userId, Function(int? blackListStatus, int? code)? finished) async {
+  static Future<void> getBlackListStatus(String userId, Function(int? blackListStatus, int? code)? finished) async {
     Map map = {"userId": userId};
     Map result = await _channel.invokeMethod(RCMethodKey.GetBlackListStatus, map);
     int? status = result["status"];
@@ -1065,7 +1065,7 @@ class RongIMClient {
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   ///
   /// [userIdList] 黑名单用户 id 列表
-  static void getBlackList(Function(List? /*<String>*/ userIdList, int? code)? finished) async {
+  static Future<void> getBlackList(Function(List? /*<String>*/ userIdList, int? code)? finished) async {
     Map result = await _channel.invokeMethod(RCMethodKey.GetBlackList);
     List? userIdList = result["userIdList"];
     int? code = result["code"];
@@ -1084,7 +1084,7 @@ class RongIMClient {
   ///
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   /// 此接口只支持单聊
-  static void sendReadReceiptMessage(int conversationType, String targetId, int timestamp, Function(int? code)? finished) async {
+  static Future<void> sendReadReceiptMessage(int conversationType, String targetId, int timestamp, Function(int? code)? finished) async {
     Map map = {"conversationType": conversationType, "targetId": targetId, "timestamp": timestamp};
 
     Map result = await _channel.invokeMethod(RCMethodKey.SendReadReceiptMessage, map);
@@ -1102,7 +1102,7 @@ class RongIMClient {
   ///
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   /// 此接口只支持群组
-  static void sendReadReceiptRequest(Message message, Function(int? code)? finished) async {
+  static Future<void> sendReadReceiptRequest(Message message, Function(int? code)? finished) async {
     Map messageMap = MessageFactory.instance!.message2Map(message);
     Map map = {"messageMap": messageMap};
 
@@ -1123,7 +1123,7 @@ class RongIMClient {
   ///
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   /// 此接口只支持群组
-  static void sendReadReceiptResponse(int conversationType, String targetId, List messageList, Function(int? code)? finished) async {
+  static Future<void> sendReadReceiptResponse(int conversationType, String targetId, List messageList, Function(int? code)? finished) async {
     List messageMaps = [];
     for (Message message in messageList) {
       Map messageMap = MessageFactory.instance!.message2Map(message);
@@ -1148,7 +1148,7 @@ class RongIMClient {
   ///
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   ///
-  static void syncConversationReadStatus(int conversationType, String targetId, int timestamp, Function(int? code)? finished) async {
+  static Future<void> syncConversationReadStatus(int conversationType, String targetId, int timestamp, Function(int? code)? finished) async {
     Map map = {"conversationType": conversationType, "targetId": targetId, "timestamp": timestamp};
 
     int? result = await _channel.invokeMethod(RCMethodKey.SyncConversationReadStatus, map);
@@ -1166,7 +1166,7 @@ class RongIMClient {
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   ///
   /// 此方法设置的屏蔽时间会在每天该时间段时生效。
-  static void setNotificationQuietHours(String startTime, int spanMins, Function(int? code)? finished) async {
+  static Future<void> setNotificationQuietHours(String startTime, int spanMins, Function(int? code)? finished) async {
     Map map = {"startTime": startTime, "spanMins": spanMins};
     int? result = await _channel.invokeMethod(RCMethodKey.SetNotificationQuietHours, map);
     if (finished != null) {
@@ -1178,7 +1178,7 @@ class RongIMClient {
   ///
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   ///
-  static void removeNotificationQuietHours(Function(int? code)? finished) async {
+  static Future<void> removeNotificationQuietHours(Function(int? code)? finished) async {
     int? result = await _channel.invokeMethod(RCMethodKey.RemoveNotificationQuietHours);
     if (finished != null) {
       finished(result);
@@ -1189,7 +1189,7 @@ class RongIMClient {
   ///
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败；startTime 代表已设置的屏蔽开始时间，spansMin 代表已设置的屏蔽时间分钟数，0 < spansMin < 1440
   ///
-  static void getNotificationQuietHours(Function(int? code, String? startTime, int? spansMin)? finished) async {
+  static Future<void> getNotificationQuietHours(Function(int? code, String? startTime, int? spansMin)? finished) async {
     Map result = await _channel.invokeMethod(RCMethodKey.GetNotificationQuietHours);
     int? code = result["code"];
     String? startTime = result["startTime"];
@@ -1222,14 +1222,14 @@ class RongIMClient {
   }
 
   /// 开始焚烧消息
-  static void messageBeginDestruct(Message message) async {
+  static Future<void> messageBeginDestruct(Message message) async {
     Map messageMap = MessageFactory.instance!.message2Map(message);
     Map map = {"message": messageMap};
     await _channel.invokeMethod(RCMethodKey.MessageBeginDestruct, map);
   }
 
   /// 停止焚烧消息（目前仅支持单聊）
-  static void messageStopDestruct(Message message) async {
+  static Future<void> messageStopDestruct(Message message) async {
     Map messageMap = MessageFactory.instance!.message2Map(message);
     Map map = {"message": messageMap};
     await _channel.invokeMethod(RCMethodKey.MessageStopDestruct, map);
@@ -1251,7 +1251,7 @@ class RongIMClient {
   ///
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   /// 此接口只支持聊天室，必须先开通聊天室属性自定义功能
-  static void setChatRoomEntry(String chatRoomId, String key, String value, bool sendNotification, bool autoDelete, String notificationExtra, Function(int? code)? finished) async {
+  static Future<void> setChatRoomEntry(String chatRoomId, String key, String value, bool sendNotification, bool autoDelete, String notificationExtra, Function(int? code)? finished) async {
     Map map = {"chatRoomId": chatRoomId, "key": key, "value": value, "sendNotification": sendNotification, "autoDelete": autoDelete, "notificationExtra": notificationExtra};
     int? result = await _channel.invokeMethod(RCMethodKey.SetChatRoomEntry, map);
     if (finished != null) {
@@ -1275,7 +1275,7 @@ class RongIMClient {
   ///
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   /// 此接口只支持聊天室，必须先开通聊天室属性自定义功能
-  static void forceSetChatRoomEntry(String chatRoomId, String key, String value, bool sendNotification, bool autoDelete, String notificationExtra, Function(int? code)? finished) async {
+  static Future<void> forceSetChatRoomEntry(String chatRoomId, String key, String value, bool sendNotification, bool autoDelete, String notificationExtra, Function(int? code)? finished) async {
     Map map = {"chatRoomId": chatRoomId, "key": key, "value": value, "sendNotification": sendNotification, "autoDelete": autoDelete, "notificationExtra": notificationExtra};
     int? result = await _channel.invokeMethod(RCMethodKey.ForceSetChatRoomEntry, map);
     if (finished != null) {
@@ -1291,7 +1291,7 @@ class RongIMClient {
   ///
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败，entry 为返回的 map
   /// 此接口只支持聊天室，必须先开通聊天室属性自定义功能
-  static void getChatRoomEntry(String chatRoomId, String key, Function(Map? entry, int? code)? finished) async {
+  static Future<void> getChatRoomEntry(String chatRoomId, String key, Function(Map? entry, int? code)? finished) async {
     Map map = {"chatRoomId": chatRoomId, "key": key};
 
     Map result = await _channel.invokeMethod(RCMethodKey.GetChatRoomEntry, map);
@@ -1308,7 +1308,7 @@ class RongIMClient {
   ///
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败，entry 为返回的 map
   /// 此接口只支持聊天室，必须先开通聊天室属性自定义功能
-  static void getAllChatRoomEntries(String chatRoomId, Function(Map? entry, int? code)? finished) async {
+  static Future<void> getAllChatRoomEntries(String chatRoomId, Function(Map? entry, int? code)? finished) async {
     Map map = {"chatRoomId": chatRoomId};
 
     Map result = await _channel.invokeMethod(RCMethodKey.GetAllChatRoomEntries, map);
@@ -1331,7 +1331,7 @@ class RongIMClient {
   ///
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   /// 此接口只支持聊天室，必须先开通聊天室属性自定义功能
-  static void removeChatRoomEntry(String chatRoomId, String key, bool sendNotification, String notificationExtra, Function(int? code)? finished) async {
+  static Future<void> removeChatRoomEntry(String chatRoomId, String key, bool sendNotification, String notificationExtra, Function(int? code)? finished) async {
     Map map = {"chatRoomId": chatRoomId, "key": key, "sendNotification": sendNotification, "notificationExtra": notificationExtra};
     int? result = await _channel.invokeMethod(RCMethodKey.RemoveChatRoomEntry, map);
     if (finished != null) {
@@ -1351,7 +1351,7 @@ class RongIMClient {
   ///
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   /// 此接口只支持聊天室，必须先开通聊天室属性自定义功能
-  static void forceRemoveChatRoomEntry(String chatRoomId, String key, bool sendNotification, String notificationExtra, Function(int? code)? finished) async {
+  static Future<void> forceRemoveChatRoomEntry(String chatRoomId, String key, bool sendNotification, String notificationExtra, Function(int? code)? finished) async {
     Map map = {"chatRoomId": chatRoomId, "key": key, "sendNotification": sendNotification, "notificationExtra": notificationExtra};
     int? result = await _channel.invokeMethod(RCMethodKey.ForceRemoveChatRoomEntry, map);
     if (finished != null) {
@@ -1369,7 +1369,7 @@ class RongIMClient {
   /// [overWrite] 是否强制覆盖
   /// [finished] 设置聊天室属性的回调
   ///            当 code 为 23428 的时候，errors 才会有值（key标识设置失败的 key,value 标识该 key 对应的错误码）
-  static void setChatRoomEntries(
+  static Future<void> setChatRoomEntries(
     String chatRoomId,
     Map<String, String> chatRoomEntryMap,
     bool autoRemove,
@@ -1405,7 +1405,7 @@ class RongIMClient {
   /// [force] 是否强制覆盖
   /// [finished] 设置聊天室属性的回调
   ///            当 code 为 23428 的时候，errors 才会有值（key标识设置失败的 key,value 标识该 key 对应的错误码）
-  static void removeChatRoomEntries(
+  static Future<void> removeChatRoomEntries(
     String chatRoomId,
     List<String> chatRoomEntryList,
     bool force,
@@ -1491,7 +1491,7 @@ class RongIMClient {
   /// conversationTypes 搜索的会话类型。
   /// objectNames       搜索的消息类型,例如:RC:TxtMsg。
   /// resultCallback    搜索结果回调。
-  static void searchConversations(String keyword, List conversationTypes, List objectNames, Function(int? code, List searchConversationResult)? finished) async {
+  static Future<void> searchConversations(String keyword, List conversationTypes, List objectNames, Function(int? code, List searchConversationResult)? finished) async {
     Map paramMap = {"keyword": keyword, "conversationTypes": conversationTypes, "objectNames": objectNames};
     Map? result = await _channel.invokeMethod(RCMethodKey.SearchConversations, paramMap);
     if (result != null) {
@@ -1518,7 +1518,7 @@ class RongIMClient {
   /// count            返回的搜索结果数量, count > 0。
   /// beginTime        查询记录的起始时间, 传0时从最新消息开始搜索。从该时间往前搜索。
   /// resultCallback   搜索结果回调。
-  static void searchMessages(int conversationType, String targetId, String keyword, int count, int beginTime, Function(List? /*<Message>*/ msgList, int? code)? finished) async {
+  static Future<void> searchMessages(int conversationType, String targetId, String keyword, int count, int beginTime, Function(List? /*<Message>*/ msgList, int? code)? finished) async {
     Map paramMap = {
       "conversationType": conversationType,
       "targetId": targetId,
@@ -1552,7 +1552,7 @@ class RongIMClient {
   }
 
   /// 发送输入状态
-  static void sendTypingStatus(int conversationType, String targetId, String typingContentType) async {
+  static Future<void> sendTypingStatus(int conversationType, String targetId, String typingContentType) async {
     Map paramMap = {
       "conversationType": conversationType,
       "targetId": targetId,
@@ -1562,13 +1562,13 @@ class RongIMClient {
   }
 
   /// 下载媒体文件
-  static void downloadMediaMessage(Message message) async {
+  static Future<void> downloadMediaMessage(Message message) async {
     Map msgMap = MessageFactory.instance!.message2Map(message);
     Map paramMap = {"message": msgMap};
     await _channel.invokeMethod(RCMethodKey.DownloadMediaMessage, paramMap);
   }
 
-  static void forwardMessageByStep(int conversationType, String targetId, Message message, {Function(int messageId, int status, int code)? finished}) async {
+  static Future<void> forwardMessageByStep(int conversationType, String targetId, Message message, {Function(int messageId, int status, int code)? finished}) async {
     Map msgMap = MessageFactory.instance!.message2Map(message);
     // 此处获取当前时间戳传给原生方法，并且当做 sendMessageCallbacks 的 key 记录 finished
     DateTime time = DateTime.now();
@@ -1584,7 +1584,7 @@ class RongIMClient {
 
   ///删除指定的一条或者一组消息。会同时删除本地和远端消息
   /// 会话类型, 不支持聊天室
-  static void deleteRemoteMessages(int? conversationType, String? targetId, List<Message> messages, Function(int? code)? finished) async {
+  static Future<void> deleteRemoteMessages(int? conversationType, String? targetId, List<Message> messages, Function(int? code)? finished) async {
     if (conversationType == null || targetId == null) {
       developer.log("deleteRemoteMessages fail: conversationType or targetId or content is null", name: "RongIMClient");
       return null;
@@ -1601,7 +1601,7 @@ class RongIMClient {
   }
 
   /// 清空指定类型，targetId 的某一会话所有聊天消息记录
-  static void clearMessages(int? conversationType, String? targetId, Function(int? code)? finished) async {
+  static Future<void> clearMessages(int? conversationType, String? targetId, Function(int? code)? finished) async {
     if (conversationType == null || targetId == null) {
       developer.log("clearMessages fail: conversationType or targetId or content is null", name: "RongIMClient");
       return null;
@@ -1617,7 +1617,7 @@ class RongIMClient {
   }
 
   /// 设置本地消息的附加信息
-  static void setMessageExtra(int messageId, String value, Function(int? code)? finished) async {
+  static Future<void> setMessageExtra(int messageId, String value, Function(int? code)? finished) async {
     Map paramMap = {
       "messageId": messageId,
       "value": value,
@@ -1629,7 +1629,7 @@ class RongIMClient {
   }
 
   /// 根据 messageId 设置接收到的消息状态。用于UI标记消息为已读，已下载等状态。
-  static void setMessageReceivedStatus(int messageId, int receivedStatus, Function(int? code)? finished) async {
+  static Future<void> setMessageReceivedStatus(int messageId, int receivedStatus, Function(int? code)? finished) async {
     Map paramMap = {
       "messageId": messageId,
       "receivedStatus": receivedStatus,
@@ -1641,7 +1641,7 @@ class RongIMClient {
   }
 
   /// 根据 messageId 设置消息的发送状态。用于UI标记消息为正在发送，对方已接收等状态。
-  static void setMessageSentStatus(int messageId, int sentStatus, Function(int? code)? finished) async {
+  static Future<void> setMessageSentStatus(int messageId, int sentStatus, Function(int? code)? finished) async {
     Map paramMap = {
       "messageId": messageId,
       "sentStatus": sentStatus,
@@ -1653,7 +1653,7 @@ class RongIMClient {
   }
 
   /// 清空会话类型列表中的所有会话及会话信息
-  static void clearConversations(List<int> conversationTypes, Function(int? code)? finished) async {
+  static Future<void> clearConversations(List<int> conversationTypes, Function(int? code)? finished) async {
     Map paramMap = {"conversationTypes": conversationTypes};
     int? result = await _channel.invokeMethod(RCMethodKey.ClearConversations, paramMap);
     if (finished != null) {
@@ -1672,7 +1672,7 @@ class RongIMClient {
   /// 服务端只会主动下发该用户第 2 天和第 3 天对应的离线消息；第 1 天的离线消息不会下发。
   /// 该功能首先需要客户提工单，在服务端开通此功能后，客户端调用该方法才生效
   /// duration 离线消息补偿时间，参数取值范围为int值1~7天。
-  static void setOfflineMessageDuration(int duration, Function(int? code, int? result)? finished) async {
+  static Future<void> setOfflineMessageDuration(int duration, Function(int? code, int? result)? finished) async {
     Map paramMap = {"duration": duration};
     Map? result = await _channel.invokeMethod(RCMethodKey.SetOfflineMessageDuration, paramMap);
     if (finished != null) {
@@ -1697,8 +1697,8 @@ class RongIMClient {
   /// A 设备网络稳定之后，用户在 A 设备连接成功，B 设备被踢出。
   /// 这个接口就是为这种情况加的。
   /// 设置 enable 为 true 时，SDK 重连的时候发现此时已有别的设备连接成功，不再强行踢出已有设备，而是踢出重连设备。
-  static void setReconnectKickEnable(bool enable) {
-    _channel.invokeMethod(RCMethodKey.SetReconnectKickEnable, enable);
+  static Future<void> setReconnectKickEnable(bool enable) async {
+    await _channel.invokeMethod(RCMethodKey.SetReconnectKickEnable, enable);
   }
 
   ///获取当前 SDK 的连接状态
@@ -1720,7 +1720,7 @@ class RongIMClient {
   // count            需要获取的消息数量， 0 < count <= 200
   // order            拉取顺序，RC_Timestamp_Desc:倒序，RC_Timestamp_ASC:正序
   // resultCallback   获取结果回调。
-  static void getRemoteChatRoomHistoryMessages(String targetId, int recordTime, int count, int /*RCTimestampOrder*/ order, Function(List? /*<Message>*/ msgList, int? syncTime, int? code)? finished) async {
+  static Future<void> getRemoteChatRoomHistoryMessages(String targetId, int recordTime, int count, int /*RCTimestampOrder*/ order, Function(List? /*<Message>*/ msgList, int? syncTime, int? code)? finished) async {
     Map map = {
       "targetId": targetId,
       "recordTime": recordTime,
@@ -1756,15 +1756,15 @@ class RongIMClient {
 //  缩略图压缩配置(仅 ios 使用，Android 请在 rc_configuration.xml 文件进行配置)
 //  maxSize:缩略图最大尺寸  minSize:缩略图最小尺寸  quality:缩略图质量压缩比
 //  @remarks 缩略图压缩配置，如果此处设置了配置就按照这个配置进行压缩。如果此处没有设置，会按照 RCConfig.plist 中的配置进行压缩。
-  static void imageCompressConfig(double maxSize, double minSize, double quality) {
+  static Future<void> imageCompressConfig(double maxSize, double minSize, double quality) async {
     Map map = {"maxSize": maxSize, "minSize": minSize, "quality": quality};
-    _channel.invokeMethod(RCMethodKey.ImageCompressConfig, map);
+    await _channel.invokeMethod(RCMethodKey.ImageCompressConfig, map);
   }
 
   /// typing 状态更新的时间，默认是 6s (仅 ios 使用，Android 请在 rc_configuration.xml 文件进行配置)
-  static void typingUpdateSeconds(int typingUpdateSeconds) {
+  static Future<void> typingUpdateSeconds(int typingUpdateSeconds) async {
     Map map = {"typingUpdateSeconds": typingUpdateSeconds};
-    _channel.invokeMethod(RCMethodKey.TypingUpdateSeconds, map);
+    await _channel.invokeMethod(RCMethodKey.TypingUpdateSeconds, map);
   }
 
   ///通过全局唯一 ID 获取消息实体
@@ -1830,7 +1830,7 @@ class RongIMClient {
  @discussion 最多支持添加 20 个标签
  @remarks 高级功能
  */
-  static addTag(TagInfo? taginfo, Function(int? code)? finished) async {
+  static Future<void> addTag(TagInfo? taginfo, Function(int? code)? finished) async {
     if (taginfo == null) {
       developer.log("addTag fail: taginfo is null", name: "RongIMClient");
       return null;
@@ -1851,7 +1851,7 @@ class RongIMClient {
 
  @remarks 高级功能
  */
-  static removeTag(String? targetId, Function(int? code)? finished) async {
+  static Future<void> removeTag(String? targetId, Function(int? code)? finished) async {
     if (targetId == null) {
       developer.log("removeTag fail: targetId is null", name: "RongIMClient");
       return null;
@@ -1872,7 +1872,7 @@ class RongIMClient {
 
  @remarks 高级功能
  */
-  static updateTag(TagInfo? taginfo, Function(int? code)? finished) async {
+  static Future<void> updateTag(TagInfo? taginfo, Function(int? code)? finished) async {
     if (taginfo == null) {
       developer.log("updateTag fail: taginfo is null", name: "RongIMClient");
       return null;
