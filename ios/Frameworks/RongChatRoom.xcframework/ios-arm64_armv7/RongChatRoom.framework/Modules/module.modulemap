@@ -1,0 +1,6 @@
+framework module RongChatRoom {
+  umbrella header "RongChatRoom.h"
+
+  export *
+  module * { export * }
+}

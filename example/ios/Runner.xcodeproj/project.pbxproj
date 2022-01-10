@@ -163,7 +163,6 @@
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				FAA041628947C20ECBDE3700 /* [CP] Embed Pods Frameworks */,
-				A340668CC116D06131A43B8C /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -279,24 +278,6 @@
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build";
 		};
-		A340668CC116D06131A43B8C /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources.sh",
-				"${PODS_ROOT}/RongCloudIM/RongCloudIM/RCConfig.plist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RCConfig.plist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		FAA041628947C20ECBDE3700 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -329,9 +310,9 @@
 				"${BUILT_PRODUCTS_DIR}/url_launcher/url_launcher.framework",
 				"${BUILT_PRODUCTS_DIR}/video_player/video_player.framework",
 				"${BUILT_PRODUCTS_DIR}/webview_flutter_wkwebview/webview_flutter_wkwebview.framework",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/RongChatRoom/RongChatRoom.framework/RongChatRoom",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/RongIMLibCore/RongIMLibCore.framework/RongIMLibCore",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/RongPublicService/RongPublicService.framework/RongPublicService",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/rongcloud_im_plugin/RongChatRoom.framework/RongChatRoom",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/rongcloud_im_plugin/RongIMLibCore.framework/RongIMLibCore",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/rongcloud_im_plugin/RongPublicService.framework/RongPublicService",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
