@@ -70,7 +70,7 @@ import io.rong.message.VoiceMessage;
 import io.rong.push.RongPushClient;
 import io.rong.push.pushconfig.PushConfig;
 
-public class RCIMFlutterWrapper {
+public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
 
     private static Context mContext = null;
     private static MethodChannel mChannel = null;
@@ -153,7 +153,7 @@ public class RCIMFlutterWrapper {
         mChannel = channel;
     }
 
-    public void onFlutterMethodCall(MethodCall call, Result result) {
+    public void onMethodCall(MethodCall call, Result result) {
         if (RCMethodList.MethodKeyInit.equalsIgnoreCase(call.method)) {
             initRCIM(call.arguments, result);
         } else if (RCMethodList.MethodKeyConfig.equalsIgnoreCase(call.method)) {
