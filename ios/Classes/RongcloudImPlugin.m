@@ -13,6 +13,10 @@
   [[RCIMFlutterWrapper sharedWrapper] addFlutterChannel:channel];
 }
 
+- (void)detachFromEngineForRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+    [[RCIMFlutterWrapper sharedWrapper] removeFlutterChannel];
+}
+
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     [[RCIMFlutterWrapper sharedWrapper] handleMethodCall:call result:result];
 }

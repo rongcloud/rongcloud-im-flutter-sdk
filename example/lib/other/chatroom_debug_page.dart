@@ -104,7 +104,7 @@ class _ChatRoomDebugPageState extends State<ChatRoomDebugPage> {
 
   void _forceSetEntry() {
     RongIMClient.forceSetChatRoomEntry(targetId, "key2", "value2", false, false, "notificationExtra", (int? code) {
-      DialogUtil.showAlertDiaLog(context, "强制删除 KV：{key2: value2}, 不发送通知，退出时不删除，code：" + CodeUtil.codeString(code)!);
+      DialogUtil.showAlertDiaLog(context, "强制设置 KV：{key2: value2}, 不发送通知，退出时不删除，code：" + CodeUtil.codeString(code)!);
     });
   }
 
