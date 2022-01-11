@@ -11,6 +11,7 @@
 #import "RCFlutterMessageFactory.h"
 #import "RCIMFlutterLog.h"
 #import "RCFlutterUtil.h"
+#import "RCUltraGroupClient.h"
 
 @interface RCMessageMapper : NSObject
 + (instancetype)sharedMapper;
@@ -96,10 +97,12 @@
 
 - (void)addFlutterChannel:(FlutterMethodChannel *)channel {
     self.channel = channel;
+    [[RCUltraGroupClient sharedClient] addFlutterChannel:channel];
 }
 
 - (void)removeFlutterChannel {
     self.channel = nil;
+    [[RCUltraGroupClient sharedClient] removeFlutterChannel];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -312,6 +315,9 @@
     }else if ([RCMethodKeySetStatisticServer isEqualToString:call.method]) {
         [self setStatisticServer:call.arguments];
         result(nil);
+    }else if ([call.method hasPrefix:RCUltraGroup]) {
+        // 处理超级群相关业务
+        [[RCUltraGroupClient sharedClient] handleMethodCall:call result:result];
     }else {
         result(FlutterMethodNotImplemented);
     }
@@ -340,6 +346,8 @@
         [[RCCoreClient sharedCoreClient] setMessageExpansionDelegate:self];
         [RCCoreClient sharedCoreClient].tagDelegate = self;
         [[RCCoreClient sharedCoreClient] setMessageBlockDelegate:self];
+        
+        [[RCUltraGroupClient sharedClient] setUltraGroupDelegate];
         self.sdkVersion = [conf objectForKey:@"version"];
     }else {
         [RCLog e:[NSString stringWithFormat:@"%@,非法参数",LOG_TAG]];

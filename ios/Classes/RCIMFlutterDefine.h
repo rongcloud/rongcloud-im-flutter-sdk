@@ -106,6 +106,33 @@ static NSString *RCMethodKeyForceRemoveChatRoomEntry = @"ForceRemoveChatRoomEntr
 static NSString *RCMethodKeySetChatRoomEntries = @"SetChatRoomEntries";
 static NSString *RCMethodKeyRemoveChatRoomEntries = @"RemoveChatRoomEntries";
 
+// 超级群相关内容
+static NSString *RCUltraGroup = @"RCUltraGroup";
+
+static NSString *RCUltraGroupSyncReadStatus = @"RCUltraGroup-SyncReadStatus";
+static NSString *RCUltraGroupOnReadTimeReceived = @"RCUltraGroup-onReadTimeReceived";
+
+static NSString *RCUltraGroupGetConversationListForAllChannel = @"RCUltraGroup-GetConversationListForAllChannel";
+static NSString *RCUltraGroupGetUnreadMentionedCount = @"RCUltraGroup-GetUnreadMentionedCount";
+
+static NSString *RCUltraGroupSendTypingStatus = @"RCUltraGroup-SendTypingStatus";
+static NSString *RCUltraGroupOnTypingStatusChanged = @"RCUltraGroup-onTypingStatusChanged";
+
+static NSString *RCUltraGroupDeleteMessagesForAllChannel = @"RCUltraGroup-DeleteMessagesForAllChannel";
+static NSString *RCUltraGroupDeleteMessages = @"RCUltraGroup-DeleteMessages";
+static NSString *RCUltraGroupDeleteRemoteMessages = @"RCUltraGroup-DeleteRemoteMessages";
+static NSString *RCUltraGroupGetBatchRemoteMessages = @"RCUltraGroup-GetBatchRemoteMessages";
+
+static NSString *RCUltraGroupOnMessageModified = @"RCUltraGroup-onMessageModified";
+static NSString *RCUltraGroupModifyMessage = @"RCUltraGroup-ModifyMessage";
+
+static NSString *RCUltraGroupUpdateMessageExpansion = @"RCUltraGroup-UpdateMessageExpansion";
+static NSString *RCUltraGroupOnMessageExpansionUpdated = @"RCUltraGroup-onMessageExpansionUpdated";
+static NSString *RCUltraGroupRemoveMessageExpansion = @"RCUltraGroup-RemoveMessageExpansion";
+
+static NSString *RCUltraGroupRecallMessage = @"RCUltraGroup-RecallMessage";
+static NSString *RCUltraGroupOnMessageRecalled = @"RCUltraGroup-onMessageRecalled";
+
 //callback iOS 通知 flutter
 static NSString *RCMethodCallBackKeySendMessage = @"sendMessageCallBack";
 static NSString *RCMethodCallBackKeyRefreshUserInfo = @"refreshUserInfoCallBack";
