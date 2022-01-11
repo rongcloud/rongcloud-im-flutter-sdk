@@ -106,6 +106,15 @@ class RCMethodKey {
   static const String RemoveTagsFromConversation = 'removeTagsFromConversation';
   static const String RemoveConversationsFromTag = 'removeConversationsFromTag';
   static const String AddConversationsToTag = 'addConversationsToTag';
+
+  static const String RCUltraGroupSyncReadStatus = 'RCUltraGroup-SyncReadStatus';
+  static const String RCUltraGroupGetConversationListForAllChannel = 'RCUltraGroup-GetConversationListForAllChannel';
+  static const String RCUltraGroupGetUnreadMentionedCount = 'RCUltraGroup-GetUnreadMentionedCount';
+
+  // static const String AddConversationsToTag = 'addConversationsToTag';
+  // static const String AddConversationsToTag = 'addConversationsToTag';
+  // static const String AddConversationsToTag = 'addConversationsToTag';
+
 }
 
 //callback list //native 会触发此方法

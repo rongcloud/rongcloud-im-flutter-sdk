@@ -2223,6 +2223,36 @@ class RongIMClient {
     }
   }
 
+  static Future<void> syncUlTraGroupReadStatus(
+      String targetId, String channelId, int timestamp, Function(int code)? callback) async {
+    Map arguments = {"targetId": targetId, "channelId": channelId, "timestamp": timestamp};
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupSyncReadStatus, arguments);
+    if (callback != null) {
+      callback(result["code"]);
+    }
+  }
+
+  static Future<List<Conversation?>> getConversationListForAllChannel(
+      RCConversationType conversationType, String targetId) async {
+    Map arguments = {"conversationType": conversationType, "targetId": targetId};
+    List? result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupGetConversationListForAllChannel, arguments);
+
+    if (result == null) {
+      return [];
+    }
+    List<Conversation?> conList = [];
+    for (String conStr in result) {
+      Conversation? con = MessageFactory.instance!.string2Conversation(conStr);
+      conList.add(con);
+    }
+    return conList;
+  }
+
+  static Future<int> getUltraGroupUnreadMentionedCount(String targetId) async {
+    Map arguments = {"targetId": targetId};
+    return await _channel.invokeMethod(RCMethodKey.RCUltraGroupGetUnreadMentionedCount, arguments);
+  }
+
   ///设置 Tag 多端同步监听
   ///
   static Function()? onConversationTagChanged;
