@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)tagInfo2String:(RCTagInfo *)tagInfo;
 + (NSString *)conversationTagInfo2String:(RCConversationTagInfo *)tagInfo;
 + (RCConversationIdentifier *)dict2ConversationIdentifier:(NSDictionary *)dict;
++ (NSDictionary *)message2Dic:(RCMessage *)message;
 @end
 
 NS_ASSUME_NONNULL_END

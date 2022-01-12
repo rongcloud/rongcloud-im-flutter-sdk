@@ -74,7 +74,7 @@
     NSString *localPath = contentDic[@"localPath"];
     int duration = [contentDic[@"duration"] intValue];
     if(![[NSFileManager defaultManager] fileExistsAtPath:localPath]) {
-        [RCLog e:[NSString stringWithFormat:@"%@,创建语音消息失败,语音文件路径不存在%@",LOG_TAG,localPath]];
+//        [RCLog e:[NSString stringWithFormat:@"%@,创建语音消息失败,语音文件路径不存在%@",LOG_TAG,localPath]];
         return nil;
     }
     NSData *voiceData= [NSData dataWithContentsOfFile:localPath];

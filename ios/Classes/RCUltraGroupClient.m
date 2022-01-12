@@ -11,6 +11,12 @@
 #import "RCFlutterMessageFactory.h"
 #import "RCFlutterUtil.h"
 
+@interface RCMessageMapper : NSObject
++ (instancetype)sharedMapper;
+- (Class)messageClassWithTypeIdenfifier:(NSString *)identifier;
+- (RCMessageContent *)messageContentWithClass:(Class)messageClass fromData:(NSData *)jsonData;
+@end
+
 @interface RCUltraGroupClient ()
 <RCUltraGroupTypingStatusDelegate,
 RCUltraGroupMessageChangeDelegate,
@@ -60,7 +66,7 @@ RCUlTraGroupReadTimeDelegate>
     } else if ([method isEqualToString:RCUltraGroupGetUnreadMentionedCount]) {
         [self getUltraGroupUnreadMentionedCount:arguments result:result];
     } else if ([method isEqualToString:RCUltraGroupModifyMessage]) {
-        [self modifyUltraGroupMessage:arguments result:result]
+        [self modifyUltraGroupMessage:arguments result:result];
     } else if ([method isEqualToString:RCUltraGroupRecallMessage]) {
         [self recallUltraGroupMessage:arguments result:result];
     } else if ([method isEqualToString:RCUltraGroupDeleteMessages]) {
@@ -72,7 +78,7 @@ RCUlTraGroupReadTimeDelegate>
     } else if ([method isEqualToString:RCUltraGroupDeleteRemoteMessages]) {
         [self deleteRemoteUltraGroupMessages:arguments result:result];
     } else if ([method isEqualToString:RCUltraGroupGetBatchRemoteMessages]) {
-        [self getBatchRemoteUrtraGroupMessages:arguments result:result];
+        [self getBatchRemoteUltraGroupMessages:arguments result:result];
     } else if ([method isEqualToString:RCUltraGroupUpdateMessageExpansion]) {
         [self updateUltraGroupMessageExpansion:arguments result:result];
     } else if ([method isEqualToString:RCUltraGroupRemoveMessageExpansion]) {
@@ -92,7 +98,7 @@ RCUlTraGroupReadTimeDelegate>
     NSLog(@"RCFlutterIM:onUltraGroupMessageModified");
     NSMutableArray *messageArr = [NSMutableArray array];
     for (RCMessage *msg in messages) {
-        NSDictionary *dict = [RCFlutterMessageFactory message2Dic:message];
+        NSDictionary *dict = [RCFlutterMessageFactory message2Dic:msg];
         [messageArr addObject:dict];
     }
     NSDictionary *arguments = @{@"messages":messageArr.copy};
@@ -103,7 +109,7 @@ RCUlTraGroupReadTimeDelegate>
     NSLog(@"RCFlutterIM:onUltraGroupMessageRecalled");
     NSMutableArray *messageArr = [NSMutableArray array];
     for (RCMessage *msg in messages) {
-        NSDictionary *dict = [RCFlutterMessageFactory message2Dic:message];
+        NSDictionary *dict = [RCFlutterMessageFactory message2Dic:msg];
         [messageArr addObject:dict];
     }
     NSDictionary *arguments = @{@"messages":messageArr.copy};
@@ -114,7 +120,7 @@ RCUlTraGroupReadTimeDelegate>
     NSLog(@"RCFlutterIM:onUltraGroupMessageExpansionUpdated");
     NSMutableArray *messageArr = [NSMutableArray array];
     for (RCMessage *msg in messages) {
-        NSDictionary *dict = [RCFlutterMessageFactory message2Dic:message];
+        NSDictionary *dict = [RCFlutterMessageFactory message2Dic:msg];
         [messageArr addObject:dict];
     }
     NSDictionary *arguments = @{@"messages":messageArr.copy};
@@ -159,7 +165,7 @@ RCUlTraGroupReadTimeDelegate>
         [dic setObject:@(0) forKey:@"code"];
         result(dic);
     } error:^(RCErrorCode errorCode) {
-        NSLog(@"RCFlutterIM:syncUlTraGroupReadStatus error : %@",errorCode);
+        NSLog(@"RCFlutterIM:syncUlTraGroupReadStatus error : %ld",(long)errorCode);
         NSMutableDictionary *dic = [NSMutableDictionary new];
         [dic setObject:@(errorCode) forKey:@"code"];
         result(dic);
@@ -169,7 +175,7 @@ RCUlTraGroupReadTimeDelegate>
 - (void)getConversationListForAllChannel:(NSDictionary *)arguments result:(FlutterResult)result {
     NSLog(@"RCFlutterIM:getConversationListForAllChannel %@",arguments);
     NSString *targetId = arguments[@"targetId"];
-    RCConversationType type = [param[@"conversationType"] integerValue];
+    RCConversationType type = [arguments[@"conversationType"] integerValue];
     NSArray *conversationList = [[RCChannelClient sharedChannelManager] getConversationListForAllChannel:type targetId:targetId];
     NSMutableArray *arr = [[NSMutableArray alloc] init];
     for(RCConversation *con in conversationList) {
@@ -179,29 +185,20 @@ RCUlTraGroupReadTimeDelegate>
     result(arr);
 }
 
-- (int)getUltraGroupUnreadMentionedCount:(NSDictionary *)arguments result:(FlutterResult)result{
+- (void)getUltraGroupUnreadMentionedCount:(NSDictionary *)arguments result:(FlutterResult)result{
     
     NSLog(@"RCFlutterIM:getUltraGroupUnreadMentionedCount");
     NSString *targetId = arguments[@"targetId"];
     int count = [[RCChannelClient sharedChannelManager] getUltraGroupUnreadMentionedCount:targetId];
-    result(count);
+    result([NSNumber numberWithInteger:count]);
 }
 
-/*!
- 向会话中发送正在输入的状态
- 
- @param targetId            会话目标  ID
- @param channelId          所属会话的频道id
- @param status                输入状态类型
- 
- @remarks 高级功能
- */
 - (void)sendUltraGroupTypingStatus:(NSDictionary *)arguments result:(FlutterResult)result{
     NSLog(@"RCFlutterIM:sendUltraGroupTypingStatus");
     NSString *targetId = arguments[@"targetId"];
     NSString *channelId = arguments[@"channelId"];
     RCUltraGroupTypingStatus typingStatus = [arguments[@"typingStatus"] integerValue];
-    [RCChannelClient sharedChannelManager] sendUltraGroupTypingStatus:targetId channleId:channelId typingStatus:RCUltraGroupTypingStatusText success:^{
+    [[RCChannelClient sharedChannelManager] sendUltraGroupTypingStatus:targetId channleId:channelId typingStatus:typingStatus success:^{
         NSMutableDictionary *dic = [NSMutableDictionary new];
         [dic setObject:@(0) forKey:@"code"];
         result(dic);
@@ -212,7 +209,7 @@ RCUlTraGroupReadTimeDelegate>
     }];
 }
 
-- (BOOL)deleteUltraGroupMessagesForAllChannel:(NSDictionary *)arguments result:(FlutterResult)result {
+- (void)deleteUltraGroupMessagesForAllChannel:(NSDictionary *)arguments result:(FlutterResult)result {
     NSLog(@"RCFlutterIM:deleteUltraGroupMessagesForAllChannel");
     
     NSString *targetId = arguments[@"targetId"];
@@ -221,17 +218,7 @@ RCUlTraGroupReadTimeDelegate>
     result([NSNumber numberWithBool:isSuccess]);
 }
 
-/*!
- 删除本地特定 channel 特点时间之前的消息
- 
- @param targetId            会话 ID
- @param channelId           频道 ID
- @param timestamp          会话的时间戳
- @return             是否删除成功
- 
- @remarks 消息操作
- */
-- (BOOL)deleteUltraGroupMessages:(NSDictionary *)arguments result:(FlutterResult)result {
+- (void)deleteUltraGroupMessages:(NSDictionary *)arguments result:(FlutterResult)result {
     
     NSString *targetId = arguments[@"targetId"];
     NSString *channelId = arguments[@"channelId"];
@@ -240,17 +227,6 @@ RCUlTraGroupReadTimeDelegate>
     result([NSNumber numberWithBool:isSuccess]);
 }
 
-/*!
- 删除服务端特定 channel 特定时间之前的消息
- 
- @param targetId            会话 ID
- @param channelId           频道 ID
- @param timestamp          会话的时间戳
- @param successBlock    成功的回调
- @param errorBlock         失败的回调
- 
- @remarks 消息操作
- */
 - (void)deleteRemoteUltraGroupMessages:(NSDictionary *)arguments result:(FlutterResult)result {
     
     NSString *targetId = arguments[@"targetId"];
@@ -269,18 +245,12 @@ RCUlTraGroupReadTimeDelegate>
 
 /**
  消息修改
- 
- @param messageUId 将被修改的消息id
- @param newContent 将被修改的消息内容
- @param successBlock 成功的回调
- @param errorBlock 失败的回调
- 
- @remarks 消息操作
  */
 - (void)modifyUltraGroupMessage:(NSDictionary *)arguments result:(FlutterResult)result {
     
     NSString *messageUId = arguments[@"messageUId"];
     NSString *contentStr = arguments[@"content"];
+    NSString *objName = arguments[@"objectName"];
     NSData *data = [contentStr dataUsingEncoding:NSUTF8StringEncoding];
     Class clazz = [[RCMessageMapper sharedMapper] messageClassWithTypeIdenfifier:objName];
     
@@ -297,7 +267,7 @@ RCUlTraGroupReadTimeDelegate>
         result(dic);
         return;
     }
-    [[RCChannelClient sharedChannelManager] modifyUltraGroupMessage:targetId messageContent:contentStr success:^{
+    [[RCChannelClient sharedChannelManager] modifyUltraGroupMessage:messageUId messageContent:content success:^{
         NSMutableDictionary *dic = [NSMutableDictionary new];
         [dic setObject:@(0) forKey:@"code"];
         result(dic);
@@ -311,19 +281,12 @@ RCUlTraGroupReadTimeDelegate>
 
 /**
  更新消息扩展信息
- 
- @param messageUId 消息 messageUId
- @param expansionDic 要更新的消息扩展信息键值对
- @param successBlock 成功的回调
- @param errorBlock 失败的回调
- 
- @remarks 高级功能
  */
 - (void)updateUltraGroupMessageExpansion:(NSDictionary *)arguments result:(FlutterResult)result {
     
     NSString *messageUId = arguments[@"messageUId"];
     NSDictionary *expansionDic = arguments[@"expansionDic"];
-    [[RCChannelClient sharedChannelManager] updateUltraGroupMessageExpansion:messageUId expansionDic:dic success:^{
+    [[RCChannelClient sharedChannelManager] updateUltraGroupMessageExpansion:messageUId expansionDic:expansionDic success:^{
         NSMutableDictionary *dic = [NSMutableDictionary new];
         [dic setObject:@(0) forKey:@"code"];
         result(dic);
@@ -336,15 +299,6 @@ RCUlTraGroupReadTimeDelegate>
 
 /**
  删除消息扩展信息中特定的键值对
- 
- @param messageUId 消息 messageUId
- @param keyArray 消息扩展信息中待删除的 key 的列表
- @param successBlock 成功的回调
- @param errorBlock 失败的回调
- 
- @discussion 扩展信息只支持单聊和群组，其它会话类型不能设置扩展信息
- 
- @remarks 高级功能
  */
 - (void)removeUltraGroupMessageExpansion:(NSDictionary *)arguments result:(FlutterResult)result {
     
@@ -363,16 +317,10 @@ RCUlTraGroupReadTimeDelegate>
 
 /*!
  撤回消息
- 
- @param message      需要撤回的消息
- @param successBlock 撤回成功的回调 [messageId:撤回的消息 ID，该消息已经变更为新的消息]
- @param errorBlock   撤回失败的回调 [errorCode:撤回失败错误码]
- @remarks 高级功能
  */
 - (void)recallUltraGroupMessage:(NSDictionary *)arguments result:(FlutterResult)result {
-    
     NSString *messageUId = arguments[@"messageUId"];
-    RCMessage *message = [[RCCoreClient sharedCoreClient] getMessage:messageUId];
+    RCMessage *message = [[RCCoreClient sharedCoreClient] getMessageByUId:messageUId];
     [[RCChannelClient sharedChannelManager] recallUltraGroupMessage:message success:^(long messageId) {
         NSMutableDictionary *dic = [NSMutableDictionary new];
         [dic setObject:@(0) forKey:@"code"];
@@ -386,13 +334,8 @@ RCUlTraGroupReadTimeDelegate>
 
 /*!
  获取同一个超级群下的批量服务消息（含所有频道）
- 
- @param messages      消息列表
- @param successBlock 撤回成功的回调 [matchedMsgList:成功的消息列表，notMatchMsgList:失败的消息列表]
- @param errorBlock   撤回失败的回调 [errorCode:撤回失败错误码]
- @remarks 高级功能
  */
-- (void)getBatchRemoteUrtraGroupMessages:(NSDictionary *)arguments result:(FlutterResult)result {
+- (void)getBatchRemoteUltraGroupMessages:(NSDictionary *)arguments result:(FlutterResult)result {
     
     NSArray *messagesStr = arguments[@"messages"];
     NSMutableArray *messages = [NSMutableArray array];

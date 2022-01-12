@@ -151,6 +151,7 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
 
     public void saveChannel(MethodChannel channel) {
         mChannel = channel;
+        RCUltraGroupClient.getInstance().saveChannel(channel);
     }
 
     public void onMethodCall(MethodCall call, Result result) {
@@ -368,7 +369,9 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
         } else if (RCMethodList.MethodKeySetStatisticServer.equalsIgnoreCase(call.method)) {
             setStatisticServer(call.arguments);
             result.success(null);
-        }else {
+        } else if (call.method.startsWith(RCMethodList.RCUltraGroup)) {
+            RCUltraGroupClient.getInstance().onMethodCall(call, result);
+        } else {
             result.notImplemented();
         }
 
@@ -573,6 +576,7 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
             setTagListenerListener();
             setChatRoomAdvancedActionListener();
             setMessageBlockListener();
+            RCUltraGroupClient.getInstance().setUltraGroupListeners();
         } else {
             Log.e("RCIM flutter init", "非法参数");
         }
@@ -940,7 +944,7 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
         }
     }
 
-    private MessageContent makeReferenceMessage(String contentStr) {
+    public MessageContent makeReferenceMessage(String contentStr) {
         if (TextUtils.isEmpty(contentStr)) {
             return null;
         }
@@ -1226,7 +1230,7 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
             } else {
 
             }
-            setCommonInfo(contentStr, content);
+            MessageFactory.getInstance().setCommonInfo(contentStr, content);
             if (content == null) {
                 RCLog.e(LOG_TAG + " message content is nil");
                 return;
@@ -1357,64 +1361,6 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
                     }
                 }
                 ((CombineMessage) content).setSummaryList(summaryList);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void setCommonInfo(String contentStr, MessageContent content) {
-        try {
-            JSONObject contentObject = new JSONObject(contentStr);
-            if (contentObject.has("user")) {
-                Object userObject = contentObject.get("user");
-                if (userObject instanceof JSONObject) {
-                    JSONObject userJObject = (JSONObject) userObject;
-                    String id = "";
-                    String name = "";
-                    String portrait = "";
-                    if (userJObject.has("id")) {
-                        id = (String) userJObject.get("id");
-                    }
-                    if (userJObject.has("name")) {
-                        name = (String) userJObject.get("name");
-                    }
-                    if (userJObject.has("portrait")) {
-                        portrait = (String) userJObject.get("portrait");
-                    }
-                    UserInfo info = new UserInfo(id, name, Uri.parse(portrait));
-                    if (userJObject.has("extra")) {
-                        info.setExtra((String) userJObject.get("extra"));
-                    }
-                    content.setUserInfo(info);
-                }
-            }
-            if (contentObject.has("mentionedInfo")) {
-                Object mentionedObject = contentObject.get("mentionedInfo");
-                if (mentionedObject instanceof JSONObject) {
-                    JSONObject mentionedJObject = (JSONObject) mentionedObject;
-                    MentionedInfo info = new MentionedInfo();
-                    if (mentionedJObject.has("type")) {
-                        info.setType(MentionedInfo.MentionedType.valueOf((int) mentionedJObject.get("type")));
-                    }
-                    if (mentionedJObject.has("userIdList")) {
-                        JSONArray userIdArray = (JSONArray) mentionedJObject.get("userIdList");
-                        List<String> userIdList = new ArrayList<>();
-                        for (int i = 0; i < userIdArray.length(); i++) {
-                            String idStr = (String) userIdArray.get(i);
-                            userIdList.add(idStr);
-                        }
-                        info.setMentionedUserIdList(userIdList);
-                    }
-                    if (mentionedJObject.has("mentionedContent")) {
-                        info.setMentionedContent((String) mentionedJObject.get("mentionedContent"));
-                    }
-                    content.setMentionedInfo(info);
-                }
-            }
-            if (contentObject.has("burnDuration")) {
-                long burnDuration = Long.valueOf(contentObject.get("burnDuration").toString());
-                content.setDestructTime(burnDuration);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -4378,7 +4324,7 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
         return identifier;
     }
 
-    private Message map2Message(Map messageMap) {
+    public Message map2Message(Map messageMap) {
         String contentStr = null;
         Message message = new Message();
         if (messageMap != null) {
@@ -4527,7 +4473,7 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
         }
     }
 
-    private MessageContent newMessageContent(String objectName, byte[] content, String contentStr) {
+    public MessageContent newMessageContent(String objectName, byte[] content, String contentStr) {
         Constructor<? extends MessageContent> constructor = messageContentConstructorMap.get(objectName);
         MessageContent result = null;
 
@@ -4573,7 +4519,8 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
                 FwLog.write(FwLog.F, FwLog.IM, "L-decode_msg-E", "msg_type|stacks", objectName, FwLog.stackToString(e));
             }
         }
-        setCommonInfo(contentStr, result);
+//        setCommonInfo(contentStr, result);
+        MessageFactory.getInstance().setCommonInfo(contentStr, result);
 //        }
         return result;
     }

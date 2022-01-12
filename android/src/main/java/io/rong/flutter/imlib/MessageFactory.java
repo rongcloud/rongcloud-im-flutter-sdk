@@ -1,6 +1,10 @@
 package io.rong.flutter.imlib;
 
 
+import android.net.Uri;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -12,6 +16,7 @@ import io.rong.imlib.model.ChatRoomInfo;
 import io.rong.imlib.model.ChatRoomMemberInfo;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.ConversationTagInfo;
+import io.rong.imlib.model.MentionedInfo;
 import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageConfig;
 import io.rong.imlib.model.MessageContent;
@@ -19,6 +24,7 @@ import io.rong.imlib.model.MessagePushConfig;
 import io.rong.imlib.model.ReadReceiptInfo;
 import io.rong.imlib.model.SearchConversationResult;
 import io.rong.imlib.model.TagInfo;
+import io.rong.imlib.model.UserInfo;
 import io.rong.imlib.typingmessage.TypingStatus;
 import io.rong.message.GIFMessage;
 import io.rong.message.ImageMessage;
@@ -40,6 +46,17 @@ public class MessageFactory {
         if (message == null) {
             return "";
         }
+
+        Map map = messageToMap(message);
+
+        JSONObject jObj = new JSONObject(map);
+
+        String jStr = jObj.toString();
+
+        return jStr;
+    }
+
+    public Map messageToMap(Message message) {
         Map map = new HashMap();
         map.put("conversationType", message.getConversationType().getValue());
         map.put("targetId", message.getTargetId());
@@ -137,12 +154,7 @@ public class MessageFactory {
             String jsonS = new String(data);
             map.put("content", jsonS);
         }
-
-        JSONObject jObj = new JSONObject(map);
-
-        String jStr = jObj.toString();
-
-        return jStr;
+        return map;
     }
 
     public String messageContent2String(MessageContent content) {
@@ -255,6 +267,64 @@ public class MessageFactory {
         JSONObject jObj = new JSONObject(map);
         String jStr = jObj.toString();
         return jStr;
+    }
+
+    public void setCommonInfo(String contentStr, MessageContent content) {
+        try {
+            JSONObject contentObject = new JSONObject(contentStr);
+            if (contentObject.has("user")) {
+                Object userObject = contentObject.get("user");
+                if (userObject instanceof JSONObject) {
+                    JSONObject userJObject = (JSONObject) userObject;
+                    String id = "";
+                    String name = "";
+                    String portrait = "";
+                    if (userJObject.has("id")) {
+                        id = (String) userJObject.get("id");
+                    }
+                    if (userJObject.has("name")) {
+                        name = (String) userJObject.get("name");
+                    }
+                    if (userJObject.has("portrait")) {
+                        portrait = (String) userJObject.get("portrait");
+                    }
+                    UserInfo info = new UserInfo(id, name, Uri.parse(portrait));
+                    if (userJObject.has("extra")) {
+                        info.setExtra((String) userJObject.get("extra"));
+                    }
+                    content.setUserInfo(info);
+                }
+            }
+            if (contentObject.has("mentionedInfo")) {
+                Object mentionedObject = contentObject.get("mentionedInfo");
+                if (mentionedObject instanceof JSONObject) {
+                    JSONObject mentionedJObject = (JSONObject) mentionedObject;
+                    MentionedInfo info = new MentionedInfo();
+                    if (mentionedJObject.has("type")) {
+                        info.setType(MentionedInfo.MentionedType.valueOf((int) mentionedJObject.get("type")));
+                    }
+                    if (mentionedJObject.has("userIdList")) {
+                        JSONArray userIdArray = (JSONArray) mentionedJObject.get("userIdList");
+                        List<String> userIdList = new ArrayList<>();
+                        for (int i = 0; i < userIdArray.length(); i++) {
+                            String idStr = (String) userIdArray.get(i);
+                            userIdList.add(idStr);
+                        }
+                        info.setMentionedUserIdList(userIdList);
+                    }
+                    if (mentionedJObject.has("mentionedContent")) {
+                        info.setMentionedContent((String) mentionedJObject.get("mentionedContent"));
+                    }
+                    content.setMentionedInfo(info);
+                }
+            }
+            if (contentObject.has("burnDuration")) {
+                long burnDuration = Long.valueOf(contentObject.get("burnDuration").toString());
+                content.setDestructTime(burnDuration);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }
 

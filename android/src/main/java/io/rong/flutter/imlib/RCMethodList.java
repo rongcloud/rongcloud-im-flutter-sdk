@@ -84,6 +84,26 @@ public class RCMethodList {
     static String MethodKeyUpdateMessageExpansion = "updateMessageExpansion";
     static String MethodKeyRemoveMessageExpansionForKey = "removeMessageExpansionForKey";
 
+    static String RCUltraGroup = "RCUltraGroup";
+    static String RCUltraGroupSyncReadStatus = "RCUltraGroup-SyncReadStatus";
+    static String RCUltraGroupGetConversationListForAllChannel = "RCUltraGroup-GetConversationListForAllChannel";
+    static String RCUltraGroupGetUnreadMentionedCount = "RCUltraGroup-GetUnreadMentionedCount";
+    static String RCUltraGroupSendTypingStatus = "RCUltraGroup-SendTypingStatus";
+    static String RCUltraGroupDeleteMessagesForAllChannel = "RCUltraGroup-DeleteMessagesForAllChannel";
+    static String RCUltraGroupDeleteMessages = "RCUltraGroup-DeleteMessages";
+    static String RCUltraGroupDeleteRemoteMessages = "RCUltraGroup-DeleteRemoteMessages";
+    static String RCUltraGroupModifyMessage = "RCUltraGroup-ModifyMessage";
+    static String RCUltraGroupUpdateMessageExpansion = "RCUltraGroup-UpdateMessageExpansion";
+    static String RCUltraGroupRemoveMessageExpansion = "RCUltraGroup-RemoveMessageExpansion";
+    static String RCUltraGroupRecallMessage = "RCUltraGroup-RecallMessage";
+    static String RCUltraGroupGetBatchRemoteMessages = "RCUltraGroup-GetBatchRemoteMessages";
+
+    static String RCUltraGroupOnMessageRecalled = "RCUltraGroup-onMessageRecalled";
+    static String RCUltraGroupOnMessageExpansionUpdated = "RCUltraGroup-onMessageExpansionUpdated";
+    static String RCUltraGroupOnReadTimeReceived = "RCUltraGroup-onReadTimeReceived";
+    static String RCUltraGroupOnMessageModified = "RCUltraGroup-onMessageModified";
+    static String RCUltraGroupOnTypingStatusChanged = "RCUltraGroup-onTypingStatusChanged";
+
     //会话标签
     static String MethodKeyAddTag = "addTag";
     static String MethodKeyRemoveTag = "removeTag";
