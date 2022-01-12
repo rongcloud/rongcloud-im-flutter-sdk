@@ -110,11 +110,15 @@ class RCMethodKey {
   static const String RCUltraGroupSyncReadStatus = 'RCUltraGroup-SyncReadStatus';
   static const String RCUltraGroupGetConversationListForAllChannel = 'RCUltraGroup-GetConversationListForAllChannel';
   static const String RCUltraGroupGetUnreadMentionedCount = 'RCUltraGroup-GetUnreadMentionedCount';
-
-  // static const String AddConversationsToTag = 'addConversationsToTag';
-  // static const String AddConversationsToTag = 'addConversationsToTag';
-  // static const String AddConversationsToTag = 'addConversationsToTag';
-
+  static const String RCUltraGroupSendTypingStatus = 'RCUltraGroup-SendTypingStatus';
+  static const String RCUltraGroupDeleteMessagesForAllChannel = 'RCUltraGroup-DeleteMessagesForAllChannel';
+  static const String RCUltraGroupDeleteMessages = 'RCUltraGroup-DeleteMessages';
+  static const String RCUltraGroupDeleteRemoteMessages = 'RCUltraGroup-DeleteRemoteMessages';
+  static const String RCUltraGroupModifyMessage = 'RCUltraGroup-ModifyMessage';
+  static const String RCUltraGroupUpdateMessageExpansion = 'RCUltraGroup-UpdateMessageExpansion';
+  static const String RCUltraGroupRemoveMessageExpansion = 'RCUltraGroup-RemoveMessageExpansion';
+  static const String RCUltraGroupRecallMessage = 'RCUltraGroup-RecallMessage';
+  static const String RCUltraGroupGetBatchRemoteMessages = 'RCUltraGroup-GetBatchRemoteMessages';
 }
 
 //callback list //native 会触发此方法
@@ -146,4 +150,10 @@ class RCMethodCallBackKey {
   static const String ConversationTagChanged = 'ConversationTagChangedCallBack';
   static const String OnTagChanged = 'onTagChanged';
   static const String OnMessageBlocked = 'onMessageBlocked';
+
+  static const String RCUltraGroupOnMessageRecalled = 'RCUltraGroup-onMessageRecalled';
+  static const String RCUltraGroupOnMessageExpansionUpdated = 'RCUltraGroup-onMessageExpansionUpdated';
+  static const String RCUltraGroupOnReadTimeReceived = 'RCUltraGroup-onReadTimeReceived';
+  static const String RCUltraGroupOnMessageModified = 'RCUltraGroup-onMessageModified';
+  static const String RCUltraGroupOnTypingStatusChanged = 'RCUltraGroup-onTypingStatusChanged';
 }

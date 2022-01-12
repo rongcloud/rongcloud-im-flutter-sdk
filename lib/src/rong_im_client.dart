@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:rongcloud_im_plugin/src/info/history_message_option.dart';
 import 'package:rongcloud_im_plugin/src/info/send_message_option.dart';
 import 'package:rongcloud_im_plugin/src/info/tag_info.dart';
+import 'package:rongcloud_im_plugin/src/info/ultra_group_typing_status_info.dart';
 import 'package:rongcloud_im_plugin/src/message/group_notification_message.dart';
 import 'package:rongcloud_im_plugin/src/util/type_util.dart';
 
@@ -2253,6 +2254,83 @@ class RongIMClient {
     return await _channel.invokeMethod(RCMethodKey.RCUltraGroupGetUnreadMentionedCount, arguments);
   }
 
+  static Future<void> sendUltraGroupTypingStatus(
+      String targetId, String channelId, Function(int code)? callback) async {
+    Map arguments = {"targetId": targetId, "channelId": channelId};
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupSendTypingStatus, arguments);
+    if (callback != null) {
+      callback(result["code"]);
+    }
+  }
+
+  static Future<bool> deleteUltraGroupMessagesForAllChannel(String targetId, int timestamp) async {
+    Map arguments = {"targetId": targetId, "timestamp": timestamp};
+    return await _channel.invokeMethod(RCMethodKey.RCUltraGroupDeleteMessagesForAllChannel, arguments);
+  }
+
+  static Future<bool> deleteUltraGroupMessages(String targetId, String channelId, int timestamp) async {
+    Map arguments = {"targetId": targetId, "channelId": channelId, "timestamp": timestamp};
+    return await _channel.invokeMethod(RCMethodKey.RCUltraGroupDeleteMessages, arguments);
+  }
+
+  static Future<void> deleteRemoteUltraGroupMessages(
+      String targetId, String channelId, int timestamp, Function(int code)? callback) async {
+    Map arguments = {"targetId": targetId, "channelId": channelId, "timestamp": timestamp};
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupDeleteRemoteMessages, arguments);
+    if (callback != null) {
+      callback(result["code"]);
+    }
+  }
+
+  static Future<void> modifyUltraGroupMessage(
+      String messageUId, MessageContent newContent, Function(int code)? callback) async {
+    String? jsonStr = newContent.encode();
+    Map arguments = {"messageUId": messageUId, "MessageContent": jsonStr};
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupModifyMessage, arguments);
+    if (callback != null) {
+      callback(result["code"]);
+    }
+  }
+
+  static Future<void> updateUltraGroupMessageExpansion(
+      String messageUId, Map expansionDic, Function(int code)? callback) async {
+    Map arguments = {"messageUId": messageUId, "MessageContent": expansionDic};
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupUpdateMessageExpansion, arguments);
+    if (callback != null) {
+      callback(result["code"]);
+    }
+  }
+
+  static Future<void> removeUltraGroupMessageExpansion(
+      String messageUId, List<String> keyArray, Function(int code)? callback) async {
+    Map arguments = {"messageUId": messageUId, "keyArray": keyArray};
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupRemoveMessageExpansion, arguments);
+    if (callback != null) {
+      callback(result["code"]);
+    }
+  }
+
+  static Future<void> recallUltraGroupMessage(String messageUId, Function(int code)? callback) async {
+    Map arguments = {"messageUId": messageUId};
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupRecallMessage, arguments);
+    if (callback != null) {
+      callback(result["code"]);
+    }
+  }
+
+  static Future<void> getBatchRemoteUrtraGroupMessages(List<Message> messages, Function(int code)? callback) async {
+    List<Map> msgList = [];
+    for (Message msg in messages) {
+      Map msgMap = MessageFactory.instance!.message2Map(msg);
+      msgList.add(msgMap);
+    }
+    Map arguments = {"messages": msgList};
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupGetBatchRemoteMessages, arguments);
+    if (callback != null) {
+      callback(result["code"]);
+    }
+  }
+
   ///设置 Tag 多端同步监听
   ///
   static Function()? onConversationTagChanged;
@@ -2409,6 +2487,16 @@ class RongIMClient {
 
   //数据库打开（调用 connect 之后回调）
   static Function(int? status)? onDatabaseOpened;
+
+  static Function(List<Message> messages)? onUltraGroupMessageModified;
+
+  static Function(List<Message> messages)? onUltraGroupMessageRecalled;
+
+  static Function(List<Message> messages)? onUltraGroupMessageExpansionUpdated;
+
+  static Function(List<RCUltraGroupTypingStatusInfo> infoList)? onUltraGroupTypingStatusChanged;
+
+  static Function(String targetId, int readTime)? onUlTraGroupReadTimeReceived;
 
   static void _addNativeMethodCallHandler() {
     _channel.setMethodCallHandler(_methodCallHandler);
@@ -2653,6 +2741,57 @@ class RongIMClient {
         break;
       case RCMethodCallBackKey.OnMessageBlocked:
         onMessageBlocked?.call(BlockedMessageInfo.fromMap(call.arguments));
+        break;
+      case RCMethodCallBackKey.RCUltraGroupOnMessageRecalled:
+        if (onUltraGroupMessageRecalled != null) {
+          List messages = call.arguments["messages"];
+          List<Message> newMessages = [];
+          for (Map message in messages) {
+            Message msg = MessageFactory.instance!.map2Message(message);
+            newMessages.add(msg);
+          }
+          onUltraGroupMessageRecalled!(newMessages);
+        }
+        break;
+      case RCMethodCallBackKey.RCUltraGroupOnMessageExpansionUpdated:
+        if (onUltraGroupMessageExpansionUpdated != null) {
+          List messages = call.arguments["messages"];
+          List<Message> newMessages = [];
+          for (Map message in messages) {
+            Message msg = MessageFactory.instance!.map2Message(message);
+            newMessages.add(msg);
+          }
+          onUltraGroupMessageExpansionUpdated!(newMessages);
+        }
+        break;
+      case RCMethodCallBackKey.RCUltraGroupOnReadTimeReceived:
+        if (onUlTraGroupReadTimeReceived != null) {
+          String targetId = call.arguments["targetId"];
+          int readTime = call.arguments["readTime"];
+          onUlTraGroupReadTimeReceived!(targetId, readTime);
+        }
+        break;
+      case RCMethodCallBackKey.RCUltraGroupOnMessageModified:
+        if (onUltraGroupMessageModified != null) {
+          List messages = call.arguments["messages"];
+          List<Message> newMessages = [];
+          for (Map message in messages) {
+            Message msg = MessageFactory.instance!.map2Message(message);
+            newMessages.add(msg);
+          }
+          onUltraGroupMessageModified!(newMessages);
+        }
+        break;
+      case RCMethodCallBackKey.RCUltraGroupOnTypingStatusChanged:
+        if (onUltraGroupTypingStatusChanged != null) {
+          List infoList = call.arguments["infoArr"];
+          List<RCUltraGroupTypingStatusInfo> newInfoArray = [];
+          for (Map item in infoList) {
+            RCUltraGroupTypingStatusInfo info = RCUltraGroupTypingStatusInfo.fromMap(item);
+            newInfoArray.add(info);
+          }
+          onUltraGroupTypingStatusChanged!(newInfoArray);
+        }
         break;
     }
   }

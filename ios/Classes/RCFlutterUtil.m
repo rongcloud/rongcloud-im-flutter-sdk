@@ -48,4 +48,39 @@
     UIImage *thumbnailImage = [UIImage imageWithData:imageData];
     return thumbnailImage;
 }
+
++ (RCMessageContent *)getVoiceMessage:(NSData *)data {
+    NSString *LOG_TAG = @"getVoiceMessage";
+    NSDictionary *contentDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+    RCUserInfo *sendUserInfo = nil;
+    RCMentionedInfo *mentionedInfo = nil;
+    if ([contentDic valueForKey:@"user"]) {
+        NSDictionary *userDict = [contentDic valueForKey:@"user"];
+        NSString *userId = [userDict valueForKey:@"id"] ?: @"";
+        NSString *name = [userDict valueForKey:@"name"] ?: @"";
+        NSString *portraitUri = [userDict valueForKey:@"portrait"] ?: @"";
+        NSString *extra = [userDict valueForKey:@"extra"] ?: @"";
+        sendUserInfo = [[RCUserInfo alloc] initWithUserId:userId name:name portrait:portraitUri];
+        sendUserInfo.extra = extra;
+    }
+    
+    if ([contentDic valueForKey:@"mentionedInfo"]) {
+        NSDictionary *mentionedInfoDict = [contentDic valueForKey:@"mentionedInfo"];
+        RCMentionedType type = [[mentionedInfoDict valueForKey:@"type"] intValue] ?: 1;
+        NSArray *userIdList = [mentionedInfoDict valueForKey:@"userIdList"] ?: @[];
+        NSString *mentionedContent = [mentionedInfoDict valueForKey:@"mentionedContent"] ?: @"";
+        mentionedInfo = [[RCMentionedInfo alloc] initWithMentionedType:type userIdList:userIdList mentionedContent:mentionedContent];
+    }
+    NSString *localPath = contentDic[@"localPath"];
+    int duration = [contentDic[@"duration"] intValue];
+    if(![[NSFileManager defaultManager] fileExistsAtPath:localPath]) {
+        [RCLog e:[NSString stringWithFormat:@"%@,创建语音消息失败,语音文件路径不存在%@",LOG_TAG,localPath]];
+        return nil;
+    }
+    NSData *voiceData= [NSData dataWithContentsOfFile:localPath];
+    RCVoiceMessage *msg = [RCVoiceMessage messageWithAudio:voiceData duration:duration];
+    msg.senderUserInfo = sendUserInfo;
+    msg.mentionedInfo = mentionedInfo;
+    return msg;
+}
 @end
