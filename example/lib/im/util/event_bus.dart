@@ -18,26 +18,30 @@ class EventBus {
     return _instance;
   }
 
-  Map<String, EventCallback> _events = new Map();
+  Map<String, List> _events = new Map();
 
   //设置事件监听，当有人调用 commit ，并且 eventKey 一样的时候会触发此方法
   void addListener(String eventKey, EventCallback callback) {
-    if (eventKey == null || callback == null) return;
-    _events[eventKey] = callback;
+    List? callbacks = _events[eventKey];
+    if (callbacks == null) {
+      callbacks = [];
+    }
+    callbacks.add(callback);
+    _events[eventKey] = callbacks;
   }
 
   //移除监听
   void removeListener(String eventKey) {
-    if (eventKey == null) return;
     _events.remove(eventKey);
   }
 
   //提交事件
   void commit(String eventKey, Object? arg) {
-    if (eventKey == null) return;
-    EventCallback? callback = _events[eventKey];
-    if (callback != null) {
-      callback(arg);
+    List? callbacks = _events[eventKey];
+    if (callbacks != null) {
+      callbacks.forEach((callback) {
+        callback(arg);
+      });
     }
   }
 }

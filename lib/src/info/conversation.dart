@@ -3,6 +3,7 @@ import '../message/message_content.dart';
 class Conversation {
   int? conversationType;
   String? targetId;
+  String? channelId;
   int? unreadMessageCount;
   int? receivedStatus;
   int? sentStatus;

@@ -4,6 +4,7 @@ class RCConversationType {
   static const int Group = 3;
   static const int ChatRoom = 4;
   static const int System = 6;
+  static const int UltraGroup = 10;
 }
 
 //消息发送状态

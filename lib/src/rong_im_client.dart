@@ -2285,7 +2285,7 @@ class RongIMClient {
   static Future<void> modifyUltraGroupMessage(
       String messageUId, MessageContent newContent, Function(int code)? callback) async {
     String? jsonStr = newContent.encode();
-    Map arguments = {"messageUId": messageUId, "MessageContent": jsonStr};
+    Map arguments = {"messageUId": messageUId, "MessageContent": jsonStr, "objectName": newContent.getObjectName()};
     Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupModifyMessage, arguments);
     if (callback != null) {
       callback(result["code"]);
@@ -2293,7 +2293,7 @@ class RongIMClient {
   }
 
   static Future<void> updateUltraGroupMessageExpansion(
-      String messageUId, Map expansionDic, Function(int code)? callback) async {
+      String messageUId, Map<String, String> expansionDic, Function(int code)? callback) async {
     Map arguments = {"messageUId": messageUId, "MessageContent": expansionDic};
     Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupUpdateMessageExpansion, arguments);
     if (callback != null) {
