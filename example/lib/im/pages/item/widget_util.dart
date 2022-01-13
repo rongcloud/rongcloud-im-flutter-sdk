@@ -88,26 +88,29 @@ class WidgetUtil {
 
   /// 消息 item 上的时间
   static Widget buildMessageTimeWidget(int sentTime) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(5),
-      child: Container(
-        alignment: Alignment.center,
-        margin: EdgeInsets.fromLTRB(0, 0, 0, 5),
-        width: RCLayout.MessageTimeItemWidth,
-        height: RCLayout.MessageTimeItemHeight,
-        color: Color(RCColor.MessageTimeBgColor),
-        child: Text(
-          TimeUtil.convertTime(sentTime),
-          style: TextStyle(color: Colors.white, fontSize: RCFont.MessageTimeFont),
+    return Center(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(5),
+        child: Container(
+          alignment: Alignment.center,
+          width: RCLayout.MessageTimeItemWidth,
+          height: RCLayout.MessageTimeItemHeight,
+          color: Color(RCColor.MessageTimeBgColor),
+          child: Text(
+            TimeUtil.convertTime(sentTime),
+            style: TextStyle(color: Colors.white, fontSize: RCFont.MessageTimeFont),
+          ),
         ),
       ),
     );
   }
 
   /// 长按的 menu，用于处理会话列表页面和会话页面的长按
-  static void showLongPressMenu(BuildContext context, Offset tapPos, Map<String, String> map, Function(String? key) onSelected) {
+  static void showLongPressMenu(
+      BuildContext context, Offset tapPos, Map<String, String> map, Function(String? key) onSelected) {
     final RenderBox overlay = Overlay.of(context)!.context.findRenderObject() as RenderBox;
-    final RelativeRect position = RelativeRect.fromLTRB(tapPos.dx, tapPos.dy, overlay.size.width - tapPos.dx, overlay.size.height - tapPos.dy);
+    final RelativeRect position =
+        RelativeRect.fromLTRB(tapPos.dx, tapPos.dy, overlay.size.width - tapPos.dx, overlay.size.height - tapPos.dy);
     List<PopupMenuEntry<String>> items = [];
     map.keys.forEach((String key) {
       PopupMenuItem<String> p = PopupMenuItem(

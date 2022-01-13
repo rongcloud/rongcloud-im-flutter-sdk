@@ -2,6 +2,7 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:rongcloud_im_plugin_example/im/pages/ultra_group_conversation_list_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../im/pages/conversation_list_page.dart';
@@ -19,12 +20,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  PageController _pageController = PageController();
   String pageName = "example.HomePage";
   final List<BottomNavigationBarItem> tabbarList = [
     new BottomNavigationBarItem(
       icon: new Icon(Icons.chat, color: Colors.grey),
       label: "会话",
     ),
+    BottomNavigationBarItem(icon: Icon(Icons.groups), label: "超级群"),
     new BottomNavigationBarItem(
       icon: new Icon(
         Icons.perm_contact_calendar,
@@ -33,7 +36,11 @@ class _HomePageState extends State<HomePage> {
       label: "通讯录",
     ),
   ];
-  final List<StatefulWidget> vcList = [new ConversationListPage(), new ContactsPage()];
+  final List<StatefulWidget> vcList = [
+    new ConversationListPage(),
+    new UltraGroupConversationListPage(),
+    new ContactsPage()
+  ];
 
   int curIndex = 0;
 
@@ -58,7 +65,8 @@ class _HomePageState extends State<HomePage> {
         EventBus.instance!.commit(EventKeys.UpdateNotificationQuietStatus, {});
         if (code == 31004 || code == 12) {
           developer.log("connect result " + code.toString(), name: pageName);
-          Navigator.of(context).pushAndRemoveUntil(new MaterialPageRoute(builder: (context) => new LoginPage()), (route) => route == null);
+          Navigator.of(context).pushAndRemoveUntil(
+              new MaterialPageRoute(builder: (context) => new LoginPage()), (route) => route == null);
         } else if (code == 0) {
           developer.log("connect userId" + userId!, name: pageName);
           // 连接成功后打开数据库
@@ -66,7 +74,8 @@ class _HomePageState extends State<HomePage> {
         }
       });
     } else {
-      Navigator.of(context).pushAndRemoveUntil(new MaterialPageRoute(builder: (context) => new LoginPage()), (route) => route == null);
+      Navigator.of(context)
+          .pushAndRemoveUntil(new MaterialPageRoute(builder: (context) => new LoginPage()), (route) => route == null);
     }
   }
 
@@ -86,20 +95,24 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      bottomNavigationBar: new BottomNavigationBar(
-        items: tabbarList,
-        type: BottomNavigationBarType.fixed,
-        onTap: (int index) {
-          setState(() {
-            curIndex = index;
-          });
-        },
-        currentIndex: curIndex,
-      ),
-      body: IndexedStack(
-        index: curIndex,
-        children: <Widget>[new ConversationListPage(), new ContactsPage()],
-      ),
-    );
+        bottomNavigationBar: new BottomNavigationBar(
+          items: tabbarList,
+          type: BottomNavigationBarType.fixed,
+          onTap: (int index) {
+            _pageController.jumpToPage(index);
+            setState(() {
+              curIndex = index;
+            });
+          },
+          currentIndex: curIndex,
+        ),
+        body: PageView.builder(
+          controller: _pageController,
+          itemBuilder: ((BuildContext context, int index) {
+            return vcList[index];
+          }),
+          itemCount: vcList.length,
+          physics: NeverScrollableScrollPhysics(),
+        ));
   }
 }

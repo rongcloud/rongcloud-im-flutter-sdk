@@ -32,7 +32,8 @@ class ConversationPage extends StatefulWidget {
   State<StatefulWidget> createState() => _ConversationPageState(arguments: this.arguments);
 }
 
-class _ConversationPageState extends State<ConversationPage> implements BottomInputBarDelegate, MessageContentListDelegate, BottomToolBarDelegate {
+class _ConversationPageState extends State<ConversationPage>
+    implements BottomInputBarDelegate, MessageContentListDelegate, BottomToolBarDelegate {
   String pageName = "example.ConversationPage";
   Map? arguments;
   int? conversationType;
@@ -207,7 +208,8 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
     };
 
     RongIMClient.onMessageDestructing = (Message? message, int? remainDuration) async {
-      EventBus.instance!.commit(EventKeys.BurnMessage, {"messageId": message!.messageId, "remainDuration": remainDuration});
+      EventBus.instance!
+          .commit(EventKeys.BurnMessage, {"messageId": message!.messageId, "remainDuration": remainDuration});
       developer.log(message.toString() + remainDuration.toString(), name: pageName);
       burnMsgMap[message.messageId] = remainDuration;
       if (remainDuration == 0) {
@@ -259,7 +261,8 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
 
     EventBus.instance!.addListener(EventKeys.BlockMessage, (info) {
       Fluttertoast.showToast(
-        msg: "敏感词被拦截,拦截类型:${info.blockType},会话类型:${info.conversationType},目标ID:${info.targetId},消息UID:${info.blockMsgUId},扩展信息:${info.extra}",
+        msg:
+            "敏感词被拦截,拦截类型:${info.blockType},会话类型:${info.conversationType},目标ID:${info.targetId},消息UID:${info.blockMsgUId},扩展信息:${info.extra}",
         timeInSecForIosWeb: 5,
       );
     });
@@ -299,7 +302,8 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
   onLoadRemoteHistoryMessages() async {
     developer.log("get Remote history message", name: pageName);
 
-    RongIMClient.getRemoteHistoryMessages(conversationType!, targetId!, recordTime!, 20, (List? /*<Message>*/ msgList, int? code) {
+    RongIMClient.getRemoteHistoryMessages(conversationType!, targetId!, recordTime!, 20,
+        (List? /*<Message>*/ msgList, int? code) {
       if (code == 0 && msgList != null) {
         msgList.sort((a, b) => b.sentTime.compareTo(a.sentTime));
         messageDataSource += msgList;
@@ -436,7 +440,9 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
     TextMessage msg = new TextMessage();
     msg.content = contentStr;
     if (conversationType == RCConversationType.Private) {
-      int duration = contentStr.length <= 20 ? RCDuration.TextMessageBurnDuration : (RCDuration.TextMessageBurnDuration + ((contentStr.length - 20) / 2 as int));
+      int duration = contentStr.length <= 20
+          ? RCDuration.TextMessageBurnDuration
+          : (RCDuration.TextMessageBurnDuration + ((contentStr.length - 20) / 2 as int));
       msg.destructDuration = isSecretChat ? duration : 0;
     }
 
@@ -622,7 +628,8 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
               developer.log("sendReadReceiptMessageFailed:code = + $code", name: pageName);
             }
           });
-          RongIMClient.syncConversationReadStatus(this.conversationType!, this.targetId!, message.sentTime!, (int? code) {
+          RongIMClient.syncConversationReadStatus(this.conversationType!, this.targetId!, message.sentTime!,
+              (int? code) {
             if (code == 0) {
               print('syncConversationReadStatusSuccess');
             } else {
@@ -715,7 +722,11 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
   void _sendReadReceiptResponse(String? messageUId) {
     List readReceiptList = [];
     for (Message? message in this.messageDataSource) {
-      if ((messageUId != null && message!.messageUId == messageUId) || (message!.readReceiptInfo != null && message.readReceiptInfo!.isReceiptRequestMessage! && !message.readReceiptInfo!.hasRespond! && message.messageDirection == RCMessageDirection.Receive)) {
+      if ((messageUId != null && message!.messageUId == messageUId) ||
+          (message!.readReceiptInfo != null &&
+              message.readReceiptInfo!.isReceiptRequestMessage! &&
+              !message.readReceiptInfo!.hasRespond! &&
+              message.messageDirection == RCMessageDirection.Receive)) {
         readReceiptList.add(message);
       }
     }
@@ -744,6 +755,7 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
                 child: Column(
                   children: <Widget>[
                     Flexible(
+                      flex: 1,
                       child: Column(
                         children: <Widget>[Flexible(child: messageContentList)],
                       ),
@@ -799,7 +811,10 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
     //     ['1', '2'], message.messageUId, (int code) {
     //   developer.log("updateMessageExpansion $code" , name: pageName);
     // });
-    if (message.messageDirection == RCMessageDirection.Receive && message.content!.destructDuration != null && message.content!.destructDuration! > 0 && multiSelect != true) RongIMClient.messageBeginDestruct(message);
+    if (message.messageDirection == RCMessageDirection.Receive &&
+        message.content!.destructDuration != null &&
+        message.content!.destructDuration! > 0 &&
+        multiSelect != true) RongIMClient.messageBeginDestruct(message);
     if (message.content is VoiceMessage) {
       VoiceMessage msg = message.content as VoiceMessage;
       if (msg.localPath != null && msg.localPath!.isNotEmpty && File(msg.localPath!).existsSync()) {
@@ -911,10 +926,15 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
   bool _isShowReference(Message message) {
     //过滤失败消息
     bool isSuccess = (message.sentStatus != RCSentStatus.Sending && message.sentStatus != RCSentStatus.Failed);
-    bool isFireMsg = message.content != null && message.content!.destructDuration != null && message.content!.destructDuration != 0;
+    bool isFireMsg =
+        message.content != null && message.content!.destructDuration != null && message.content!.destructDuration != 0;
     // bool isFireMode = mRongExtension != null && mRongExtension.isFireStatus();
     // bool isEnableReferenceMsg = RongContext.getInstance().getResources().getBoolean(R.bool.rc_enable_reference_message);
-    bool isSupport = (message.content!.getObjectName() == TextMessage.objectName) || (message.content!.getObjectName() == ImageMessage.objectName) || (message.content!.getObjectName() == FileMessage.objectName) || (message.content!.getObjectName() == RichContentMessage.objectName) || (message.content!.getObjectName() == ReferenceMessage.objectName);
+    bool isSupport = (message.content!.getObjectName() == TextMessage.objectName) ||
+        (message.content!.getObjectName() == ImageMessage.objectName) ||
+        (message.content!.getObjectName() == FileMessage.objectName) ||
+        (message.content!.getObjectName() == RichContentMessage.objectName) ||
+        (message.content!.getObjectName() == ReferenceMessage.objectName);
     return isSuccess && isSupport && !isFireMsg;
   }
 
@@ -1103,7 +1123,12 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
       if (!CombineMessageUtils.allowForward(forwardMsg.objectName)) {
         isAllowCombine = false;
       }
-      if (forwardMsg.content == null || (forwardMsg.content != null && forwardMsg.content!.destructDuration != null && forwardMsg.content!.destructDuration! > 0) || forwardMsg.sentStatus == RCSentStatus.Failed || forwardMsg.sentStatus == RCSentStatus.Sending) {
+      if (forwardMsg.content == null ||
+          (forwardMsg.content != null &&
+              forwardMsg.content!.destructDuration != null &&
+              forwardMsg.content!.destructDuration! > 0) ||
+          forwardMsg.sentStatus == RCSentStatus.Failed ||
+          forwardMsg.sentStatus == RCSentStatus.Sending) {
         DialogUtil.showAlertDiaLog(context, "无法识别的消息、阅后即焚消息以及未发送成功的消息不支持转发");
         return;
       }

@@ -17,7 +17,8 @@ class ConversationItem extends StatefulWidget {
   late _ConversationItemState state;
   ValueNotifier<int?> time = ValueNotifier<int?>(0);
 
-  ConversationItem(ConversationItemDelegate delegate, prefix.Message msg, bool showTime, bool? multiSelect, List selectedMessageIds, ValueNotifier<int?> time) {
+  ConversationItem(ConversationItemDelegate delegate, prefix.Message msg, bool showTime, bool? multiSelect,
+      List selectedMessageIds, ValueNotifier<int?> time) {
     this.message = msg;
     this.delegate = delegate;
     this.showTime = showTime;
@@ -28,7 +29,8 @@ class ConversationItem extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return state = new _ConversationItemState(this.delegate, this.message, this.showTime, this.multiSelect, this.selectedMessageIds, this.time);
+    return state = new _ConversationItemState(
+        this.delegate, this.message, this.showTime, this.multiSelect, this.selectedMessageIds, this.time);
   }
 
   void refreshUI(prefix.Message message) {
@@ -52,7 +54,8 @@ class _ConversationItemState extends State<ConversationItem> {
   ValueNotifier<int?> time = ValueNotifier<int>(0);
   bool needShowMessage = true;
 
-  _ConversationItemState(ConversationItemDelegate? delegate, prefix.Message msg, bool? showTime, bool? multiSelect, List? selectedMessageIds, ValueNotifier<int?> time) {
+  _ConversationItemState(ConversationItemDelegate? delegate, prefix.Message msg, bool? showTime, bool? multiSelect,
+      List? selectedMessageIds, ValueNotifier<int?> time) {
     this.message = msg;
     this.delegate = delegate;
     this.showTime = showTime;
@@ -61,7 +64,11 @@ class _ConversationItemState extends State<ConversationItem> {
     this.selectedMessageIds = selectedMessageIds;
     this.time = time;
     setInfo(message!.senderUserId);
-    needShowMessage = !(msg.messageDirection == prefix.RCMessageDirection.Receive && msg.content != null && msg.content!.destructDuration != null && msg.content!.destructDuration! > 0 && time.value == msg.content!.destructDuration);
+    needShowMessage = !(msg.messageDirection == prefix.RCMessageDirection.Receive &&
+        msg.content != null &&
+        msg.content!.destructDuration != null &&
+        msg.content!.destructDuration! > 0 &&
+        time.value == msg.content!.destructDuration);
   }
 
   void setInfo(String? targetId) async {
@@ -98,9 +105,11 @@ class _ConversationItemState extends State<ConversationItem> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
       child: Column(
-        children: <Widget>[this.showTime! ? WidgetUtil.buildMessageTimeWidget(message!.sentTime!) : WidgetUtil.buildEmptyWidget(), showMessage()],
+        children: <Widget>[
+          this.showTime! ? WidgetUtil.buildMessageTimeWidget(message!.sentTime!) : WidgetUtil.buildEmptyWidget(),
+          showMessage()
+        ],
       ),
     );
   }
@@ -141,49 +150,53 @@ class _ConversationItemState extends State<ConversationItem> {
     }
   }
 
+  Widget _buildSendContent() {
+    return Expanded(
+        child: Row(
+      children: [
+        buildMessageWidget(),
+        Column(
+          children: [_buildUserName(), _buildUserPortrait()],
+        ),
+      ],
+    ));
+  }
+
+  Widget _buildReceiveContent() {
+    return Expanded(
+        child: Row(
+      children: [
+        Column(
+          children: [_buildUserName(), _buildUserPortrait()],
+        ),
+        buildMessageWidget(),
+      ],
+    ));
+  }
+
+  Widget _buildUserName() {
+    return Container(
+      // 名字
+      alignment: Alignment.centerRight,
+      child: Text((this.user == null || this.user!.id == null ? "" : this.user!.id!),
+          style: TextStyle(fontSize: RCFont.MessageNameFont, color: Color(RCColor.MessageNameBgColor))),
+    );
+  }
+
+  Widget _buildUserPortrait() {
+    return GestureDetector(
+      onTap: () {
+        __onTapedUserPortrait();
+      },
+      child: WidgetUtil.buildUserPortrait(this.user?.portraitUrl),
+    );
+  }
+
   Widget subContent() {
     if (message!.messageDirection == prefix.RCMessageDirection.Send) {
-      return Expanded(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Expanded(
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    alignment: Alignment.centerRight,
-                    padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
-                    child: Text((this.user == null || this.user!.id == null ? "" : this.user!.id!), style: TextStyle(fontSize: RCFont.MessageNameFont, color: Color(RCColor.MessageNameBgColor))),
-                  ),
-                  buildMessageWidget(),
-                  Container(
-                    alignment: Alignment.centerRight,
-                    padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTapDown: (TapDownDetails details) {
-                        this.tapPos = details.globalPosition;
-                      },
-                      onTap: () {
-                        __onTapedReadRequest();
-                      },
-                      child: message!.content != null && message!.content!.destructDuration != null && message!.content!.destructDuration! > 0 ? Text("") : buildReadInfo(),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                __onTapedUserPortrait();
-              },
-              child: WidgetUtil.buildUserPortrait(this.user?.portraitUrl),
-            ),
-          ],
-        ),
-      );
+      return _buildSendContent();
     } else if (message!.messageDirection == prefix.RCMessageDirection.Receive) {
+      return _buildReceiveContent();
       return Expanded(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -203,7 +216,6 @@ class _ConversationItemState extends State<ConversationItem> {
                 children: <Widget>[
                   Container(
                     alignment: Alignment.centerLeft,
-                    padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
                     child: Text(
                       (this.user == null || this.user!.id == null ? "" : this.user!.id!),
                       style: TextStyle(color: Color(RCColor.MessageNameBgColor)),
@@ -294,95 +306,107 @@ class _ConversationItemState extends State<ConversationItem> {
     }
   }
 
+  Widget buildMessageContentWidget() {
+    return Container();
+  }
+
   Widget buildMessageWidget() {
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: Container(
-            padding: EdgeInsets.fromLTRB(15, 6, 15, 10),
-            alignment: message!.messageDirection == prefix.RCMessageDirection.Send ? Alignment.centerRight : Alignment.centerLeft,
-            child: Row(mainAxisAlignment: message!.messageDirection == prefix.RCMessageDirection.Send ? MainAxisAlignment.end : MainAxisAlignment.start, children: <Widget>[
-              message!.messageDirection == prefix.RCMessageDirection.Send && message!.content != null && message!.content!.destructDuration != null && message!.content!.destructDuration! > 0
-                  ? ValueListenableBuilder(
-                      builder: (BuildContext context, int? value, Widget? child) {
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            value! > 0
-                                ? Text(
-                                    "$value ",
-                                    style: TextStyle(color: Colors.red),
-                                  )
-                                : Text("")
-                          ],
-                        );
-                      },
-                      valueListenable: time,
-                    )
-                  : Text(""),
-              // sentStatus = 20 为发送失败
-              message!.messageDirection == prefix.RCMessageDirection.Send && message!.sentStatus == 20
-                  ? Container(
-                      padding: EdgeInsets.fromLTRB(6, 6, 6, 6),
-                      child: GestureDetector(
-                          onTap: () {
-                            if (delegate != null) {
-                              if (multiSelect == true) {
-                                //多选模式下修改为didTapItem处理
-                                delegate!.didTapItem(message);
-                                bool isSelected = selectedMessageIds!.contains(message!.messageId);
-                                icon!.updateUI(isSelected);
-                              } else {
-                                delegate!.didTapReSendMessage(message);
+    bool _isSend = message!.messageDirection == prefix.RCMessageDirection.Send;
+    return Expanded(
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Container(
+              alignment: _isSend ? Alignment.centerRight : Alignment.centerLeft,
+              child:
+                  Row(mainAxisAlignment: _isSend ? MainAxisAlignment.end : MainAxisAlignment.start, children: <Widget>[
+                _isSend &&
+                        message!.content != null &&
+                        message!.content!.destructDuration != null &&
+                        message!.content!.destructDuration! > 0
+                    ? ValueListenableBuilder(
+                        builder: (BuildContext context, int? value, Widget? child) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              value! > 0
+                                  ? Text(
+                                      "$value ",
+                                      style: TextStyle(color: Colors.red),
+                                    )
+                                  : Text("")
+                            ],
+                          );
+                        },
+                        valueListenable: time,
+                      )
+                    : Text(""),
+                // sentStatus = 20 为发送失败
+                _isSend && message!.sentStatus == 20
+                    ? Container(
+                        child: GestureDetector(
+                            onTap: () {
+                              if (delegate != null) {
+                                if (multiSelect == true) {
+                                  //多选模式下修改为didTapItem处理
+                                  delegate!.didTapItem(message);
+                                  bool isSelected = selectedMessageIds!.contains(message!.messageId);
+                                  icon!.updateUI(isSelected);
+                                } else {
+                                  delegate!.didTapReSendMessage(message);
+                                }
                               }
-                            }
-                          },
-                          child: Image.asset(
-                            "assets/images/rc_ic_warning.png",
-                            width: RCLayout.MessageErrorHeight,
-                            height: RCLayout.MessageErrorHeight,
-                          )))
-                  : WidgetUtil.buildEmptyWidget(),
-              Container(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTapDown: (TapDownDetails details) {
-                    this.tapPos = details.globalPosition;
-                  },
-                  onTap: () {
-                    __onTapedMesssage();
-                  },
-                  onLongPress: () {
-                    __onLongPressMessage(this.tapPos);
-                  },
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: MessageItemFactory(message: message, needShow: needShowMessage),
+                            },
+                            child: Image.asset(
+                              "assets/images/rc_ic_warning.png",
+                              width: RCLayout.MessageErrorHeight,
+                              height: RCLayout.MessageErrorHeight,
+                            )))
+                    : WidgetUtil.buildEmptyWidget(),
+                Container(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTapDown: (TapDownDetails details) {
+                      this.tapPos = details.globalPosition;
+                    },
+                    onTap: () {
+                      __onTapedMesssage();
+                    },
+                    onLongPress: () {
+                      __onLongPressMessage(this.tapPos);
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: MessageItemFactory(message: message, needShow: needShowMessage),
+                    ),
                   ),
                 ),
-              ),
-              message!.messageDirection == prefix.RCMessageDirection.Receive && message!.content != null && message!.content!.destructDuration != null && message!.content!.destructDuration! > 0
-                  ? ValueListenableBuilder(
-                      builder: (BuildContext context, int? value, Widget? child) {
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            value! > 0
-                                ? Text(
-                                    " $value",
-                                    style: TextStyle(color: Colors.red),
-                                  )
-                                : Text("")
-                          ],
-                        );
-                      },
-                      valueListenable: time,
-                    )
-                  : Text(""),
-            ]),
-          ),
-        )
-      ],
+                !_isSend &&
+                        message!.content != null &&
+                        message!.content!.destructDuration != null &&
+                        message!.content!.destructDuration! > 0
+                    ? ValueListenableBuilder(
+                        builder: (BuildContext context, int? value, Widget? child) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              value! > 0
+                                  ? Text(
+                                      " $value",
+                                      style: TextStyle(color: Colors.red),
+                                    )
+                                  : Text("")
+                            ],
+                          );
+                        },
+                        valueListenable: time,
+                      )
+                    : Text(""),
+              ]),
+            ),
+          )
+        ],
+      ),
     );
   }
 
