@@ -61,6 +61,7 @@ public class MessageFactory {
         map.put("conversationType", message.getConversationType().getValue());
         map.put("targetId", message.getTargetId());
         map.put("messageId", message.getMessageId());
+        map.put("channelId", message.getChannelId());
         if (message.getMessageDirection() != null) {
             map.put("messageDirection", message.getMessageDirection().getValue());
         }
@@ -170,6 +171,7 @@ public class MessageFactory {
         Map map = new HashMap();
         map.put("conversationType", conversation.getConversationType().getValue());
         map.put("targetId", conversation.getTargetId());
+        map.put("channelId", conversation.getChannelId());
         map.put("unreadMessageCount", conversation.getUnreadMessageCount());
         map.put("receivedStatus", conversation.getReceivedStatus().getFlag());
         map.put("sentStatus", conversation.getSentStatus().getValue());

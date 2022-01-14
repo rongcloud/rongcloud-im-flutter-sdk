@@ -97,6 +97,7 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
         ChannelClient.getInstance().syncUltraGroupReadStatus(targetId, channelId, timestamp.longValue(), new IRongCoreCallback.OperationCallback() {
             @Override
             public void onSuccess() {
+                Log.d(TAG, "syncUlTraGroupReadStatus: onSuccess");
                 HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", 0);
                 result.success(msgMap);
@@ -104,6 +105,7 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
 
             @Override
             public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
+                Log.d(TAG, "syncUlTraGroupReadStatus: onError " + coreErrorCode.getValue());
                 HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", coreErrorCode.getValue());
                 result.success(msgMap);
