@@ -101,8 +101,10 @@
 }
 
 - (void)removeFlutterChannel {
+    NSLog(@"我正在销毁");
     self.channel = nil;
     [[RCUltraGroupClient sharedClient] removeFlutterChannel];
+    [[RCCoreClient sharedCoreClient] removeReceiveMessageDelegate:self];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {

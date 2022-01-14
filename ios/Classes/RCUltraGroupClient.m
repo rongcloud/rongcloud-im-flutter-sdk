@@ -127,7 +127,7 @@ RCUlTraGroupReadTimeDelegate>
     [self.channel invokeMethod:RCUltraGroupOnMessageExpansionUpdated arguments:arguments];
 }
 
--(void)onUlTraGroupReadTimeReceived:(NSString *)targetId readTime:(long long)readTime {
+- (void)onUlTraGroupReadTimeReceived:(NSString *)targetId channelId:(NSString *)channelId readTime:(long long)readTime {
     NSLog(@"RCFlutterIM:onUltraGroupMessageExpansionUpdated");
     NSDictionary *arguments = @{@"targetId":targetId,@"readTime":@(readTime)};
     [self.channel invokeMethod:RCUltraGroupOnReadTimeReceived arguments:arguments];

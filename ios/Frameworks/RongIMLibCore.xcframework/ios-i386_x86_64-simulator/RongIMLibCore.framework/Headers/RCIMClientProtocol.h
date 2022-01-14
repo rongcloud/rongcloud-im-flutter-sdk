@@ -335,9 +335,10 @@
  超级群已读时间同步
  
  @param targetId 会话 ID
+ @param channelId 频道 ID
  @param readTime 已读时间
  */
-- (void)onUlTraGroupReadTimeReceived:(NSString *)targetId readTime:(long long)readTime;
+- (void)onUlTraGroupReadTimeReceived:(NSString *)targetId channelId:(NSString *)channelId readTime:(long long)readTime;
 
 @end
 
