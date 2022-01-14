@@ -10,7 +10,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.4'
+        classpath 'com.android.tools.build:gradle:3.6.4'
     }
 }
 
@@ -37,7 +37,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar','*.aar'])
+    api fileTree(dir: 'libs', include: ['*.jar','*.aar'])
 
     // api 'cn.rongcloud.sdk:im_libcore:5.1.7'
     // api 'cn.rongcloud.sdk:im_chatroom:5.1.7'
