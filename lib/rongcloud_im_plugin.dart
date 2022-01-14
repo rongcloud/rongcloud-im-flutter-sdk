@@ -21,6 +21,7 @@ export 'src/message/gif_message.dart';
 export 'src/message/group_notification_message.dart';
 export 'src/message/image_message.dart';
 export 'src/message/location_message.dart';
+export 'src/info/ultra_group_typing_status_info.dart';
 //消息体
 export 'src/message/message_content.dart';
 export 'src/message/recall_notification_message.dart';

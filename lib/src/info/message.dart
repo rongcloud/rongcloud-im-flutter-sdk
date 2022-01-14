@@ -3,6 +3,7 @@ import '../message/message_content.dart';
 class Message extends Object {
   int? conversationType; //会话类型 参见 RCConversationType
   String? targetId; //会话 id
+  String? channelId;
   int? messageId; //messageId ，本地数据库的自增 id
   int? messageDirection; //消息方向 参见 RCMessageDirection
   String? senderUserId; //发送者 id

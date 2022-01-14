@@ -97,6 +97,7 @@ class MessageFactory extends Object {
     Message message = new Message();
     message.conversationType = map["conversationType"];
     message.targetId = map["targetId"];
+    message.channelId = map["channelId"];
     message.messageId = map["messageId"];
     message.messageDirection = map["messageDirection"];
     message.senderUserId = map["senderUserId"];
@@ -230,6 +231,7 @@ class MessageFactory extends Object {
     map["conversationType"] = message.conversationType;
     map["targetId"] = message.targetId ?? "";
     map["messageId"] = message.messageId;
+    map["channelId"] = message.channelId;
     map["messageDirection"] = message.messageDirection;
     map["senderUserId"] = message.senderUserId ?? "";
     map["receivedStatus"] = message.receivedStatus;
