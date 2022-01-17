@@ -10,11 +10,11 @@
   RongcloudImPlugin* instance = [[RongcloudImPlugin alloc] init];
   [registrar addApplicationDelegate:instance];
   [registrar addMethodCallDelegate:instance channel:channel];
-  [[RCIMFlutterWrapper sharedWrapper] addFlutterChannel:channel];
+  [[RCIMFlutterWrapper sharedWrapper] setFlutterChannel:channel];
 }
 
 - (void)detachFromEngineForRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-    [[RCIMFlutterWrapper sharedWrapper] removeFlutterChannel];
+    [[RCIMFlutterWrapper sharedWrapper] setFlutterChannel:nil];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {

@@ -34,8 +34,7 @@ NS_ASSUME_NONNULL_END
  */
 @interface RCIMFlutterWrapper (Internal)
 
-- (void)addFlutterChannel:(FlutterMethodChannel *_Nonnull)channel;
-- (void)removeFlutterChannel;
+- (void)setFlutterChannel:(FlutterMethodChannel *_Nullable)channel;
 - (void)handleMethodCall:(FlutterMethodCall*_Nonnull)call result:(FlutterResult _Nonnull )result;
 
 @end
