@@ -15,6 +15,7 @@ public class RongcloudImPlugin implements FlutterPlugin {
         channel.setMethodCallHandler(RCIMFlutterWrapper.getInstance());
         RCIMFlutterWrapper.getInstance().saveContext(registrar.activity().getApplicationContext());
         RCIMFlutterWrapper.getInstance().saveChannel(channel);
+        RCIMFlutterWrapper.getInstance().initListener();
     }
 
     @Override
@@ -23,11 +24,13 @@ public class RongcloudImPlugin implements FlutterPlugin {
         channel.setMethodCallHandler(RCIMFlutterWrapper.getInstance());
         RCIMFlutterWrapper.getInstance().saveContext(binding.getApplicationContext());
         RCIMFlutterWrapper.getInstance().saveChannel(channel);
+        RCIMFlutterWrapper.getInstance().initListener();
     }
 
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
         Log.e("onDetachedFromEngine", "onDetachedFromEngine");
+        RCIMFlutterWrapper.getInstance().releaseListener();
         channel = null;
     }
 
