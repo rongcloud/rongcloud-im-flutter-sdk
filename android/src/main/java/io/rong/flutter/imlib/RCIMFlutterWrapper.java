@@ -31,6 +31,7 @@ import io.rong.common.ExpansionUtils;
 import io.rong.common.RLog;
 import io.rong.common.fwlog.FwLog;
 import io.rong.flutter.imlib.forward.CombineMessage;
+import io.rong.imlib.ChannelClient;
 import io.rong.imlib.IRongCoreCallback;
 import io.rong.imlib.IRongCoreEnum;
 import io.rong.imlib.IRongCoreListener;
@@ -455,7 +456,6 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
 
                         @Override
                         public void onCanceled(Message message) {
-
                         }
 
                         @Override
@@ -1762,21 +1762,20 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
             Integer t = (Integer) map.get("conversationType");
             Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
             String targetId = (String) map.get("targetId");
-            RongCoreClient.getInstance().clearMessagesUnreadStatus(type, targetId,
-                    new IRongCoreCallback.ResultCallback<Boolean>() {
-                        @Override
-                        public void onSuccess(Boolean aBoolean) {
-                            RCLog.i("[clearMessagesUnreadStatus] onSuccess:");
-                            result.success(true);
-                        }
+            String channelId = (String) map.get("channelId");
+            ChannelClient.getInstance().clearMessagesUnreadStatus(type, targetId, channelId, new IRongCoreCallback.ResultCallback<Boolean>() {
+                @Override
+                public void onSuccess(Boolean aBoolean) {
+                    RCLog.i("[clearMessagesUnreadStatus] onSuccess:");
+                    result.success(true);
+                }
 
-                        @Override
-                        public void onError(IRongCoreEnum.CoreErrorCode errorCode) {
-                            RCLog.e("[clearMessagesUnreadStatus] onError:" + errorCode.getValue());
-                            result.success(false);
-                        }
-                    });
-
+                @Override
+                public void onError(IRongCoreEnum.CoreErrorCode e) {
+                    RCLog.e("[clearMessagesUnreadStatus] onError:" + e.getValue());
+                    result.success(false);
+                }
+            });
         }
     }
 
@@ -2226,7 +2225,9 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
             Integer t = (Integer) map.get("conversationType");
             Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
             String targetId = (String) map.get("targetId");
-            RongCoreClient.getInstance().removeConversation(type, targetId, new IRongCoreCallback.ResultCallback<Boolean>() {
+            String channelId = (String) map.get("channelId");
+
+            ChannelClient.getInstance().removeConversation(type, targetId, channelId, new IRongCoreCallback.ResultCallback<Boolean>() {
                 @Override
                 public void onSuccess(Boolean aBoolean) {
                     RCLog.i("[removeConversation] onSuccess:");
@@ -2234,11 +2235,12 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
                 }
 
                 @Override
-                public void onError(IRongCoreEnum.CoreErrorCode errorCode) {
-                    RCLog.e("[removeConversation] onError:" + errorCode.getValue());
+                public void onError(IRongCoreEnum.CoreErrorCode e) {
+                    RCLog.e("[removeConversation] onError:" + e.getValue());
                     result.success(false);
                 }
             });
+
         }
     }
 

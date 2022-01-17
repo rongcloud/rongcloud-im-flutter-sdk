@@ -1,6 +1,8 @@
 package io.rong.flutter.imlib;
 
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -17,6 +19,7 @@ import io.rong.imlib.ChannelClient;
 import io.rong.imlib.IRongCoreCallback;
 import io.rong.imlib.IRongCoreEnum;
 import io.rong.imlib.IRongCoreListener;
+import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
 import io.rong.imlib.model.UltraGroupTypingStatusInfo;
@@ -27,12 +30,14 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
 
     private static final String TAG = "RCUltraGroupClient";
     private static MethodChannel mChannel = null;
-
+    private Handler mMainHandler = null;
     private static class SingletonHolder {
         private static final RCUltraGroupClient INSTANCE = new RCUltraGroupClient();
     }
 
-    private RCUltraGroupClient() {}
+    private RCUltraGroupClient() {
+        mMainHandler = new Handler(Looper.getMainLooper());
+    }
 
     public static RCUltraGroupClient getInstance() {
         return SingletonHolder.INSTANCE;
@@ -116,9 +121,28 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
 
     private void getConversationListForAllChannel(HashMap<String,Object> arguments,final MethodChannel.Result result) {
         Log.d(TAG, "getConversationListForAllChannel: " + arguments);
-        String targetId = (String) arguments.get("arguments");
-//        // 接口缺少参数
-//        ChannelClient.getInstance().getUltraGroupConversationListForAllChannel();
+        String targetId = (String) arguments.get("targetId");
+        Integer t = (Integer) arguments.get("conversationType");
+        Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
+//        String channelId = (String) arguments.get("channelId");
+
+        // TODO
+        ChannelClient.getInstance().getConversationListForAllChannel(type, targetId, new IRongCoreCallback.ResultCallback<List<Conversation>>() {
+            @Override
+            public void onSuccess(List<Conversation> conversations) {
+                List l = new ArrayList();
+                for (Conversation con : conversations) {
+                    String conStr = MessageFactory.getInstance().conversation2String(con);
+                    l.add(conStr);
+                }
+                result.success(l);
+            }
+
+            @Override
+            public void onError(IRongCoreEnum.CoreErrorCode e) {
+                result.success(null);
+            }
+        });
     }
 
     private void getUltraGroupUnreadMentionedCount(HashMap<String,Object> arguments,final MethodChannel.Result result) {
@@ -456,12 +480,21 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
             hashMap.put("userId",statusInfo.getUserId());
             hashMap.put("userNumbers",statusInfo.getUserNums());
             hashMap.put("timestamp",(int) statusInfo.getTimestamp());
-            hashMap.put("status",statusInfo.getStatus().getType());
+            // TODO status 为空
+            int a = statusInfo.getStatus().getType();
+            hashMap.put("status",a);
             arrayList.add(hashMap);
         }
         final HashMap<String,ArrayList> arguments = new HashMap<>();
         arguments.put("infoArr", arrayList);
-        mChannel.invokeMethod(RCMethodList.RCUltraGroupOnTypingStatusChanged, arguments);
+
+        mMainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mChannel.invokeMethod(RCMethodList.RCUltraGroupOnTypingStatusChanged, arguments);
+            }
+        });
+
     }
 }
 
