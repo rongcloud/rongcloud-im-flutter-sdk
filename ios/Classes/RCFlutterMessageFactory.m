@@ -208,6 +208,7 @@
     RCMessage *message = [[RCMessage alloc] init];
     message.conversationType = [msgDic[@"conversationType"] integerValue];
     message.targetId = msgDic[@"targetId"];
+    message.channelId = msgDic[@"channelId"];
     if (msgDic[@"messageId"] && ![msgDic[@"messageId"] isKindOfClass:[NSNull class]]) {
         message.messageId = [msgDic[@"messageId"] integerValue];
     }
