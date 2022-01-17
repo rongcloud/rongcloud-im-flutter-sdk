@@ -1172,18 +1172,15 @@
             NSMutableDictionary *callbackDic = [NSMutableDictionary new];
             if (code == 0) {
                 [RCLog i:[NSString stringWithFormat:@"%@, success",LOG_TAG]];
+                NSMutableArray *msgsArray = [NSMutableArray new];
                 if (messages &&messages.count > 0) {
-                    NSMutableArray *msgsArray = [NSMutableArray new];
                     for(RCMessage *message in messages) {
                         NSString *jsonString = [RCFlutterMessageFactory message2String:message];
                         [msgsArray addObject:jsonString];
                     }
-                    [callbackDic setObject:msgsArray forKey:@"messages"];
-                }else {
-                    
                 }
                 [callbackDic setObject:@(0) forKey:@"code"];
-                [callbackDic setObject:@[] forKey:@"messages"];
+                [callbackDic setObject:msgsArray.copy forKey:@"messages"];
                 result(callbackDic);
             }else {
                 [callbackDic setObject:@(code) forKey:@"code"];
@@ -1248,6 +1245,7 @@
     if ([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *param = (NSDictionary *)arg;
         NSArray *typeArray = param[@"conversationTypeList"];
+        NSLog(@"getConversationListByPage count : %ld",typeArray.count);
         int count = [param[@"count"] intValue];
         long long startTime = [param[@"startTime"] longLongValue];
         
@@ -1304,7 +1302,14 @@
         NSDictionary *dic = (NSDictionary *)arg;
         RCConversationType type = (RCConversationType)[dic[@"conversationType"] integerValue];
         NSString *targetId = dic[@"targetId"];
-        BOOL rc = [[RCCoreClient sharedCoreClient] clearMessagesUnreadStatus:type targetId:targetId];
+        NSString *channelId = dic[@"channelId"];
+//        BOOL rc = [[RCCoreClient sharedCoreClient] clearMessagesUnreadStatus:type targetId:targetId];
+        BOOL rc = [[RCChannelClient sharedChannelManager] clearMessagesUnreadStatus:type targetId:targetId channelId:channelId];
+        if (rc) {
+            NSLog(@"清除成功了");
+        } else {
+            NSLog(@"清除失败了");
+        }
         result([NSNumber numberWithBool:rc]);
     }
 }
@@ -1690,8 +1695,10 @@
         NSDictionary *param = (NSDictionary *)arg;
         RCConversationType type =  [param[@"conversationType"] integerValue];
         NSString *targetId = param[@"targetId"];
+        NSString *channelId = param[@"channelId"];
         
-        int count = [[RCCoreClient sharedCoreClient] getUnreadCount:type targetId:targetId];
+//        int count = [[RCCoreClient sharedCoreClient] getUnreadCount:type targetId:targetId];
+        int count = [[RCChannelClient sharedChannelManager] getUnreadCount:type targetId:targetId channelId:channelId];
         result(@{@"count":@(count),@"code":@(0)});
     }
 }
@@ -1750,7 +1757,9 @@
         NSDictionary *param = (NSDictionary *)arg;
         RCConversationType type =  [param[@"conversationType"] integerValue];
         NSString *targetId = param[@"targetId"];
-        BOOL success = [[RCCoreClient sharedCoreClient] removeConversation:type targetId:targetId];
+        NSString *channelId = param[@"channelId"];
+//        BOOL success = [[RCCoreClient sharedCoreClient] removeConversation:type targetId:targetId];
+        BOOL success = [[RCChannelClient sharedChannelManager] removeConversation:type targetId:targetId channelId:channelId];
         result(@(success));
     }
 }

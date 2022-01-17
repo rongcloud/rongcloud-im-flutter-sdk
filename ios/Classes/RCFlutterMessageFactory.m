@@ -56,6 +56,7 @@
     [dic setObject:@(message.conversationType) forKey:@"conversationType"];
     [dic setObject:message.targetId forKey:@"targetId"];
     [dic setObject:@(message.messageId) forKey:@"messageId"];
+    [dic setObject:message.channelId forKey:@"channelId"];
     [dic setObject:@(message.messageDirection) forKey:@"messageDirection"];
     [dic setObject:message.senderUserId forKey:@"senderUserId"];
     [dic setObject:@(message.receivedStatus) forKey:@"receivedStatus"];
@@ -173,6 +174,7 @@
     NSMutableDictionary *dic = [NSMutableDictionary new];
     [dic setObject:@(conversation.conversationType) forKey:@"conversationType"];
     [dic setObject:conversation.targetId forKey:@"targetId"];
+    [dic setObject:conversation.channelId forKey:@"channelId"];
     [dic setObject:@(conversation.unreadMessageCount) forKey:@"unreadMessageCount"];
     [dic setObject:@(conversation.receivedStatus) forKey:@"receivedStatus"];
     [dic setObject:@(conversation.sentStatus) forKey:@"sentStatus"];
