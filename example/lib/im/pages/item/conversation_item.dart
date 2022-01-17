@@ -17,8 +17,7 @@ class ConversationItem extends StatefulWidget {
   late _ConversationItemState state;
   ValueNotifier<int?> time = ValueNotifier<int?>(0);
 
-  ConversationItem(ConversationItemDelegate delegate, prefix.Message msg, bool showTime, bool? multiSelect,
-      List selectedMessageIds, ValueNotifier<int?> time) {
+  ConversationItem(ConversationItemDelegate delegate, prefix.Message msg, bool showTime, bool? multiSelect, List selectedMessageIds, ValueNotifier<int?> time) {
     this.message = msg;
     this.delegate = delegate;
     this.showTime = showTime;
@@ -29,8 +28,7 @@ class ConversationItem extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return state = new _ConversationItemState(
-        this.delegate, this.message, this.showTime, this.multiSelect, this.selectedMessageIds, this.time);
+    return state = new _ConversationItemState(this.delegate, this.message, this.showTime, this.multiSelect, this.selectedMessageIds, this.time);
   }
 
   void refreshUI(prefix.Message message) {
@@ -54,8 +52,7 @@ class _ConversationItemState extends State<ConversationItem> {
   ValueNotifier<int?> time = ValueNotifier<int>(0);
   bool needShowMessage = true;
 
-  _ConversationItemState(ConversationItemDelegate? delegate, prefix.Message msg, bool? showTime, bool? multiSelect,
-      List? selectedMessageIds, ValueNotifier<int?> time) {
+  _ConversationItemState(ConversationItemDelegate? delegate, prefix.Message msg, bool? showTime, bool? multiSelect, List? selectedMessageIds, ValueNotifier<int?> time) {
     this.message = msg;
     this.delegate = delegate;
     this.showTime = showTime;
@@ -64,11 +61,7 @@ class _ConversationItemState extends State<ConversationItem> {
     this.selectedMessageIds = selectedMessageIds;
     this.time = time;
     setInfo(message!.senderUserId);
-    needShowMessage = !(msg.messageDirection == prefix.RCMessageDirection.Receive &&
-        msg.content != null &&
-        msg.content!.destructDuration != null &&
-        msg.content!.destructDuration! > 0 &&
-        time.value == msg.content!.destructDuration);
+    needShowMessage = !(msg.messageDirection == prefix.RCMessageDirection.Receive && msg.content != null && msg.content!.destructDuration != null && msg.content!.destructDuration! > 0 && time.value == msg.content!.destructDuration);
   }
 
   void setInfo(String? targetId) async {
@@ -106,10 +99,7 @@ class _ConversationItemState extends State<ConversationItem> {
   Widget build(BuildContext context) {
     return Container(
       child: Column(
-        children: <Widget>[
-          this.showTime! ? WidgetUtil.buildMessageTimeWidget(message!.sentTime!) : WidgetUtil.buildEmptyWidget(),
-          showMessage()
-        ],
+        children: <Widget>[this.showTime! ? WidgetUtil.buildMessageTimeWidget(message!.sentTime!) : WidgetUtil.buildEmptyWidget(), showMessage()],
       ),
     );
   }
@@ -178,8 +168,7 @@ class _ConversationItemState extends State<ConversationItem> {
     return Container(
       // 名字
       alignment: Alignment.centerRight,
-      child: Text((this.user == null || this.user!.id == null ? "" : this.user!.id!),
-          style: TextStyle(fontSize: RCFont.MessageNameFont, color: Color(RCColor.MessageNameBgColor))),
+      child: Text((this.user == null || this.user!.id == null ? "" : this.user!.id!), style: TextStyle(fontSize: RCFont.MessageNameFont, color: Color(RCColor.MessageNameBgColor))),
     );
   }
 
@@ -197,37 +186,6 @@ class _ConversationItemState extends State<ConversationItem> {
       return _buildSendContent();
     } else if (message!.messageDirection == prefix.RCMessageDirection.Receive) {
       return _buildReceiveContent();
-      return Expanded(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            GestureDetector(
-              onTap: () {
-                __onTapedUserPortrait();
-              },
-              onLongPress: () {
-                __onLongPressUserPortrait(this.tapPos);
-              },
-              child: WidgetUtil.buildUserPortrait(this.user?.portraitUrl),
-            ),
-            Expanded(
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      (this.user == null || this.user!.id == null ? "" : this.user!.id!),
-                      style: TextStyle(color: Color(RCColor.MessageNameBgColor)),
-                    ),
-                  ),
-                  buildMessageWidget(),
-                ],
-              ),
-            ),
-          ],
-        ),
-      );
     } else {
       return WidgetUtil.buildEmptyWidget();
     }
@@ -318,12 +276,8 @@ class _ConversationItemState extends State<ConversationItem> {
           Expanded(
             child: Container(
               alignment: _isSend ? Alignment.centerRight : Alignment.centerLeft,
-              child:
-                  Row(mainAxisAlignment: _isSend ? MainAxisAlignment.end : MainAxisAlignment.start, children: <Widget>[
-                _isSend &&
-                        message!.content != null &&
-                        message!.content!.destructDuration != null &&
-                        message!.content!.destructDuration! > 0
+              child: Row(mainAxisAlignment: _isSend ? MainAxisAlignment.end : MainAxisAlignment.start, children: <Widget>[
+                _isSend && message!.content != null && message!.content!.destructDuration != null && message!.content!.destructDuration! > 0
                     ? ValueListenableBuilder(
                         builder: (BuildContext context, int? value, Widget? child) {
                           return Row(
@@ -381,10 +335,7 @@ class _ConversationItemState extends State<ConversationItem> {
                     ),
                   ),
                 ),
-                !_isSend &&
-                        message!.content != null &&
-                        message!.content!.destructDuration != null &&
-                        message!.content!.destructDuration! > 0
+                !_isSend && message!.content != null && message!.content!.destructDuration != null && message!.content!.destructDuration! > 0
                     ? ValueListenableBuilder(
                         builder: (BuildContext context, int? value, Widget? child) {
                           return Row(

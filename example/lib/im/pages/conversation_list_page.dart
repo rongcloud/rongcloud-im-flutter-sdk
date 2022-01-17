@@ -4,6 +4,7 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -38,7 +39,7 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
     updateConversationList();
 
     print("我重建了");
-    EventBus.instance!.addListener(EventKeys.ConversationPageDispose, (arg) {
+    EventBus.instance!.addListener(EventKeys.ConversationPageDispose, widget, (arg) {
       Timer(Duration(milliseconds: 10), () {
         addIMhandler();
         updateConversationList();
@@ -50,7 +51,7 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
   @override
   void dispose() {
     super.dispose();
-    EventBus.instance!.removeListener(EventKeys.ConversationPageDispose);
+    EventBus.instance!.removeListener(EventKeys.ConversationPageDispose, widget);
   }
 
   updateConversationList() async {
@@ -67,12 +68,11 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
   }
 
   addIMhandler() {
-    EventBus.instance!.addListener(EventKeys.ReceiveMessage, (map) {
+    EventBus.instance!.addListener(EventKeys.ReceiveMessage, widget, (map) {
       Message msg = map["message"];
       int? left = map["left"];
       bool hasPackage = map["hasPackage"];
-      bool isDisplayConversation =
-          msg.conversationType != null && displayConversationType.contains(msg.conversationType);
+      bool isDisplayConversation = msg.conversationType != null && displayConversationType.contains(msg.conversationType);
       //如果离线消息过多，那么可以等到 hasPackage 为 false 并且 left == 0 时更新会话列表
       if (!hasPackage && left == 0 && isDisplayConversation) {
         updateConversationList();
@@ -80,17 +80,61 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
     });
 
     RongIMClient.onConnectionStatusChange = (int? connectionStatus) {
-      if (RCConnectionStatus.KickedByOtherClient == connectionStatus ||
-          RCConnectionStatus.TokenIncorrect == connectionStatus ||
-          RCConnectionStatus.UserBlocked == connectionStatus) {
+      String s = "";
+      switch (connectionStatus) {
+        case RCConnectionStatus.Connected:
+          // Routes.scaffoldKey.currentState?.showSnackBar(const SnackBar(content: Text("IM登录成功")));
+          s = "IM登录成功";
+          break;
+        case RCConnectionStatus.Connecting:
+          // Routes.scaffoldKey.currentState?.showSnackBar(const SnackBar(content: Text("连接中")));
+          s = "连接中";
+          break;
+        case RCConnectionStatus.KickedByOtherClient:
+          // Routes.scaffoldKey.currentState?.showSnackBar(const SnackBar(content: Text("您已经在其他设备登录")));
+          s = "您已经在其他设备登录";
+          break;
+        case RCConnectionStatus.NetworkUnavailable:
+          // Routes.scaffoldKey.currentState?.showSnackBar(const SnackBar(content: Text("网络连接不可用，请检查网络设置")));
+          s = "网络连接不可用，请检查网络设置";
+          break;
+        case RCConnectionStatus.TokenIncorrect:
+          // Routes.scaffoldKey.currentState?.showSnackBar(const SnackBar(content: Text("授权验证异常，请重新登录")));
+          s = "授权验证异常，请重新登录";
+          break;
+        case RCConnectionStatus.UserBlocked:
+          // Routes.scaffoldKey.currentState?.showSnackBar(const SnackBar(content: Text("您被停止使用，请重新登录")));
+          s = "您被停止使用，请重新登录";
+
+          break;
+        case RCConnectionStatus.DisConnected:
+          // Routes.scaffoldKey.currentState?.showSnackBar(const SnackBar(content: Text("连接已断开")));
+          s = "连接已断开";
+
+          break;
+        case RCConnectionStatus.Suspend:
+          s = "网络连接不稳定，请检查网络设置";
+          // Routes.scaffoldKey.currentState?.showSnackBar(const SnackBar(content: Text("网络连接不稳定，请检查网络设置"), dismissDirection: DismissDirection.up));
+          break;
+        case RCConnectionStatus.Timeout:
+          s = "连接超时，正在重新连接...";
+
+          // Future.delayed(const Duration(milliseconds: 100), () async {
+          //   await connectRcClient();
+          // });
+          break;
+      }
+
+      print(s);
+      Fluttertoast.showToast(msg: "连接状态改变 $s");
+      if (RCConnectionStatus.KickedByOtherClient == connectionStatus || RCConnectionStatus.TokenIncorrect == connectionStatus || RCConnectionStatus.UserBlocked == connectionStatus) {
         String toast = "连接状态变化 $connectionStatus, 请退出后重新登录";
         DialogUtil.showAlertDiaLog(context, toast,
             confirmButton: TextButton(
                 onPressed: () async {
                   SharedPreferences prefs = await SharedPreferences.getInstance();
                   prefs.remove("token");
-                  Navigator.of(context).pushAndRemoveUntil(
-                      new MaterialPageRoute(builder: (context) => new LoginPage()), (route) => route == null);
+                  Navigator.of(context).pushAndRemoveUntil(new MaterialPageRoute(builder: (context) => new LoginPage()), (route) => route == null);
                 },
                 child: Text("重新登录")));
       } else if (RCConnectionStatus.Connected == connectionStatus) {
@@ -123,16 +167,14 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
 
   void _clearConversationUnread(Conversation conversation) async {
     //清空未读需要刷新会话列表数据
-    bool success = await (RongIMClient.clearMessagesUnreadStatus(conversation.conversationType!, conversation.targetId!)
-        as FutureOr<bool>);
+    bool success = await (RongIMClient.clearMessagesUnreadStatus(conversation.conversationType!, conversation.targetId!) as FutureOr<bool>);
     if (success) {
       updateConversationList();
     }
   }
 
   void _setConversationToTop(Conversation conversation, bool isTop) {
-    RongIMClient.setConversationToTop(conversation.conversationType!, conversation.targetId!, isTop,
-        (bool? status, int? code) {
+    RongIMClient.setConversationToTop(conversation.conversationType!, conversation.targetId!, isTop, (bool? status, int? code) {
       if (code == 0) {
         updateConversationList();
       }
@@ -174,13 +216,7 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
 
   @override
   void didLongPressConversation(Conversation? conversation, Offset? tapPos) {
-    Map<String, String> actionMap = {
-      RCLongPressAction.DeleteConversationKey: RCLongPressAction.DeleteConversationValue,
-      RCLongPressAction.ClearUnreadKey: RCLongPressAction.ClearUnreadValue,
-      RCLongPressAction.SetConversationToTopKey: conversation!.isTop!
-          ? RCLongPressAction.CancelConversationToTopValue
-          : RCLongPressAction.SetConversationToTopValue
-    };
+    Map<String, String> actionMap = {RCLongPressAction.DeleteConversationKey: RCLongPressAction.DeleteConversationValue, RCLongPressAction.ClearUnreadKey: RCLongPressAction.ClearUnreadValue, RCLongPressAction.SetConversationToTopKey: conversation!.isTop! ? RCLongPressAction.CancelConversationToTopValue : RCLongPressAction.SetConversationToTopValue};
     WidgetUtil.showLongPressMenu(context, tapPos!, actionMap, (String? key) {
       developer.log("当前选中的是 " + key!, name: pageName);
       if (key == RCLongPressAction.DeleteConversationKey) {

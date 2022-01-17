@@ -8,6 +8,18 @@ import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 
 import '../im/util/dialog_util.dart';
 
+const String case1 = "设置免打扰";
+const String case12 = "取消免打扰";
+const String case2 = "会话置顶";
+const String case22 = "取消会话置顶";
+const String case3 = "清空本地历史消息";
+const String case4 = "清空本地和远端历史消息";
+const String case5 = "删除本地[所有频道]当前时间之前的消息";
+const String case6 = "删除本地[当前频道]当前时间之前的消息";
+const String case7 = "删除服务端当前时间之前的消息";
+const String case8 = "发一条携带{tkey:当前时间}文本消息";
+const String case9 = "获取当前超级群所有频道的lastMsgUid";
+
 class ChatDebugPage extends StatefulWidget {
   final Map? arguments;
 
@@ -24,6 +36,8 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   int? conversationType;
   String? targetId;
   bool? isPrivate;
+  late String channelId;
+  late bool isUltraGroup;
 
   _ChatDebugPageState({this.arguments});
 
@@ -32,6 +46,8 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     super.initState();
     conversationType = arguments!["coversationType"];
     targetId = arguments!["targetId"];
+    channelId = arguments!["channelId"];
+    isUltraGroup = arguments!["isUltraGroup"];
     titles = [
       "设置免打扰",
       "取消免打扰",
@@ -67,6 +83,10 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
         "发送定向消息",
       ];
       titles.addAll(onlyGroupTitles);
+    } else if (conversationType == RCConversationType.UltraGroup) {
+      titles.clear();
+      List onlyUltraGroupTitles = [case1, case12, case2, case22, case3, case4, case5, case6, case7, case8, case9];
+      titles.addAll(onlyUltraGroupTitles);
     }
 
     RongIMClient.onTagChanged = () {

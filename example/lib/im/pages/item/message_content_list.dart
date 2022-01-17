@@ -15,7 +15,8 @@ class MessageContentList extends StatefulWidget {
   late _MessageContentListState state;
   Map burnMsgMap = Map();
 
-  MessageContentList(List messageDataSource, bool multiSelect, List selectedMessageIds, MessageContentListDelegate delegate, Map burnMsgMap) {
+  MessageContentList(List messageDataSource, bool multiSelect, List selectedMessageIds,
+      MessageContentListDelegate delegate, Map burnMsgMap) {
     this.delegate = delegate;
     this.messageDataSource = messageDataSource;
     this.multiSelect = multiSelect;
@@ -25,6 +26,7 @@ class MessageContentList extends StatefulWidget {
 
   void updateData(List messageDataSource, bool multiSelect, List selectedMessageIds) {
     // this.state._refreshUI(messageDataSource, multiSelect, selectedMessageIds);
+    if (this.state == null) return;
     this.state.updateData(messageDataSource, multiSelect, selectedMessageIds);
   }
 
@@ -34,7 +36,8 @@ class MessageContentList extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return state = _MessageContentListState(messageDataSource, multiSelect, selectedMessageIds, delegate, burnMsgMap);
+     state = _MessageContentListState(messageDataSource, multiSelect, selectedMessageIds, delegate, burnMsgMap);
+     return state;
   }
 }
 
@@ -51,7 +54,8 @@ class _MessageContentListState extends State<MessageContentList> implements Conv
   Map conversationItems = Map();
   Map burnMsgMap = Map();
 
-  _MessageContentListState(List messageDataSource, bool? multiSelect, List selectedMessageIds, MessageContentListDelegate? delegate, Map burnMsgMap) {
+  _MessageContentListState(List messageDataSource, bool? multiSelect, List selectedMessageIds,
+      MessageContentListDelegate? delegate, Map burnMsgMap) {
     this.delegate = delegate;
     this.messageDataSource = messageDataSource;
     this.multiSelect = multiSelect;
@@ -74,7 +78,7 @@ class _MessageContentListState extends State<MessageContentList> implements Conv
     _bloc = new MessageBloc();
     super.initState();
 
-    EventBus.instance!.addListener(EventKeys.BurnMessage, (map) {
+    EventBus.instance!.addListener(EventKeys.BurnMessage, widget, (map) {
       int? messageId = map["messageId"];
       int? remainDuration = map["remainDuration"];
       ConversationItem item = conversationItems[messageId];
@@ -113,12 +117,15 @@ class _MessageContentListState extends State<MessageContentList> implements Conv
                 if (messageDataSource.length != null && messageDataSource.length > 0) {
                   Message tempMessage = messageDataSource[index];
                   // bool isSelected = selectedMessageIds.contains(tempMessage.messageId);
-                  int? destructDuration = tempMessage.content != null && tempMessage.content!.destructDuration != null ? tempMessage.content!.destructDuration : 0;
+                  int? destructDuration = tempMessage.content != null && tempMessage.content!.destructDuration != null
+                      ? tempMessage.content!.destructDuration
+                      : 0;
                   ValueNotifier<int?> time = ValueNotifier<int?>(destructDuration);
                   if (burnMsgMap[tempMessage.messageId] != null) {
                     time.value = burnMsgMap[tempMessage.messageId];
                   }
-                  ConversationItem item = ConversationItem(this, tempMessage, _needShowTime(index, messageDataSource), this.multiSelect, selectedMessageIds, time);
+                  ConversationItem item = ConversationItem(this, tempMessage, _needShowTime(index, messageDataSource),
+                      this.multiSelect, selectedMessageIds, time);
                   conversationItems[tempMessage.messageId] = item;
                   return item;
                 } else {

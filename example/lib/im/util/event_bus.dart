@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 typedef void EventCallback(arg);
 
 //事件总线
@@ -18,28 +20,33 @@ class EventBus {
     return _instance;
   }
 
-  Map<String, List> _events = new Map();
+  Map<String, Map<Widget, EventCallback>> _events = new Map();
 
   //设置事件监听，当有人调用 commit ，并且 eventKey 一样的时候会触发此方法
-  void addListener(String eventKey, EventCallback callback) {
-    List? callbacks = _events[eventKey];
+  void addListener(String eventKey, Widget widget, EventCallback callback) {
+    Map<Widget, EventCallback>? callbacks = _events[eventKey];
     if (callbacks == null) {
-      callbacks = [];
+      callbacks = Map();
     }
-    callbacks.add(callback);
+    callbacks[widget] = callback;
+
     _events[eventKey] = callbacks;
   }
 
   //移除监听
-  void removeListener(String eventKey) {
-    _events.remove(eventKey);
+  void removeListener(String eventKey, Widget widget) {
+    // _events.remove(eventKey);
+    Map<Widget, EventCallback>? callbacks = _events[eventKey];
+    if (callbacks != null) {
+      callbacks.remove(widget);
+    }
   }
 
   //提交事件
   void commit(String eventKey, Object? arg) {
-    List? callbacks = _events[eventKey];
+    Map<Widget, EventCallback>? callbacks = _events[eventKey];
     if (callbacks != null) {
-      callbacks.forEach((callback) {
+      callbacks.values.forEach((callback) {
         callback(arg);
       });
     }

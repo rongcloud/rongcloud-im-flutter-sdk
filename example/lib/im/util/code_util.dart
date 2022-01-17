@@ -1,8 +1,24 @@
+import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+
 class CodeUtil {
   /// 具体业务错误码
   static String? codeString(int? code) {
     String key = code.toString() != null ? code.toString() : "";
     return codeMap[key];
+  }
+
+  static String conversationTypeToString(int type) {
+    String str = "";
+
+    if (type == RCConversationType.Private) {
+      str = "单聊";
+    } else if (type == RCConversationType.Group) {
+      str = "群聊";
+    } else if (type == RCConversationType.UltraGroup) {
+      str = "超级群";
+    }
+
+    return str;
   }
 
   static Map codeMap = {

@@ -1,7 +1,9 @@
 import 'dart:developer' as developer;
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:rongcloud_im_plugin_example/im/util/code_util.dart';
 
 import '../../util/style.dart';
 import '../../util/time.dart';
@@ -104,7 +106,10 @@ class _ConversationListItemState extends State<ConversationListItem> {
   }
 
   Widget _buildTitle() {
-    String title = (conversation!.conversationType == RCConversationType.Private ? "单聊：" : "群聊：") + (this.info == null || this.info!.id == null ? "" : this.info!.id!);
+    // String title = (conversation!.conversationType == RCConversationType.Private ? "单聊：" : "群聊：") + (this.info == null || this.info!.id == null ? "" : this.info!.id!);
+
+    String title = (CodeUtil.conversationTypeToString(conversation!.conversationType!)) + ":" + (this.info == null || this.info!.id == null ? "" : this.info!.id!) + ' - [ ${conversation!.channelId} ]';
+
     String? digest = "";
     if (conversation!.latestMessageContent != null) {
       if (conversation!.latestMessageContent!.destructDuration != null && conversation!.latestMessageContent!.destructDuration! > 0) {
