@@ -15,7 +15,13 @@ class RCUltraGroupTypingStatusInfo {
         status = statusInfo["status"];
 
   RCUltraGroupTypingStatusInfo.create(
-      this.targetId, this.channelId, this.userId, this.userNumbers, this.timestamp, this.status);
+    this.targetId,
+    this.channelId,
+    this.userId,
+    this.userNumbers,
+    this.timestamp,
+    this.status,
+  );
 }
 
 enum RCUltraGroupTypingStatus { RCUltraGroupTypingStatusText }

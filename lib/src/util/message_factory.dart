@@ -159,8 +159,7 @@ class MessageFactory extends Object {
     if (content != null) {
       message.content = content;
     } else {
-      developer.log("${message.objectName}:该消息不能被解析!消息内容被保存在 Message.originContentMap 中",
-          name: "RongIMClient.MessageFactory");
+      developer.log("${message.objectName}:该消息不能被解析!消息内容被保存在 Message.originContentMap 中", name: "RongIMClient.MessageFactory");
       Map? map = json.decode(contenStr.toString());
       message.originContentMap = map;
     }
@@ -191,11 +190,9 @@ class MessageFactory extends Object {
       con.latestMessageContent = content;
     } else {
       if (contenStr == null || contenStr.length <= 0) {
-        developer.log("该会话没有消息 type:" + con.conversationType.toString() + " targetId:" + con.targetId!,
-            name: "RongIMClient.MessageFactory");
+        developer.log("该会话没有消息 type:" + con.conversationType.toString() + " targetId:" + con.targetId!, name: "RongIMClient.MessageFactory");
       } else {
-        developer.log(con.objectName! + ":该消息不能被解析!消息内容被保存在 Conversation.originContentMap 中",
-            name: "RongIMClient.MessageFactory");
+        developer.log(con.objectName! + ":该消息不能被解析!消息内容被保存在 Conversation.originContentMap 中", name: "RongIMClient.MessageFactory");
         Map? map = json.decode(contenStr.toString());
         con.originContentMap = map;
       }

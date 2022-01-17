@@ -1,6 +1,7 @@
-import 'message_content.dart';
 import 'dart:convert' show json;
 import 'dart:developer' as developer;
+
+import 'message_content.dart';
 
 // 聊天室自定义属性通知消息
 // 不要随意构造此类消息发送，调用设置或者删除接口时会自动构建。
