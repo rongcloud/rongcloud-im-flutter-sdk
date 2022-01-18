@@ -39,7 +39,7 @@ public class MessageFactory {
     }
 
     public static MessageFactory getInstance() {
-        return MessageFactory.SingleHolder.instance;
+        return SingleHolder.instance;
     }
 
     public String message2String(Message message) {
