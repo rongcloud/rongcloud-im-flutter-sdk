@@ -224,12 +224,16 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
         final String messageUId = (String) arguments.get("messageUId");
         ChannelClient.getInstance().getMessageByUid(messageUId, new IRongCoreCallback.ResultCallback<Message>() {
             @Override
-            public void onSuccess(Message message) {
+            public void onSuccess(final Message message) {
                 ChannelClient.getInstance().recallUltraGroupMessage(message, new IRongCoreCallback.ResultCallback<RecallNotificationMessage>() {
                     @Override
                     public void onSuccess(RecallNotificationMessage recallNotificationMessage) {
+                        message.setContent(recallNotificationMessage);
+                        message.setObjectName("RC:RcNtf");
+                        Map map = MessageFactory.getInstance().messageToMap(message);
                         HashMap<String,Object> msgMap = new HashMap<>();
                         msgMap.put("code", 0);
+                        msgMap.put("message",map);
                         result.success(msgMap);
                     }
 
@@ -428,7 +432,13 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
 
         final HashMap<String,ArrayList> arguments = new HashMap<>();
         arguments.put("messages", arrayList);
-        mChannel.invokeMethod(RCMethodList.RCUltraGroupUpdateMessageExpansion, arguments);
+        mMainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mChannel.invokeMethod(RCMethodList.RCUltraGroupOnMessageExpansionUpdated, arguments);
+            }
+        });
+        
     }
 
     @Override
@@ -442,7 +452,13 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
 
         final HashMap<String,ArrayList> arguments = new HashMap<>();
         arguments.put("messages", arrayList);
-        mChannel.invokeMethod(RCMethodList.RCUltraGroupOnMessageModified, arguments);
+        
+        mMainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mChannel.invokeMethod(RCMethodList.RCUltraGroupOnMessageModified, arguments);
+            }
+        });
     }
 
     @Override
@@ -456,7 +472,13 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
 
         final HashMap<String,ArrayList> arguments = new HashMap<>();
         arguments.put("messages", arrayList);
-        mChannel.invokeMethod(RCMethodList.RCUltraGroupOnMessageRecalled, arguments);
+
+        mMainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mChannel.invokeMethod(RCMethodList.RCUltraGroupOnMessageRecalled, arguments);
+            }
+        });
     }
 
     @Override
@@ -466,7 +488,12 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
         arguments.put("targetId",targetId);
         arguments.put("channelId",channelId);
         arguments.put("readTime", (int) time);
-        mChannel.invokeMethod(RCMethodList.RCUltraGroupOnReadTimeReceived, arguments);
+        mMainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mChannel.invokeMethod(RCMethodList.RCUltraGroupOnReadTimeReceived, arguments);
+            }
+        });
     }
 
     @Override
