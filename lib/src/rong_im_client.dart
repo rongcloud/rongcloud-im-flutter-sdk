@@ -208,8 +208,8 @@ class RongIMClient {
   ///[targetId] 会话 id
   ///
   ///[content] 消息内容 参见 [MessageContent]
-  static Future<Message?> sendMessage(int conversationType, String targetId, MessageContent content, {bool disableNotification = false}) async {
-    return sendMessageCarriesPush(conversationType, targetId, content, "", "", disableNotification: disableNotification);
+  static Future<Message?> sendMessage(int conversationType, String targetId, MessageContent content, {bool disableNotification = false, String channelId = ""}) async {
+    return sendMessageCarriesPush(conversationType, targetId, content, "", "", disableNotification: disableNotification, channelId: channelId);
   }
 
   ///发送消息
@@ -232,8 +232,9 @@ class RongIMClient {
     String pushContent,
     String pushData, {
     bool disableNotification = false,
+    String channelId = "",
   }) async {
-    return sendMessageWithCallBack(conversationType, targetId, content, pushContent, pushData, null, disableNotification: disableNotification);
+    return sendMessageWithCallBack(conversationType, targetId, content, pushContent, pushData, null, disableNotification: disableNotification, channelId: channelId);
   }
 
   ///发送消息
@@ -2494,7 +2495,7 @@ class RongIMClient {
 
   static Future<void> modifyUltraGroupMessage(String messageUId, MessageContent newContent, Function(int code)? callback) async {
     String? jsonStr = newContent.encode();
-    Map arguments = {"messageUId": messageUId, "MessageContent": jsonStr, "objectName": newContent.getObjectName()};
+    Map arguments = {"messageUId": messageUId, "content": jsonStr, "objectName": newContent.getObjectName()};
     Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupModifyMessage, arguments);
     if (callback != null) {
       callback(result["code"]);
@@ -2502,7 +2503,7 @@ class RongIMClient {
   }
 
   static Future<void> updateUltraGroupMessageExpansion(String messageUId, Map<String, String> expansionDic, Function(int code)? callback) async {
-    Map arguments = {"messageUId": messageUId, "MessageContent": expansionDic};
+    Map arguments = {"messageUId": messageUId, "expansionDic": expansionDic};
     Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupUpdateMessageExpansion, arguments);
     if (callback != null) {
       callback(result["code"]);
@@ -2517,11 +2518,18 @@ class RongIMClient {
     }
   }
 
-  static Future<void> recallUltraGroupMessage(String messageUId, Function(int code)? callback) async {
+  static Future<void> recallUltraGroupMessage(String messageUId, Function(int code, Message? recallMessage)? callback) async {
     Map arguments = {"messageUId": messageUId};
     Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupRecallMessage, arguments);
     if (callback != null) {
-      callback(result["code"]);
+      int code = result["code"];
+      if (code != 0) {
+        callback(code, null);
+        return;
+      }
+      Map message = result["message"];
+      Message msg = MessageFactory.instance!.map2Message(message);
+      callback(code, msg);
     }
   }
 
