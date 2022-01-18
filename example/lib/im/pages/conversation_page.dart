@@ -101,7 +101,7 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
       int timestamp = DateTime.now().millisecondsSinceEpoch;
       print(" 同步的时间为 " + timestamp.toString());
       RongIMClient.syncUlTraGroupReadStatus(targetId!, channelId!, timestamp, (code) => {Fluttertoast.showToast(msg: "我同步了未读数" + timestamp.toString())});
-      RongIMClient.clearMessagesUnreadStatus(conversationType!, targetId!,channelId!);
+      RongIMClient.clearMessagesUnreadStatus(conversationType!, targetId!, channelId!);
     }
 
     RongIMClient.onUltraGroupTypingStatusChanged = (List<RCUltraGroupTypingStatusInfo> infoList) {
@@ -148,7 +148,7 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
     }
 
     RongIMClient.saveTextMessageDraft(conversationType, targetId, textDraft);
-    RongIMClient.clearMessagesUnreadStatus(conversationType!, targetId!,channelId!);
+    RongIMClient.clearMessagesUnreadStatus(conversationType!, targetId!, channelId!);
     EventBus.instance!.commit(EventKeys.ConversationPageDispose, widget);
     EventBus.instance!.removeListener(EventKeys.ReceiveMessage, widget);
     EventBus.instance!.removeListener(EventKeys.ReceiveReadReceipt, widget);
@@ -181,7 +181,7 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
       Message msg = map["message"];
       if (msg.targetId == this.targetId) {
         _insertOrReplaceMessage(msg);
-        RongIMClient.clearMessagesUnreadStatus(conversationType!, targetId!,channelId!);
+        RongIMClient.clearMessagesUnreadStatus(conversationType!, targetId!, channelId!);
       }
       _sendReadReceipt();
     });
@@ -223,6 +223,27 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
       Message? msg = await RongIMClient.getMessage(messageId!);
       if (msg?.targetId == this.targetId) {
         _insertOrReplaceMessage(msg);
+      }
+    };
+
+    RongIMClient.onUltraGroupMessageModified = (List<Message> messages) {
+      for (var message in messages) {
+        _insertOrReplaceMessage(message);
+        Fluttertoast.showToast(msg: "消息被修改:" + message.messageUId!);
+      }
+    };
+
+    RongIMClient.onUltraGroupMessageRecalled = (List<Message> messages) {
+      for (var message in messages) {
+        _insertOrReplaceMessage(message);
+        Fluttertoast.showToast(msg: "消息被撤回:" + message.messageUId!);
+      }
+    };
+
+    RongIMClient.onUltraGroupMessageExpansionUpdated = (List<Message> messages) {
+      for (var message in messages) {
+        _insertOrReplaceMessage(message);
+        Fluttertoast.showToast(msg: "消息扩展被修改:" + message.messageUId!);
       }
     };
 
@@ -291,25 +312,27 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
     if (isUltraGroup) {
       HistoryMessageOption historyMessageOption = HistoryMessageOption(20, 0, 0);
       RongIMClient.getMessages(
-          conversationType!,
-          targetId!,
-          historyMessageOption,
-          (msgList, code) => {
-                if (msgList != null)
-                  {
-                    // msgList.sort((a, b) => b.sentTime.compareTo(a.sentTime)),
-                    msgList.forEach((element) {
-                      print(element);
-                    }),
-                    messageDataSource = msgList,
-                    if (isFirstGetHistoryMessages)
-                      {
-                        _sendReadReceipt(),
-                      },
-                    _refreshMessageContentListUI(),
-                    isFirstGetHistoryMessages = false,
-                  }
-              });
+        conversationType!,
+        targetId!,
+        historyMessageOption,
+        (msgList, code) => {
+          if (msgList != null)
+            {
+              // msgList.sort((a, b) => b.sentTime.compareTo(a.sentTime)),
+              msgList.forEach((element) {
+                print(element);
+              }),
+              messageDataSource = msgList,
+              if (isFirstGetHistoryMessages)
+                {
+                  _sendReadReceipt(),
+                },
+              _refreshMessageContentListUI(),
+              isFirstGetHistoryMessages = false,
+            }
+        },
+        channelId: channelId!,
+      );
     } else {
       List? msgs = await RongIMClient.getHistoryMessage(conversationType!, targetId!, -1, 20);
       if (msgs != null) {
@@ -506,6 +529,9 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
   }
 
   void _recallMessage(Message? message) async {
+    if (isUltraGroup) {
+      RongIMClient.recallUltraGroupMessage(message!.messageUId!, (code, recallMessage) => {_insertOrReplaceMessage(recallMessage)});
+    }
     RecallNotificationMessage? recallNotifiMessage = await RongIMClient.recallMessage(message, "");
     if (recallNotifiMessage != null) {
       message!.content = recallNotifiMessage;
@@ -937,6 +963,15 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
       actionMap[RCLongPressAction.RecallKey] = RCLongPressAction.RecallValue;
     }
 
+    if (isUltraGroup) {
+      Map<String, String> map = {
+        RCLongPressAction.UltraGroupModifyMessageKey: RCLongPressAction.UltraGroupModifyMessageValue,
+        RCLongPressAction.UltraGroupUpdateMessageExpansionKey: RCLongPressAction.UltraGroupUpdateModifyMessageExpansionValue,
+        RCLongPressAction.UltraGroupRemoveMessageExpansionKey: RCLongPressAction.UltraGroupRemoveMessageExpansionValue,
+      };
+      actionMap.addAll(map);
+    }
+
     WidgetUtil.showLongPressMenu(context, tapPos!, actionMap, (String? key) {
       if (key == RCLongPressAction.DeleteKey) {
         _deleteMessage(message);
@@ -949,9 +984,39 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
         _refreshUI();
       } else if (key == RCLongPressAction.ReferenceKey) {
         bottomInputBar!.makeReferenceMessage(message);
+      } else if (key == RCLongPressAction.UltraGroupModifyMessageKey) {
+        _updateUltraGroupMessage(message);
+      } else if (key == RCLongPressAction.UltraGroupUpdateMessageExpansionKey) {
+        _updateUltraGroupMessageExpansionKey(message);
+      } else if (key == RCLongPressAction.UltraGroupRemoveMessageExpansionKey) {
+        _removeUltraGroupMessageExpansionKey(message);
       }
       developer.log("当前选中的是 " + key!, name: pageName);
     });
+  }
+
+  void _updateUltraGroupMessageExpansionKey(Message message) {
+    Map<String, String> expansionDic = {"key1": "我是扩展信息1"};
+    RongIMClient.updateUltraGroupMessageExpansion(message.messageUId!, expansionDic, (code) => {});
+  }
+
+  void _removeUltraGroupMessageExpansionKey(Message message) {
+    List<String> list = ["key1"];
+    RongIMClient.removeUltraGroupMessageExpansion(message.messageUId!, list, (code) => {});
+  }
+
+  void _updateUltraGroupMessage(Message message) {
+    if (!(message.content is TextMessage)) {
+      Fluttertoast.showToast(msg: "当前仅支持文本消息修改");
+      return;
+    }
+    TextMessage newMsg = TextMessage.obtain("我被修改了内容");
+    RongIMClient.modifyUltraGroupMessage(
+        message.messageUId!,
+        newMsg,
+        (code) => {
+              if (code == 0) {message.content = newMsg, _insertOrReplaceMessage(message)}
+            });
   }
 
   bool _isShowReference(Message message) {
@@ -1031,13 +1096,19 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
       msg.destructDuration = isSecretChat ? duration : 0;
     }
 
-    Message? message = await RongIMClient.sendMessage(conversationType!, targetId!, msg);
-    // Message message = Message();
-    // message.conversationType = conversationType;
-    // message.targetId = targetId;
-    // message.objectName = TextMessage.objectName;
-    // message.content = msg;
-    // message.canIncludeExpansion = true;
+    // Message? message = await RongIMClient.sendMessage(
+    //   conversationType!,
+    //   targetId!,
+    //   msg,
+    //   channelId: channelId!,
+    // );
+    Message message = Message();
+    message.conversationType = conversationType;
+    message.targetId = targetId;
+    message.channelId = channelId;
+    message.objectName = TextMessage.objectName;
+    message.content = msg;
+    message.canIncludeExpansion = true;
     // message.expansionDic = {
     //   "1": "1",
     //   "2": "2",
@@ -1079,12 +1150,12 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
     // message.messagePushConfig = MessagePushConfig();
     // // 传 null 测试结束
 
-    // await RongIMClient.sendIntactMessageWithCallBack(message, "", "",(int messageId, int status, int code){
-    //   String result = "messageId:$messageId status:$status code:$code";
-    // });
+    Message? resultMsg = await RongIMClient.sendIntactMessageWithCallBack(message, "", "", (int messageId, int status, int code) {
+      String result = "messageId:$messageId status:$status code:$code";
+    });
     userIdList.clear();
     bottomInputBar!.clearReferenceMessage();
-    _insertOrReplaceMessage(message);
+    _insertOrReplaceMessage(resultMsg);
   }
 
   @override

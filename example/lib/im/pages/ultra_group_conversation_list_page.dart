@@ -66,9 +66,7 @@ class _UltraGroupConversationListPageState extends State<UltraGroupConversationL
         List? l = await RongIMClient.getConversationListForAllChannel(element.conversationType, element.targetId);
         if (l != null) {
           l.forEach((element1) {
-            RongIMClient.getUnreadCount(element1.conversationType, element1.targetId, (count, code) => {
-              print("element1.targetId channel 未读数" + element1.targetId + " ${element1.channelId} " + count.toString())
-            },element1.channelId);
+            RongIMClient.getUnreadCount(element1.conversationType, element1.targetId, (count, code) => {print("element1.targetId channel 未读数" + element1.targetId + " ${element1.channelId} " + count.toString())}, element1.channelId);
           });
           ultraGroupList.addAll(l);
         }
@@ -131,20 +129,24 @@ class _UltraGroupConversationListPageState extends State<UltraGroupConversationL
   @override
   void didLongPressConversation(Conversation? conversation, Offset? tapPos) {
     print("长按了会话 " + tapPos.toString());
-    Map<String, String> actionMap = {RCLongPressAction.DeleteConversationKey: RCLongPressAction.DeleteConversationValue, RCLongPressAction.ClearUnreadKey: RCLongPressAction.ClearUnreadValue, RCLongPressAction.SetConversationToTopKey: conversation!.isTop! ? RCLongPressAction.CancelConversationToTopValue : RCLongPressAction.SetConversationToTopValue};
+    Map<String, String> actionMap = {
+      RCLongPressAction.ClearUnreadKey: RCLongPressAction.ClearUnreadValue,
+      RCLongPressAction.SetConversationToTopKey: conversation!.isTop! ? RCLongPressAction.CancelConversationToTopValue : RCLongPressAction.SetConversationToTopValue,
+      RCLongPressAction.DeleteConversationKey: RCLongPressAction.DeleteConversationValue,
+    };
+
+    if (conversation.channelId == "") {
+      // 主频道ID先不让删，避免无法显示其他子频道
+      actionMap.remove(RCLongPressAction.DeleteConversationKey);
+    }
+
     WidgetUtil.showLongPressMenu(context, tapPos!, actionMap, (String? key) {
       if (key == RCLongPressAction.DeleteConversationKey) {
-        if(conversation.channelId == "") {
-          Fluttertoast.showToast(msg: "主频道当前 UI 不支持删除");
-          return;
-        }
         RongIMClient.removeConversation(conversation.conversationType!, conversation.targetId!, (success) => {_updateConversationList(), Fluttertoast.showToast(msg: RCLongPressAction.DeleteConversationKey)}, conversation.channelId!);
       } else if (key == RCLongPressAction.DeleteConversationValue) {
-        // _recallMessage(message);
-
         Fluttertoast.showToast(msg: RCLongPressAction.DeleteConversationValue);
       } else if (key == RCLongPressAction.ClearUnreadKey) {
-        RongIMClient.clearMessagesUnreadStatus(conversation.conversationType!, conversation.targetId!,conversation.channelId!);
+        RongIMClient.clearMessagesUnreadStatus(conversation.conversationType!, conversation.targetId!, conversation.channelId!);
         Fluttertoast.showToast(msg: RCLongPressAction.ClearUnreadKey);
       } else if (key == RCLongPressAction.SetConversationToTopKey) {
         Fluttertoast.showToast(msg: RCLongPressAction.SetConversationToTopKey);
