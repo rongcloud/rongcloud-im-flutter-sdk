@@ -106,12 +106,12 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
 
     RongIMClient.onUltraGroupTypingStatusChanged = (List<RCUltraGroupTypingStatusInfo> infoList) {
 
-      print("正在输入内容");
-      String str = "";
+      String str = "正在输入的用户:";
       infoList.forEach((element) {
-        str += element.userId;
+        if (element.targetId == targetId && channelId == channelId) {
+          str += element.userId;
+        }
       });
-
       Fluttertoast.showToast(msg: str);
     };
   }
