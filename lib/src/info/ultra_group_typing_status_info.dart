@@ -12,7 +12,7 @@ class RCUltraGroupTypingStatusInfo {
         userId = statusInfo["userId"],
         userNumbers = statusInfo["userNumbers"],
         timestamp = statusInfo["timestamp"],
-        status = statusInfo["status"];
+        status = RCUltraGroupTypingStatus.values[statusInfo["status"]];
 
   RCUltraGroupTypingStatusInfo.create(
     this.targetId,
