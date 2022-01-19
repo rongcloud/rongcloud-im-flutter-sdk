@@ -140,7 +140,7 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
         ChannelClient.getInstance().getConversationListForAllChannel(type, targetId, new IRongCoreCallback.ResultCallback<List<Conversation>>() {
             @Override
             public void onSuccess(List<Conversation> conversations) {
-                final List l = new ArrayList();
+                final List<String> l = new ArrayList();
                 for (Conversation con : conversations) {
                     String conStr = MessageFactory.getInstance().conversation2String(con);
                     l.add(conStr);

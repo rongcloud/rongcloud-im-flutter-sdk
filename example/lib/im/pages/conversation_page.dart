@@ -105,6 +105,8 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
     }
 
     RongIMClient.onUltraGroupTypingStatusChanged = (List<RCUltraGroupTypingStatusInfo> infoList) {
+
+      print("正在输入内容");
       String str = "";
       infoList.forEach((element) {
         str += element.userId;
@@ -1188,6 +1190,10 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
   @override
   void onTextChange(String text) {
     textDraft = text;
+    if (isUltraGroup) {
+      RongIMClient.sendUltraGroupTypingStatus(targetId!, channelId!, (code) => null);
+      return;
+    }
     RongIMClient.sendTypingStatus(conversationType!, targetId!, TextMessage.objectName);
   }
 
