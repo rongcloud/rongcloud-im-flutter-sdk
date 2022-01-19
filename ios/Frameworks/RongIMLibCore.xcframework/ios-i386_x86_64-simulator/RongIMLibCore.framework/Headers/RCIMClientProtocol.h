@@ -329,7 +329,7 @@
 /**
  超级群已读时间同步代理
  */
-@protocol RCUlTraGroupReadTimeDelegate <NSObject>
+@protocol RCUltraGroupReadTimeDelegate <NSObject>
 
 /**
  超级群已读时间同步
@@ -338,7 +338,7 @@
  @param channelId 频道 ID
  @param readTime 已读时间
  */
-- (void)onUlTraGroupReadTimeReceived:(NSString *)targetId channelId:(NSString *)channelId readTime:(long long)readTime;
+- (void)onUltraGroupReadTimeReceived:(NSString *)targetId channelId:(NSString *)channelId readTime:(long long)readTime;
 
 @end
 

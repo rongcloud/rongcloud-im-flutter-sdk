@@ -78,7 +78,7 @@
  @discussion 此方法只支持超级群的会话类型。
  @remarks 超级群
  */
-- (void)setRCUlTraGroupReadTimeDelegate:(id<RCUlTraGroupReadTimeDelegate>)delegate;
+- (void)setRCUltraGroupReadTimeDelegate:(id<RCUltraGroupReadTimeDelegate>)delegate;
 
 /*!
  设置超级群消息处理监听器
@@ -465,7 +465,7 @@
  @discussion 此方法只支持超级群的会话类型。
  @remarks 超级群
  */
-- (void)syncUlTraGroupReadStatus:(NSString *)targetId
+- (void)syncUltraGroupReadStatus:(NSString *)targetId
                        channelId:(NSString *)channelId
                             time:(long long)timestamp
                          success:(void (^)(void))successBlock
@@ -755,6 +755,32 @@
           channelId:(NSString *)channelId
              option:(RCHistoryMessageOption *)option
            complete:(void (^)(NSArray *messages, RCErrorCode code))complete;
+/*!
+ * \~chinese
+ 获取历史消息
+
+ @param conversationType    会话类型
+ @param targetId            会话 ID
+ @param channelId          所属会话的业务标识
+ @param option              可配置的参数
+ @param complete        获取成功的回调 [messages：获取到的历史消息数组； code : 获取是否成功，0表示成功，非 0 表示失败，此时 messages 数组可能存在断档]
+ @param errorBlock 获取失败的回调 [status:获取失败的错误码]，参数合法性检查不通过会直接回调 errorBlock
+
+ @discussion 必须开通历史消息云存储功能。
+ @discussion count 传入 1~20 之间的数值。
+ @discussion 此方法先从本地获取历史消息，本地有缺失的情况下会从服务端同步缺失的部分。
+ @discussion 从服务端同步失败的时候会返回非 0 的 errorCode，同时把本地能取到的消息回调上去。
+ @discussion 在获取远端消息的时候，可能会拉到信令消息，信令消息会被 SDK 排除掉，导致 messages.count < option.count 此时只要 isRemaining 为 YES，那么下次拉取消息的时候，请用 timestamp 当做 option.recordTime 再去拉取
+ * 如果 isRemaining 为 NO，则代表远端不再有消息了
+
+ @remarks 消息操作
+ */
+- (void)getMessages:(RCConversationType)conversationType
+           targetId:(NSString *)targetId
+          channelId:(NSString *)channelId
+             option:(RCHistoryMessageOption *)option
+           complete:(void (^)(NSArray *messages,long long timestamp,BOOL isRemaining, RCErrorCode code))complete
+              error:(void (^)(RCErrorCode status))errorBlock;
 
 /*!
  获取会话中@提醒自己的消息

@@ -18,7 +18,7 @@
 		</data>
 		<key>Headers/RCChannelClient.h</key>
 		<data>
-		xPNL7M6203cIGx0MF9gPoVOmyjs=
+		ROwSahEmjNzXPVQBPNF++JVTC5E=
 		</data>
 		<key>Headers/RCClearConversationOption.h</key>
 		<data>
@@ -114,7 +114,7 @@
 		</data>
 		<key>Headers/RCIMClientProtocol.h</key>
 		<data>
-		RDbfvy8+VbTPtV1BRpLLcVJpOp4=
+		Y5ZCC1JU+0saob//P70nS10jDRA=
 		</data>
 		<key>Headers/RCImageCompressConfig.h</key>
 		<data>
@@ -278,7 +278,7 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		PL66Qx5F4lU1aaQYZO5FFlK78T8=
+		VsRwN1/EEHwOj36h8xjVsK6fkG0=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -332,11 +332,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			xPNL7M6203cIGx0MF9gPoVOmyjs=
+			ROwSahEmjNzXPVQBPNF++JVTC5E=
 			</data>
 			<key>hash2</key>
 			<data>
-			kvPDdU/3+EY8nwCgjTuhcySY94mnAoBHY8v5hNctdIs=
+			Hs8grCN4OwtAbR+Ud6EaLqLvUXoiOKBSxuuy2PvIWoY=
 			</data>
 		</dict>
 		<key>Headers/RCClearConversationOption.h</key>
@@ -596,11 +596,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			RDbfvy8+VbTPtV1BRpLLcVJpOp4=
+			Y5ZCC1JU+0saob//P70nS10jDRA=
 			</data>
 			<key>hash2</key>
 			<data>
-			6RYoDcoX5YKXUJ60mTHNScE6TwJq42NEBrXA6+FZFRs=
+			Dgx+RnzoaF+y+SgDrFJkUtz804LvmM4CCMGw8xobosI=
 			</data>
 		</dict>
 		<key>Headers/RCImageCompressConfig.h</key>
