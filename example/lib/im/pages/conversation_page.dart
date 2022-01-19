@@ -186,6 +186,13 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
       _sendReadReceipt();
     });
 
+    EventBus.instance!.addListener(EventKeys.ClearMessage, widget, (map) {
+      messageDataSource.clear();
+
+      print("我收到清空的监听了");
+      _refreshMessageContentListUI();
+    });
+
     EventBus.instance!.addListener(EventKeys.ReceiveReadReceipt, widget, (map) {
       String? tId = map["tId"];
       if (tId == this.targetId) {

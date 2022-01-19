@@ -64,4 +64,5 @@ class EventKeys {
   static const String ForwardMessageEnd = "ForwardMessageEnd";
   static const String BurnMessage = "BurnMessage";
   static const String BlockMessage = "BlockMessage";
+  static const String ClearMessage = "clearMessage";
 }

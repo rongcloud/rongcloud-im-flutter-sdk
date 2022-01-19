@@ -5,20 +5,23 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
+import 'package:rongcloud_im_plugin_example/im/util/event_bus.dart';
 
 import '../im/util/dialog_util.dart';
 
-const String case1 = "设置免打扰";
-const String case12 = "取消免打扰";
-const String case2 = "会话置顶";
-const String case22 = "取消会话置顶";
-const String case3 = "清空本地历史消息";
-const String case4 = "清空本地和远端历史消息";
-const String case5 = "删除本地[所有频道]当前时间之前的消息";
-const String case6 = "删除本地[当前频道]当前时间之前的消息";
-const String case7 = "删除服务端当前时间之前的消息";
-const String case8 = "发一条携带{tkey:当前时间}文本消息";
-const String case9 = "获取当前超级群所有频道的lastMsgUid";
+List<String> _kUltraGroupTitles = <String>[
+  "设置免打扰",
+  "取消免打扰",
+  "会话置顶",
+  "取消会话置顶",
+  "清空本地历史消息",
+  "清空本地和远端历史消息",
+  "删除本地[所有频道]当前时间之前的消息",
+  "删除本地[当前频道]当前时间之前的消息",
+  "删除服务端当前时间之前的消息",
+  "发一条携带{tkey:当前时间}文本消息",
+  "获取当前超级群所有频道的lastMsgUid",
+];
 
 class ChatDebugPage extends StatefulWidget {
   final Map? arguments;
@@ -85,13 +88,34 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
       titles.addAll(onlyGroupTitles);
     } else if (conversationType == RCConversationType.UltraGroup) {
       titles.clear();
-      List onlyUltraGroupTitles = [case1, case12, case2, case22, case3, case4, case5, case6, case7, case8, case9];
-      titles.addAll(onlyUltraGroupTitles);
+      titles.addAll(_kUltraGroupTitles);
     }
 
     RongIMClient.onTagChanged = () {
       Fluttertoast.showToast(msg: "会话标签变化收到监听", timeInSecForIosWeb: 2);
     };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Chat Debug"),
+      ),
+      body: ListView.builder(
+        scrollDirection: Axis.vertical,
+        itemCount: titles.length,
+        itemBuilder: (BuildContext context, int index) {
+          return MaterialButton(
+            onPressed: () {
+              _didTap(index);
+            },
+            child: Text(titles[index]),
+            color: Colors.blue,
+          );
+        },
+      ),
+    );
   }
 
   void _didTap(int index) {
@@ -110,10 +134,10 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
         _getBlackList();
         break;
       case "设置免打扰":
-        _setConStatusEnable();
+        _setConStatusEnable(true);
         break;
       case "取消免打扰":
-        _setConStatusDisanable();
+        _setConStatusEnable(false);
         break;
       case "查看免打扰":
         _getConStatus();
@@ -172,6 +196,30 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
       case "获取指定会话下的标签置顶状态":
         _getConversationTopStatusInTag();
         break;
+      case "会话置顶":
+        _setConversationTopState(true);
+        break;
+      case "取消会话置顶":
+        _setConversationTopState(false);
+        break;
+      case "清空本地历史消息":
+        _clearLocalHistoryMessage();
+        break;
+      case "清空本地和远端历史消息":
+        _clearHistoryMessage();
+        break;
+      case "删除本地[所有频道]当前时间之前的消息":
+        _clearMessagesForAllChannel();
+        break;
+      case "删除本地[当前频道]当前时间之前的消息":
+        _clearUltraGroupMessages();
+        break;
+      case "删除服务端当前时间之前的消息":
+        _clearRemoteMessages();
+        break;
+      case "获取当前超级群所有频道的lastMsgUid":
+        _getConversationTopStatusInTag();
+        break;
     }
   }
 
@@ -221,20 +269,12 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     });
   }
 
-  void _setConStatusEnable() {
-    RongIMClient.setConversationNotificationStatus(conversationType!, targetId!, true, (int? status, int? code) {
+  void _setConStatusEnable(bool enable) {
+    RongIMClient.setConversationNotificationStatus(conversationType!, targetId!, enable, (int? status, int? code) {
       developer.log("setConversationNotificationStatus1 status " + status.toString(), name: pageName);
       String toast = code == 0 ? "设置免打扰成功" : "设置免打扰失败，错误码: $code";
       DialogUtil.showAlertDiaLog(context, toast);
-    });
-  }
-
-  void _setConStatusDisanable() {
-    RongIMClient.setConversationNotificationStatus(conversationType!, targetId!, false, (int? status, int? code) {
-      developer.log("setConversationNotificationStatus2 status " + status.toString(), name: pageName);
-      String toast = code == 0 ? "取消免打扰成功" : "取消免打扰失败，错误码: $code";
-      DialogUtil.showAlertDiaLog(context, toast);
-    });
+    }, channelId: channelId);
   }
 
   void _getConStatus() {
@@ -442,25 +482,51 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Chat Debug"),
-      ),
-      body: ListView.builder(
-        scrollDirection: Axis.vertical,
-        itemCount: titles.length,
-        itemBuilder: (BuildContext context, int index) {
-          return MaterialButton(
-            onPressed: () {
-              _didTap(index);
-            },
-            child: Text(titles[index]),
-            color: Colors.blue,
-          );
-        },
-      ),
+  void _setConversationTopState(bool isTop) {
+    RongIMClient.setConversationToTop(conversationType!, targetId!, isTop, (status, code) => null, channelId: channelId);
+  }
+
+  void _clearLocalHistoryMessage() {
+    RongIMClient.clearMessages(
+      conversationType,
+      targetId,
+      (code) {
+        String toast = code == 0 ? "本地历史清除成功" : "本地历史清除失败";
+        DialogUtil.showAlertDiaLog(context, toast);
+        EventBus.instance!.commit(EventKeys.ClearMessage, null);
+      },
+      channelId: channelId,
     );
+  }
+
+  void _clearHistoryMessage() {
+    RongIMClient.clearHistoryMessages(
+      conversationType,
+      targetId,
+      0,
+      true,
+      (code) => {
+      EventBus.instance!.commit(EventKeys.ClearMessage, null)
+      },
+      channelId: channelId,
+    );
+  }
+
+  void _clearUltraGroupMessages() async {
+    bool isSuccess = await RongIMClient.deleteUltraGroupMessages(targetId!, channelId, 0);
+    if (isSuccess) {
+      EventBus.instance!.commit(EventKeys.ClearMessage, null);
+    }
+  }
+
+  void _clearMessagesForAllChannel() async{
+    bool isSuccess = await RongIMClient.deleteUltraGroupMessagesForAllChannel(targetId!, 0);
+    if (isSuccess) {
+      EventBus.instance!.commit(EventKeys.ClearMessage, null);
+    }
+  }
+
+  void _clearRemoteMessages() {
+    RongIMClient.deleteRemoteUltraGroupMessages(targetId!, channelId, 0, (code) => null);
   }
 }
