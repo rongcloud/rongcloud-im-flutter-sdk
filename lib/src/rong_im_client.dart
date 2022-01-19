@@ -2477,12 +2477,22 @@ class RongIMClient {
 
   static Future<bool> deleteUltraGroupMessagesForAllChannel(String targetId, int timestamp) async {
     Map arguments = {"targetId": targetId, "timestamp": timestamp};
-    return await _channel.invokeMethod(RCMethodKey.RCUltraGroupDeleteMessagesForAllChannel, arguments);
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupDeleteMessagesForAllChannel, arguments);
+
+    if (result["code"] == 0) {
+      return Future.value(true);
+    }
+    return Future.value(false);
   }
 
   static Future<bool> deleteUltraGroupMessages(String targetId, String channelId, int timestamp) async {
     Map arguments = {"targetId": targetId, "channelId": channelId, "timestamp": timestamp};
-    return await _channel.invokeMethod(RCMethodKey.RCUltraGroupDeleteMessages, arguments);
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupDeleteMessages, arguments);
+
+    if (result["code"] == 0) {
+      return Future.value(true);
+    }
+    return Future.value(false);
   }
 
   static Future<void> deleteRemoteUltraGroupMessages(String targetId, String channelId, int timestamp, Function(int code)? callback) async {
