@@ -20,7 +20,7 @@
 @interface RCUltraGroupClient ()
 <RCUltraGroupTypingStatusDelegate,
 RCUltraGroupMessageChangeDelegate,
-RCUlTraGroupReadTimeDelegate>
+RCUltraGroupReadTimeDelegate>
 
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 
@@ -89,7 +89,7 @@ RCUlTraGroupReadTimeDelegate>
 - (void)setUltraGroupDelegate {
     [[RCChannelClient sharedChannelManager] setRCUltraGroupTypingStatusDelegate:self];
     [[RCChannelClient sharedChannelManager] setRCUltraGroupMessageChangeDelegate:self];
-    [[RCChannelClient sharedChannelManager] setRCUlTraGroupReadTimeDelegate:self];
+    [[RCChannelClient sharedChannelManager] setRCUltraGroupReadTimeDelegate:self];
 }
 
 #pragma mark - Delegate
@@ -127,7 +127,7 @@ RCUlTraGroupReadTimeDelegate>
     [self.channel invokeMethod:RCUltraGroupOnMessageExpansionUpdated arguments:arguments];
 }
 
-- (void)onUlTraGroupReadTimeReceived:(NSString *)targetId channelId:(NSString *)channelId readTime:(long long)readTime {
+- (void)onUltraGroupReadTimeReceived:(NSString *)targetId channelId:(NSString *)channelId readTime:(long long)readTime {
     NSLog(@"RCFlutterIM:onUltraGroupMessageExpansionUpdated");
     NSDictionary *arguments = @{@"targetId":targetId,@"readTime":@(readTime)};
     [self.channel invokeMethod:RCUltraGroupOnReadTimeReceived arguments:arguments];
@@ -159,7 +159,7 @@ RCUlTraGroupReadTimeDelegate>
     NSString *channelId = arguments[@"channelId"];
     long long timestamp = [arguments[@"timestamp"] longLongValue];
     
-    [[RCChannelClient sharedChannelManager] syncUlTraGroupReadStatus:targetId channelId:channelId time:timestamp success:^{
+    [[RCChannelClient sharedChannelManager] syncUltraGroupReadStatus:targetId channelId:channelId time:timestamp success:^{
         NSLog(@"RCFlutterIM:syncUlTraGroupReadStatus success");
         NSMutableDictionary *dic = [NSMutableDictionary new];
         [dic setObject:@(0) forKey:@"code"];
