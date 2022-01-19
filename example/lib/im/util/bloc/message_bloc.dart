@@ -15,7 +15,6 @@ class MessageBloc extends BlocBase {
 
   @override
   void dispose() {
-    print("MessageBloc 销毁了");
     _listDataController.close();
     isDispose = true;
   }

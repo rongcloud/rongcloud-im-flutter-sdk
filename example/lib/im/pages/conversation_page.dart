@@ -190,8 +190,6 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
 
     EventBus.instance!.addListener(EventKeys.ClearMessage, widget, (map) {
       messageDataSource.clear();
-
-      print("我收到清空的监听了");
       _refreshMessageContentListUI();
     });
 
