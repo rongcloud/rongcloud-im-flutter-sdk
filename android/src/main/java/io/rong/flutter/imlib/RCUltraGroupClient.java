@@ -103,17 +103,27 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
             @Override
             public void onSuccess() {
                 Log.d(TAG, "syncUlTraGroupReadStatus: onSuccess");
-                HashMap<String,Object> msgMap = new HashMap<>();
+                final HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", 0);
-                result.success(msgMap);
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(msgMap);
+                    }
+                });
             }
 
             @Override
             public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
                 Log.d(TAG, "syncUlTraGroupReadStatus: onError " + coreErrorCode.getValue());
-                HashMap<String,Object> msgMap = new HashMap<>();
+                final HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", coreErrorCode.getValue());
-                result.success(msgMap);
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(msgMap);
+                    }
+                });
             }
         });
 
@@ -130,17 +140,27 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
         ChannelClient.getInstance().getConversationListForAllChannel(type, targetId, new IRongCoreCallback.ResultCallback<List<Conversation>>() {
             @Override
             public void onSuccess(List<Conversation> conversations) {
-                List l = new ArrayList();
+                final List l = new ArrayList();
                 for (Conversation con : conversations) {
                     String conStr = MessageFactory.getInstance().conversation2String(con);
                     l.add(conStr);
                 }
-                result.success(l);
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(l);
+                    }
+                });
             }
 
             @Override
             public void onError(IRongCoreEnum.CoreErrorCode e) {
-                result.success(null);
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(null);
+                    }
+                });
             }
         });
     }
@@ -151,16 +171,27 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
         ChannelClient.getInstance().getUltraGroupUnreadMentionedCount(targetId, new IRongCoreCallback.ResultCallback<Integer>() {
             @Override
             public void onSuccess(Integer integer) {
-                HashMap<String,Object> msgMap = new HashMap<>();
+                final HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", 0);
-                result.success(msgMap);
+
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(msgMap);
+                    }
+                });
             }
 
             @Override
             public void onError(IRongCoreEnum.CoreErrorCode e) {
-                HashMap<String,Object> msgMap = new HashMap<>();
+                final HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", e.getValue());
-                result.success(msgMap);
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(msgMap);
+                    }
+                });
             }
         });
     }
@@ -196,22 +227,37 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
 
         if (content == null) {
 //            RCLog.e(LOG_TAG + " message content is nil");
-            result.success(null);
+            mMainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    result.success(null);
+                }
+            });
             return;
         }
         ChannelClient.getInstance().modifyUltraGroupMessage(messageUId, content, new IRongCoreCallback.OperationCallback() {
             @Override
             public void onSuccess() {
-                HashMap<String,Object> msgMap = new HashMap<>();
+                final HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", 0);
-                result.success(msgMap);
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(msgMap);
+                    }
+                });
             }
 
             @Override
             public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
-                HashMap<String,Object> msgMap = new HashMap<>();
+                final HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", coreErrorCode.getValue());
-                result.success(msgMap);
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(msgMap);
+                    }
+                });
             }
         });
     }
@@ -231,26 +277,41 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
                         message.setContent(recallNotificationMessage);
                         message.setObjectName("RC:RcNtf");
                         Map map = MessageFactory.getInstance().messageToMap(message);
-                        HashMap<String,Object> msgMap = new HashMap<>();
+                        final HashMap<String,Object> msgMap = new HashMap<>();
                         msgMap.put("code", 0);
                         msgMap.put("message",map);
-                        result.success(msgMap);
+                        mMainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                result.success(msgMap);
+                            }
+                        });
                     }
 
                     @Override
                     public void onError(IRongCoreEnum.CoreErrorCode e) {
-                        HashMap<String,Object> msgMap = new HashMap<>();
+                        final HashMap<String,Object> msgMap = new HashMap<>();
                         msgMap.put("code", e.getValue());
-                        result.success(msgMap);
+                        mMainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                result.success(msgMap);
+                            }
+                        });
                     }
                 });
             }
 
             @Override
             public void onError(IRongCoreEnum.CoreErrorCode e) {
-                HashMap<String,Object> msgMap = new HashMap<>();
+                final HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", e.getValue());
-                result.success(msgMap);
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(msgMap);
+                    }
+                });
             }
         });
 
@@ -265,16 +326,26 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
         ChannelClient.getInstance().deleteUltraGroupMessages(targetId, channelId, timestamp.longValue(), new IRongCoreCallback.ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean aBoolean) {
-                HashMap<String,Object> msgMap = new HashMap<>();
+                final HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", 0);
-                result.success(msgMap);
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(msgMap);
+                    }
+                });
             }
 
             @Override
             public void onError(IRongCoreEnum.CoreErrorCode e) {
-                HashMap<String,Object> msgMap = new HashMap<>();
+                final HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", e.getValue());
-                result.success(msgMap);
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(msgMap);
+                    }
+                });
             }
         });
     }
@@ -289,16 +360,26 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
         ChannelClient.getInstance().sendUltraGroupTypingStatus(targetId, channelId, typingStatus, new IRongCoreCallback.OperationCallback() {
             @Override
             public void onSuccess() {
-                HashMap<String,Object> msgMap = new HashMap<>();
+                final HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", 0);
-                result.success(msgMap);
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(msgMap);
+                    }
+                });
             }
 
             @Override
             public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
-                HashMap<String,Object> msgMap = new HashMap<>();
+                final HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", coreErrorCode.getValue());
-                result.success(msgMap);
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(msgMap);
+                    }
+                });
             }
         });
     }
@@ -311,16 +392,27 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
         ChannelClient.getInstance().deleteUltraGroupMessagesForAllChannel(targetId, timestamp.longValue(), new IRongCoreCallback.ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean aBoolean) {
-                HashMap<String,Object> msgMap = new HashMap<>();
+                final HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", 0);
-                result.success(msgMap);
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(msgMap);
+                    }
+                });
+
             }
 
             @Override
             public void onError(IRongCoreEnum.CoreErrorCode e) {
-                HashMap<String,Object> msgMap = new HashMap<>();
+                final HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", e.getValue());
-                result.success(msgMap);
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(msgMap);
+                    }
+                });
             }
         });
     }
@@ -334,16 +426,26 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
         ChannelClient.getInstance().deleteRemoteUltraGroupMessages(targetId, channelId, timestamp.longValue(), new IRongCoreCallback.OperationCallback() {
             @Override
             public void onSuccess() {
-                HashMap<String,Object> msgMap = new HashMap<>();
+                final HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", 0);
-                result.success(msgMap);
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(msgMap);
+                    }
+                });
             }
 
             @Override
             public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
-                HashMap<String,Object> msgMap = new HashMap<>();
+                final HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", coreErrorCode.getValue());
-                result.success(msgMap);
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(msgMap);
+                    }
+                });
             }
         });
     }
@@ -362,16 +464,26 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
         ChannelClient.getInstance().getBatchRemoteUltraGroupMessages(messageList, new IRongCoreCallback.IGetBatchRemoteUltraGroupMessageCallback() {
             @Override
             public void onSuccess(List<Message> matchedMsgList, List<Message> notMatchedMsgList) {
-                HashMap<String,Object> msgMap = new HashMap<>();
+                final HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", 0);
-                result.success(msgMap);
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(msgMap);
+                    }
+                });
             }
 
             @Override
             public void onError(IRongCoreEnum.CoreErrorCode errorCode) {
-                HashMap<String,Object> msgMap = new HashMap<>();
+                final HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", errorCode.getValue());
-                result.success(msgMap);
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(msgMap);
+                    }
+                });
             }
         });
     }
@@ -384,16 +496,26 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
         ChannelClient.getInstance().updateUltraGroupMessageExpansion(expansionDic, messageUId, new IRongCoreCallback.OperationCallback() {
             @Override
             public void onSuccess() {
-                HashMap<String,Object> msgMap = new HashMap<>();
+                final HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", 0);
-                result.success(msgMap);
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(msgMap);
+                    }
+                });
             }
 
             @Override
             public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
-                HashMap<String,Object> msgMap = new HashMap<>();
+                final HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", coreErrorCode.getValue());
-                result.success(msgMap);
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(msgMap);
+                    }
+                });
             }
         });
     }
@@ -406,16 +528,26 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
         ChannelClient.getInstance().removeUltraGroupMessageExpansion(messageUId, arrayList, new IRongCoreCallback.OperationCallback() {
             @Override
             public void onSuccess() {
-                HashMap<String,Object> msgMap = new HashMap<>();
+                final HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", 0);
-                result.success(msgMap);
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(msgMap);
+                    }
+                });
             }
 
             @Override
             public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
-                HashMap<String,Object> msgMap = new HashMap<>();
+                final HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", coreErrorCode.getValue());
-                result.success(msgMap);
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(msgMap);
+                    }
+                });
             }
         });
     }
