@@ -79,7 +79,7 @@ class _UltraGroupConversationListPageState extends State<UltraGroupConversationL
 
   Widget _conversationList1() {
     if (_converstaionList.length == 0) {
-      return _buildEmptyWidget();
+      return WidgetUtil.buildEmptyWidget();
     }
     return _conversationList();
   }
