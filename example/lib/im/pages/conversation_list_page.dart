@@ -37,8 +37,6 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
     super.initState();
     addIMhandler();
     updateConversationList();
-
-    print("我重建了");
     EventBus.instance!.addListener(EventKeys.ConversationPageDispose, widget, (arg) {
       Timer(Duration(milliseconds: 10), () {
         addIMhandler();
@@ -239,12 +237,5 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
   void didTapConversation(Conversation? conversation) {
     Map arg = {"coversationType": conversation!.conversationType, "targetId": conversation.targetId};
     Navigator.pushNamed(context, "/conversation", arguments: arg);
-  }
-
-  @override
-  void didUpdateWidget(covariant ConversationListPage oldWidget) {
-    // TODO: implement didUpdateWidget
-    super.didUpdateWidget(oldWidget);
-    print("我也更新");
   }
 }

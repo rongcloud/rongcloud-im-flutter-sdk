@@ -24,13 +24,8 @@ class _UltraGroupConversationListPageState extends State<UltraGroupConversationL
   @override
   void initState() {
     super.initState();
-    print("我在初始化");
     _updateConversationList();
     EventBus.instance!.addListener(EventKeys.ReceiveMessage, widget, (map) {
-      Message msg = map["message"];
-      int? left = map["left"];
-      bool hasPackage = map["hasPackage"];
-      print("超级群的会话列表在更新" + msg.messageId.toString());
       _updateConversationList();
     });
   }
@@ -38,27 +33,20 @@ class _UltraGroupConversationListPageState extends State<UltraGroupConversationL
   @override
   void didUpdateWidget(covariant UltraGroupConversationListPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-
-    print("我更新了");
   }
 
   @override
   void dispose() {
     super.dispose();
-    print("超级群会话页面我销毁了");
-
     EventBus.instance!.removeListener(EventKeys.ReceiveMessage, widget);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
-    print("didChangeDependencies");
   }
 
   void _updateConversationList() async {
-    print("我去拉一下数据");
     List? list = await RongIMClient.getConversationListByPage([10], 300, 0);
     if (list != null) {
       List ultraGroupList = [];
@@ -79,7 +67,6 @@ class _UltraGroupConversationListPageState extends State<UltraGroupConversationL
 
   @override
   Widget build(BuildContext context) {
-    print("我在build");
     super.build(context);
     return Scaffold(
       key: UniqueKey(),
@@ -128,7 +115,6 @@ class _UltraGroupConversationListPageState extends State<UltraGroupConversationL
 
   @override
   void didLongPressConversation(Conversation? conversation, Offset? tapPos) {
-    print("长按了会话 " + tapPos.toString());
     Map<String, String> actionMap = {
       RCLongPressAction.ClearUnreadKey: RCLongPressAction.ClearUnreadValue,
       RCLongPressAction.SetConversationToTopKey: conversation!.isTop! ? RCLongPressAction.CancelConversationToTopValue : RCLongPressAction.SetConversationToTopValue,

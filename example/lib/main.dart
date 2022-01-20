@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart' as prefix;
 import 'package:rongcloud_im_plugin_example/test_message.dart';
 
@@ -86,27 +87,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       String hasP = hasPackage! ? "true" : "false";
       String off = offline! ? "true" : "false";
       if (msg!.content != null) {
-        developer.log(
-            "object onMessageReceivedWrapper objName:" +
-                msg.content!.getObjectName()! +
-                " msgContent:" +
-                msg.content!.encode()! +
-                " left:" +
-                left.toString() +
-                " hasPackage:" +
-                hasP +
-                " offline:" +
-                off,
-            name: pageName);
+        developer.log("object onMessageReceivedWrapper objName:" + msg.content!.getObjectName()! + " msgContent:" + msg.content!.encode()! + " left:" + left.toString() + " hasPackage:" + hasP + " offline:" + off, name: pageName);
       } else {
-        developer.log(
-            "object onMessageReceivedWrapper objName: ${msg.objectName} content is null left:${left.toString()} hasPackage:$hasP offline:$off",
-            name: pageName);
+        developer.log("object onMessageReceivedWrapper objName: ${msg.objectName} content is null left:${left.toString()} hasPackage:$hasP offline:$off", name: pageName);
       }
       if (currentState == AppLifecycleState.paused && !checkNoficationQuietStatus()) {
         EventBus.instance!.commit(EventKeys.ReceiveMessage, {"message": msg, "left": left, "hasPackage": hasPackage});
-        prefix.RongIMClient.getConversationNotificationStatus(msg.conversationType!, msg.targetId!,
-            (int? status, int? code) {
+        prefix.RongIMClient.getConversationNotificationStatus(msg.conversationType!, msg.targetId!, (int? status, int? code) {
           if (status == 1) {
             _postLocalNotification(msg, left);
           }
@@ -141,6 +128,18 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       developer.log("object onReceiveReadReceipt " + info.toString(), name: pageName);
     };
 
+    prefix.RongIMClient.onUltraGroupTypingStatusChanged = (List<prefix.RCUltraGroupTypingStatusInfo> infoList) {
+      String str = "";
+      infoList.forEach((element) {
+        if (element.userNumbers > 2) {
+          str += "${element.targetId} [${element.channelId}] 正在有 ${element.userNumbers} 人输入";
+        } else {
+          str += "${element.userId} 正在超级群 ${element.targetId} [${element.channelId}] 输入内容";
+        }
+      });
+      Fluttertoast.showToast(msg: str);
+    };
+
     setState(() {
       _ready = true;
     });
@@ -164,13 +163,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     prefix.RongIMClient.getNotificationQuietHours((int? code, String? startTime, int? spansMin) {
       if (startTime != null && startTime.length > 0 && spansMin! > 0) {
         DateTime now = DateTime.now();
-        String nowString = now.year.toString() +
-            "-" +
-            now.month.toString().padLeft(2, '0') +
-            "-" +
-            now.day.toString().padLeft(2, '0') +
-            " " +
-            startTime;
+        String nowString = now.year.toString() + "-" + now.month.toString().padLeft(2, '0') + "-" + now.day.toString().padLeft(2, '0') + " " + startTime;
         DateTime start = DateTime.parse(nowString);
         notificationQuietStartTime = start;
         notificationQuietEndTime = start.add(Duration(minutes: spansMin));
@@ -185,10 +178,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     bool isNotificationQuiet = false;
 
     DateTime now = DateTime.now();
-    if (notificationQuietStartTime != null &&
-        notificationQuietEndTime != null &&
-        now.isAfter(notificationQuietStartTime!) &&
-        now.isBefore(notificationQuietEndTime!)) {
+    if (notificationQuietStartTime != null && notificationQuietEndTime != null && now.isAfter(notificationQuietStartTime!) && now.isBefore(notificationQuietEndTime!)) {
       isNotificationQuiet = true;
     }
 
@@ -198,15 +188,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void _postLocalNotification(prefix.Message? msg, int? left) async {
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
     var initializationSettingsAndroid = new AndroidInitializationSettings("app_icon"); // app_icon 所在目录为 res/drawable/
-    var initializationSettingsIOS =
-        new IOSInitializationSettings(requestAlertPermission: true, requestSoundPermission: true);
-    var initializationSettings =
-        new InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+    var initializationSettingsIOS = new IOSInitializationSettings(requestAlertPermission: true, requestSoundPermission: true);
+    var initializationSettings = new InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
     flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: null);
 
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-        'your channel id', 'your channel name', 'your channel description',
-        importance: Importance.max, priority: Priority.high, ticker: '本地通知');
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails('your channel id', 'your channel name', 'your channel description', importance: Importance.max, priority: Priority.high, ticker: '本地通知');
 
     var platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics, iOS: null);
 

@@ -99,21 +99,9 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
 
     if (isUltraGroup) {
       int timestamp = DateTime.now().millisecondsSinceEpoch;
-      print(" 同步的时间为 " + timestamp.toString());
       RongIMClient.syncUlTraGroupReadStatus(targetId!, channelId!, timestamp, (code) => {Fluttertoast.showToast(msg: "我同步了未读数" + timestamp.toString())});
       RongIMClient.clearMessagesUnreadStatus(conversationType!, targetId!, channelId!);
     }
-
-    RongIMClient.onUltraGroupTypingStatusChanged = (List<RCUltraGroupTypingStatusInfo> infoList) {
-
-      String str = "正在输入的用户:";
-      infoList.forEach((element) {
-        if (element.targetId == targetId && channelId == channelId) {
-          str += element.userId;
-        }
-      });
-      Fluttertoast.showToast(msg: str);
-    };
   }
 
   void setInfo() {
@@ -179,7 +167,6 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
 
   _addIMHandler() {
     EventBus.instance!.addListener(EventKeys.ReceiveMessage, widget, (map) {
-      print("我收到消息了");
       Message msg = map["message"];
       if (msg.targetId == this.targetId) {
         _insertOrReplaceMessage(msg);
@@ -1013,7 +1000,7 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
   }
 
   void _updateUltraGroupMessage(Message message) {
-    if (!(message.content is TextMessage)) {
+    if ((message.content is! TextMessage)) {
       Fluttertoast.showToast(msg: "当前仅支持文本消息修改");
       return;
     }
@@ -1188,8 +1175,11 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
   @override
   void onTextChange(String text) {
     textDraft = text;
+    if (text.isEmpty) {
+      return;
+    }
     if (isUltraGroup) {
-      RongIMClient.sendUltraGroupTypingStatus(targetId!, channelId!, (code) => null);
+      RongIMClient.sendUltraGroupTypingStatus(targetId!, channelId!, RCUltraGroupTypingStatus.RCUltraGroupTypingStatusText, (code) => null);
       return;
     }
     RongIMClient.sendTypingStatus(conversationType!, targetId!, TextMessage.objectName);
