@@ -2467,8 +2467,8 @@ class RongIMClient {
     return await _channel.invokeMethod(RCMethodKey.RCUltraGroupGetUnreadMentionedCount, arguments);
   }
 
-  static Future<void> sendUltraGroupTypingStatus(String targetId, String channelId, Function(int code)? callback) async {
-    Map arguments = {"targetId": targetId, "channelId": channelId};
+  static Future<void> sendUltraGroupTypingStatus(String targetId, String channelId, RCUltraGroupTypingStatus typingStatus, Function(int code)? callback) async {
+    Map arguments = {"targetId": targetId, "channelId": channelId, "typingStatus": typingStatus.index};
     Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupSendTypingStatus, arguments);
     if (callback != null) {
       callback(result["code"]);
