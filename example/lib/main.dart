@@ -69,7 +69,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   void _init() {
     //1.初始化 im SDK
-    prefix.RongIMClient.setServerInfo("http://nav-ucqa.rongcloud.net", "fileServer");
     prefix.RongIMClient.init(RongAppKey);
 
     //注册自定义消息

@@ -53,9 +53,6 @@ class _UltraGroupConversationListPageState extends State<UltraGroupConversationL
       list.forEach((element) async {
         List? l = await RongIMClient.getConversationListForAllChannel(element.conversationType, element.targetId);
         if (l != null) {
-          l.forEach((element1) {
-            RongIMClient.getUnreadCount(element1.conversationType, element1.targetId, (count, code) => {print("element1.targetId channel 未读数" + element1.targetId + " ${element1.channelId} " + count.toString())}, element1.channelId);
-          });
           ultraGroupList.addAll(l);
         }
         this.setState(() {
