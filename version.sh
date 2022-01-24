@@ -12,3 +12,10 @@ awk "{
         gsub(/static final String sdkVersion = .*/, \"static final String sdkVersion = \\\"$version\\\";\");
         print;
     }" lib/src/rong_im_client.dart > .tmp && mv .tmp lib/src/rong_im_client.dart
+
+
+awk "{
+        gsub(/static NSString \* const VER =.*/, \"static NSString \* const VER = @\\\"$version\\\";\");
+        print;
+    }" ios/Classes/RCIMFlutterWrapper.m > .tmp && mv .tmp ios/Classes/RCIMFlutterWrapper.m
+

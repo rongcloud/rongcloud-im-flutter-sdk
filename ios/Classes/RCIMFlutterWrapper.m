@@ -72,8 +72,11 @@
 
 @implementation RCIMFlutterWrapper
 
+
+static NSString * const VER = @"5.1.8";
+
 + (void)load {
-    [RCUtilities setModuleName:@"imflutter" version:[RCIMFlutterWrapper getVersion]];
+    [RCUtilities setModuleName:@"imflutter" version:VER];
 }
 
 + (instancetype)sharedWrapper {
