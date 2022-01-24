@@ -24,6 +24,8 @@ if [ -z "$platform" ]; then
   exit 1
 fi
 
+cd $(dirname "$0")/.. && pwd;
+
 if [ ! -d "outputs" ]; then
   mkdir outputs
 else
@@ -31,7 +33,7 @@ else
   mkdir outputs
 fi
 
-sh version.sh
+sh scripts/version.sh
 
 flutter clean
 flutter pub get

@@ -1,4 +1,5 @@
 #!/bin/bash
+cd $(dirname "$0")/.. && pwd;
 
 version=$(awk -F '[= #]' '{a=1}a==1&&$1~/version:/{print $2;exit}' pubspec.yaml)
 
