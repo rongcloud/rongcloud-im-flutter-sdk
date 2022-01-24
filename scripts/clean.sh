@@ -28,8 +28,9 @@ if [[ $mode == "release" ]]; then
 
     rm example/ios/archive.plist
     rm -rf scripts
-    rm -rf outputs
 fi
+
+rm -rf outputs
 
 # # 删除敏感数据
 
