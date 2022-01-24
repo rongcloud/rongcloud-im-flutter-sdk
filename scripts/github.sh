@@ -34,8 +34,8 @@ clean_CH="无文件要提交，干净的工作区"
 if [[ $status =~ $clean_EN ]] || [[ $status =~ $clean_CH ]]; then
   git checkout "$branch"
   git merge --allow-unrelated-histories --squash --strategy-option=theirs dev
-  rm example/ios/archive.plist
-  rm -rf scripts
+  sh scripts/clean.sh -m "release"
+  
 #  if [ -n "$message" ]; then
 #    git commit -am "\"$message\""
 #    git push
