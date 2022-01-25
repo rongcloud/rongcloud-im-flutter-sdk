@@ -34,6 +34,7 @@ rm -rf outputs
 
 if [[ $mode == "release" ]]; then
     mv -f example/lib/user_data_github.dart example/lib/user_data.dart
+    mv -f example/android/app/google-services_github.json example/android/app/google-services.json
 fi
 
 # 删除 example 文件
