@@ -23,17 +23,25 @@ cd $(dirname "$0")/.. && pwd;
 
 flutter clean
 
-# # 删除文件
+# 删除 dart 文件
 if [[ $mode == "release" ]]; then
-
-    rm example/ios/archive.plist
     rm -rf scripts
 fi
 
 rm -rf outputs
 
-# # 删除敏感数据
+# 删除敏感数据
 
 if [[ $mode == "release" ]]; then
     mv -f example/lib/user_data_github.dart example/lib/user_data.dart
 fi
+
+# 删除 example 文件
+if [[ $mode == "release" ]]; then
+    rm -rf example/build
+    rm -rf example/ios/Pods
+    rm -rf example/ios/Podfile.lock
+    rm -rf example/ios/Runner.xcworkspace
+    rm -rf example/ios/archive.plist
+fi
+
