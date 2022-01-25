@@ -39,6 +39,7 @@ import io.rong.imlib.MessageTag;
 import io.rong.imlib.NativeClient;
 import io.rong.imlib.RongCoreClient;
 import io.rong.imlib.chatroom.base.RongChatRoomClient;
+import io.rong.imlib.listener.OnReceiveMessageWrapperListener;
 import io.rong.imlib.model.AndroidConfig;
 import io.rong.imlib.model.BlockedMessageInfo;
 import io.rong.imlib.model.ChatRoomInfo;
@@ -52,6 +53,7 @@ import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageConfig;
 import io.rong.imlib.model.MessageContent;
 import io.rong.imlib.model.MessagePushConfig;
+import io.rong.imlib.model.ReceivedProfile;
 import io.rong.imlib.model.SearchConversationResult;
 import io.rong.imlib.model.TagInfo;
 import io.rong.imlib.model.UnknownMessage;
@@ -76,6 +78,7 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
     private static MethodChannel mChannel = null;
     private static RCFlutterConfig mConfig = null;
     private Handler mMainHandler = null;
+    private RCListenerImpl listenerImpl = null;
     private List<Class<? extends MessageContent>> messageContentClassList;
 
     private HashMap<String, Constructor<? extends MessageContent>> messageContentConstructorMap;
@@ -151,6 +154,17 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
 
     public void saveChannel(MethodChannel channel) {
         mChannel = channel;
+    }
+
+    public void initListener() {
+        listenerImpl = new RCListenerImpl(mChannel, mMainHandler);
+    }
+
+    public void releaseListener() {
+        RongCoreClient.removeOnReceiveMessageListener(listenerImpl.receiveMessageWrapperListener);
+        RongChatRoomClient.getInstance().removeKVStatusListener(listenerImpl.kvStatusListener);
+        RongCoreClient.removeConnectionStatusListener(listenerImpl.connectionStatusListener);
+        listenerImpl = null;
     }
 
     public void onMethodCall(MethodCall call, Result result) {
@@ -2417,26 +2431,8 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
     }
 
     private void setReceiveMessageListener() {
-        RongCoreClient.setOnReceiveMessageListener(new IRongCoreListener.OnReceiveMessageWrapperListener() {
-            @Override
-            public boolean onReceived(final Message message, final int left, final boolean hasPackage,
-                                      final boolean offline) {
-                mMainHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        String messageS = MessageFactory.getInstance().message2String(message);
-                        final Map map = new HashMap();
-                        map.put("message", messageS);
-                        map.put("left", left);
-                        map.put("offline", offline);
-                        map.put("hasPackage", hasPackage);
-
-                        mChannel.invokeMethod(RCMethodList.MethodCallBackKeyReceiveMessage, map);
-                    }
-                });
-                return false;
-            }
-        });
+        RongCoreClient.removeOnReceiveMessageListener(listenerImpl.receiveMessageWrapperListener);
+        RongCoreClient.addOnReceiveMessageListener(listenerImpl.receiveMessageWrapperListener);
     }
 
     private void setOnRecallMessageListener() {
@@ -2463,7 +2459,6 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
     // 阅后即焚销毁回调
     private void setOnReceiveDestructionMessageListener() {
         RongCoreClient.getInstance().setOnReceiveDestructionMessageListener(new IRongCoreListener.OnReceiveDestructionMessageListener() {
-
             @Override
             public void onReceive(final Message message) {
                 mMainHandler.post(new Runnable() {
@@ -2478,49 +2473,8 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
 
     // 聊天室 kv 状态变化监听
     private void setKVStatusListener() {
-        RongChatRoomClient.getInstance().setKVStatusListener(new RongChatRoomClient.KVStatusListener() {
-            @Override
-            public void onChatRoomKVSync(final String roomId) {
-                mMainHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        final Map resultMap = new HashMap();
-                        resultMap.put("roomId", roomId);
-                        mChannel.invokeMethod(RCMethodList.MethodCallBackChatRoomKVDidSync, resultMap);
-                    }
-                });
-            }
-
-            @Override
-            public void onChatRoomKVUpdate(final String roomId, Map<String, String> chatRoomKVMap) {
-                final Map<String, String> kvMap = new HashMap<>();
-                kvMap.putAll(chatRoomKVMap);
-                mMainHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        final Map resultMap = new HashMap();
-                        resultMap.put("roomId", roomId);
-                        resultMap.put("entry", kvMap);
-                        mChannel.invokeMethod(RCMethodList.MethodCallBackChatRoomKVDidUpdate, resultMap);
-                    }
-                });
-            }
-
-            @Override
-            public void onChatRoomKVRemove(final String roomId, Map<String, String> map) {
-                final Map<String, String> kvMap = new HashMap<>();
-                kvMap.putAll(map);
-                mMainHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        final Map resultMap = new HashMap();
-                        resultMap.put("roomId", roomId);
-                        resultMap.put("entry", kvMap);
-                        mChannel.invokeMethod(RCMethodList.MethodCallBackChatRoomKVDidRemove, resultMap);
-                    }
-                });
-            }
-        });
+        RongChatRoomClient.getInstance().removeKVStatusListener(listenerImpl.kvStatusListener);
+        RongChatRoomClient.getInstance().addKVStatusListener(listenerImpl.kvStatusListener);
     }
 
     private void setMessageExpansionListener() {
@@ -2660,16 +2614,8 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
     }
 
     private void setConnectStatusListener() {
-        RongCoreClient.setConnectionStatusListener(new IRongCoreListener.ConnectionStatusListener() {
-            @Override
-            public void onChanged(ConnectionStatus connectionStatus) {
-                final String LOG_TAG = "ConnectionStatusChanged";
-                RCLog.i(LOG_TAG + " status:" + String.valueOf(connectionStatus.getValue()));
-                Map map = new HashMap();
-                map.put("status", connectionStatus.getValue());
-                mChannel.invokeMethod(RCMethodList.MethodCallBackKeyConnectionStatusChange, map);
-            }
-        });
+        RongCoreClient.removeConnectionStatusListener(listenerImpl.connectionStatusListener);
+        RongCoreClient.addConnectionStatusListener(listenerImpl.connectionStatusListener);
     }
 
     private void setMessageBlockListener() {

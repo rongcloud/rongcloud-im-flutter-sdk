@@ -1,8 +1,8 @@
 //融云 appkey
-String RongAppKey = 'n19jmcy59f1q9';
+String RongAppKey = '';
 
 //用户 id
-String CurrentUserId = 'vnVFC3hnE';
+String CurrentUserId = '';
 
 //通过用户 id 生成的对应融云 token
-String RongIMToken = 'dsvXZKrfCO/OA1PS5qxbZOF+lwb3rejuvSXKtbO03G0=@h4mx.cn.rongnav.com;h4mx.cn.rongcfg.com';
+String RongIMToken = '';
