@@ -1178,10 +1178,9 @@ static NSString * const VER = @"5.1.8";
                     }
                     [callbackDic setObject:msgsArray forKey:@"messages"];
                 }else {
-                    
+                    [callbackDic setObject:@[] forKey:@"messages"];
                 }
                 [callbackDic setObject:@(0) forKey:@"code"];
-                [callbackDic setObject:@[] forKey:@"messages"];
                 result(callbackDic);
             }else {
                 [callbackDic setObject:@(code) forKey:@"code"];
