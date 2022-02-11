@@ -640,7 +640,6 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
         // 连接前对自定义消息进行注册，防止注册时序错误导致的注册失败
         if (messageContentClassList != null && messageContentClassList.size() > 0) {
             RongCoreClient.registerMessageType(messageContentClassList);
-            messageContentClassList.clear();
         }
         if (arg instanceof String) {
             final String token = String.valueOf(arg);
