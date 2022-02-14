@@ -296,6 +296,21 @@ typedef NS_ENUM(NSInteger, RCErrorCode) {
     RC_ULTRA_GROUP_NOT_AVAILABLE = 24401,
     
     /*!
+     超级群服务异常
+    */
+    RC_ULTRA_GROUP_SERVICE_ABNORMAL = 24402,
+    
+    /*!
+     超级群参数错误
+    */
+    RC_ULTRA_GROUP_PARAMETER_ERROR = 24403,
+    
+    /*!
+     超级群未知异常
+    */
+    RC_ULTRA_GROUP_UNKNOWN_ERROR = 24404,
+    
+    /*!
      当前用户不在该超级群中
      */
     RC_NOT_IN_ULTRA_GROUP = 24406,
@@ -304,6 +319,31 @@ typedef NS_ENUM(NSInteger, RCErrorCode) {
      当前用户在超级群中已被禁言
      */
     RC_FORBIDDEN_IN_ULTRA_GROUP = 24408,
+    
+    /*!
+     超级群不存在
+     */
+    RC_ULTRA_GROUP_NOT_EXIST = 24410,
+    
+    /*!
+     超级群成员超限制
+     */
+    RC_ULTRA_GROUP_MEMBERS_EXCEED_LIMIT = 24411,
+    
+    /*!
+     用户加入超级群数量超限
+     */
+    RC_ULTRA_GROUP_NUMBER_EXCEED_LIMIT = 24412,
+    
+    /*!
+     创建超级群频道，频道数超限
+     */
+    RC_ULTRA_GROUP_CHANNELS_EXCEED_LIMIT = 24413,
+    
+    /*!
+     超级群 频道 ID 不存在
+     */
+    RC_ULTRA_GROUP_CHANNEL_ID_NOT_EXIST = 24414,
     
     /*!
      操作跟服务端同步时出现问题，有可能是操作过于频繁所致。如果出现该错误，请延时 0.5s 再试
@@ -614,6 +654,11 @@ typedef NS_ENUM(NSInteger, RCErrorCode) {
      超级群扩展消息，扩展内容格式错误
      */
     RC_MESSAGE_EXPAND_FORMAT_ERROR = 22203,
+
+    /*!
+     超级群扩展消息，无操作权限
+     */
+    RC_MESSAGE_EXPAND_NOT_AUTHORIZED = 22204,
 };
 
 typedef NS_ENUM(NSInteger, RCDBErrorCode) {
@@ -791,7 +836,7 @@ typedef NS_ENUM(NSUInteger, RCConversationType) {
     /*!
      超级群
      */
-    ConversationType_ULTRAROUP = 10,
+    ConversationType_ULTRAGROUP = 10,
 
     /*!
      加密会话（仅对部分私有云用户开放，公有云用户不适用）

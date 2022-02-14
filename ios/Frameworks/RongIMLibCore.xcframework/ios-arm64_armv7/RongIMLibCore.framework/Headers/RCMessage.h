@@ -158,6 +158,22 @@
 
 
 /*!
+ RCMessage初始化方法，供超级群消息使用
+
+ @param  conversationType    会话类型
+ @param  targetId            会话 ID
+ @param  channelId           频道 ID
+ @param  messageDirection    消息的方向
+ @param  content             消息的内容
+ */
+- (instancetype)initWithType:(RCConversationType)conversationType
+                    targetId:(NSString *)targetId
+                   channelId:(NSString *)channelId
+                   direction:(RCMessageDirection)messageDirection
+                     content:(RCMessageContent *)content;
+
+
+/*!
  RCMessage初始化方法（已废弃，请不要使用该接口构造消息发送）
 
  @param  conversationType    会话类型

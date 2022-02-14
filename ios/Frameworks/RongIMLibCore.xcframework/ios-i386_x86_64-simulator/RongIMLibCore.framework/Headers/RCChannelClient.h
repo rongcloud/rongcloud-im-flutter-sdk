@@ -745,7 +745,7 @@
 
  @discussion 必须开通历史消息云存储功能。
  @discussion count 传入 1~20 之间的数值。
- @discussion 此方法先从本地获取历史消息，本地有缺失的情况下会从服务端同步缺失的部分。
+ @discussion 此方法先从本地获取历史消息，本地有缺失的情况下会从服务端同步缺失的部分。当本地没有更多消息的时候，会从服务器拉取
  @discussion 从服务端同步失败的时候会返回非 0 的 errorCode，同时把本地能取到的消息回调上去。
 
  @remarks 消息操作
@@ -768,7 +768,7 @@
 
  @discussion 必须开通历史消息云存储功能。
  @discussion count 传入 1~20 之间的数值。
- @discussion 此方法先从本地获取历史消息，本地有缺失的情况下会从服务端同步缺失的部分。
+ @discussion 此方法先从本地获取历史消息，本地有缺失的情况下会从服务端同步缺失的部分。当本地没有更多消息的时候，会从服务器拉取
  @discussion 从服务端同步失败的时候会返回非 0 的 errorCode，同时把本地能取到的消息回调上去。
  @discussion 在获取远端消息的时候，可能会拉到信令消息，信令消息会被 SDK 排除掉，导致 messages.count < option.count 此时只要 isRemaining 为 YES，那么下次拉取消息的时候，请用 timestamp 当做 option.recordTime 再去拉取
  * 如果 isRemaining 为 NO，则代表远端不再有消息了
@@ -815,6 +815,9 @@
  @param newContent 将被修改的消息内容
  @param successBlock 成功的回调
  @param errorBlock 失败的回调
+
+ @discussion
+ 此方法只能修改同类型消息
 
  @remarks 消息操作
  */
@@ -871,8 +874,8 @@
  获取同一个超级群下的批量服务消息（含所有频道）
 
  @param messages      消息列表
- @param successBlock 撤回成功的回调 [matchedMsgList:成功的消息列表，notMatchMsgList:失败的消息列表]
- @param errorBlock   撤回失败的回调 [errorCode:撤回失败错误码]
+ @param successBlock 成功的回调 [matchedMsgList:成功的消息列表，notMatchMsgList:失败的消息列表]
+ @param errorBlock   失败的回调 [errorCode:错误码]
  @remarks 高级功能
  */
 - (void)getBatchRemoteUrtraGroupMessages:(NSArray <RCMessage*>*)messages

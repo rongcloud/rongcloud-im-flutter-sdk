@@ -18,7 +18,7 @@
 		</data>
 		<key>Headers/RCChannelClient.h</key>
 		<data>
-		ROwSahEmjNzXPVQBPNF++JVTC5E=
+		NAp3g+eU+IZjPRkSXxVXEdQU/8M=
 		</data>
 		<key>Headers/RCClearConversationOption.h</key>
 		<data>
@@ -110,7 +110,7 @@
 		</data>
 		<key>Headers/RCHistoryMessageOption.h</key>
 		<data>
-		YErVJaseZ9ZtChm7p+7EHbyaNF4=
+		NnY3YXSz/8k3qjtMgf3lyeHZ6eY=
 		</data>
 		<key>Headers/RCIMClientProtocol.h</key>
 		<data>
@@ -138,7 +138,7 @@
 		</data>
 		<key>Headers/RCMessage.h</key>
 		<data>
-		JcCc91//O3nEnHT2fOiA8TsZpBo=
+		fABjmHWYIYVdJ6mi/OEjB60bUzM=
 		</data>
 		<key>Headers/RCMessageConfig.h</key>
 		<data>
@@ -198,7 +198,7 @@
 		</data>
 		<key>Headers/RCStatusDefine.h</key>
 		<data>
-		EaTbQvBVjKexvl8EYHFBs28Yeq4=
+		iqq9A355ND3JqR3Y6Acnvu+MYIk=
 		</data>
 		<key>Headers/RCStatusMessage.h</key>
 		<data>
@@ -278,7 +278,7 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		VsRwN1/EEHwOj36h8xjVsK6fkG0=
+		rOQ5E/uMcJQiJ0yVn3Zgkz7VxVg=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -332,11 +332,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			ROwSahEmjNzXPVQBPNF++JVTC5E=
+			NAp3g+eU+IZjPRkSXxVXEdQU/8M=
 			</data>
 			<key>hash2</key>
 			<data>
-			Hs8grCN4OwtAbR+Ud6EaLqLvUXoiOKBSxuuy2PvIWoY=
+			UeeMOis/wyohJ+jUqmPXuDmho7Vs1g0IyDFkTrL+ODw=
 			</data>
 		</dict>
 		<key>Headers/RCClearConversationOption.h</key>
@@ -585,11 +585,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			YErVJaseZ9ZtChm7p+7EHbyaNF4=
+			NnY3YXSz/8k3qjtMgf3lyeHZ6eY=
 			</data>
 			<key>hash2</key>
 			<data>
-			/pj1hwsCJWYut6SKjG2/ojpxQrK83QQHLCi5WTohADA=
+			Ng3MwnhkdehQRWIKN8STm8l1kGePuPWPG8CSTJzhQrA=
 			</data>
 		</dict>
 		<key>Headers/RCIMClientProtocol.h</key>
@@ -662,11 +662,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			JcCc91//O3nEnHT2fOiA8TsZpBo=
+			fABjmHWYIYVdJ6mi/OEjB60bUzM=
 			</data>
 			<key>hash2</key>
 			<data>
-			lPSr+2r5RRbsIx0OUTctANS2PW/rzpD8Y55xjxx29oo=
+			M84L5H/b4vl2NMMP4DMyn1ZS41hprz8XvtahD/qTt3k=
 			</data>
 		</dict>
 		<key>Headers/RCMessageConfig.h</key>
@@ -827,11 +827,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			EaTbQvBVjKexvl8EYHFBs28Yeq4=
+			iqq9A355ND3JqR3Y6Acnvu+MYIk=
 			</data>
 			<key>hash2</key>
 			<data>
-			wnrAZruETJN7QqW0j7KTPE2JMsTcre4ty5UBdpFvL8E=
+			MKyE+GORDE95h1IfixQZsa5jBlrLa05/H1HBvz93pws=
 			</data>
 		</dict>
 		<key>Headers/RCStatusMessage.h</key>
