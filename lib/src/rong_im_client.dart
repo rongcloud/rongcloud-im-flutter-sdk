@@ -2496,7 +2496,13 @@ class RongIMClient {
     }
   }
 
-  static Future<void> syncUlTraGroupReadStatus(String targetId, String channelId, int timestamp, Function(int code)? callback) async {
+  /// 同步超级群未读状态
+  ///
+  /// [targetId] 会话 ID
+  /// [channelId] 所属会话的业务标识
+  /// [timestamp] 已读时间
+  /// [callback] 操作回调
+  static Future<void> syncUltraGroupReadStatus(String targetId, String channelId, int timestamp, Function(int code)? callback) async {
     Map arguments = {"targetId": targetId, "channelId": channelId, "timestamp": timestamp};
     Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupSyncReadStatus, arguments);
     if (callback != null) {
@@ -2504,6 +2510,12 @@ class RongIMClient {
     }
   }
 
+  /// 获取特定会话下所有频道的会话列表
+  ///
+  /// [conversationType]  会话类型
+  /// [targetId] 会话 ID
+  ///
+  /// 返回一个元素为 [Conversation] 的 list
   static Future<List<Conversation>?> getConversationListForAllChannel(int conversationType, String targetId) async {
     Map arguments = {"conversationType": conversationType, "targetId": targetId};
     List? result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupGetConversationListForAllChannel, arguments);
@@ -2519,11 +2531,20 @@ class RongIMClient {
     return conList;
   }
 
+  /// 根据会话 id 获取所有子频道的 @ 未读消息总数
+  ///
+  /// [targetId] 会话 ID
   static Future<int> getUltraGroupUnreadMentionedCount(String targetId) async {
     Map arguments = {"targetId": targetId};
     return await _channel.invokeMethod(RCMethodKey.RCUltraGroupGetUnreadMentionedCount, arguments);
   }
 
+  /// 向会话中发送正在输入的状态
+  ///
+  /// [targetId] 会话目标  ID
+  /// [channelId] 所属会话的频道id
+  /// [typingStatus] 输入状态类型
+  /// [callback] 操作回调
   static Future<void> sendUltraGroupTypingStatus(String targetId, String channelId, RCUltraGroupTypingStatus typingStatus, Function(int code)? callback) async {
     Map arguments = {"targetId": targetId, "channelId": channelId, "typingStatus": typingStatus.index};
     Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupSendTypingStatus, arguments);
@@ -2532,6 +2553,10 @@ class RongIMClient {
     }
   }
 
+  /// 删除本地所有 channel 特定时间之前的消息
+  ///
+  /// [targetId] 会话 ID
+  /// [timestamp] 会话的时间戳
   static Future<bool> deleteUltraGroupMessagesForAllChannel(String targetId, int timestamp) async {
     Map arguments = {"targetId": targetId, "timestamp": timestamp};
     Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupDeleteMessagesForAllChannel, arguments);
@@ -2542,6 +2567,11 @@ class RongIMClient {
     return Future.value(false);
   }
 
+  /// 删除本地特定 channel 特点时间之前的消息
+  ///
+  /// [targetId] 会话 ID
+  /// [channelId] 频道 ID
+  /// [timestamp] 会话的时间戳
   static Future<bool> deleteUltraGroupMessages(String targetId, String channelId, int timestamp) async {
     Map arguments = {"targetId": targetId, "channelId": channelId, "timestamp": timestamp};
     Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupDeleteMessages, arguments);
@@ -2552,6 +2582,12 @@ class RongIMClient {
     return Future.value(false);
   }
 
+  /// 删除服务端特定 channel 特定时间之前的消息
+  ///
+  /// [targetId] 会话 ID
+  /// [channelId] 频道 ID
+  /// [timestamp] 会话的时间戳
+  /// [callback] 操作回调
   static Future<void> deleteRemoteUltraGroupMessages(String targetId, String channelId, int timestamp, Function(int code)? callback) async {
     Map arguments = {"targetId": targetId, "channelId": channelId, "timestamp": timestamp};
     Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupDeleteRemoteMessages, arguments);
@@ -2560,6 +2596,11 @@ class RongIMClient {
     }
   }
 
+  /// 修改消息内容
+  ///
+  /// [messageUId] 将被修改的消息id
+  /// [newContent] 将被修改的消息内容
+  /// [callback] 操作回调
   static Future<void> modifyUltraGroupMessage(String messageUId, MessageContent newContent, Function(int code)? callback) async {
     String? jsonStr = newContent.encode();
     Map arguments = {"messageUId": messageUId, "content": jsonStr, "objectName": newContent.getObjectName()};
@@ -2569,6 +2610,11 @@ class RongIMClient {
     }
   }
 
+  /// 更新消息扩展信息
+  ///
+  /// [messageUId] 消息 messageUId
+  /// [expansionDic] 要更新的消息扩展信息键值对
+  /// [callback] 操作回调
   static Future<void> updateUltraGroupMessageExpansion(String messageUId, Map<String, String> expansionDic, Function(int code)? callback) async {
     Map arguments = {"messageUId": messageUId, "expansionDic": expansionDic};
     Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupUpdateMessageExpansion, arguments);
@@ -2577,6 +2623,11 @@ class RongIMClient {
     }
   }
 
+  /// 删除消息扩展信息中特定的键值对
+  ///
+  /// [messageUId] 消息 messageUId
+  /// [keyArray] 消息扩展信息中待删除的 key 的列表
+  /// [callback] 操作回调
   static Future<void> removeUltraGroupMessageExpansion(String messageUId, List<String> keyArray, Function(int code)? callback) async {
     Map arguments = {"messageUId": messageUId, "keyArray": keyArray};
     Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupRemoveMessageExpansion, arguments);
@@ -2585,6 +2636,10 @@ class RongIMClient {
     }
   }
 
+  /// 撤回消息
+  ///
+  /// [messageUId] 需要撤回的消息
+  /// [callback] 操作回调 code 为错误码，recallMessage 为撤回的消息，该消息已经变更为新的消息
   static Future<void> recallUltraGroupMessage(String messageUId, Function(int code, Message? recallMessage)? callback) async {
     Map arguments = {"messageUId": messageUId};
     Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupRecallMessage, arguments);
@@ -2600,6 +2655,10 @@ class RongIMClient {
     }
   }
 
+  /// 获取同一个超级群下的批量服务消息（含所有频道）
+  ///
+  /// [messages] 消息列表
+  /// [callback] 操作回调
   static Future<void> getBatchRemoteUrtraGroupMessages(List<Message> messages, Function(int code)? callback) async {
     List<Map> msgList = [];
     for (Message msg in messages) {
@@ -2770,14 +2829,19 @@ class RongIMClient {
   //数据库打开（调用 connect 之后回调）
   static Function(int? status)? onDatabaseOpened;
 
+  /// 消息被修改
   static Function(List<Message> messages)? onUltraGroupMessageModified;
 
+  /// 消息被撤回
   static Function(List<Message> messages)? onUltraGroupMessageRecalled;
 
+  /// 消息扩展被更新
   static Function(List<Message> messages)? onUltraGroupMessageExpansionUpdated;
 
+  /// 输入状态发生变化
   static Function(List<RCUltraGroupTypingStatusInfo> infoList)? onUltraGroupTypingStatusChanged;
 
+  /// 超级群已读时间同步
   static Function(String targetId, int readTime)? onUlTraGroupReadTimeReceived;
 
   static void _addNativeMethodCallHandler() {
