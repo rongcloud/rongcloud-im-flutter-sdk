@@ -38,13 +38,10 @@ RCUltraGroupReadTimeDelegate>
 }
 
 
-- (void)addFlutterChannel:(FlutterMethodChannel *)channel {
+- (void)setFlutterChannel:(FlutterMethodChannel *)channel {
     self.channel = channel;
 }
 
-- (void)removeFlutterChannel {
-    self.channel = nil;
-}
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
     
@@ -91,6 +88,7 @@ RCUltraGroupReadTimeDelegate>
     [[RCChannelClient sharedChannelManager] setRCUltraGroupMessageChangeDelegate:self];
     [[RCChannelClient sharedChannelManager] setRCUltraGroupReadTimeDelegate:self];
 }
+
 
 #pragma mark - Delegate
 

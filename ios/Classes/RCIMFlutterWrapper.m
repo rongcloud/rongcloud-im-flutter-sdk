@@ -73,8 +73,11 @@ RCMessageBlockDelegate>
 
 @implementation RCIMFlutterWrapper
 
+
+static NSString * const VER = @"5.1.8";
+
 + (void)load {
-    [RCUtilities setModuleName:@"imflutter" version:[RCIMFlutterWrapper getVersion]];
+    [RCUtilities setModuleName:@"imflutter" version:VER];
 }
 
 + (instancetype)sharedWrapper {
@@ -95,17 +98,15 @@ RCMessageBlockDelegate>
     return self;
 }
 
-- (void)addFlutterChannel:(FlutterMethodChannel *)channel {
+- (void)setFlutterChannel:(FlutterMethodChannel *)channel {
     self.channel = channel;
-    [[RCUltraGroupClient sharedClient] addFlutterChannel:channel];
+    
+    [[RCUltraGroupClient sharedClient] setFlutterChannel:channel];
+    [[RCCoreClient sharedCoreClient] removeReceiveMessageDelegate:self];
+    [[RCCoreClient sharedCoreClient] removeConnectionStatusChangeDelegate:self];
+    [[RCChatRoomClient sharedChatRoomClient] removeChatRoomKVStatusChangeDelegate:self];
 }
 
-- (void)removeFlutterChannel {
-    NSLog(@"我正在销毁");
-    self.channel = nil;
-    [[RCUltraGroupClient sharedClient] removeFlutterChannel];
-    [[RCCoreClient sharedCoreClient] removeReceiveMessageDelegate:self];
-}
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     if([RCMethodKeyInit isEqualToString:call.method]){
@@ -339,11 +340,16 @@ RCMessageBlockDelegate>
         /// imlib 默认检测到小视频 SDK，才会注册小视频消息，但是这里没有小视频 SDK
         [[RCCoreClient sharedCoreClient] registerMessageType:RCSightMessage.class];
         
-        [[RCCoreClient sharedCoreClient] setReceiveMessageDelegate:self object:nil];
-        [[RCCoreClient sharedCoreClient] setRCConnectionStatusChangeDelegate:self];
+        [[RCCoreClient sharedCoreClient] removeReceiveMessageDelegate:self];
+        [[RCCoreClient sharedCoreClient] removeConnectionStatusChangeDelegate:self];
+        [[RCChatRoomClient sharedChatRoomClient] removeChatRoomKVStatusChangeDelegate:self];
+        
+        [[RCCoreClient sharedCoreClient] addReceiveMessageDelegate:self];
+        [[RCCoreClient sharedCoreClient] addConnectionStatusChangeDelegate:self];
+        [[RCChatRoomClient sharedChatRoomClient] addChatRoomKVStatusChangeDelegate:self];
+        
         [[RCCoreClient sharedCoreClient] setRCTypingStatusDelegate:self];
         [[RCCoreClient sharedCoreClient] setRCMessageDestructDelegate:self];
-        [[RCChatRoomClient sharedChatRoomClient] setRCChatRoomKVStatusChangeDelegate:self];
         [[RCChatRoomClient sharedChatRoomClient] setChatRoomStatusDelegate:self];
         [[RCCoreClient sharedCoreClient] setMessageExpansionDelegate:self];
         [RCCoreClient sharedCoreClient].tagDelegate = self;

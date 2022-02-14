@@ -18,9 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setUltraGroupDelegate;
 
-- (void)addFlutterChannel:(FlutterMethodChannel *_Nonnull)channel;
+- (void)setFlutterChannel:(FlutterMethodChannel *)channel;
 
-- (void)removeFlutterChannel;
 @end
 
 NS_ASSUME_NONNULL_END

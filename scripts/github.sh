@@ -26,19 +26,16 @@ if [ -z "$branch" ]; then
   exit 1
 fi
 
-cd $(dirname "$0");
+cd $(dirname "$0")/.. && pwd;
+
 status=$(git status)
 clean_EN="nothing to commit, working tree clean"
 clean_CH="无文件要提交，干净的工作区"
 if [[ $status =~ $clean_EN ]] || [[ $status =~ $clean_CH ]]; then
   git checkout "$branch"
   git merge --allow-unrelated-histories --squash --strategy-option=theirs dev
-  rm example/ios/archive.plist
-  rm jenkins.sh
-  rm release.sh
-  rm github.sh
-  sh version.sh
-  rm version.sh
+  sh scripts/clean.sh -m "release"
+  
 #  if [ -n "$message" ]; then
 #    git commit -am "\"$message\""
 #    git push
