@@ -60,7 +60,7 @@ RCUltraGroupReadTimeDelegate>
     NSDictionary *arguments = (NSDictionary *)call.arguments;
     
     if ([method isEqual:RCUltraGroupSyncReadStatus]) {
-        [self syncUlTraGroupReadStatus:arguments result:result];
+        [self syncUltraGroupReadStatus:arguments result:result];
     } else if ([method isEqualToString:RCUltraGroupGetConversationListForAllChannel]) {
         [self getConversationListForAllChannel:arguments result:result];
     } else if ([method isEqualToString:RCUltraGroupGetUnreadMentionedCount]) {
@@ -152,20 +152,20 @@ RCUltraGroupReadTimeDelegate>
 
 #pragma mark - Method
 
-- (void)syncUlTraGroupReadStatus:(NSDictionary *)arguments result:(FlutterResult)result {
+- (void)syncUltraGroupReadStatus:(NSDictionary *)arguments result:(FlutterResult)result {
     
-    NSLog(@"RCFlutterIM:syncUlTraGroupReadStatus %@",arguments);
+    NSLog(@"RCFlutterIM:syncUltraGroupReadStatus %@",arguments);
     NSString *targetId = arguments[@"targetId"];
     NSString *channelId = arguments[@"channelId"];
     long long timestamp = [arguments[@"timestamp"] longLongValue];
     
     [[RCChannelClient sharedChannelManager] syncUltraGroupReadStatus:targetId channelId:channelId time:timestamp success:^{
-        NSLog(@"RCFlutterIM:syncUlTraGroupReadStatus success");
+        NSLog(@"RCFlutterIM:syncUltraGroupReadStatus success");
         NSMutableDictionary *dic = [NSMutableDictionary new];
         [dic setObject:@(0) forKey:@"code"];
         result(dic);
     } error:^(RCErrorCode errorCode) {
-        NSLog(@"RCFlutterIM:syncUlTraGroupReadStatus error : %ld",(long)errorCode);
+        NSLog(@"RCFlutterIM:syncUltraGroupReadStatus error : %ld",(long)errorCode);
         NSMutableDictionary *dic = [NSMutableDictionary new];
         [dic setObject:@(errorCode) forKey:@"code"];
         result(dic);

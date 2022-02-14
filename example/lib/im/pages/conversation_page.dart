@@ -99,7 +99,7 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
 
     if (isUltraGroup) {
       int timestamp = DateTime.now().millisecondsSinceEpoch;
-      RongIMClient.syncUlTraGroupReadStatus(targetId!, channelId!, timestamp, (code) => {Fluttertoast.showToast(msg: "我同步了未读数" + timestamp.toString())});
+      RongIMClient.syncUltraGroupReadStatus(targetId!, channelId!, timestamp, (code) => {Fluttertoast.showToast(msg: "我同步了未读数" + timestamp.toString())});
       RongIMClient.clearMessagesUnreadStatus(conversationType!, targetId!, channelId!);
     }
   }

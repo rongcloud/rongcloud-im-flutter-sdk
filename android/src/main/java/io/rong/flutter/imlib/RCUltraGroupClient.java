@@ -67,7 +67,7 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
         HashMap<String,Object> arguments = (HashMap<String, Object>) call.arguments;
 
         if (method.equalsIgnoreCase(RCMethodList.RCUltraGroupSyncReadStatus)) {
-            syncUlTraGroupReadStatus(arguments,result);
+            syncUltraGroupReadStatus(arguments,result);
         } else if (method.equalsIgnoreCase(RCMethodList.RCUltraGroupGetConversationListForAllChannel)){
             getConversationListForAllChannel(arguments,result);
         } else if (method.equalsIgnoreCase(RCMethodList.RCUltraGroupGetUnreadMentionedCount)){
@@ -93,8 +93,8 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
         }
     }
 
-    private void syncUlTraGroupReadStatus(HashMap<String,Object> arguments, final MethodChannel.Result result) {
-        Log.d(TAG, "syncUlTraGroupReadStatus: " + arguments);
+    private void syncUltraGroupReadStatus(HashMap<String,Object> arguments, final MethodChannel.Result result) {
+        Log.d(TAG, "syncUltraGroupReadStatus: " + arguments);
         String targetId = (String) arguments.get("targetId");
         String channelId = (String) arguments.get("channelId");
         Number timestamp = (Number) arguments.get("timestamp");
@@ -102,7 +102,7 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
         ChannelClient.getInstance().syncUltraGroupReadStatus(targetId, channelId, timestamp.longValue(), new IRongCoreCallback.OperationCallback() {
             @Override
             public void onSuccess() {
-                Log.d(TAG, "syncUlTraGroupReadStatus: onSuccess");
+                Log.d(TAG, "syncUltraGroupReadStatus: onSuccess");
                 final HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", 0);
                 mMainHandler.post(new Runnable() {
@@ -115,7 +115,7 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
 
             @Override
             public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
-                Log.d(TAG, "syncUlTraGroupReadStatus: onError " + coreErrorCode.getValue());
+                Log.d(TAG, "syncUltraGroupReadStatus: onError " + coreErrorCode.getValue());
                 final HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", coreErrorCode.getValue());
                 mMainHandler.post(new Runnable() {
