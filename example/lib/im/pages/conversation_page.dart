@@ -305,28 +305,27 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
 
     if (isUltraGroup) {
       HistoryMessageOption historyMessageOption = HistoryMessageOption(20, 0, 0);
-      RongIMClient.getMessages(
-        conversationType!,
-        targetId!,
-        historyMessageOption,
-        (msgList, code) => {
-          if (msgList != null)
-            {
-              // msgList.sort((a, b) => b.sentTime.compareTo(a.sentTime)),
-              msgList.forEach((element) {
-                print(element);
-              }),
-              messageDataSource = msgList,
-              if (isFirstGetHistoryMessages)
-                {
-                  _sendReadReceipt(),
-                },
-              _refreshMessageContentListUI(),
-              isFirstGetHistoryMessages = false,
-            }
-        },
-        channelId: channelId!,
-      );
+      RongIMClient.loadMessages(
+          conversationType!,
+          targetId!,
+          historyMessageOption,
+          (msgList, timestamp, isRemaining, code) => {
+                if (msgList != null)
+                  {
+                    // msgList.sort((a, b) => b.sentTime.compareTo(a.sentTime)),
+                    msgList.forEach((element) {
+                      print(element);
+                    }),
+                    messageDataSource = msgList,
+                    if (isFirstGetHistoryMessages)
+                      {
+                        _sendReadReceipt(),
+                      },
+                    _refreshMessageContentListUI(),
+                    isFirstGetHistoryMessages = false,
+                  }
+              },
+          channelId: channelId!);
     } else {
       List? msgs = await RongIMClient.getHistoryMessage(conversationType!, targetId!, -1, 20);
       if (msgs != null) {

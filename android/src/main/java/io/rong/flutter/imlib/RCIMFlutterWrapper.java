@@ -1572,18 +1572,32 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
                 pullOrder = HistoryMessageOption.PullOrder.ASCEND;
             }
 
-            ChannelClient.getInstance().getMessages(type, targetId, channelId, new HistoryMessageOption(time, count, pullOrder), new IRongCoreCallback.IGetMessageCallback() {
+            ChannelClient.getInstance().getMessages(type, targetId, channelId, new HistoryMessageOption(time, count, pullOrder), new IRongCoreCallback.IGetMessageCallbackEx() {
                 @Override
-                public void onComplete(List<Message> messageList, IRongCoreEnum.CoreErrorCode errorCode) {
+                public void onComplete(List<Message> list, long l, boolean b, IRongCoreEnum.CoreErrorCode coreErrorCode) {
                     final Map resultMap = new HashMap();
-                    resultMap.put("code", errorCode.getValue());
-                    List<String> list = new ArrayList<>();
-                    if (messageList != null) {
-                        for (Message message : messageList) {
-                            list.add(MessageFactory.getInstance().message2String(message));
+                    resultMap.put("code", coreErrorCode.getValue());
+                    List<String> resultList = new ArrayList<>();
+                    if (list != null) {
+                        for (Message message : list) {
+                            resultList.add(MessageFactory.getInstance().message2String(message));
                         }
                     }
-                    resultMap.put("messages", list);
+                    resultMap.put("messages", resultList);
+                    resultMap.put("timestamp", l);
+                    resultMap.put("isRemaining", b);
+                    mMainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            result.success(resultMap);
+                        }
+                    });
+                }
+
+                @Override
+                public void onFail(IRongCoreEnum.CoreErrorCode coreErrorCode) {
+                    final Map resultMap = new HashMap();
+                    resultMap.put("code", coreErrorCode.getValue());
                     mMainHandler.post(new Runnable() {
                         @Override
                         public void run() {
