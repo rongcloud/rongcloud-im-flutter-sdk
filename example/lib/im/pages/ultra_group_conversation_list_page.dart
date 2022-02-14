@@ -92,21 +92,6 @@ class _UltraGroupConversationListPageState extends State<UltraGroupConversationL
     ));
   }
 
-  Widget _buildEmptyWidget() {
-    return Container(
-      child: GestureDetector(
-        onTap: () {
-          Conversation conversation = Conversation();
-          conversation.conversationType = 10;
-          conversation.targetId = "100";
-
-          didTapConversation(conversation);
-        },
-        child: Text("data"),
-      ),
-    );
-  }
-
   // @override
   bool get wantKeepAlive => true;
 
