@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rongcloud_im_plugin_example/im/pages/ultra_group_send_message_page.dart';
 
 import 'im/pages/conversation_page.dart';
 import 'im/pages/file_preview_page.dart';
@@ -17,6 +18,7 @@ import 'other/select_conversation_page.dart';
 final routes = {
   '/': (context) => HomePage(),
   '/conversation': (context, {arguments}) => ConversationPage(arguments: arguments),
+  '/createConversation': (context) => UltraGroupSendMessagePage(),
   '/image_preview': (context, {arguments}) => ImagePreviewPage(message: arguments),
   '/debug': (context) => DebugPage(),
   '/video_record': (context, {arguments}) => VideoRecordPage(arguments: arguments),

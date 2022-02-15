@@ -67,7 +67,12 @@ class _UltraGroupConversationListPageState extends State<UltraGroupConversationL
     super.build(context);
     return Scaffold(
       key: UniqueKey(),
-      appBar: AppBar(title: Text("超级群")),
+
+      appBar: AppBar(title: Text("超级群"),actions: [
+        IconButton(icon: Icon(Icons.add_box), onPressed: () {
+          Navigator.pushNamed(context, "/createConversation").then((value) => {_updateConversationList()});
+        })
+      ],),
       body: Container(
         child: _conversationList1(),
       ),

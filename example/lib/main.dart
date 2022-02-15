@@ -41,6 +41,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void initState() {
     super.initState();
 
+    if (NaviServer.length > 0 || FileServer.length > 0) {
+      prefix.RongIMClient.setServerInfo(NaviServer, FileServer);
+    }
     if (Platform.isAndroid) {
       // android 推送配置
       prefix.PushConfig pushConfig = prefix.PushConfig();
