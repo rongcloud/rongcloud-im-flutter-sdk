@@ -327,8 +327,9 @@ class RongIMClient {
     Message message,
     String? pushContent,
     String? pushData,
-    Function(int messageId, int status, int code)? finished,
-  ) async {
+    Function(int messageId, int status, int code)? finished, {
+    String channelId = "",
+  }) async {
     if (pushContent == null) {
       pushContent = "";
     }
@@ -344,6 +345,7 @@ class RongIMClient {
     map['pushContent'] = pushContent;
     map['pushData'] = pushData;
     map['timestamp'] = timestamp;
+    map['channelId'] = channelId;
 
     if (finished != null) {
       sendMessageCallbacks[timestamp] = finished;
@@ -381,6 +383,7 @@ class RongIMClient {
     String? targetId,
     List userIdList,
     MessageContent? content, {
+    String channelId = "",
     String? pushContent,
     String? pushData,
     Function(int messageId, int status, int code)? finished,
@@ -2534,9 +2537,18 @@ class RongIMClient {
   /// 根据会话 id 获取所有子频道的 @ 未读消息总数
   ///
   /// [targetId] 会话 ID
-  static Future<int> getUltraGroupUnreadMentionedCount(String targetId) async {
+  static Future<void> getUltraGroupUnreadMentionedCount(String targetId, Function(int code, int? count)? callback) async {
     Map arguments = {"targetId": targetId};
-    return await _channel.invokeMethod(RCMethodKey.RCUltraGroupGetUnreadMentionedCount, arguments);
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupGetUnreadMentionedCount, arguments);
+
+    if (callback != null) {
+      if (result["code"] == 0) {
+        int count = result["count"];
+        callback(0, count);
+      } else {
+        callback(0, null);
+      }
+    }
   }
 
   /// 向会话中发送正在输入的状态
@@ -2659,7 +2671,7 @@ class RongIMClient {
   ///
   /// [messages] 消息列表
   /// [callback] 操作回调
-  static Future<void> getBatchRemoteUrtraGroupMessages(List<Message> messages, Function(int code)? callback) async {
+  static Future<void> getBatchRemoteUrtraGroupMessages(List<Message> messages, Function(int code, List? matchedMsgList, List? notMatchMsgList)? callback) async {
     List<Map> msgList = [];
     for (Message msg in messages) {
       Map msgMap = MessageFactory.instance!.message2Map(msg);
@@ -2667,8 +2679,27 @@ class RongIMClient {
     }
     Map arguments = {"messages": msgList};
     Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupGetBatchRemoteMessages, arguments);
+
     if (callback != null) {
-      callback(result["code"]);
+      int code = result["code"];
+      if (code != 0) {
+        callback(code, null, null);
+        return;
+      }
+
+      List matchedMsgList = result["matchedMsgList"];
+      List notMatchMsgList = result["notMatchMsgList"];
+      List l = [];
+      for (String msgStr in matchedMsgList) {
+        Message? m = MessageFactory.instance!.string2Message(msgStr);
+        l.add(m);
+      }
+      List l2 = [];
+      for (String msgStr in notMatchMsgList) {
+        Message? m = MessageFactory.instance!.string2Message(msgStr);
+        l2.add(m);
+      }
+      callback(result["code"], l, l2);
     }
   }
 
@@ -2862,6 +2893,9 @@ class RongIMClient {
             if (finished != null) {
               finished(msgId, status, code);
               sendMessageCallbacks.remove(timestamp);
+              if (onMessageSend != null) {
+                onMessageSend!(msgId, status, code);
+              }
             } else {
               if (onMessageSend != null) {
                 onMessageSend!(msgId, status, code);

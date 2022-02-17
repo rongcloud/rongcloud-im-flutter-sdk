@@ -135,13 +135,13 @@ RCUltraGroupReadTimeDelegate>
     NSLog(@"RCFlutterIM:onUltraGroupTypingStatusChanged");
     NSMutableArray *arr = [NSMutableArray array];
     for (RCUltraGroupTypingStatusInfo *info in infoArr) {
-        NSDictionary *infoDic = [NSDictionary dictionary];
-        [infoDic setValue:info.targetId forKey:@"targetId"];
-        [infoDic setValue:info.channelId forKey:@"channelId"];
-        [infoDic setValue:info.userId forKey:@"userId"];
-        [infoDic setValue:@(info.userNumbers) forKey:@"userNumbers"];
-        [infoDic setValue:@(info.timestamp) forKey:@"timestamp"];
-        [infoDic setValue:@(info.status) forKey:@"status"];
+        NSMutableDictionary *infoDic = [NSMutableDictionary new];
+        [infoDic setObject:info.targetId forKey:@"targetId"];
+        [infoDic setObject:info.channelId forKey:@"channelId"];
+        [infoDic setObject:info.userId forKey:@"userId"];
+        [infoDic setObject:@(info.userNumbers) forKey:@"userNumbers"];
+        [infoDic setObject:@(info.timestamp) forKey:@"timestamp"];
+        [infoDic setObject:@(info.status) forKey:@"status"];
         [arr addObject:infoDic];
     }
     NSDictionary *arguments = @{@"infoArr":arr.copy};
@@ -188,7 +188,11 @@ RCUltraGroupReadTimeDelegate>
     NSLog(@"RCFlutterIM:getUltraGroupUnreadMentionedCount");
     NSString *targetId = arguments[@"targetId"];
     int count = [[RCChannelClient sharedChannelManager] getUltraGroupUnreadMentionedCount:targetId];
-    result([NSNumber numberWithInteger:count]);
+
+    NSMutableDictionary *dic = [NSMutableDictionary new];
+    [dic setObject:@(count) forKey:@"count"];
+    result(dic);
+    
 }
 
 - (void)sendUltraGroupTypingStatus:(NSDictionary *)arguments result:(FlutterResult)result{
@@ -213,7 +217,14 @@ RCUltraGroupReadTimeDelegate>
     NSString *targetId = arguments[@"targetId"];
     long long timestamp = [arguments[@"timestamp"] longLongValue];
     BOOL isSuccess = [[RCChannelClient sharedChannelManager] deleteUltraGroupMessagesForAllChannel:targetId timestamp:timestamp];
-    result([NSNumber numberWithBool:isSuccess]);
+    
+    NSMutableDictionary *dic = [NSMutableDictionary new];
+    if (isSuccess) {
+        [dic setObject:@(0) forKey:@"code"];
+    }else {
+        [dic setObject:@(-1) forKey:@"code"];
+    }
+    result(dic);
 }
 
 - (void)deleteUltraGroupMessages:(NSDictionary *)arguments result:(FlutterResult)result {
@@ -222,7 +233,14 @@ RCUltraGroupReadTimeDelegate>
     NSString *channelId = arguments[@"channelId"];
     long long timestamp = [arguments[@"timestamp"] longLongValue];
     BOOL isSuccess = [[RCChannelClient sharedChannelManager] deleteUltraGroupMessages:targetId channelId:channelId timestamp:timestamp];
-    result([NSNumber numberWithBool:isSuccess]);
+    
+    NSMutableDictionary *dic = [NSMutableDictionary new];
+    if (isSuccess) {
+        [dic setObject:@(0) forKey:@"code"];
+    }else {
+        [dic setObject:@(-1) forKey:@"code"];
+    }
+    result(dic);
 }
 
 - (void)deleteRemoteUltraGroupMessages:(NSDictionary *)arguments result:(FlutterResult)result {
@@ -321,7 +339,12 @@ RCUltraGroupReadTimeDelegate>
     RCMessage *message = [[RCCoreClient sharedCoreClient] getMessageByUId:messageUId];
     [[RCChannelClient sharedChannelManager] recallUltraGroupMessage:message success:^(long messageId) {
         NSMutableDictionary *dic = [NSMutableDictionary new];
+        
+        RCMessage *resultMessage = [[RCCoreClient sharedCoreClient] getMessage:messageId];
+        NSDictionary *dict = [RCFlutterMessageFactory message2Dic:resultMessage];
         [dic setObject:@(0) forKey:@"code"];
+        [dic setObject:dict forKey:@"message"];
+        
         result(dic);
     } error:^(RCErrorCode status) {
         NSMutableDictionary *dic = [NSMutableDictionary new];
@@ -342,7 +365,22 @@ RCUltraGroupReadTimeDelegate>
     }
     [[RCChannelClient sharedChannelManager] getBatchRemoteUrtraGroupMessages:messages.copy success:^(NSArray *matchedMsgList, NSArray *notMatchMsgList) {
         NSMutableDictionary *dic = [NSMutableDictionary new];
+        
+        NSMutableArray *messageArr = [NSMutableArray array];
+        for (RCMessage *msg in matchedMsgList) {
+            NSDictionary *dict = [RCFlutterMessageFactory message2Dic:msg];
+            [messageArr addObject:dict];
+        }
+        
+        NSMutableArray *notMatchMessageArr = [NSMutableArray array];
+        for (RCMessage *msg in notMatchMsgList) {
+            NSDictionary *dict = [RCFlutterMessageFactory message2Dic:msg];
+            [notMatchMessageArr addObject:dict];
+        }
+        
         [dic setObject:@(0) forKey:@"code"];
+        [dic setObject:messageArr.copy forKey:@"matchedMsgList"];
+        [dic setObject:notMatchMessageArr.copy forKey:@"notMatchMsgList"];
         result(dic);
     } error:^(RCErrorCode status) {
         NSMutableDictionary *dic = [NSMutableDictionary new];

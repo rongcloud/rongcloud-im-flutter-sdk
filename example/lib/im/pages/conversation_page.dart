@@ -501,7 +501,7 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
       msg.destructDuration = isSecretChat ? duration : 0;
     }
 
-    Message? message = await RongIMClient.sendMessage(conversationType!, targetId!, msg);
+    Message? message = await RongIMClient.sendMessage(conversationType!, targetId!, msg, channelId: channelId!);
     // 统一转成了 onMessageSend 回调处理
     // _insertOrReplaceMessage(message);
   }
@@ -559,7 +559,7 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
         if (conversationType == RCConversationType.Private) {
           gifMsg.destructDuration = isSecretChat ? RCDuration.MediaMessageBurnDuration : 0;
         }
-        Message? msg = await RongIMClient.sendMessage(conversationType!, targetId!, gifMsg);
+        Message? msg = await RongIMClient.sendMessage(conversationType!, targetId!, gifMsg,channelId: channelId!);
         _insertOrReplaceMessage(msg);
       } else {
         ImageMessage imgMsg = ImageMessage.obtain(imgPath);
@@ -590,7 +590,7 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
         //     message, "", "", (int messageId, int status, int code) {
         //   String result = "messageId:$messageId status:$status code:$code";
         // });
-        Message? msg = await RongIMClient.sendMessage(conversationType!, targetId!, imgMsg);
+        Message? msg = await RongIMClient.sendMessage(conversationType!, targetId!, imgMsg,channelId: channelId!);
         _insertOrReplaceMessage(msg);
       }
     });
@@ -608,7 +608,7 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
       if (conversationType == RCConversationType.Private) {
         imgMsg.destructDuration = isSecretChat ? RCDuration.MediaMessageBurnDuration : 0;
       }
-      Message? msg = await RongIMClient.sendMessage(conversationType!, targetId!, imgMsg);
+      Message? msg = await RongIMClient.sendMessage(conversationType!, targetId!, imgMsg,channelId: channelId!);
       _insertOrReplaceMessage(msg);
     });
 
@@ -636,7 +636,7 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
           //     message, "", "", (int messageId, int status, int code) {
           //   String result = "messageId:$messageId status:$status code:$code";
           // });
-          Message? msg = await RongIMClient.sendMessage(conversationType!, targetId!, fileMessage);
+          Message? msg = await RongIMClient.sendMessage(conversationType!, targetId!, fileMessage,channelId: channelId!);
           _insertOrReplaceMessage(msg);
           // 延迟400秒，防止过渡频繁的发送消息导致发送失败的问题
           sleep(Duration(milliseconds: 400));
@@ -1157,7 +1157,7 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
     if (conversationType == RCConversationType.Private) {
       msg.destructDuration = isSecretChat ? RCDuration.TextMessageBurnDuration + duration : 0;
     }
-    Message? message = await RongIMClient.sendMessage(conversationType!, targetId!, msg);
+    Message? message = await RongIMClient.sendMessage(conversationType!, targetId!, msg,channelId: channelId!);
     _insertOrReplaceMessage(message);
   }
 
@@ -1261,7 +1261,7 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
           break;
         }
       }
-      Message? msg = await RongIMClient.sendMessage(conversationType!, targetId!, message.content!);
+      Message? msg = await RongIMClient.sendMessage(conversationType!, targetId!, message.content!,channelId: channelId!);
       _insertOrReplaceMessage(msg);
     });
   }

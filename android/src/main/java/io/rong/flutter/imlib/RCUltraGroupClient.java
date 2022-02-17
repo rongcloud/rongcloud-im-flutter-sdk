@@ -173,7 +173,7 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
             public void onSuccess(Integer integer) {
                 final HashMap<String,Object> msgMap = new HashMap<>();
                 msgMap.put("code", 0);
-
+                msgMap.put("count",integer);
                 mMainHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -465,7 +465,22 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
             @Override
             public void onSuccess(List<Message> matchedMsgList, List<Message> notMatchedMsgList) {
                 final HashMap<String,Object> msgMap = new HashMap<>();
+                
+                ArrayList<Map<String,Object>> arrayList = new ArrayList<>();
+                for (Message message : matchedMsgList) {
+                    Map map = MessageFactory.getInstance().messageToMap(message);
+                    arrayList.add(map);
+                }
+
+                ArrayList<Map<String,Object>> notMatchedArrayResult = new ArrayList<>();
+                for (Message message : notMatchedMsgList) {
+                    Map map = MessageFactory.getInstance().messageToMap(message);
+                    notMatchedArrayResult.add(map);
+                }
+
                 msgMap.put("code", 0);
+                msgMap.put("matchedMsgList", arrayList);
+                msgMap.put("notMatchMsgList", notMatchedArrayResult);
                 mMainHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -639,7 +654,6 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
             hashMap.put("userId",statusInfo.getUserId());
             hashMap.put("userNumbers",statusInfo.getUserNums());
             hashMap.put("timestamp",(int) statusInfo.getTimestamp());
-            // TODO status 为空
             int a = statusInfo.getStatus().getType();
             hashMap.put("status",a);
             arrayList.add(hashMap);

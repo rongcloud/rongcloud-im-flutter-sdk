@@ -12,15 +12,11 @@ import '../im/util/dialog_util.dart';
 List<String> _kUltraGroupTitles = <String>[
   "设置免打扰",
   "取消免打扰",
-  "会话置顶",
-  "取消会话置顶",
   "清空本地历史消息",
   "清空本地和远端历史消息",
   "删除本地[所有频道]当前时间之前的消息",
   "删除本地[当前频道]当前时间之前的消息",
   "删除服务端当前时间之前的消息",
-  "发一条携带{tkey:当前时间}文本消息",
-  "获取当前超级群所有频道的lastMsgUid",
 ];
 
 class ChatDebugPage extends StatefulWidget {
@@ -505,8 +501,10 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
       targetId,
       0,
       true,
-      (code) => {
-      EventBus.instance!.commit(EventKeys.ClearMessage, null)
+      (code) {
+        String toast = code == 0 ? "清除成功" : "清除失败";
+        DialogUtil.showAlertDiaLog(context, toast);
+        EventBus.instance!.commit(EventKeys.ClearMessage, null);
       },
       channelId: channelId,
     );
@@ -517,16 +515,24 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     if (isSuccess) {
       EventBus.instance!.commit(EventKeys.ClearMessage, null);
     }
+    String toast = isSuccess ? "清除成功" : "清除失败";
+    DialogUtil.showAlertDiaLog(context, toast);
   }
 
-  void _clearMessagesForAllChannel() async{
+  void _clearMessagesForAllChannel() async {
     bool isSuccess = await RongIMClient.deleteUltraGroupMessagesForAllChannel(targetId!, 0);
     if (isSuccess) {
       EventBus.instance!.commit(EventKeys.ClearMessage, null);
     }
+
+    String toast = isSuccess ? "清除成功" : "清除失败";
+    DialogUtil.showAlertDiaLog(context, toast);
   }
 
   void _clearRemoteMessages() {
-    RongIMClient.deleteRemoteUltraGroupMessages(targetId!, channelId, 0, (code) => null);
+    RongIMClient.deleteRemoteUltraGroupMessages(targetId!, channelId, 0, (code) {
+      String toast = code == 0 ? "清除成功" : "清除失败";
+      DialogUtil.showAlertDiaLog(context, toast);
+    });
   }
 }

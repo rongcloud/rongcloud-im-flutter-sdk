@@ -67,12 +67,16 @@ class _UltraGroupConversationListPageState extends State<UltraGroupConversationL
     super.build(context);
     return Scaffold(
       key: UniqueKey(),
-
-      appBar: AppBar(title: Text("超级群"),actions: [
-        IconButton(icon: Icon(Icons.add_box), onPressed: () {
-          Navigator.pushNamed(context, "/createConversation").then((value) => {_updateConversationList()});
-        })
-      ],),
+      appBar: AppBar(
+        title: Text("超级群"),
+        actions: [
+          IconButton(
+              icon: Icon(Icons.add_box),
+              onPressed: () {
+                Navigator.pushNamed(context, "/createConversation").then((value) => {_updateConversationList()});
+              })
+        ],
+      ),
       body: Container(
         child: _conversationList1(),
       ),
@@ -113,14 +117,19 @@ class _UltraGroupConversationListPageState extends State<UltraGroupConversationL
       actionMap.remove(RCLongPressAction.DeleteConversationKey);
     }
 
-    WidgetUtil.showLongPressMenu(context, tapPos!, actionMap, (String? key) {
+    WidgetUtil.showLongPressMenu(context, tapPos!, actionMap, (String? key) async {
       if (key == RCLongPressAction.DeleteConversationKey) {
         RongIMClient.removeConversation(conversation.conversationType!, conversation.targetId!, (success) => {_updateConversationList(), Fluttertoast.showToast(msg: RCLongPressAction.DeleteConversationKey)}, conversation.channelId!);
       } else if (key == RCLongPressAction.DeleteConversationValue) {
         Fluttertoast.showToast(msg: RCLongPressAction.DeleteConversationValue);
       } else if (key == RCLongPressAction.ClearUnreadKey) {
-        RongIMClient.clearMessagesUnreadStatus(conversation.conversationType!, conversation.targetId!, conversation.channelId!);
         Fluttertoast.showToast(msg: RCLongPressAction.ClearUnreadKey);
+
+        bool? success = await RongIMClient.clearMessagesUnreadStatus(conversation.conversationType!, conversation.targetId!, conversation.channelId!);
+
+        if (success!) {
+          _updateConversationList();
+        }
       } else if (key == RCLongPressAction.SetConversationToTopKey) {
         Fluttertoast.showToast(msg: RCLongPressAction.SetConversationToTopKey);
       }

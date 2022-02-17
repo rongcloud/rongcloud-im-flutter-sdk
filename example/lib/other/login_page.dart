@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -25,7 +27,12 @@ class _LoginPageState extends State<LoginPage> {
   initPlatformState() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String id = prefs.getString("id") ?? CurrentUserId;
-    String token = prefs.getString("token") ?? RongIMToken;
+    String token = '';
+    if (Platform.isIOS) {
+      token = prefs.getString("token") ?? RongIMToken1;
+    } else {
+      token = prefs.getString("token") ?? RongIMToken;
+    }
 
     _id.text = id;
     _token.text = token;
