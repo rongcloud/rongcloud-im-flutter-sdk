@@ -344,6 +344,12 @@ typedef NS_ENUM(NSInteger, RCErrorCode) {
      超级群 频道 ID 不存在
      */
     RC_ULTRA_GROUP_CHANNEL_ID_NOT_EXIST = 24414,
+
+    /*
+     聊天室设置 KV 失败，出现在两人或者多端同时操作一个 kv。
+     如果出现该错误，为避免和其他端同时操作，请延时一定时间再试
+    */
+    RC_KV_CONCURRENT_SET_ERROR = 23431,
     
     /*!
      操作跟服务端同步时出现问题，有可能是操作过于频繁所致。如果出现该错误，请延时 0.5s 再试

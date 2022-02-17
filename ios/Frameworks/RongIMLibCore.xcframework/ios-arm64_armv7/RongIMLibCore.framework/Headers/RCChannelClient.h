@@ -334,6 +334,7 @@
  @discussion 此方法用于在群组和讨论组中发送消息给其中的部分用户，其它用户不会收到这条消息。
  如果您使用 IMLibCore，可以使用此方法发送定向消息；
  如果您使用 IMKit，请使用 RCIM 中的同名方法发送定向消息，否则不会自动更新 UI。
+ @discussion userIdList里ID个数不能超过300，超过会被截断。
 
  @warning 此方法目前仅支持普通群组和讨论组。
 
@@ -369,6 +370,7 @@
  @discussion 此方法用于在群组和讨论组中发送消息给其中的部分用户，其它用户不会收到这条消息。
  如果您使用 IMLibCore，可以使用此方法发送定向消息；
  如果您使用 IMKit，请使用 RCIM 中的同名方法发送定向消息，否则不会自动更新 UI。
+ userIdList里ID个数不能超过300，超过会被截断。
 
  @warning 此方法目前仅支持普通群组和讨论组。
 
@@ -1000,6 +1002,7 @@
  返回的会话列表按照时间从前往后排列，如果有置顶的会话，则置顶的会话会排列在前面。
  @discussion 当您的会话较多且没有清理机制的时候，强烈建议您使用 getConversationList: count: startTime:
  分页拉取会话列表,否则有可能造成内存过大。
+ @discussion conversationTypeList中类型个数不能超过300，超过会被截断。
 
  @remarks 会话列表
  */
@@ -1016,6 +1019,7 @@
 
  @discussion 此方法会从本地数据库中，读取会话列表。
  返回的会话列表按照时间从前往后排列，如果有置顶的会话，则置顶的会话会排列在前面。
+ @discussion conversationTypeList中类型个数不能超过300，超过会被截断。
 
  @remarks 会话列表
  */
@@ -1070,6 +1074,7 @@
  @discussion 此方法会从本地存储中删除该会话，同时删除会话中的消息。
 
  @discussion 此方法不支持超级群的会话类型，包含超级群时可能会造成数据异常。
+ @discussion conversationTypeList中类型个数不能超过300，超过会被截断。
  
  @remarks 会话
  */
@@ -1218,6 +1223,8 @@
  @param isContain           是否包含免打扰消息的未读数
  @return                    该类型的会话中所有的未读消息数
 
+ @discussion conversationTypes中类型个数不能超过300，超过会被截断。
+ 
  @remarks 会话
  */
 - (int)getUnreadCount:(NSArray *)conversationTypes channelId:(NSString *)channelId containBlocked:(bool)isContain;
@@ -1229,6 +1236,8 @@
  @param channelId          所属会话的业务标识
  @return                    该类型的会话中所有未读的被@的消息数
 
+ @discussion conversationTypeList中类型个数不能超过300，超过会被截断。
+ 
  @remarks 会话
  */
 - (int)getUnreadMentionedCount:(NSArray *)conversationTypes channelId:(NSString *)channelId;
@@ -1444,6 +1453,8 @@
  自定义的消息必须要实现 RCMessageContent 的 getSearchableWords 接口才能进行搜索。
 
  @discussion 此方法不支持超级群的会话类型，包含超级群时可能会造成数据异常。
+ @discussion conversationTypeList中类型个数不能超过300，超过会被截断。
+ @discussion objectNameList中类型名个数不能超过300，超过会被截断。
  
  @remarks 消息操作
  */

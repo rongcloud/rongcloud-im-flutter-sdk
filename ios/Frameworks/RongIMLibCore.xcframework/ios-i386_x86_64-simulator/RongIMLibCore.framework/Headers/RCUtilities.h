@@ -323,6 +323,14 @@
 + (NSString *)getDeviceId:(NSString *)appKey;
 
 /**
+ 根据字符串生成 md5
+ @param bateNum MD5位数
+ @param isLowercaseStr 是否生成小写字符串
+ @return MD5
+ */
++ (NSString *)md5EncryptStr:(NSString *)str bateNum:(NSInteger)bateNum isLowercaseStr:(BOOL)isLowercaseStr;
+
+/**
 获取手机型号
 
 @return  手机型号

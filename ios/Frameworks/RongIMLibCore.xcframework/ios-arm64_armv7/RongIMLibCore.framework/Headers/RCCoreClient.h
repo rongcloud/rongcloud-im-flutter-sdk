@@ -914,6 +914,7 @@ deviceToken 是系统提供的，从苹果服务器获取的，用于 APNs 远�
  @discussion 此方法用于在群组和讨论组中发送消息给其中的部分用户，其它用户不会收到这条消息。
  如果您使用 IMLibCore，可以使用此方法发送定向消息；
  如果您使用 IMKit，请使用 RCIM 中的同名方法发送定向消息，否则不会自动更新 UI。
+ @discussion userIdList里ID个数不能超过300，超过会被截断。
 
  @warning 此方法目前仅支持普通群组和讨论组。
 
@@ -941,6 +942,7 @@ deviceToken 是系统提供的，从苹果服务器获取的，用于 APNs 远�
  @return 发送的消息实体
 
  @discussion 此方法用于在群组和讨论组中发送消息给其中的部分用户，其它用户不会收到这条消息。
+ @discussion userIdList里ID个数不能超过300，超过会被截断。
 
  @warning 此方法目前仅支持普通群组和讨论组。
 
@@ -967,6 +969,7 @@ deviceToken 是系统提供的，从苹果服务器获取的，用于 APNs 远�
  @return 发送的消息实体
 
  @discussion 此方法用于在群组和讨论组中发送消息给其中的部分用户，其它用户不会收到这条消息。
+ @discussion userIdList里ID个数不能超过300，超过会被截断。
 
  @warning 此方法目前仅支持普通群组和讨论组。
 
@@ -1561,6 +1564,7 @@ deviceToken 是系统提供的，从苹果服务器获取的，用于 APNs 远�
  @return                是否设置成功
 
  @discussion 用于 UI 展示消息为正在发送，对方已接收等状态。
+ @discussion 为了保证 UI 正常显示，5.1.8 版本起不再支持 app 将消息状态设置为 SentStatus_SENDING
 
  @discussion 此方法不支持超级群的会话类型。
  
@@ -1788,6 +1792,8 @@ deviceToken 是系统提供的，从苹果服务器获取的，用于 APNs 远�
  @param conversations       会话列表 （ RCConversation 对象只需要 conversationType 和 targetId，channelId 按需使用）
  @return                    传入会话列表的未读消息数
 
+ @discussion conversations会话个数不能超过300，超过会被截断。
+
  @remarks 会话
  */
 - (int)getTotalUnreadCount:(NSArray<RCConversation *> *)conversations;
@@ -1935,12 +1941,12 @@ deviceToken 是系统提供的，从苹果服务器获取的，用于 APNs 远�
  查询已设置的全局时间段消息提醒屏蔽
 
  @param successBlock    屏蔽成功的回调 [startTime:已设置的屏蔽开始时间,
- spansMin:已设置的屏蔽时间分钟数，0 < spansMin < 1440]
+ spanMins:已设置的屏蔽时间分钟数，0 < spanMins < 1440]
  @param errorBlock      查询失败的回调 [status:查询失败的错误码]
 
  @remarks 会话
  */
-- (void)getNotificationQuietHours:(void (^)(NSString *startTime, int spansMin))successBlock
+- (void)getNotificationQuietHours:(void (^)(NSString *startTime, int spanMins))successBlock
                             error:(void (^)(RCErrorCode status))errorBlock;
 
 #pragma mark - 输入状态提醒
