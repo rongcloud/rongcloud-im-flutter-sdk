@@ -134,16 +134,17 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
         String targetId = (String) arguments.get("targetId");
         Integer t = (Integer) arguments.get("conversationType");
         Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
-//        String channelId = (String) arguments.get("channelId");
 
         // TODO
         ChannelClient.getInstance().getConversationListForAllChannel(type, targetId, new IRongCoreCallback.ResultCallback<List<Conversation>>() {
             @Override
             public void onSuccess(List<Conversation> conversations) {
                 final List<String> l = new ArrayList();
-                for (Conversation con : conversations) {
-                    String conStr = MessageFactory.getInstance().conversation2String(con);
-                    l.add(conStr);
+                if (conversations != null) {
+                    for (Conversation con : conversations) {
+                        String conStr = MessageFactory.getInstance().conversation2String(con);
+                        l.add(conStr);
+                    }
                 }
                 mMainHandler.post(new Runnable() {
                     @Override
@@ -467,15 +468,21 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
                 final HashMap<String,Object> msgMap = new HashMap<>();
                 
                 ArrayList<Map<String,Object>> arrayList = new ArrayList<>();
-                for (Message message : matchedMsgList) {
-                    Map map = MessageFactory.getInstance().messageToMap(message);
-                    arrayList.add(map);
+
+                if (matchedMsgList != null) {
+                    for (Message message : matchedMsgList) {
+                        Map map = MessageFactory.getInstance().messageToMap(message);
+                        arrayList.add(map);
+                    }
                 }
 
                 ArrayList<Map<String,Object>> notMatchedArrayResult = new ArrayList<>();
-                for (Message message : notMatchedMsgList) {
-                    Map map = MessageFactory.getInstance().messageToMap(message);
-                    notMatchedArrayResult.add(map);
+
+                if (notMatchedMsgList != null) {
+                    for (Message message : notMatchedMsgList) {
+                        Map map = MessageFactory.getInstance().messageToMap(message);
+                        notMatchedArrayResult.add(map);
+                    }
                 }
 
                 msgMap.put("code", 0);
