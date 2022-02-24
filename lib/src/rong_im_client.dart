@@ -323,13 +323,7 @@ class RongIMClient {
   ///
   /// 发送消息之后有两种查看结果的方式：1、发送消息的 callback（消息插入数据库时会走一次 onMessageSend） 2、onMessageSend；推荐使用 callback 的方式
   /// 如果未实现此方法的 callback，则会通过 onMessageSend 返回发送消息的结果
-  static Future<Message?> sendIntactMessageWithCallBack(
-    Message message,
-    String? pushContent,
-    String? pushData,
-    Function(int messageId, int status, int code)? finished, {
-    String channelId = "",
-  }) async {
+  static Future<Message?> sendIntactMessageWithCallBack(Message message, String? pushContent, String? pushData, Function(int messageId, int status, int code)? finished) async {
     if (pushContent == null) {
       pushContent = "";
     }
@@ -345,7 +339,6 @@ class RongIMClient {
     map['pushContent'] = pushContent;
     map['pushData'] = pushData;
     map['timestamp'] = timestamp;
-    map['channelId'] = channelId;
 
     if (finished != null) {
       sendMessageCallbacks[timestamp] = finished;
