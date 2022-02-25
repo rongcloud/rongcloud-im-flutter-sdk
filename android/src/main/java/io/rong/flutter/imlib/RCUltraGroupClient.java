@@ -455,6 +455,18 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
 
         Log.d(TAG, "getBatchRemoteUltraGroupMessages: " + arguments);
         ArrayList list = (ArrayList) arguments.get("messages");
+        if (list == null) {
+            Log.d(TAG, "getBatchRemoteUltraGroupMessages: 参数非法");
+            final HashMap<String,Object> msgMap = new HashMap<>();
+            msgMap.put("code", 33003);
+            mMainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    result.success(msgMap);
+                }
+            });
+            return;
+        }
         List<Message> messageList = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
             HashMap<String,HashMap> message = (HashMap<String, HashMap>) list.get(i);
@@ -578,6 +590,9 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
     public void onUltraGroupMessageExpansionUpdated(List<Message> messages) {
 
         Log.d(TAG, "onUltraGroupMessageExpansionUpdated");
+        if (messages == null) {
+            return;
+        }
         ArrayList<Map<String,Object>> arrayList = new ArrayList<>();
         for (Message message : messages) {
             Map map = MessageFactory.getInstance().messageToMap(message);
@@ -598,6 +613,9 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
     @Override
     public void onUltraGroupMessageModified(List<Message> messages) {
         Log.d(TAG, "onUltraGroupMessageModified");
+        if (messages == null) {
+            return;
+        }
         ArrayList<Map<String,Object>> arrayList = new ArrayList<>();
         for (Message message : messages) {
             Map map = MessageFactory.getInstance().messageToMap(message);
@@ -618,6 +636,9 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
     @Override
     public void onUltraGroupMessageRecalled(List<Message> messages) {
         Log.d(TAG, "onUltraGroupMessageRecalled");
+        if (messages == null) {
+            return;
+        }
         ArrayList<Map<String,Object>> arrayList = new ArrayList<>();
         for (Message message : messages) {
             Map map = MessageFactory.getInstance().messageToMap(message);
@@ -653,6 +674,9 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
     @Override
     public void onUltraGroupTypingStatusChanged(List<UltraGroupTypingStatusInfo> infoList) {
         Log.d(TAG, "onUltraGroupTypingStatusChanged: ");
+        if (infoList == null) {
+            return;
+        }
         ArrayList<Map<String,Object>> arrayList = new ArrayList<>();
         for (UltraGroupTypingStatusInfo statusInfo : infoList) {
             HashMap<String,Object> hashMap = new HashMap<>();
