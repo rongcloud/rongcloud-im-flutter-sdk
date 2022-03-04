@@ -363,7 +363,8 @@ RCUltraGroupReadTimeDelegate>
     for (NSDictionary *dict in messagesStr) {
         [messages addObject:[RCFlutterMessageFactory dic2Message:dict]];
     }
-    [[RCChannelClient sharedChannelManager] getBatchRemoteUrtraGroupMessages:messages.copy success:^(NSArray *matchedMsgList, NSArray *notMatchMsgList) {
+    [[RCChannelClient sharedChannelManager] getBatchRemoteUltraGroupMessages:messages.copy
+                                                                     success:^(NSArray *matchedMsgList, NSArray *notMatchMsgList) {
         NSMutableDictionary *dic = [NSMutableDictionary new];
         
         NSMutableArray *messageArr = [NSMutableArray array];
