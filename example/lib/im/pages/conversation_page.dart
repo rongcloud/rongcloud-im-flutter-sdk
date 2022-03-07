@@ -138,7 +138,7 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
     }
 
     RongIMClient.saveTextMessageDraft(conversationType, targetId, textDraft);
-    RongIMClient.clearMessagesUnreadStatus(conversationType!, targetId!, channelId!);
+    RongIMClient.clearMessagesUnreadStatus(conversationType!, targetId!, channelId ?? "");
     EventBus.instance!.commit(EventKeys.ConversationPageDispose, widget);
     EventBus.instance!.removeListener(EventKeys.ReceiveMessage, widget);
     EventBus.instance!.removeListener(EventKeys.ReceiveReadReceipt, widget);
