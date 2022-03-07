@@ -132,6 +132,9 @@ class _UltraGroupConversationListPageState extends State<UltraGroupConversationL
         }
       } else if (key == RCLongPressAction.SetConversationToTopKey) {
         Fluttertoast.showToast(msg: RCLongPressAction.SetConversationToTopKey);
+        await RongIMClient.setConversationToTop(conversation.conversationType!, conversation.targetId!, !conversation.isTop!, (status, code) {
+          _updateConversationList();
+        });
       }
       // developer.log("当前选中的是 " + key!, name: pageName);
     });
