@@ -135,7 +135,6 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
         Integer t = (Integer) arguments.get("conversationType");
         Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
 
-        // TODO
         ChannelClient.getInstance().getConversationListForAllChannel(type, targetId, new IRongCoreCallback.ResultCallback<List<Conversation>>() {
             @Override
             public void onSuccess(List<Conversation> conversations) {
