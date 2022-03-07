@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
 import 'package:rongcloud_im_plugin/rongcloud_im_plugin.dart';
 import 'package:rongcloud_im_plugin_example/im/pages/item/widget_util.dart';
 import 'package:rongcloud_im_plugin_example/im/util/event_bus.dart';
@@ -134,7 +133,7 @@ class _UltraGroupConversationListPageState extends State<UltraGroupConversationL
         Fluttertoast.showToast(msg: RCLongPressAction.SetConversationToTopKey);
         await RongIMClient.setConversationToTop(conversation.conversationType!, conversation.targetId!, !conversation.isTop!, (status, code) {
           _updateConversationList();
-        });
+        }, channelId: conversation.channelId ?? "");
       }
       // developer.log("当前选中的是 " + key!, name: pageName);
     });
