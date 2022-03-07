@@ -614,7 +614,7 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
 
     Widget videoWidget = WidgetUtil.buildExtentionWidget(Icons.video_call, RCString.ExtVideo, () async {
       developer.log("push to video record page", name: pageName);
-      Map map = {"coversationType": conversationType, "targetId": targetId, "isSecretChat": isSecretChat};
+      Map map = {"coversationType": conversationType, "targetId": targetId, "isSecretChat": isSecretChat, "channelId": channelId};
       Navigator.pushNamed(context, "/video_record", arguments: map);
     });
 

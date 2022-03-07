@@ -30,6 +30,7 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
   Map? arguments;
   int? conversationType;
   String? targetId;
+  String? channelId;
   int recodeTime = 0;
   Timer? timer;
   bool? isSecretChat = false;
@@ -47,6 +48,7 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
     super.initState();
     conversationType = arguments!["coversationType"];
     targetId = arguments!["targetId"];
+    channelId = arguments!["channelId"];
     isSecretChat = arguments!["isSecretChat"];
     initCamera();
     topitem = TopRecordItem(this);
@@ -271,7 +273,7 @@ class _VideoRecordPageState extends State<VideoRecordPage> implements VideoBotto
         if (conversationType == RCConversationType.Private) {
           sightMessage.destructDuration = isSecretChat! ? RCDuration.MediaMessageBurnDuration + recodeTime : 0;
         }
-        RongIMClient.sendMessage(conversationType!, targetId!, sightMessage);
+        RongIMClient.sendMessage(conversationType!, targetId!, sightMessage, channelId: channelId ?? "");
         _saveVideo(videoPath!);
       } else {
         developer.log("sightMessage duration is 0", name: pageName);
