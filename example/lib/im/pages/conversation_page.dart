@@ -137,7 +137,7 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
       textDraft = '';
     }
 
-    RongIMClient.saveTextMessageDraft(conversationType, targetId, textDraft);
+    RongIMClient.saveTextMessageDraft(conversationType, targetId, textDraft, channelId: channelId ?? "");
     RongIMClient.clearMessagesUnreadStatus(conversationType!, targetId!, channelId ?? "");
     EventBus.instance!.commit(EventKeys.ConversationPageDispose, widget);
     EventBus.instance!.removeListener(EventKeys.ReceiveMessage, widget);
@@ -372,7 +372,7 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
   }
 
   onGetTextMessageDraft() async {
-    textDraft = await RongIMClient.getTextMessageDraft(conversationType, targetId);
+    textDraft = await RongIMClient.getTextMessageDraft(conversationType, targetId, channelId: channelId ?? "");
     if (bottomInputBar != null) {
       bottomInputBar!.setTextContent(textDraft);
     }
