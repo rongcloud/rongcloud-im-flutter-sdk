@@ -179,6 +179,11 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
     });
   }
 
+  void _getFirstUnreadMessage(Conversation conversation) async {
+    Message? msg = await RongIMClient.getFirstUnreadMessage(conversation.conversationType!, conversation.targetId!, channelId: conversation.channelId!);
+    Fluttertoast.showToast(msg: msg?.messageUId ?? "");
+  }
+
   void _addScroolListener() {
     _scrollController!.addListener(() {
       mPosition = _scrollController!.position.pixels;
@@ -214,7 +219,12 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
 
   @override
   void didLongPressConversation(Conversation? conversation, Offset? tapPos) {
-    Map<String, String> actionMap = {RCLongPressAction.DeleteConversationKey: RCLongPressAction.DeleteConversationValue, RCLongPressAction.ClearUnreadKey: RCLongPressAction.ClearUnreadValue, RCLongPressAction.SetConversationToTopKey: conversation!.isTop! ? RCLongPressAction.CancelConversationToTopValue : RCLongPressAction.SetConversationToTopValue};
+    Map<String, String> actionMap = {
+      RCLongPressAction.DeleteConversationKey: RCLongPressAction.DeleteConversationValue,
+      RCLongPressAction.ClearUnreadKey: RCLongPressAction.ClearUnreadValue,
+      RCLongPressAction.SetConversationToTopKey: conversation!.isTop! ? RCLongPressAction.CancelConversationToTopValue : RCLongPressAction.SetConversationToTopValue,
+      RCLongPressAction.GetUnreadMessageKey: RCLongPressAction.GetUnreadMessageValue,
+    };
     WidgetUtil.showLongPressMenu(context, tapPos!, actionMap, (String? key) {
       developer.log("当前选中的是 " + key!, name: pageName);
       if (key == RCLongPressAction.DeleteConversationKey) {
@@ -227,6 +237,7 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
           isTop = false;
         }
         _setConversationToTop(conversation, isTop);
+      } else if (key == RCLongPressAction.GetUnreadMessageKey) {
       } else {
         developer.log("未实现操作 " + key, name: pageName);
       }

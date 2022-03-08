@@ -85,6 +85,9 @@ class RCLongPressAction {
   static const String DeleteConversationKey = "DeleteConversationKey";
   static const String DeleteConversationValue = "删除会话";
 
+  static const String GetUnreadMessageKey = "GetUnreadMessageKey";
+  static const String GetUnreadMessageValue = "获取第一条未读消息";
+
   static const String ClearUnreadKey = "ClearUnreadKey";
   static const String ClearUnreadValue = "清除未读";
 
