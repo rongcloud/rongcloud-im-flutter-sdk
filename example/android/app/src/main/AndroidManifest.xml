@@ -33,7 +33,6 @@
     <!-- MeiZu 配置结束 < -->
 
     <application
-        android:name="io.flutter.app.FlutterApplication"
         android:label="RC_Flutter_Demo"
         android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher">

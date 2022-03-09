@@ -109,6 +109,7 @@ class _UltraGroupConversationListPageState extends State<UltraGroupConversationL
       RCLongPressAction.ClearUnreadKey: RCLongPressAction.ClearUnreadValue,
       RCLongPressAction.SetConversationToTopKey: conversation!.isTop! ? RCLongPressAction.CancelConversationToTopValue : RCLongPressAction.SetConversationToTopValue,
       RCLongPressAction.DeleteConversationKey: RCLongPressAction.DeleteConversationValue,
+      RCLongPressAction.GetUnreadMessageKey: RCLongPressAction.GetUnreadMessageValue,
     };
 
     if (conversation.channelId == "") {
@@ -134,9 +135,16 @@ class _UltraGroupConversationListPageState extends State<UltraGroupConversationL
         await RongIMClient.setConversationToTop(conversation.conversationType!, conversation.targetId!, !conversation.isTop!, (status, code) {
           _updateConversationList();
         }, channelId: conversation.channelId ?? "");
+      } else if (key == RCLongPressAction.GetUnreadMessageKey) {
+        _getFirstUnreadMessage(conversation);
       }
       // developer.log("当前选中的是 " + key!, name: pageName);
     });
+  }
+
+  void _getFirstUnreadMessage(Conversation conversation) async {
+    Message? msg = await RongIMClient.getFirstUnreadMessage(conversation.conversationType!, conversation.targetId!, channelId: conversation.channelId!);
+    Fluttertoast.showToast(msg: msg?.messageUId ?? "");
   }
 
   @override

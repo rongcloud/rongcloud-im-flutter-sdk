@@ -238,6 +238,7 @@ class _ConversationListPageState extends State<ConversationListPage> implements 
         }
         _setConversationToTop(conversation, isTop);
       } else if (key == RCLongPressAction.GetUnreadMessageKey) {
+        _getFirstUnreadMessage(conversation);
       } else {
         developer.log("未实现操作 " + key, name: pageName);
       }
