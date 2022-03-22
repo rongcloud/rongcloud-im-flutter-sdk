@@ -1255,15 +1255,6 @@ static NSString * const VER = @"5.1.8";
         long recordTime = [dic[@"recordTime"] longValue];
         int count = [dic[@"count"] intValue];
         
-        [[RCCoreClient sharedCoreClient] getRemoteHistoryMessages:type targetId:targetId recordTime:recordTime count:count success:^(NSArray *messages, BOOL isRemaining) {
-            
-        } error:^(RCErrorCode status) {
-            [RCLog e:[NSString stringWithFormat:@"%@, %@",LOG_TAG,@(status)]];
-            NSMutableDictionary *callbackDic = [NSMutableDictionary new];
-            [callbackDic setObject:@(status) forKey:@"code"];
-            result(callbackDic);
-        }];
-        
         [[RCChannelClient sharedChannelManager] getRemoteHistoryMessages:type targetId:targetId channelId:channelId recordTime:recordTime count:count success:^(NSArray *messages, BOOL isRemaining) {
             [RCLog i:[NSString stringWithFormat:@"%@, success",LOG_TAG]];
             NSMutableArray *msgsArray = [NSMutableArray new];
@@ -2893,7 +2884,9 @@ static NSString * const VER = @"5.1.8";
 - (void)receiveMessageHasReadNotification:(NSNotification *)notification {
     NSDictionary *dict = @{@"cType":[notification.userInfo objectForKey:@"cType"],
                            @"messageTime":[notification.userInfo objectForKey:@"messageTime"],
-                           @"tId":[notification.userInfo objectForKey:@"tId"]
+                           @"tId":[notification.userInfo objectForKey:@"tId"],
+                           @"fId":[notification.userInfo objectForKey:@"fId"],
+                           
     };
     NSString *LOG_TAG =  @"receiveMessageHasReadNotification";
     [RCLog i:[NSString stringWithFormat:@"%@,start param:%@",LOG_TAG,dict]];

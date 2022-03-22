@@ -98,6 +98,7 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
                     msgMap.put("cType", message.getConversationType().getValue());
                     msgMap.put("messageTime", ((ReadReceiptMessage) message.getContent()).getLastMessageSendTime());
                     msgMap.put("tId", message.getTargetId());
+                    msgMap.put("fId", message.getSenderUserId());
                     mChannel.invokeMethod(RCMethodList.MethodCallBackKeyReceiveReadReceipt, msgMap);
                 }
             }
