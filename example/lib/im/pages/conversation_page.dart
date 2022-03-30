@@ -460,6 +460,17 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
     // });
   }
 
+  void _cancelMessage(Message message) async {
+    RongIMClient.cancelSendMediaMessage(message, (code) {
+      if (code == 0) {
+        _insertOrReplaceMessage(message);
+        showShortToast("取消成功");
+      } else {
+        showShortToast("无法取消");
+      }
+    });
+  }
+
   void _recallMessage(Message? message) async {
     RecallNotificationMessage? recallNotifiMessage = await RongIMClient.recallMessage(message, "");
     if (recallNotifiMessage != null) {
@@ -887,6 +898,13 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
       actionMap[RCLongPressAction.ReferenceKey] = RCLongPressAction.ReferenceValue;
     }
     actionMap[RCLongPressAction.MutiSelectKey] = RCLongPressAction.MutiSelectValue;
+    if (message.messageDirection == RCMessageDirection.Send && message.sentStatus == RCSentStatus.Sending) {
+      MessageContent? messageContent = message.content;
+      if (messageContent is ImageMessage || messageContent is SightMessage || messageContent is GifMessage || messageContent is FileMessage) {
+        actionMap[RCLongPressAction.CancelKey] = RCLongPressAction.CancelValue;
+      }
+    }
+
     if (message.messageDirection == RCMessageDirection.Send) {
       actionMap[RCLongPressAction.RecallKey] = RCLongPressAction.RecallValue;
     }
@@ -894,6 +912,8 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
     WidgetUtil.showLongPressMenu(context, tapPos!, actionMap, (String? key) {
       if (key == RCLongPressAction.DeleteKey) {
         _deleteMessage(message);
+      } else if (key == RCLongPressAction.CancelKey) {
+        _cancelMessage(message);
       } else if (key == RCLongPressAction.RecallKey) {
         _recallMessage(message);
       } else if (key == RCLongPressAction.MutiSelectKey) {

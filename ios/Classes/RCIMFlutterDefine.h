@@ -95,6 +95,7 @@ static NSString *RCMethodKeySetConversationToTopInTag = @"setConversationToTopIn
 static NSString *RCMethodKeyGetConversationTopStatusInTag = @"getConversationTopStatusInTag";
 static NSString *RCMethodKeySetAndroidPushConfig = @"setAndroidPushConfig";
 static NSString *RCMethodKeySetStatisticServer = @"setStatisticServer";
+static NSString *RCMethodKeyCancelSendMediaMessage = @"cancelSendMediaMessage";
 
 // 聊天室状态存储
 static NSString *RCMethodKeySetChatRoomEntry = @"SetChatRoomEntry";

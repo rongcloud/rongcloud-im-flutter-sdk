@@ -34,12 +34,9 @@ import io.rong.flutter.imlib.forward.CombineMessage;
 import io.rong.imlib.IRongCoreCallback;
 import io.rong.imlib.IRongCoreEnum;
 import io.rong.imlib.IRongCoreListener;
-import io.rong.imlib.ISendMediaMessageCallback;
 import io.rong.imlib.MessageTag;
-import io.rong.imlib.NativeClient;
 import io.rong.imlib.RongCoreClient;
 import io.rong.imlib.chatroom.base.RongChatRoomClient;
-import io.rong.imlib.listener.OnReceiveMessageWrapperListener;
 import io.rong.imlib.model.AndroidConfig;
 import io.rong.imlib.model.BlockedMessageInfo;
 import io.rong.imlib.model.ChatRoomInfo;
@@ -53,7 +50,6 @@ import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageConfig;
 import io.rong.imlib.model.MessageContent;
 import io.rong.imlib.model.MessagePushConfig;
-import io.rong.imlib.model.ReceivedProfile;
 import io.rong.imlib.model.SearchConversationResult;
 import io.rong.imlib.model.TagInfo;
 import io.rong.imlib.model.UnknownMessage;
@@ -382,7 +378,9 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
         } else if (RCMethodList.MethodKeySetStatisticServer.equalsIgnoreCase(call.method)) {
             setStatisticServer(call.arguments);
             result.success(null);
-        }else {
+        } else if (RCMethodList.MethodKeyCancelSendMediaMessage.equalsIgnoreCase(call.method)) {
+            cancelSendMediaMessage(call.arguments, result);
+        } else {
             result.notImplemented();
         }
 
@@ -627,6 +625,28 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
             Map params = (Map)arg;
             String statisticServer = (String)params.get("statisticServer");
             RongCoreClient.setStatisticDomain(statisticServer);
+        }
+    }
+
+    private void cancelSendMediaMessage(Object arguments, final Result result) {
+        if (arguments instanceof Map) {
+            Map map = (Map) arguments;
+            Map messageMap = (Map) map.get("message");
+            Message message = map2Message(messageMap);
+            if (message == null) {
+                return;
+            }
+            RongCoreClient.getInstance().cancelSendMediaMessage(message, new IRongCoreCallback.OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    result.success(0);
+                }
+
+                @Override
+                public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
+                    result.success(coreErrorCode.code);
+                }
+            });
         }
     }
 

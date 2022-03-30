@@ -398,6 +398,16 @@ class RongIMClient {
     return msg;
   }
 
+  ///取消发送媒体消息
+  ///
+  ///[message] 消息对象
+  static Future<void> cancelSendMediaMessage(Message message, Function(int? code)? finished) async {
+    Map msgMap = MessageFactory.instance!.message2Map(message);
+    Map paramMap = {"message": msgMap};
+    int? result = await _channel.invokeMethod(RCMethodKey.CancelSendMediaMessage, paramMap);
+    finished?.call(result);
+  }
+
   ///获取历史消息
   ///
   ///[conversationType] 会话类型，参见枚举 [RCConversationType]
