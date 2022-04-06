@@ -95,6 +95,9 @@ class RCLongPressAction {
   static const String CopyKey = "CopyKey";
   static const String CopyValue = "复制";
 
+  static const String CancelKey = "CancelKey";
+  static const String CancelValue = "取消发送";
+
   static const String DeleteKey = "DeleteKey";
   static const String DeleteValue = "删除";
 
