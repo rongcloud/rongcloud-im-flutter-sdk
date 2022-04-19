@@ -15,6 +15,9 @@
 
 @implementation RCFlutterMessageFactory
 + (NSString *)message2String:(RCMessage *)message {
+    if (message == nil) {
+        return nil;
+    }
     NSDictionary *dic = [self message2Dic:message];
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dic options:0 error:nil];
     return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];

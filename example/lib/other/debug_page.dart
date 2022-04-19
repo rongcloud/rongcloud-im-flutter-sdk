@@ -23,6 +23,7 @@ class _DebugPageState extends State<DebugPage> {
     "消息携带用户信息",
     "聊天室状态存储测试",
     "获取免打扰的会话列表",
+    "获取会话 SealTalk 第一条未读消息",
   ];
 
   void _didTap(int index, BuildContext context) {
@@ -55,7 +56,15 @@ class _DebugPageState extends State<DebugPage> {
       case 8:
         _getBlockedConversationList();
         break;
+      case 9:
+        _getFirstUnreadMsg();
+        break;
     }
+  }
+
+  void _getFirstUnreadMsg() async {
+    String targetId = "SealTalk";
+    prefix.Message? m = await prefix.RongIMClient.getFirstUnreadMessage(1, targetId);
   }
 
   void _setNotificationQuietHours() {
