@@ -56,7 +56,7 @@ class _DebugPageState extends State<DebugPage> {
     prefix.ReferenceMessage rf = prefix.ReferenceMessage();
     rf.referMsg = prefix.TextMessage.obtain("测试引用消息");
     rf.content = "这个是引用文本";
-    rf.referMsgUserId = "1";
+    rf.referMsgUserId = "referMsgUserId";
     prefix.Message? m = prefix.Message();
     m.conversationType = 1;
     m.targetId = targetId;
