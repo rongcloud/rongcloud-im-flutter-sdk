@@ -59,7 +59,7 @@
     [dic setObject:@(message.conversationType) forKey:@"conversationType"];
     [dic setObject:message.targetId forKey:@"targetId"];
     [dic setObject:@(message.messageId) forKey:@"messageId"];
-    [dic setObject:message.channelId forKey:@"channelId"];
+    [dic setObject:message.channelId?:@"" forKey:@"channelId"];
     [dic setObject:@(message.messageDirection) forKey:@"messageDirection"];
     [dic setObject:message.senderUserId forKey:@"senderUserId"];
     [dic setObject:@(message.receivedStatus) forKey:@"receivedStatus"];
