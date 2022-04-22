@@ -13,17 +13,7 @@ class DebugPage extends StatefulWidget {
 
 class _DebugPageState extends State<DebugPage> {
   String pageName = "example.DebugPage";
-  List titles = [
-    "设置全局屏蔽某个时间段的消息提醒",
-    "查询已设置的全局时间段消息提醒屏蔽",
-    "删除已设置的全局时间段消息提醒屏蔽",
-    "获取特定会话",
-    "获取特定方向的消息列表",
-    "分页获取会话",
-    "消息携带用户信息",
-    "聊天室状态存储测试",
-    "获取免打扰的会话列表",
-  ];
+  List titles = ["设置全局屏蔽某个时间段的消息提醒", "查询已设置的全局时间段消息提醒屏蔽", "删除已设置的全局时间段消息提醒屏蔽", "获取特定会话", "获取特定方向的消息列表", "分页获取会话", "消息携带用户信息", "聊天室状态存储测试", "获取免打扰的会话列表", "发送引用消息"];
 
   void _didTap(int index, BuildContext context) {
     developer.log("did tap debug " + titles[index], name: pageName);
@@ -55,7 +45,24 @@ class _DebugPageState extends State<DebugPage> {
       case 8:
         _getBlockedConversationList();
         break;
+      case 9:
+        _sendReferenceMsg();
+        break;
     }
+  }
+
+  void _sendReferenceMsg() async {
+    String targetId = "SealTalk";
+    prefix.ReferenceMessage rf = prefix.ReferenceMessage();
+    rf.referMsg = prefix.TextMessage.obtain("测试引用消息");
+    rf.content = "这个是引用文本";
+    rf.referMsgUserId = "referMsgUserId";
+    prefix.Message? m = prefix.Message();
+    m.conversationType = 1;
+    m.targetId = targetId;
+    m.content = rf;
+    m.objectName = rf.getObjectName();
+    m = await prefix.RongIMClient.sendIntactMessageWithCallBack(m, null, null, (messageId, status, code) => null);
   }
 
   void _setNotificationQuietHours() {

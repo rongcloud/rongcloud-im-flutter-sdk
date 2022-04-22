@@ -4383,14 +4383,19 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
         }
         byte[] bytes = contentStr.getBytes();
         MessageContent content = null;
-        content = newMessageContent((String) messageMap.get("objectName"), bytes, contentStr);
+        String objectName = (String) messageMap.get("objectName");
+
+        if (objectName.equalsIgnoreCase("RC:ReferenceMsg")) {
+            content = makeReferenceMessage(contentStr);
+        } else {
+            content = newMessageContent(objectName, bytes, contentStr);
+        }
 
         if (content == null) {
             RCLog.e("Map2Message:  message content is nil");
             return null;
         }
-        // 主动赋予值 thumUri 防止在 flutter 互相传递时丢失
-        String objectName = (String) messageMap.get("objectName");
+        
         if (!TextUtils.isEmpty(objectName)) {
             if (objectName.equalsIgnoreCase("RC:ImgMsg") || objectName.equalsIgnoreCase("RC:SightMsg")) {
                 try {
