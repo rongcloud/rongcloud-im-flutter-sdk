@@ -317,7 +317,7 @@ class MessageItemFactory extends StatelessWidget {
               Container(
                 width: screenWidth - 220,
                 child: Text(
-                  fileMessage.mName!,
+                  fileMessage.mName??"",
                   textWidthBasis: TextWidthBasis.parent,
                   softWrap: true,
                   overflow: TextOverflow.ellipsis,

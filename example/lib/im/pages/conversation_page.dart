@@ -892,12 +892,12 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
   void didLongPressMessageItem(Message? message, Offset? tapPos) {
     Map<String, String> actionMap = {
       RCLongPressAction.DeleteKey: RCLongPressAction.DeleteValue,
+      RCLongPressAction.MutiSelectKey: RCLongPressAction.MutiSelectValue,
     };
-    // 引用消息
+    // 判断当前消息是否可以被引用
     if (_isShowReference(message!)) {
       actionMap[RCLongPressAction.ReferenceKey] = RCLongPressAction.ReferenceValue;
     }
-    actionMap[RCLongPressAction.MutiSelectKey] = RCLongPressAction.MutiSelectValue;
     if (message.messageDirection == RCMessageDirection.Send && message.sentStatus == RCSentStatus.Sending) {
       MessageContent? messageContent = message.content;
       if (messageContent is ImageMessage || messageContent is SightMessage || messageContent is GifMessage || messageContent is FileMessage) {

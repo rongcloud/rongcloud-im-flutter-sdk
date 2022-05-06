@@ -234,8 +234,8 @@ class CachedNetworkImageState extends State<CachedNetworkImage> with TickerProvi
     super.dispose();
   }
 
-  void _createFileStream() {
-    _fromMemory = _cacheManager().getFileFromMemory(widget.imageUrl) as FileInfo;
+  void _createFileStream() async{
+    _fromMemory = await _cacheManager().getFileFromMemory(widget.imageUrl) as FileInfo;
 
     _fileResponseStream = _cacheManager()
         .getFileStream(

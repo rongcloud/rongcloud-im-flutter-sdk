@@ -129,10 +129,17 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
           // 转发时去掉消息原先携带的 sendUserInfo 和 mentionedInfo
           msg.content!.sendUserInfo = null;
           msg.content!.mentionedInfo = null;
+          msg.messageId = 0;
           if (TargetPlatform.android == defaultTargetPlatform && !isCombineMsg) {
-            RongIMClient.forwardMessageByStep(con.conversationType!, con.targetId!, msg);
+            // RongIMClient.forwardMessageByStep(con.conversationType!, con.targetId!, msg);
+            RongIMClient.sendIntactMessageWithCallBack(msg, null, null, (messageId, status, code) => {
+              print("转发成功")
+            });
           } else {
-            RongIMClient.sendMessage(con.conversationType!, con.targetId!, msg.content!);
+            // RongIMClient.sendMessage(con.conversationType!, con.targetId!, msg.content!);
+            RongIMClient.sendIntactMessageWithCallBack(msg, null, null, (messageId, status, code) => {
+              print("转发成功")
+            });
           }
 
           // 延迟400秒，防止过渡频繁的发送消息导致发送失败的问题
