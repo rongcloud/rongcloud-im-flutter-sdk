@@ -4166,8 +4166,7 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
                     Conversation.ConversationType.setValue((int) messageMap.get("conversationType")));
             message.setTargetId((String) messageMap.get("targetId"));
             if (messageMap.get("messageId") != null) {
-//                message.setMessageId((int) messageMap.get("messageId"));
-                message.setMessageId(0);
+                message.setMessageId((int) messageMap.get("messageId"));
             }
             if (messageMap.get("messageDirection") != null) {
                 message.setMessageDirection(Message.MessageDirection.setValue((int) messageMap.get("messageDirection")));
