@@ -1,17 +1,12 @@
 buildscript {
-    ext.kotlin_version = '1.4.32'
     repositories {
         google()
         jcenter()
-        maven { url "https://maven.rongcloud.cn/repository/maven-releases/" }
-        maven { url 'https://developer.huawei.com/repo/' }
+        mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.3'
-        classpath 'com.huawei.agconnect:agcp:1.1.1.300'
-        classpath 'com.google.gms:google-services:4.2.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.android.tools.build:gradle:3.5.4'
     }
 }
 
@@ -19,8 +14,7 @@ allprojects {
     repositories {
         google()
         jcenter()
-        maven { url "https://maven.rongcloud.cn/repository/maven-releases/" }
-        maven { url 'https://developer.huawei.com/repo/' }
+        mavenCentral()
     }
 }
 
