@@ -7,6 +7,22 @@ class RCConversationType {
   static const int UltraGroup = 10;
 }
 
+// 会话类型
+class RCPushNotificationQuietHoursLevel {
+  static const int AllMessage = -1;
+  static const int Default = 0;
+  static const int Blocked = 5;
+}
+
+class RCPushNotificationLevel {
+  static const int AllMessage = -1;
+  static const int Default = 0;
+  static const int Mention = 1;
+  static const int MentionUsers = 2;
+  static const int MentionAll = 4;
+  static const int Blocked = 5;
+}
+
 //消息发送状态
 class RCSentStatus {
   static const int Sending = 10; //发送中

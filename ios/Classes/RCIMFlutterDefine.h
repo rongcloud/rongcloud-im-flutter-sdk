@@ -133,6 +133,22 @@ static NSString *RCUltraGroupRemoveMessageExpansion = @"RCUltraGroup-RemoveMessa
 static NSString *RCUltraGroupRecallMessage = @"RCUltraGroup-RecallMessage";
 static NSString *RCUltraGroupOnMessageRecalled = @"RCUltraGroup-onMessageRecalled";
 
+static NSString *RCUltraGroupSetNotificationQuietHoursLevel = @"RCUltraGroup-SetNotificationQuietHoursLevel";
+static NSString *RCUltraGroupGetNotificationQuietHoursLevel = @"RCUltraGroup-GetNotificationQuietHoursLevel";
+static NSString *RCUltraGroupSetConversationChannelNotificationLevel = @"RCUltraGroup-SetConversationChannelNotificationLevel";
+static NSString *RCUltraGroupGetConversationChannelNotificationLevel = @"RCUltraGroup-GetConversationChannelNotificationLevel";
+static NSString *RCUltraGroupSetConversationTypeNotificationLevel = @"RCUltraGroup-SetConversationTypeNotificationLevel";
+static NSString *RCUltraGroupGetConversationTypeNotificationLevel = @"RCUltraGroup-GetConversationTypeNotificationLevel";
+static NSString *RCUltraGroupSetConversationDefaultNotificationLevel = @"RCUltraGroup-SetConversationDefaultNotificationLevel";
+static NSString *RCUltraGroupGetConversationDefaultNotificationLevel = @"RCUltraGroup-GetConversationDefaultNotificationLevel";
+static NSString *RCUltraGroupSetConversationChannelDefaultNotificationLevel = @"RCUltraGroup-SetConversationChannelDefaultNotificationLevel";
+static NSString *RCUltraGroupGetConversationChannelDefaultNotificationLevel = @"RCUltraGroup-GetConversationChannelDefaultNotificationLevel";
+static NSString *RCUltraGroupGetUltraGroupUnreadCount = @"RCUltraGroup-GetUltraGroupUnreadCount";
+static NSString *RCUltraGroupGetUltraGroupAllUnreadCount = @"RCUltraGroup-GetUltraGroupAllUnreadCount";
+static NSString *RCUltraGroupGetUltraGroupAllUnreadMentionedCount = @"RCUltraGroup-GetUltraGroupAllUnreadMentionedCount";
+static NSString *RCUltraGroupConversationListDidSync = @"RCUltraGroup-ConversationListDidSync";
+
+
 //callback iOS 通知 flutter
 static NSString *RCMethodCallBackKeySendMessage = @"sendMessageCallBack";
 static NSString *RCMethodCallBackKeyRefreshUserInfo = @"refreshUserInfoCallBack";

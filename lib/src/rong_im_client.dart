@@ -2696,6 +2696,214 @@ class RongIMClient {
     }
   }
 
+  static Future<void> setNotificationQuietHoursLevel(String startTime, int spanMins, int pushNotificationQuietHoursLevel, Function(int? code)? callback) async {
+    Map arguments = {
+      "startTime": startTime,
+      "spanMins": spanMins,
+      "pushNotificationQuietHoursLevel": pushNotificationQuietHoursLevel,
+    };
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupSetNotificationQuietHoursLevel, arguments);
+    if (callback == null) return;
+    int code = result["code"];
+    callback(code);
+  }
+
+  static Future<void> getNotificationQuietHoursLevel(Function(int? code, String? startTime, int? spanMins, int? pushNotificationQuietHoursLevel)? callback) async {
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupGetNotificationQuietHoursLevel);
+    if (callback == null) return;
+    int code = result["code"];
+    if (code != 0) {
+      callback(code, null, null, null);
+      return;
+    }
+    callback(code, result['startTime'], result['spanMins'], result['pushNotificationQuietHoursLevel']);
+  }
+
+  static Future<void> setConversationChannelNotificationLevel(
+    int conversationType,
+    String targetId,
+    String channelId,
+    int pushNotificationLevel,
+    Function(int? code)? callback,
+  ) async {
+    Map arguments = {
+      "conversationType": conversationType,
+      "targetId": targetId,
+      "channelId": channelId,
+      "pushNotificationLevel": pushNotificationLevel,
+    };
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupSetConversationChannelNotificationLevel, arguments);
+    if (callback == null) return;
+    int code = result["code"];
+    callback(code);
+  }
+
+  static Future<void> getConversationChannelNotificationLevel(
+    int conversationType,
+    String targetId,
+    String channelId,
+    Function(int? code, int? pushNotificationLevel)? callback,
+  ) async {
+    Map arguments = {
+      "conversationType": conversationType,
+      "targetId": targetId,
+      "channelId": channelId,
+    };
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupGetConversationChannelNotificationLevel, arguments);
+    if (callback == null) return;
+    int code = result["code"];
+    if (code != 0) {
+      callback(code, null);
+      return;
+    }
+    callback(code, result['pushNotificationLevel']);
+  }
+
+  static Future<void> setConversationTypeNotificationLevel(
+    int conversationType,
+    int pushNotificationLevel,
+    Function(int? code)? callback,
+  ) async {
+    Map arguments = {
+      "conversationType": conversationType,
+      "pushNotificationLevel": pushNotificationLevel,
+    };
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupSetConversationTypeNotificationLevel, arguments);
+    if (callback == null) return;
+    int code = result["code"];
+    callback(code);
+  }
+
+  static Future<void> getConversationTypeNotificationLevel(
+    int conversationType,
+    Function(int? code, int? pushNotificationLevel)? callback,
+  ) async {
+    Map arguments = {
+      "conversationType": conversationType,
+    };
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupGetConversationTypeNotificationLevel, arguments);
+    if (callback == null) return;
+    int code = result["code"];
+    if (code != 0) {
+      callback(code, null);
+      return;
+    }
+    callback(code, result['pushNotificationLevel']);
+  }
+
+  static Future<void> setUltraGroupConversationDefaultNotificationLevel(
+    String targetId,
+    int pushNotificationLevel,
+    Function(int? code)? callback,
+  ) async {
+    Map arguments = {
+      "targetId": targetId,
+      "pushNotificationLevel": pushNotificationLevel,
+    };
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupSetConversationDefaultNotificationLevel, arguments);
+    if (callback == null) return;
+    int code = result["code"];
+    callback(code);
+  }
+
+  static Future<void> getUltraGroupConversationDefaultNotificationLevel(
+    String targetId,
+    Function(int? code, int? pushNotificationLevel)? callback,
+  ) async {
+    Map arguments = {
+      "targetId": targetId,
+    };
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupGetConversationDefaultNotificationLevel, arguments);
+    if (callback == null) return;
+    int code = result["code"];
+    if (code != 0) {
+      callback(code, null);
+      return;
+    }
+    callback(code, result['pushNotificationLevel']);
+  }
+
+  static Future<void> setUltraGroupConversationChannelDefaultNotificationLevel(
+    String targetId,
+    String channelId,
+    int pushNotificationLevel,
+    Function(int? code)? callback,
+  ) async {
+    Map arguments = {
+      "targetId": targetId,
+      "channelId": channelId,
+      "pushNotificationLevel": pushNotificationLevel,
+    };
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupSetConversationChannelDefaultNotificationLevel, arguments);
+    if (callback == null) return;
+    int code = result["code"];
+    callback(code);
+  }
+
+  static Future<void> getUltraGroupConversationChannelDefaultNotificationLevel(
+    String targetId,
+    String channelId,
+    Function(int? code, int? pushNotificationLevel)? callback,
+  ) async {
+    Map arguments = {
+      "targetId": targetId,
+      "channelId": channelId,
+    };
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupGetConversationChannelDefaultNotificationLevel, arguments);
+    if (callback == null) return;
+    int code = result["code"];
+    if (code != 0) {
+      callback(code, null);
+      return;
+    }
+    callback(code, result['pushNotificationLevel']);
+  }
+
+  static Future<void> getUltraGroupUnreadCount(
+    String targetId,
+    Function(int? code, int? count)? callback,
+  ) async {
+    Map arguments = {
+      "targetId": targetId,
+    };
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupGetUltraGroupUnreadCount, arguments);
+    if (callback == null) return;
+    int code = result["code"];
+    if (code != 0) {
+      callback(code, null);
+      return;
+    }
+    callback(code, result['count']);
+  }
+
+  static Future<void> getUltraGroupAllUnreadCount(
+    Function(int? code, int? count)? callback,
+  ) async {
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupGetUltraGroupAllUnreadCount);
+    if (callback == null) return;
+    int code = result["code"];
+    if (code != 0) {
+      callback(code, null);
+      return;
+    }
+    callback(code, result['count']);
+  }
+
+  static Future<void> getUltraGroupAllUnreadMentionedCount(
+    Function(int? code, int? count)? callback,
+  ) async {
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupGetUltraGroupAllUnreadMentionedCount);
+    if (callback == null) return;
+    int code = result["code"];
+    if (code != 0) {
+      callback(code, null);
+      return;
+    }
+    callback(code, result['count']);
+  }
+
+  static Function()? ultraGroupConversationListDidSync;
+
   ///设置 Tag 多端同步监听
   ///
   static Function()? onConversationTagChanged;
@@ -3162,6 +3370,11 @@ class RongIMClient {
             newInfoArray.add(info);
           }
           onUltraGroupTypingStatusChanged!(newInfoArray);
+        }
+        break;
+      case RCMethodCallBackKey.RCUltraGroupConversationListDidSync:
+        if (ultraGroupConversationListDidSync != null) {
+          ultraGroupConversationListDidSync!();
         }
         break;
     }

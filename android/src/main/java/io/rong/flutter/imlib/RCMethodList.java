@@ -104,6 +104,22 @@ public class RCMethodList {
     static String RCUltraGroupOnMessageModified = "RCUltraGroup-onMessageModified";
     static String RCUltraGroupOnTypingStatusChanged = "RCUltraGroup-onTypingStatusChanged";
 
+    static String RCUltraGroupGetNotificationQuietHoursLevel = "RCUltraGroup-GetNotificationQuietHoursLevel";
+    static String RCUltraGroupSetConversationChannelNotificationLevel = "RCUltraGroup-SetConversationChannelNotificationLevel";
+    static String RCUltraGroupSetNotificationQuietHoursLevel = "RCUltraGroup-SetNotificationQuietHoursLevel";
+    static String RCUltraGroupGetConversationChannelNotificationLevel = "RCUltraGroup-GetConversationChannelNotificationLevel";
+    static String RCUltraGroupSetConversationTypeNotificationLevel = "RCUltraGroup-SetConversationTypeNotificationLevel";
+    static String RCUltraGroupGetConversationTypeNotificationLevel = "RCUltraGroup-GetConversationTypeNotificationLevel";
+    static String RCUltraGroupSetConversationDefaultNotificationLevel = "RCUltraGroup-SetConversationDefaultNotificationLevel";
+    static String RCUltraGroupGetConversationDefaultNotificationLevel = "RCUltraGroup-GetConversationDefaultNotificationLevel";
+    static String RCUltraGroupSetConversationChannelDefaultNotificationLevel = "RCUltraGroup-SetConversationChannelDefaultNotificationLevel";
+    static String RCUltraGroupGetConversationChannelDefaultNotificationLevel = "RCUltraGroup-GetConversationChannelDefaultNotificationLevel";
+    static String RCUltraGroupGetUltraGroupUnreadCount = "RCUltraGroup-GetUltraGroupUnreadCount";
+    static String RCUltraGroupGetUltraGroupAllUnreadCount = "RCUltraGroup-GetUltraGroupAllUnreadCount";
+    static String RCUltraGroupGetUltraGroupAllUnreadMentionedCount = "RCUltraGroup-GetUltraGroupAllUnreadMentionedCount";
+
+    static String RCUltraGroupConversationListDidSync = "RCUltraGroup-ConversationListDidSync";
+
     //会话标签
     static String MethodKeyAddTag = "addTag";
     static String MethodKeyRemoveTag = "removeTag";

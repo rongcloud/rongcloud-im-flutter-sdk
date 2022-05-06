@@ -119,6 +119,22 @@ class RCMethodKey {
   static const String RCUltraGroupRemoveMessageExpansion = 'RCUltraGroup-RemoveMessageExpansion';
   static const String RCUltraGroupRecallMessage = 'RCUltraGroup-RecallMessage';
   static const String RCUltraGroupGetBatchRemoteMessages = 'RCUltraGroup-GetBatchRemoteMessages';
+
+  static const String RCUltraGroupSetNotificationQuietHoursLevel = 'RCUltraGroup-SetNotificationQuietHoursLevel';
+  static const String RCUltraGroupGetNotificationQuietHoursLevel = 'RCUltraGroup-GetNotificationQuietHoursLevel';
+  static const String RCUltraGroupSetConversationChannelNotificationLevel = 'RCUltraGroup-SetConversationChannelNotificationLevel';
+  static const String RCUltraGroupGetConversationChannelNotificationLevel = 'RCUltraGroup-GetConversationChannelNotificationLevel';
+  static const String RCUltraGroupSetConversationTypeNotificationLevel = 'RCUltraGroup-SetConversationTypeNotificationLevel';
+  static const String RCUltraGroupGetConversationTypeNotificationLevel = 'RCUltraGroup-GetConversationTypeNotificationLevel';
+  static const String RCUltraGroupSetConversationDefaultNotificationLevel = 'RCUltraGroup-SetConversationDefaultNotificationLevel';
+  static const String RCUltraGroupGetConversationDefaultNotificationLevel = 'RCUltraGroup-GetConversationDefaultNotificationLevel';
+  static const String RCUltraGroupSetConversationChannelDefaultNotificationLevel = 'RCUltraGroup-SetConversationChannelDefaultNotificationLevel';
+  static const String RCUltraGroupGetConversationChannelDefaultNotificationLevel = 'RCUltraGroup-GetConversationChannelDefaultNotificationLevel';
+  static const String RCUltraGroupGetUltraGroupUnreadCount = 'RCUltraGroup-GetUltraGroupUnreadCount';
+  static const String RCUltraGroupGetUltraGroupAllUnreadCount = 'RCUltraGroup-GetUltraGroupAllUnreadCount';
+  static const String RCUltraGroupGetUltraGroupAllUnreadMentionedCount = 'RCUltraGroup-GetUltraGroupAllUnreadMentionedCount';
+
+
 }
 
 //callback list //native 会触发此方法
@@ -156,4 +172,5 @@ class RCMethodCallBackKey {
   static const String RCUltraGroupOnReadTimeReceived = 'RCUltraGroup-onReadTimeReceived';
   static const String RCUltraGroupOnMessageModified = 'RCUltraGroup-onMessageModified';
   static const String RCUltraGroupOnTypingStatusChanged = 'RCUltraGroup-onTypingStatusChanged';
+  static const String RCUltraGroupConversationListDidSync = 'RCUltraGroup-ConversationListDidSync';
 }

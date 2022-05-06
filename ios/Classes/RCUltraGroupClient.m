@@ -20,7 +20,8 @@
 @interface RCUltraGroupClient ()
 <RCUltraGroupTypingStatusDelegate,
 RCUltraGroupMessageChangeDelegate,
-RCUltraGroupReadTimeDelegate>
+RCUltraGroupReadTimeDelegate,
+RCUltraGroupConversationDelegate>
 
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 
@@ -80,13 +81,41 @@ RCUltraGroupReadTimeDelegate>
         [self updateUltraGroupMessageExpansion:arguments result:result];
     } else if ([method isEqualToString:RCUltraGroupRemoveMessageExpansion]) {
         [self removeUltraGroupMessageExpansion:arguments result:result];
+    } else if ([method isEqualToString:RCUltraGroupSetNotificationQuietHoursLevel]) {
+        [self setNotificationQuietHoursLevel:arguments result:result];
+    } else if ([method isEqualToString:RCUltraGroupGetNotificationQuietHoursLevel]) {
+        [self getNotificationQuietHoursLevel:arguments result:result];
+    } else if ([method isEqualToString:RCUltraGroupSetConversationChannelNotificationLevel]) {
+        [self setConversationChannelNotificationLevel:arguments result:result];
+    } else if ([method isEqualToString:RCUltraGroupGetConversationChannelNotificationLevel]) {
+        [self getConversationChannelNotificationLevel:arguments result:result];
+    } else if ([method isEqualToString:RCUltraGroupSetConversationTypeNotificationLevel]) {
+        [self setConversationTypeNotificationLevel:arguments result:result];
+    } else if ([method isEqualToString:RCUltraGroupGetConversationTypeNotificationLevel]) {
+        [self getConversationTypeNotificationLevel:arguments result:result];
+    } else if ([method isEqualToString:RCUltraGroupSetConversationDefaultNotificationLevel]) {
+        [self setUltraGroupConversationDefaultNotificationLevel:arguments result:result];
+    } else if ([method isEqualToString:RCUltraGroupGetConversationDefaultNotificationLevel]) {
+        [self getUltraGroupConversationDefaultNotificationLevel:arguments result:result];
+    } else if ([method isEqualToString:RCUltraGroupSetConversationChannelDefaultNotificationLevel]) {
+        [self setUltraGroupConversationChannelDefaultNotificationLevel:arguments result:result];
+    } else if ([method isEqualToString:RCUltraGroupGetConversationChannelDefaultNotificationLevel]) {
+        [self getUltraGroupConversationChannelDefaultNotificationLevel:arguments result:result];
+    } else if ([method isEqualToString:RCUltraGroupGetUltraGroupUnreadCount]) {
+        [self getUltraGroupUnreadCount:arguments result:result];
+    } else if ([method isEqualToString:RCUltraGroupGetUltraGroupAllUnreadCount]) {
+        [self getUltraGroupAllUnreadCount:arguments result:result];
+    } else if ([method isEqualToString:RCUltraGroupGetUltraGroupAllUnreadMentionedCount]) {
+        [self getUltraGroupAllUnreadMentionedCount:arguments result:result];
     }
+    
 }
 
 - (void)setUltraGroupDelegate {
     [[RCChannelClient sharedChannelManager] setRCUltraGroupTypingStatusDelegate:self];
     [[RCChannelClient sharedChannelManager] setRCUltraGroupMessageChangeDelegate:self];
     [[RCChannelClient sharedChannelManager] setRCUltraGroupReadTimeDelegate:self];
+    [[RCChannelClient sharedChannelManager] setUltraGroupConversationDelegate:self];
 }
 
 
@@ -148,7 +177,266 @@ RCUltraGroupReadTimeDelegate>
     [self.channel invokeMethod:RCUltraGroupOnTypingStatusChanged arguments:arguments];
 }
 
+- (void)ultraGroupConversationListDidSync{
+    NSLog(@"RCFlutterIM:ultraGroupConversationListDidSync");
+    [self.channel invokeMethod:RCUltraGroupConversationListDidSync arguments:nil];
+}
+
 #pragma mark - Method
+
+- (void)setNotificationQuietHoursLevel:(NSDictionary *)arguments result:(FlutterResult)result {
+    
+    NSLog(@"RCFlutterIM:setNotificationQuietHoursLevel %@",arguments);
+    NSString *startTime = arguments[@"startTime"];
+    int spanMins = [arguments[@"spanMins"] intValue];
+    int pushNotificationQuietHoursLevel = [arguments[@"pushNotificationQuietHoursLevel"] intValue];
+    
+    [[RCChannelClient sharedChannelManager] setNotificationQuietHoursLevel:startTime spanMins:spanMins level:pushNotificationQuietHoursLevel success:^{
+        NSLog(@"RCFlutterIM:setNotificationQuietHoursLevel success");
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:@(0) forKey:@"code"];
+        result(dic);
+    } error:^(RCErrorCode status) {
+        NSLog(@"RCFlutterIM:setNotificationQuietHoursLevel error : %ld",(long)status);
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:@(status) forKey:@"code"];
+        result(dic);
+    }];
+}
+
+
+- (void)getNotificationQuietHoursLevel:(NSDictionary *)arguments result:(FlutterResult)result {
+    
+    NSLog(@"RCFlutterIM:getNotificationQuietHoursLevel %@",arguments);
+    
+    [[RCChannelClient sharedChannelManager] getNotificationQuietHoursLevel:^(NSString *startTime, int spanMins, RCPushNotificationQuietHoursLevel level) {
+        NSLog(@"RCFlutterIM:setNotificationQuietHoursLevel success");
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:startTime forKey:@"startTime"];
+        [dic setObject:@(spanMins) forKey:@"spanMins"];
+        [dic setObject:@(level) forKey:@"pushNotificationQuietHoursLevel"];
+        result(dic);
+        
+    } error:^(RCErrorCode status) {
+        NSLog(@"RCFlutterIM:setNotificationQuietHoursLevel error : %ld",(long)status);
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:@(status) forKey:@"code"];
+        result(dic);
+    }];
+}
+
+
+- (void)setConversationChannelNotificationLevel:(NSDictionary *)arguments result:(FlutterResult)result {
+    
+    NSLog(@"RCFlutterIM:setConversationChannelNotificationLevel %@",arguments);
+    NSString *targetId = arguments[@"targetId"];
+    NSString *channelId = arguments[@"channelId"];
+    RCConversationType conversationType = [arguments[@"conversationType"] integerValue];
+    int pushNotificationLevel = [arguments[@"pushNotificationLevel"] intValue];
+    
+    [[RCChannelClient sharedChannelManager] setConversationChannelNotificationLevel:conversationType targetId:targetId channelId:channelId level:pushNotificationLevel success:^{
+        NSLog(@"RCFlutterIM:setConversationChannelNotificationLevel success");
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:@(0) forKey:@"code"];
+        result(dic);
+    } error:^(RCErrorCode status) {
+        NSLog(@"RCFlutterIM:setConversationChannelNotificationLevel error : %ld",(long)status);
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:@(status) forKey:@"code"];
+        result(dic);
+    }];
+}
+
+
+- (void)getConversationChannelNotificationLevel:(NSDictionary *)arguments result:(FlutterResult)result {
+    NSLog(@"RCFlutterIM:getConversationChannelNotificationLevel %@",arguments);
+    
+    NSString *targetId = arguments[@"targetId"];
+    NSString *channelId = arguments[@"channelId"];
+    RCConversationType conversationType = [arguments[@"conversationType"] integerValue];
+    
+    [[RCChannelClient sharedChannelManager] getConversationChannelNotificationLevel:conversationType targetId:targetId channelId:channelId success:^(RCPushNotificationLevel level) {
+        NSLog(@"RCFlutterIM:setConversationChannelNotificationLevel success");
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:@(0) forKey:@"code"];
+        [dic setObject:@(level) forKey:@"pushNotificationLevel"];
+        result(dic);
+    } error:^(RCErrorCode status) {
+        NSLog(@"RCFlutterIM:setConversationChannelNotificationLevel error : %ld",(long)status);
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:@(status) forKey:@"code"];
+        result(dic);
+    }];
+}
+
+- (void)setConversationTypeNotificationLevel:(NSDictionary *)arguments result:(FlutterResult)result {
+    NSLog(@"RCFlutterIM:setConversationTypeNotificationLevel %@",arguments);
+    RCConversationType conversationType = [arguments[@"conversationType"] integerValue];
+    int pushNotificationLevel = [arguments[@"pushNotificationLevel"] intValue];
+    
+    [[RCChannelClient sharedChannelManager] setConversationTypeNotificationLevel:conversationType level:pushNotificationLevel success:^{
+        NSLog(@"RCFlutterIM:setConversationTypeNotificationLevel success");
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:@(0) forKey:@"code"];
+        result(dic);
+    } error:^(RCErrorCode status) {
+        NSLog(@"RCFlutterIM:setConversationTypeNotificationLevel error : %ld",(long)status);
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:@(status) forKey:@"code"];
+        result(dic);
+    }];
+}
+
+- (void)getConversationTypeNotificationLevel:(NSDictionary *)arguments result:(FlutterResult)result {
+    NSLog(@"RCFlutterIM:getConversationTypeNotificationLevel %@",arguments);
+    RCConversationType conversationType = [arguments[@"conversationType"] integerValue];
+    
+    
+    [[RCChannelClient sharedChannelManager] getConversationTypeNotificationLevel:conversationType success:^(RCPushNotificationLevel level) {
+        NSLog(@"RCFlutterIM:setConversationTypeNotificationLevel success");
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:@(0) forKey:@"code"];
+        [dic setObject:@(level) forKey:@"pushNotificationLevel"];
+        result(dic);
+    } error:^(RCErrorCode status) {
+        NSLog(@"RCFlutterIM:setConversationTypeNotificationLevel error : %ld",(long)status);
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:@(status) forKey:@"code"];
+        result(dic);
+    }];
+    
+}
+
+- (void)setUltraGroupConversationDefaultNotificationLevel:(NSDictionary *)arguments result:(FlutterResult)result {
+    NSLog(@"RCFlutterIM:setUltraGroupConversationDefaultNotificationLevel %@",arguments);
+    NSString *targetId = arguments[@"targetId"];
+    int pushNotificationLevel = [arguments[@"pushNotificationLevel"] intValue];
+    
+    [[RCChannelClient sharedChannelManager] setUltraGroupConversationDefaultNotificationLevel:targetId level:pushNotificationLevel success:^{
+        NSLog(@"RCFlutterIM:setUltraGroupConversationDefaultNotificationLevel success");
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:@(0) forKey:@"code"];
+        result(dic);
+        } error:^(RCErrorCode status) {
+            NSLog(@"RCFlutterIM:setUltraGroupConversationDefaultNotificationLevel error : %ld",(long)status);
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:@(status) forKey:@"code"];
+            result(dic);
+        }];
+    
+}
+
+- (void)getUltraGroupConversationDefaultNotificationLevel:(NSDictionary *)arguments result:(FlutterResult)result {
+    NSLog(@"RCFlutterIM:getUltraGroupConversationDefaultNotificationLevel %@",arguments);
+    NSString *targetId = arguments[@"targetId"];
+    
+    [[RCChannelClient sharedChannelManager] getUltraGroupConversationDefaultNotificationLevel:targetId success:^(RCPushNotificationLevel level) {
+            NSLog(@"RCFlutterIM:getUltraGroupConversationDefaultNotificationLevel success");
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:@(0) forKey:@"code"];
+            [dic setObject:@(level) forKey:@"pushNotificationLevel"];
+            result(dic);
+        } error:^(RCErrorCode status) {
+            NSLog(@"RCFlutterIM:getUltraGroupConversationDefaultNotificationLevel error : %ld",(long)status);
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:@(status) forKey:@"code"];
+            result(dic);
+        }];
+}
+
+- (void)setUltraGroupConversationChannelDefaultNotificationLevel:(NSDictionary *)arguments result:(FlutterResult)result {
+    NSLog(@"RCFlutterIM:setUltraGroupConversationChannelDefaultNotificationLevel %@",arguments);
+    NSString *targetId = arguments[@"targetId"];
+    NSString *channelId = arguments[@"channelId"];
+    int pushNotificationLevel = [arguments[@"pushNotificationLevel"] intValue];
+    
+    [[RCChannelClient sharedChannelManager] setUltraGroupConversationChannelDefaultNotificationLevel:targetId channelId:channelId level:pushNotificationLevel success:^{
+        NSLog(@"RCFlutterIM:setUltraGroupConversationChannelDefaultNotificationLevel success");
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:@(0) forKey:@"code"];
+        result(dic);
+    } error:^(RCErrorCode status) {
+        NSLog(@"RCFlutterIM:setUltraGroupConversationChannelDefaultNotificationLevel error : %ld",(long)status);
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:@(status) forKey:@"code"];
+        result(dic);
+    }];
+}
+
+- (void)getUltraGroupConversationChannelDefaultNotificationLevel:(NSDictionary *)arguments result:(FlutterResult)result {
+    NSLog(@"RCFlutterIM:getUltraGroupConversationChannelDefaultNotificationLevel %@",arguments);
+    NSString *targetId = arguments[@"targetId"];
+    NSString *channelId = arguments[@"channelId"];
+    
+    [[RCChannelClient sharedChannelManager] getUltraGroupConversationChannelDefaultNotificationLevel:targetId channelId:channelId success:^(RCPushNotificationLevel level) {
+        NSLog(@"RCFlutterIM:getUltraGroupConversationChannelDefaultNotificationLevel success");
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:@(0) forKey:@"code"];
+        [dic setObject:@(level) forKey:@"pushNotificationLevel"];
+        result(dic);
+        } error:^(RCErrorCode status) {
+            NSLog(@"RCFlutterIM:getUltraGroupConversationChannelDefaultNotificationLevel error : %ld",(long)status);
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:@(status) forKey:@"code"];
+            result(dic);
+        }];
+}
+
+- (void)getUltraGroupUnreadCount:(NSDictionary *)arguments result:(FlutterResult)result {
+    NSLog(@"RCFlutterIM:getUltraGroupUnreadCount %@",arguments);
+    NSString *targetId = arguments[@"targetId"];
+    
+    [[RCChannelClient sharedChannelManager] getUltraGroupUnreadCount:targetId success:^(NSInteger count) {
+        NSLog(@"RCFlutterIM:getUltraGroupUnreadCount success");
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:@(0) forKey:@"code"];
+        [dic setObject:@(count) forKey:@"count"];
+        result(dic);
+        } error:^(RCErrorCode status) {
+            NSLog(@"RCFlutterIM:getUltraGroupUnreadCount error : %ld",(long)status);
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:@(status) forKey:@"code"];
+            result(dic);
+        }];
+}
+
+
+- (void)getUltraGroupAllUnreadCount:(NSDictionary *)arguments result:(FlutterResult)result {
+    NSLog(@"RCFlutterIM:getUltraGroupAllUnreadCount %@",arguments);
+
+    
+    [[RCChannelClient sharedChannelManager] getUltraGroupAllUnreadCount:^(NSInteger count) {
+        NSLog(@"RCFlutterIM:getUltraGroupAllUnreadCount success");
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:@(0) forKey:@"code"];
+        [dic setObject:@(count) forKey:@"count"];
+        result(dic);
+        } error:^(RCErrorCode status) {
+            NSLog(@"RCFlutterIM:getUltraGroupAllUnreadCount error : %ld",(long)status);
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:@(status) forKey:@"code"];
+            result(dic);
+        }];
+}
+
+- (void)getUltraGroupAllUnreadMentionedCount:(NSDictionary *)arguments result:(FlutterResult)result {
+    NSLog(@"RCFlutterIM:getUltraGroupAllUnreadMentionedCount %@",arguments);
+
+    [[RCChannelClient sharedChannelManager] getUltraGroupAllUnreadMentionedCount:^(NSInteger count) {
+        NSLog(@"RCFlutterIM:getUltraGroupAllUnreadMentionedCount success");
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:@(0) forKey:@"code"];
+        [dic setObject:@(count) forKey:@"count"];
+        result(dic);
+        } error:^(RCErrorCode status) {
+            NSLog(@"RCFlutterIM:getUltraGroupAllUnreadMentionedCount error : %ld",(long)status);
+            NSMutableDictionary *dic = [NSMutableDictionary new];
+            [dic setObject:@(status) forKey:@"code"];
+            result(dic);
+        }];
+}
+
+
 
 - (void)syncUltraGroupReadStatus:(NSDictionary *)arguments result:(FlutterResult)result {
     
@@ -188,7 +476,7 @@ RCUltraGroupReadTimeDelegate>
     NSLog(@"RCFlutterIM:getUltraGroupUnreadMentionedCount");
     NSString *targetId = arguments[@"targetId"];
     int count = [[RCChannelClient sharedChannelManager] getUltraGroupUnreadMentionedCount:targetId];
-
+    
     NSMutableDictionary *dic = [NSMutableDictionary new];
     [dic setObject:@(count) forKey:@"count"];
     result(dic);
@@ -200,7 +488,7 @@ RCUltraGroupReadTimeDelegate>
     NSString *targetId = arguments[@"targetId"];
     NSString *channelId = arguments[@"channelId"];
     RCUltraGroupTypingStatus typingStatus = [arguments[@"typingStatus"] integerValue];
-    [[RCChannelClient sharedChannelManager] sendUltraGroupTypingStatus:targetId channleId:channelId typingStatus:typingStatus success:^{
+    [[RCChannelClient sharedChannelManager] sendUltraGroupTypingStatus:targetId channelId:channelId typingStatus:typingStatus success:^{
         NSMutableDictionary *dic = [NSMutableDictionary new];
         [dic setObject:@(0) forKey:@"code"];
         result(dic);
