@@ -521,6 +521,17 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
     // });
   }
 
+  void _cancelMessage(Message message) async {
+    RongIMClient.cancelSendMediaMessage(message, (code) {
+      if (code == 0) {
+        _insertOrReplaceMessage(message);
+        showShortToast("取消成功");
+      } else {
+        showShortToast("无法取消");
+      }
+    });
+  }
+
   void _recallMessage(Message? message) async {
     if (isUltraGroup) {
       RongIMClient.recallUltraGroupMessage(message!.messageUId!, (code, recallMessage) => {_insertOrReplaceMessage(recallMessage)});
@@ -946,12 +957,19 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
   void didLongPressMessageItem(Message? message, Offset? tapPos) {
     Map<String, String> actionMap = {
       RCLongPressAction.DeleteKey: RCLongPressAction.DeleteValue,
+      RCLongPressAction.MutiSelectKey: RCLongPressAction.MutiSelectValue,
     };
-    // 引用消息
+    // 判断当前消息是否可以被引用
     if (_isShowReference(message!)) {
       actionMap[RCLongPressAction.ReferenceKey] = RCLongPressAction.ReferenceValue;
     }
-    actionMap[RCLongPressAction.MutiSelectKey] = RCLongPressAction.MutiSelectValue;
+    if (message.messageDirection == RCMessageDirection.Send && message.sentStatus == RCSentStatus.Sending) {
+      MessageContent? messageContent = message.content;
+      if (messageContent is ImageMessage || messageContent is SightMessage || messageContent is GifMessage || messageContent is FileMessage) {
+        actionMap[RCLongPressAction.CancelKey] = RCLongPressAction.CancelValue;
+      }
+    }
+
     if (message.messageDirection == RCMessageDirection.Send) {
       actionMap[RCLongPressAction.RecallKey] = RCLongPressAction.RecallValue;
     }
@@ -968,6 +986,8 @@ class _ConversationPageState extends State<ConversationPage> implements BottomIn
     WidgetUtil.showLongPressMenu(context, tapPos!, actionMap, (String? key) {
       if (key == RCLongPressAction.DeleteKey) {
         _deleteMessage(message);
+      } else if (key == RCLongPressAction.CancelKey) {
+        _cancelMessage(message);
       } else if (key == RCLongPressAction.RecallKey) {
         _recallMessage(message);
       } else if (key == RCLongPressAction.MutiSelectKey) {

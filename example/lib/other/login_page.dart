@@ -46,9 +46,11 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _saveUserInfo(String id, String token) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString("id", id);
-    prefs.setString("token", token);
+    if (id.isNotEmpty && token.isNotEmpty) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString("id", id);
+      prefs.setString("token", token);
+    }
   }
 
   @override

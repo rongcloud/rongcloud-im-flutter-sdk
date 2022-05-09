@@ -5,7 +5,7 @@ buildscript {
     repositories {
         google()
         jcenter()
-        maven { url "https://maven.rongcloud.cn/repository/maven-releases/" }
+        mavenCentral()
         maven { url 'https://developer.huawei.com/repo/' }
     }
 
@@ -18,7 +18,7 @@ rootProject.allprojects {
     repositories {
         google()
         jcenter()
-        maven { url "https://maven.rongcloud.cn/repository/maven-releases/" }
+        mavenCentral()
         maven { url 'https://developer.huawei.com/repo/' }
     }
 }
@@ -26,7 +26,7 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 31
 
     defaultConfig {
         minSdkVersion 20
@@ -40,4 +40,5 @@ dependencies {
 //    api fileTree(dir: 'libs', include: ['*.jar','*.aar'])
      api 'cn.rongcloud.sdk:im_libcore:5.2.2'
      api 'cn.rongcloud.sdk:im_chatroom:5.2.2'
+
 }

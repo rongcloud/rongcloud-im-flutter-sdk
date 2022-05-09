@@ -79,6 +79,7 @@ public class RCMethodList {
     static String MethodKeySendIntactMessage = "sendIntactMessage";
     static String MethodKeySetAndroidPushConfig = "setAndroidPushConfig";
     static String MethodKeySetStatisticServer = "setStatisticServer";
+    static String MethodKeyCancelSendMediaMessage = "cancelSendMediaMessage";
 
     // 消息扩展
     static String MethodKeyUpdateMessageExpansion = "updateMessageExpansion";

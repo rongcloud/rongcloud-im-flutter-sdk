@@ -321,6 +321,8 @@ static NSString * const VER = @"5.1.8";
     }else if ([call.method hasPrefix:RCUltraGroup]) {
         // 处理超级群相关业务
         [[RCUltraGroupClient sharedClient] handleMethodCall:call result:result];
+    }else if ([RCMethodKeyCancelSendMediaMessage isEqualToString:call.method]) {
+        [self cancelSendMediaMessage:call.arguments result:result];
     }else {
         result(FlutterMethodNotImplemented);
     }
@@ -405,6 +407,18 @@ static NSString * const VER = @"5.1.8";
     NSDictionary *dic = (NSDictionary *)arg;
     NSString *statisticServer = dic[@"statisticServer"];
     [[RCCoreClient sharedCoreClient] setStatisticServer:statisticServer];
+}
+
+- (void)cancelSendMediaMessage:(id)arg result:(FlutterResult)result {
+    if([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *param = (NSDictionary *)arg;
+        
+        NSDictionary *messageDic = param[@"message"];
+        RCMessage *message = [RCFlutterMessageFactory dic2Message:messageDic];
+        
+        BOOL res = [[RCCoreClient sharedCoreClient] cancelSendMediaMessage:message.messageId];
+        result(@(res ? 0 : -1));
+    }
 }
 
 - (void)connectWithToken:(id)arg result:(FlutterResult)result {

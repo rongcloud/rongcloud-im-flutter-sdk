@@ -5,6 +5,7 @@ class RCMethodKey {
   static const String Connect = 'connect';
   static const String Disconnect = 'disconnect';
   static const String SendMessage = 'sendMessage';
+  static const String CancelSendMediaMessage = 'cancelSendMediaMessage';
   static const String RefreshUserInfo = 'refreshUserInfo';
   static const String JoinChatRoom = 'joinChatRoom';
   static const String JoinExistChatRoom = 'joinExistChatRoom';
