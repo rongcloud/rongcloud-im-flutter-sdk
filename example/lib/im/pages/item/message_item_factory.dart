@@ -30,7 +30,7 @@ class MessageItemFactory extends StatelessWidget {
       ),
       padding: EdgeInsets.all(8),
       child: Text(
-        needShow ? msg!.content! : "点击查看",
+        needShow ? msg!.content ?? "当前消息 content 为空" : "点击查看",
         style: TextStyle(fontSize: RCFont.MessageTextFont),
       ),
     );

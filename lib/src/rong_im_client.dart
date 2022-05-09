@@ -594,20 +594,6 @@ class RongIMClient {
     return msg;
   }
 
-//  ///获取会话列表
-//  static Future<List> getConversationList() async {
-//    List list = await _channel.invokeMethod(RCMethodKey.GetConversationList);
-//    if (list == null) {
-//      return null;
-//    }
-//    List conList = [];
-//    for (String conStr in list) {
-//      Conversation con = MessageFactory.instance.string2Conversation(conStr);
-//      conList.add(con);
-//    }
-//    return conList;
-//  }
-
   ///根据传入的会话类型来获取会话列表
   ///
   /// [conversationTypeList] 会话类型数组，参见枚举 [RCConversationType]
