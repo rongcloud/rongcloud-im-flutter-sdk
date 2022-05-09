@@ -4151,63 +4151,15 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
         return identifier;
     }
 
-    public Message map2Message(Map messageMap) {
+    private Message map2Message(Map messageMap) {
         String contentStr = null;
+        Message message = new Message();
         if (messageMap != null) {
-            contentStr = (String) messageMap.get("content");
-            if (contentStr == null) {
-                RCLog.e("Map2Message: message content is nil");
-                return null;
-            }
-
-            byte[] bytes = contentStr.getBytes();
-            MessageContent content = null;
-            content = newMessageContent((String) messageMap.get("objectName"), bytes, contentStr);
-
-            if (content == null) {
-                RCLog.e("Map2Message:  message content is nil");
-                return null;
-            }
-            // 主动赋予值 thumUri 防止在 flutter 互相传递时丢失
-            String objectName = (String) messageMap.get("objectName");
-            if (!TextUtils.isEmpty(objectName)) {
-                if (objectName.equalsIgnoreCase("RC:ImgMsg") || objectName.equalsIgnoreCase("RC:SightMsg")) {
-                    try {
-                        JSONObject jsonObject = new JSONObject(contentStr);
-                        if (jsonObject.has("thumbUri")) {
-                            String thumbUriStr = (String) jsonObject.get("thumbUri");
-                            if (content instanceof ImageMessage) {
-                                ((ImageMessage) content).setThumUri(Uri.parse(thumbUriStr));
-                            } else if (content instanceof SightMessage) {
-                                ((SightMessage) content).setThumbUri(Uri.parse(thumbUriStr));
-                            }
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                } else if (isVoiceMessage(objectName)) {
-                    JSONObject jsonObject = null;
-                    try {
-                        jsonObject = new JSONObject(contentStr);
-                        String localPath = jsonObject.getString("localPath");
-                        int duration = jsonObject.getInt("duration");
-                        Uri uri = Uri.parse(localPath);
-                        content = VoiceMessage.obtain(uri, duration);
-                    } catch (JSONException e) {
-                    }
-                } else if (objectName != null && objectName.equalsIgnoreCase("RC:ReferenceMsg")) {
-                    makeReferenceMessage(content, contentStr);
-                }
-            }
-//            message.setContent(content);
-            int type = (int) messageMap.get("conversationType");
-            String targetId = (String) messageMap.get("targetId");
-            String channelId = (String) messageMap.get("channelId");
-
-            Message message = Message.obtain(targetId, Conversation.ConversationType.setValue(type),channelId,content);
-
+            message.setConversationType(
+                    Conversation.ConversationType.setValue((int) messageMap.get("conversationType")));
+            message.setTargetId((String) messageMap.get("targetId"));
             if (messageMap.get("messageId") != null) {
-               message.setMessageId((int) messageMap.get("messageId"));
+                message.setMessageId((int) messageMap.get("messageId"));
             }
             if (messageMap.get("messageDirection") != null) {
                 message.setMessageDirection(Message.MessageDirection.setValue((int) messageMap.get("messageDirection")));
@@ -4230,144 +4182,148 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
             if (messageMap.get("messageUId") != null) {
                 message.setUId((String) messageMap.get("messageUId"));
             }
-            byte[] bytes = contentStr.getBytes();
-            MessageContent content = null;
-            String objectName = (String) messageMap.get("objectName");
-    
-            if (objectName.equalsIgnoreCase("RC:ReferenceMsg")) {
-                content = makeReferenceMessage(contentStr);
-            } else {
-                content = newMessageContent(objectName, bytes, contentStr);
-            }
-    
-            if (content == null) {
-                RCLog.e("Map2Message:  message content is nil");
-                return null;
-            }
-    
-            if (content instanceof MediaMessageContent) {
-                    JSONObject jsonObject = null;
-                    String localPath = null;
-                    try {
-                        jsonObject = new JSONObject(contentStr);
-                        localPath = (String) jsonObject.get("localPath");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                localPath = getCorrectLocalPath(localPath);
-                    ((MediaMessageContent) content).setLocalPath(Uri.parse(localPath));
-            }
-            
-            if (!TextUtils.isEmpty(objectName)) {
-                if (objectName.equalsIgnoreCase("RC:ImgMsg") || objectName.equalsIgnoreCase("RC:SightMsg")) {
-                    try {
-                        JSONObject jsonObject = new JSONObject(contentStr);
-                        if (jsonObject.has("thumbUri")) {
-                            String thumbUriStr = (String) jsonObject.get("thumbUri");
-                            if (content instanceof ImageMessage) {
-                                ((ImageMessage) content).setThumUri(Uri.parse(thumbUriStr));
-                            } else if (content instanceof SightMessage) {
-                                ((SightMessage) content).setThumbUri(Uri.parse(thumbUriStr));
-                            }
-                        } else if (jsonObject.has("localPath")) {
-                            String thumbUriStr = (String) jsonObject.get("localPath");
-                            if (content instanceof ImageMessage) {
-                                ((ImageMessage) content).setThumUri(Uri.parse(thumbUriStr));
-                            }
+            setExtraValue(messageMap, message);
+            contentStr = (String) messageMap.get("content");
+        }
+        if (contentStr == null) {
+            RCLog.e("Map2Message: message content is nil");
+            return null;
+        }
+        byte[] bytes = contentStr.getBytes();
+        MessageContent content = null;
+        String objectName = (String) messageMap.get("objectName");
+
+        if (objectName.equalsIgnoreCase("RC:ReferenceMsg")) {
+            content = makeReferenceMessage(contentStr);
+        } else {
+            content = newMessageContent(objectName, bytes, contentStr);
+        }
+
+        if (content == null) {
+            RCLog.e("Map2Message:  message content is nil");
+            return null;
+        }
+
+        if (content instanceof MediaMessageContent) {
+                JSONObject jsonObject = null;
+                String localPath = null;
+                try {
+                    jsonObject = new JSONObject(contentStr);
+                    localPath = (String) jsonObject.get("localPath");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            localPath = getCorrectLocalPath(localPath);
+                ((MediaMessageContent) content).setLocalPath(Uri.parse(localPath));
+        }
+        
+        if (!TextUtils.isEmpty(objectName)) {
+            if (objectName.equalsIgnoreCase("RC:ImgMsg") || objectName.equalsIgnoreCase("RC:SightMsg")) {
+                try {
+                    JSONObject jsonObject = new JSONObject(contentStr);
+                    if (jsonObject.has("thumbUri")) {
+                        String thumbUriStr = (String) jsonObject.get("thumbUri");
+                        if (content instanceof ImageMessage) {
+                            ((ImageMessage) content).setThumUri(Uri.parse(thumbUriStr));
+                        } else if (content instanceof SightMessage) {
+                            ((SightMessage) content).setThumbUri(Uri.parse(thumbUriStr));
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    } else if (jsonObject.has("localPath")) {
+                        String thumbUriStr = (String) jsonObject.get("localPath");
+                        if (content instanceof ImageMessage) {
+                            ((ImageMessage) content).setThumUri(Uri.parse(thumbUriStr));
+                        }
                     }
-                } else if (isVoiceMessage(objectName)) {
-                    JSONObject jsonObject = null;
-                    try {
-                        jsonObject = new JSONObject(contentStr);
-                        String localPath = jsonObject.getString("localPath");
-                        int duration = jsonObject.getInt("duration");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else if (isVoiceMessage(objectName)) {
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(contentStr);
+                    String localPath = jsonObject.getString("localPath");
+                    int duration = jsonObject.getInt("duration");
+                    Uri uri = Uri.parse(localPath);
+                    content = VoiceMessage.obtain(uri, duration);
+                } catch (JSONException e) {
+                }
+            } else if (objectName != null && objectName.equalsIgnoreCase("RC:ReferenceMsg")) {
+                makeReferenceMessage(content, contentStr);
+            }else if (objectName.equalsIgnoreCase("RC:FileMsg")) {
+                try {
+                    JSONObject jsonObject = new JSONObject(contentStr);
+                    String localPath = (String) jsonObject.get("localPath");
+                    if (!TextUtils.isEmpty(localPath)) {
+                        localPath = getCorrectLocalPath(localPath);
                         Uri uri = Uri.parse(localPath);
-                        content = VoiceMessage.obtain(uri, duration);
-                    } catch (JSONException e) {
-                    }
-                } else if (objectName != null && objectName.equalsIgnoreCase("RC:ReferenceMsg")) {
-                    makeReferenceMessage(content, contentStr);
-                }else if (objectName.equalsIgnoreCase("RC:FileMsg")) {
-                    try {
-                        JSONObject jsonObject = new JSONObject(contentStr);
-                        String localPath = (String) jsonObject.get("localPath");
-                        if (!TextUtils.isEmpty(localPath)) {
-                            localPath = getCorrectLocalPath(localPath);
-                            Uri uri = Uri.parse(localPath);
-                            content = FileMessage.obtain(uri);
-                            if (jsonObject.has("type")) {
-                                String mType = (String) jsonObject.get("type");
-                                ((FileMessage) content).setType(mType);
-                            }
-                            if (jsonObject.has("extra")) {
-                                Object o = jsonObject.get("extra");// 设置 extra
-                                if (o instanceof String) {
-                                    String extra = (String) o;
-                                    ((FileMessage) content).setExtra(extra);
-                                }
-                            }
-                            if (jsonObject.has("fileUrl")) {
-                                String fileUrl = (String) jsonObject.get("fileUrl");
-                                if (!TextUtils.isEmpty(fileUrl)) {
-                                    ((FileMessage) content).setMediaUrl(Uri.parse(fileUrl));
-                                }
-                            }
-                            if (jsonObject.has("size")) {
-                                Number size = (Number) jsonObject.get("size");
-                                if (size != null && size.intValue() > 0) {
-                                    ((FileMessage) content).setSize(size.intValue());
-                                }
-                            }
-                            if (jsonObject.has("name")) {
-                                String name = jsonObject.optString("name");
-                                if (!TextUtils.isEmpty(name)) {
-                                    ((FileMessage) content).setName(name);
-                                }
+                        content = FileMessage.obtain(uri);
+                        if (jsonObject.has("type")) {
+                            String mType = (String) jsonObject.get("type");
+                            ((FileMessage) content).setType(mType);
+                        }
+                        if (jsonObject.has("extra")) {
+                            Object o = jsonObject.get("extra");// 设置 extra
+                            if (o instanceof String) {
+                                String extra = (String) o;
+                                ((FileMessage) content).setExtra(extra);
                             }
                         }
-    
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                } else if (objectName.equalsIgnoreCase("RC:CombineMsg")) {
-                    try {
-                        JSONObject jsonObject = new JSONObject(contentStr);
-                        String localPath = (String) jsonObject.get("localPath");
-                        if (!TextUtils.isEmpty(localPath)) {
-                            localPath = getCorrectLocalPath(localPath);
-                            Uri uri = Uri.parse(localPath);
-                            content = CombineMessage.obtain(uri);
-                            setInfoToCombineMessage(contentStr, content);
-                            if (jsonObject.has("extra")) {
-                                Object o = jsonObject.get("extra");// 设置 extra
-                                if (o instanceof String) {
-                                    String extra = (String) o;
-                                    ((CombineMessage) content).setExtra(extra);
-                                }
-                            }
-                            if (jsonObject.has("remoteUrl")) {
-                                String remoteUrl = jsonObject.optString("remoteUrl");
-                                if (!TextUtils.isEmpty(remoteUrl) && !"null".equals(remoteUrl)) {
-                                    ((CombineMessage) content).setMediaUrl(Uri.parse(remoteUrl));
-                                }
+                        if (jsonObject.has("fileUrl")) {
+                            String fileUrl = (String) jsonObject.get("fileUrl");
+                            if (!TextUtils.isEmpty(fileUrl)) {
+                                ((FileMessage) content).setMediaUrl(Uri.parse(fileUrl));
                             }
                         }
-    
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                        if (jsonObject.has("size")) {
+                            Number size = (Number) jsonObject.get("size");
+                            if (size != null && size.intValue() > 0) {
+                                ((FileMessage) content).setSize(size.intValue());
+                            }
+                        }
+                        if (jsonObject.has("name")) {
+                            String name = jsonObject.optString("name");
+                            if (!TextUtils.isEmpty(name)) {
+                                ((FileMessage) content).setName(name);
+                            }
+                        }
                     }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else if (objectName.equalsIgnoreCase("RC:CombineMsg")) {
+                try {
+                    JSONObject jsonObject = new JSONObject(contentStr);
+                    String localPath = (String) jsonObject.get("localPath");
+                    if (!TextUtils.isEmpty(localPath)) {
+                        localPath = getCorrectLocalPath(localPath);
+                        Uri uri = Uri.parse(localPath);
+                        content = CombineMessage.obtain(uri);
+                        setInfoToCombineMessage(contentStr, content);
+                        if (jsonObject.has("extra")) {
+                            Object o = jsonObject.get("extra");// 设置 extra
+                            if (o instanceof String) {
+                                String extra = (String) o;
+                                ((CombineMessage) content).setExtra(extra);
+                            }
+                        }
+                        if (jsonObject.has("remoteUrl")) {
+                            String remoteUrl = jsonObject.optString("remoteUrl");
+                            if (!TextUtils.isEmpty(remoteUrl) && !"null".equals(remoteUrl)) {
+                                ((CombineMessage) content).setMediaUrl(Uri.parse(remoteUrl));
+                            }
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             }
-            message.setContent(content);
-            setExtraValue(messageMap, message);
-            return message;
         }
-        return null;
-
+        message.setContent(content);
+        return message;
     }
+
 
     private void setExtraValue(Map messageMap, Message message) {
         if (messageMap.get("disableNotification") != null && (boolean) messageMap.get("disableNotification")) {
