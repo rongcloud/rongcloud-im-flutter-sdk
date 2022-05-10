@@ -4151,7 +4151,7 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
         return identifier;
     }
 
-    private Message map2Message(Map messageMap) {
+    public Message map2Message(Map messageMap) {
         String contentStr = null;
         Message message = new Message();
         if (messageMap != null) {
