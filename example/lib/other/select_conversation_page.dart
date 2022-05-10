@@ -109,6 +109,7 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
     List<Message> messageList = [];
     Message message = Message();
     message.content = combineMessage;
+    message.objectName = combineMessage!.getObjectName();
     messageList.add(message);
     // 这里不使用 loading，因为发消息时 sleep 会卡住动画
     DialogUtil.showAlertDiaLog(context, "消息转发中，请稍后...", confirmButton: TextButton(onPressed: () {}, child: Text("确认")));
@@ -129,10 +130,16 @@ class _SelectConversationPageState extends State<SelectConversationPage> {
           // 转发时去掉消息原先携带的 sendUserInfo 和 mentionedInfo
           msg.content!.sendUserInfo = null;
           msg.content!.mentionedInfo = null;
+          msg.messageId = 0;
+          msg.conversationType = con.conversationType!;
+          msg.targetId = con.targetId!;
+
           if (TargetPlatform.android == defaultTargetPlatform && !isCombineMsg) {
-            RongIMClient.forwardMessageByStep(con.conversationType!, con.targetId!, msg);
+            // RongIMClient.forwardMessageByStep(con.conversationType!, con.targetId!, msg);
+            RongIMClient.sendIntactMessageWithCallBack(msg, null, null, (messageId, status, code) => {print("转发成功")});
           } else {
-            RongIMClient.sendMessage(con.conversationType!, con.targetId!, msg.content!);
+            // RongIMClient.sendMessage(con.conversationType!, con.targetId!, msg.content!);
+            RongIMClient.sendIntactMessageWithCallBack(msg, null, null, (messageId, status, code) => {print("转发成功")});
           }
 
           // 延迟400秒，防止过渡频繁的发送消息导致发送失败的问题
