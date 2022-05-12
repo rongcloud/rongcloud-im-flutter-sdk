@@ -24,6 +24,11 @@ class _DebugPageState extends State<DebugPage> {
     "聊天室状态存储测试",
     "获取免打扰的会话列表",
     "获取会话 SealTalk 第一条未读消息",
+    "获取指定超级群 100 下所有频道的未读数",
+    "获取超级群会话类型的所有未读消息数",
+    "获取超级群会话类型的@消息未读数",
+    "设置会话类型免打扰",
+    "查询会话类型免打扰",
   ];
 
   void _didTap(int index, BuildContext context) {
@@ -59,7 +64,225 @@ class _DebugPageState extends State<DebugPage> {
       case 9:
         _getFirstUnreadMsg();
         break;
+      case 10:
+        _getUltraGroupUnreadCount();
+        break;
+      case 11:
+        _getUltraGroupAllUnreadCount();
+        break;
+      case 12:
+        _getUltraGroupAllUnreadMentionedCount();
+        break;
+      case 13:
+        _showConversationTypeForSetConversationTypeLevel();
+        break;
+      case 14:
+        _getConversationTypeForNotification();
+        break;
     }
+  }
+
+  void _showConversationTypeForSetConversationTypeLevel() {
+    List<Widget> widgets = [
+      ListTile(
+        title: Center(
+          child: Text(
+            "单聊",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          _showLevelForSetConversationTypeLevel(1);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "群聊",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          _showLevelForSetConversationTypeLevel(3);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "超级群",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          _showLevelForSetConversationTypeLevel(10);
+        },
+      )
+    ];
+    _showSheet(widgets);
+  }
+
+  void _showLevelForSetConversationTypeLevel(int type) {
+    List<Widget> widgets = [
+      ListTile(
+        title: Center(
+          child: Text(
+            "全部消息通知",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          _setConversationTypeNotificationLevel(type, -1);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "未设置",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          _setConversationTypeNotificationLevel(type, 0);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "@成员列表有自己 时通知",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          _setConversationTypeNotificationLevel(type, 1);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "不接收消息通知",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          _setConversationTypeNotificationLevel(type, 5);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "@ 有自己时通知@所有人不通知",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          _setConversationTypeNotificationLevel(type, 2);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "@所有人通知，其他情况都不通知",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          _setConversationTypeNotificationLevel(type, 4);
+        },
+      )
+    ];
+    _showSheet(widgets);
+  }
+
+  void _setConversationTypeNotificationLevel(int type, int level) async {
+    await prefix.RongIMClient.setConversationTypeNotificationLevel(type, level, (code) {
+      String toast = "指定会话类型免打扰:\n" + type.toString() + "level:" + level.toString();
+      developer.log(toast, name: pageName);
+      DialogUtil.showAlertDiaLog(context, toast);
+    });
+  }
+
+  void _getConversationTypeForNotification() {
+    List<Widget> widgets = [
+      ListTile(
+        title: Center(
+          child: Text(
+            "单聊",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          _getConversationTypeNotificationLevel(1);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "群聊",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          _getConversationTypeNotificationLevel(3);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "超级群",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          _getConversationTypeNotificationLevel(10);
+        },
+      )
+    ];
+    _showSheet(widgets);
+  }
+
+  void _getConversationTypeNotificationLevel(int type) async {
+    await prefix.RongIMClient.getConversationTypeNotificationLevel(type, (code, pushNotificationLevel) {
+      String toast = "查询会话类型免打扰:\n" + pushNotificationLevel.toString();
+      developer.log(toast, name: pageName);
+      DialogUtil.showAlertDiaLog(context, toast);
+    });
+  }
+
+  void _getUltraGroupUnreadCount() async {
+    String targetId = "100";
+    await prefix.RongIMClient.getUltraGroupUnreadCount(targetId, (int? code, int? count) {
+      String toast = "获取指定超级群下所有频道的未读数:\n" + count.toString();
+      developer.log(toast, name: pageName);
+      DialogUtil.showAlertDiaLog(context, toast);
+    });
+  }
+
+  void _getUltraGroupAllUnreadCount() async {
+    await prefix.RongIMClient.getUltraGroupAllUnreadCount((int? code, int? count) {
+      String toast = "获取超级群会话类型的所有未读消息数:\n" + count.toString();
+      developer.log(toast, name: pageName);
+      DialogUtil.showAlertDiaLog(context, toast);
+    });
+  }
+
+  void _getUltraGroupAllUnreadMentionedCount() async {
+    await prefix.RongIMClient.getUltraGroupAllUnreadMentionedCount((int? code, int? count) {
+      String toast = "获取超级群会话类型的@消息未读数:\n" + count.toString();
+      developer.log(toast, name: pageName);
+      DialogUtil.showAlertDiaLog(context, toast);
+    });
   }
 
   void _getFirstUnreadMsg() async {
@@ -67,20 +290,74 @@ class _DebugPageState extends State<DebugPage> {
     prefix.Message? m = await prefix.RongIMClient.getFirstUnreadMessage(1, targetId);
   }
 
-  void _setNotificationQuietHours() {
+  void _showSheet(List<Widget> items) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: items,
+          );
+        });
+  }
+
+  void setNotificationQuietHoursLevel(int level) {
     developer.log("_setNotificationQuietHours", name: pageName);
-    prefix.RongIMClient.setNotificationQuietHours("09:00:00", 600, (int? code) {
+    prefix.RongIMClient.setNotificationQuietHoursLevel("09:00:00", 600, level, (int? code) {
       EventBus.instance!.commit(EventKeys.UpdateNotificationQuietStatus, {});
       String toast = "设置全局屏蔽某个时间段的消息提醒:\n" + (code == 0 ? "设置成功" : "设置失败, code:" + code.toString());
       developer.log(toast, name: pageName);
+
       DialogUtil.showAlertDiaLog(context, toast);
     });
   }
 
+  void _setNotificationQuietHours() {
+    List<Widget> widgets = [
+      ListTile(
+        title: Center(
+          child: Text(
+            "向上查询群或者APP级别设置",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          setNotificationQuietHoursLevel(0);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "仅@消息通知",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          setNotificationQuietHoursLevel(1);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "不接收消息通知",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          setNotificationQuietHoursLevel(5);
+        },
+      )
+    ];
+    _showSheet(widgets);
+  }
+
   void _getNotificationQuietHours() {
     developer.log("_getNotificationQuietHours", name: pageName);
-    prefix.RongIMClient.getNotificationQuietHours((int? code, String? startTime, int? spansMin) {
-      String toast = "查询已设置的全局时间段消息提醒屏蔽\n: startTime:" + startTime! + " spansMin:" + spansMin.toString() + (code == 0 ? "" : "\n设置失败, code:" + code.toString());
+    prefix.RongIMClient.getNotificationQuietHoursLevel((code, startTime, spanMins, pushNotificationQuietHoursLevel) {
+      String toast = "查询已设置的全局时间段消息提醒屏蔽\n: startTime:" + (startTime ?? "") + " spansMin:" + spanMins.toString() + "pushNotificationQuietHoursLevel:" + pushNotificationQuietHoursLevel.toString() + (code == 0 ? "" : "\n设置失败, code:" + code.toString());
       developer.log(toast, name: pageName);
       DialogUtil.showAlertDiaLog(context, toast);
     });
@@ -88,10 +365,12 @@ class _DebugPageState extends State<DebugPage> {
 
   void _removeNotificationQuietHours() {
     developer.log("_removeNotificationQuietHours", name: pageName);
-    prefix.RongIMClient.removeNotificationQuietHours((int? code) {
+
+    prefix.RongIMClient.setNotificationQuietHoursLevel("09:00:00", 600, 0, (int? code) {
       EventBus.instance!.commit(EventKeys.UpdateNotificationQuietStatus, {});
       String toast = "删除已设置的全局时间段消息提醒屏蔽:\n" + (code == 0 ? "删除成功" : "删除失败, code:" + code.toString());
       developer.log(toast, name: pageName);
+
       DialogUtil.showAlertDiaLog(context, toast);
     });
   }
@@ -178,6 +457,10 @@ class _DebugPageState extends State<DebugPage> {
       DialogUtil.showAlertDiaLog(context, toast);
     });
   }
+
+  // Widget getBottomSheet(){
+
+  // }
 
   @override
   Widget build(BuildContext context) {

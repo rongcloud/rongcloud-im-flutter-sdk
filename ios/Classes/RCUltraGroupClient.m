@@ -298,7 +298,6 @@ RCUltraGroupConversationDelegate>
     NSLog(@"RCFlutterIM:getConversationTypeNotificationLevel %@",arguments);
     RCConversationType conversationType = [arguments[@"conversationType"] integerValue];
     
-    
     [[RCChannelClient sharedChannelManager] getConversationTypeNotificationLevel:conversationType success:^(RCPushNotificationLevel level) {
         NSLog(@"RCFlutterIM:setConversationTypeNotificationLevel success");
         NSMutableDictionary *dic = [NSMutableDictionary new];

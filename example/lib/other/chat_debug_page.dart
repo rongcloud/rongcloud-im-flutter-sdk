@@ -9,15 +9,7 @@ import 'package:rongcloud_im_plugin_example/im/util/event_bus.dart';
 
 import '../im/util/dialog_util.dart';
 
-List<String> _kUltraGroupTitles = <String>[
-  "设置免打扰",
-  "取消免打扰",
-  "清空本地历史消息",
-  "清空本地和远端历史消息",
-  "删除本地[所有频道]当前时间之前的消息",
-  "删除本地[当前频道]当前时间之前的消息",
-  "删除服务端当前时间之前的消息",
-];
+List<String> _kUltraGroupTitles = <String>["设置免打扰", "查看免打扰", "清空本地历史消息", "清空本地和远端历史消息", "删除本地[所有频道]当前时间之前的消息", "删除本地[当前频道]当前时间之前的消息", "删除服务端当前时间之前的消息", "查询指定超级群默认通知配置", "设置指定超级群默认通知配置", "查询指定超级群指定频道默认通知配置", "设置指定超级群指定频道默认通知配置"];
 
 class ChatDebugPage extends StatefulWidget {
   final Map? arguments;
@@ -45,11 +37,10 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
     super.initState();
     conversationType = arguments!["coversationType"];
     targetId = arguments!["targetId"];
-    channelId = arguments!["channelId"];
+    channelId = arguments!["channelId"] ?? "";
     isUltraGroup = arguments!["isUltraGroup"];
     titles = [
       "设置免打扰",
-      "取消免打扰",
       "查看免打扰",
       "搜索会话消息记录",
       "通过UId获取消息",
@@ -132,9 +123,6 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
       case "设置免打扰":
         _setConStatusEnable(true);
         break;
-      case "取消免打扰":
-        _setConStatusEnable(false);
-        break;
       case "查看免打扰":
         _getConStatus();
         break;
@@ -216,7 +204,211 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
       case "获取当前超级群所有频道的lastMsgUid":
         _getConversationTopStatusInTag();
         break;
+      case "查询指定超级群默认通知配置":
+        _getUltraGroupConversationDefaultNotificationLevel();
+        break;
+      case "设置指定超级群默认通知配置":
+        _setUltraGroupLevel();
+        break;
+      case "查询指定超级群指定频道默认通知配置":
+        _getUltraGroupConversationChannelDefaultNotificationLevel();
+        break;
+      case "设置指定超级群指定频道默认通知配置":
+        _setUltraGroupChannelLevel();
+        break;
     }
+  }
+
+  void _getUltraGroupConversationChannelDefaultNotificationLevel() {
+    developer.log("_getUltraGroupConversationDefaultNotificationLevel", name: pageName);
+    RongIMClient.getUltraGroupConversationChannelDefaultNotificationLevel(targetId!, channelId, (code, pushNotificationLevel) {
+      String toast = pushNotificationLevel.toString();
+      developer.log(toast, name: pageName);
+      DialogUtil.showAlertDiaLog(context, toast);
+    });
+  }
+
+  void _setUltraGroupConversationChannelDefaultNotificationLevel(int level) {
+    developer.log("_setUltraGroupConversationDefaultNotificationLevel", name: pageName);
+    RongIMClient.setUltraGroupConversationChannelDefaultNotificationLevel(targetId!, channelId, level, (code) {
+      String toast = "设置成功 code:" + code.toString();
+      developer.log(toast, name: pageName);
+      DialogUtil.showAlertDiaLog(context, toast);
+    });
+  }
+
+  void _setUltraGroupChannelLevel() {
+    List<Widget> widgets = [
+      ListTile(
+        title: Center(
+          child: Text(
+            "全部消息通知",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          _setUltraGroupConversationChannelDefaultNotificationLevel(-1);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "未设置",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          _setUltraGroupConversationChannelDefaultNotificationLevel(0);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "@成员列表有自己 时通知",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          _setUltraGroupConversationChannelDefaultNotificationLevel(1);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "不接收消息通知",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          _setUltraGroupConversationChannelDefaultNotificationLevel(5);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "@ 有自己时通知@所有人不通知",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          _setUltraGroupConversationChannelDefaultNotificationLevel(2);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "@所有人通知，其他情况都不通知",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          _setUltraGroupConversationChannelDefaultNotificationLevel(4);
+        },
+      )
+    ];
+    _showSheet(widgets);
+  }
+
+  void _setUltraGroupLevel() {
+    List<Widget> widgets = [
+      ListTile(
+        title: Center(
+          child: Text(
+            "全部消息通知",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          _setUltraGroupConversationDefaultNotificationLevel(-1);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "未设置",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          _setUltraGroupConversationDefaultNotificationLevel(0);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "@成员列表有自己 时通知",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          _setUltraGroupConversationDefaultNotificationLevel(1);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "不接收消息通知",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          _setUltraGroupConversationDefaultNotificationLevel(5);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "@ 有自己时通知@所有人不通知",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          _setUltraGroupConversationDefaultNotificationLevel(2);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "@所有人通知，其他情况都不通知",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          _setUltraGroupConversationDefaultNotificationLevel(4);
+        },
+      )
+    ];
+    _showSheet(widgets);
+  }
+
+  void _setUltraGroupConversationDefaultNotificationLevel(int level) {
+    developer.log("_setUltraGroupConversationDefaultNotificationLevel", name: pageName);
+    RongIMClient.setUltraGroupConversationDefaultNotificationLevel(targetId!, level, (code) {
+      String toast = "设置成功 code:" + code.toString();
+      developer.log(toast, name: pageName);
+      DialogUtil.showAlertDiaLog(context, toast);
+    });
+  }
+
+  void _getUltraGroupConversationDefaultNotificationLevel() {
+    developer.log("_getUltraGroupConversationDefaultNotificationLevel", name: pageName);
+    RongIMClient.getUltraGroupConversationDefaultNotificationLevel(targetId!, (code, pushNotificationLevel) {
+      String toast = pushNotificationLevel.toString();
+      developer.log(toast, name: pageName);
+      DialogUtil.showAlertDiaLog(context, toast);
+    });
   }
 
   void _addBlackList() {
@@ -266,19 +458,130 @@ class _ChatDebugPageState extends State<ChatDebugPage> {
   }
 
   void _setConStatusEnable(bool enable) {
-    RongIMClient.setConversationNotificationStatus(conversationType!, targetId!, enable, (int? status, int? code) {
-      developer.log("setConversationNotificationStatus1 status " + status.toString(), name: pageName);
-      String toast = code == 0 ? "设置免打扰成功" : "设置免打扰失败，错误码: $code";
-      DialogUtil.showAlertDiaLog(context, toast);
-    }, channelId: channelId);
+    List<Widget> widgets = [
+      ListTile(
+        title: Center(
+          child: Text(
+            "全部消息通知",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          setConversationChannelNotificationLevel(-1);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "未设置",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          setConversationChannelNotificationLevel(0);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "@成员列表有自己 时通知",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          setConversationChannelNotificationLevel(1);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "不接收消息通知",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          setConversationChannelNotificationLevel(5);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "@ 有自己时通知@所有人不通知",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          setConversationChannelNotificationLevel(2);
+        },
+      ),
+      ListTile(
+        title: Center(
+          child: Text(
+            "@所有人通知，其他情况都不通知",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        onTap: () async {
+          Navigator.pop(context);
+          setConversationChannelNotificationLevel(4);
+        },
+      )
+    ];
+    _showSheet(widgets);
+
+    // RongIMClient.setConversationNotificationStatus(conversationType!, targetId!, enable, (int? status, int? code) {
+    //   developer.log("setConversationNotificationStatus1 status " + status.toString(), name: pageName);
+    //   String toast = code == 0 ? "设置免打扰成功" : "设置免打扰失败，错误码: $code";
+    //   DialogUtil.showAlertDiaLog(context, toast);
+    // }, channelId: channelId);
+  }
+
+  void _showSheet(List<Widget> items) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: items,
+          );
+        });
+  }
+
+  void setConversationChannelNotificationLevel(int level) {
+    if (channelId == "") {
+      RongIMClient.setConversationNotificationLevel(conversationType!, targetId!, level, (code) {
+        developer.log("setConversationNotificationLevel status " + level.toString(), name: pageName);
+        String toast = code == 0 ? "设置免打扰成功" : "设置免打扰失败，错误码: $code";
+        DialogUtil.showAlertDiaLog(context, toast);
+      });
+    } else {
+      RongIMClient.setConversationChannelNotificationLevel(conversationType!, targetId!, channelId, level, (code) {
+        developer.log("setConversationChannelNotificationLevel status " + level.toString(), name: pageName);
+        String toast = code == 0 ? "设置免打扰成功" : "设置免打扰失败，错误码: $code";
+        DialogUtil.showAlertDiaLog(context, toast);
+      });
+    }
   }
 
   void _getConStatus() {
-    RongIMClient.getConversationNotificationStatus(conversationType!, targetId!, (int? status, int? code) {
-      String toast = "免打扰状态:" + (status == 0 ? "免打扰" : "有消息提醒");
-      developer.log(toast, name: pageName);
-      DialogUtil.showAlertDiaLog(context, toast);
-    });
+    if (channelId == "") {
+      RongIMClient.getConversationNotificationLevel(conversationType!, targetId!, (code, pushNotificationLevel) {
+        String toast = "免打扰状态:" + pushNotificationLevel.toString();
+        developer.log(toast, name: pageName);
+        DialogUtil.showAlertDiaLog(context, toast);
+      });
+    } else {
+      RongIMClient.getConversationChannelNotificationLevel(conversationType!, targetId!, channelId, (code, pushNotificationLevel) {
+        String toast = "免打扰状态:" + pushNotificationLevel.toString();
+        developer.log(toast, name: pageName);
+        DialogUtil.showAlertDiaLog(context, toast);
+      });
+    }
   }
 
   void _goToSearchMessagePage() {

@@ -23,7 +23,7 @@ if (flutterVersionName == null) {
 
 apply plugin: 'com.android.application'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
-project.setProperty('target-platform', 'android-arm')
+//project.setProperty('target-platform', 'android-arm')
 
 android {
     compileSdkVersion 31
