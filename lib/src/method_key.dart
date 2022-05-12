@@ -125,6 +125,8 @@ class RCMethodKey {
   static const String RCUltraGroupGetNotificationQuietHoursLevel = 'RCUltraGroup-GetNotificationQuietHoursLevel';
   static const String RCUltraGroupSetConversationChannelNotificationLevel = 'RCUltraGroup-SetConversationChannelNotificationLevel';
   static const String RCUltraGroupGetConversationChannelNotificationLevel = 'RCUltraGroup-GetConversationChannelNotificationLevel';
+  static const String RCUltraGroupSetConversationNotificationLevel = 'RCUltraGroup-SetConversationNotificationLevel';
+  static const String RCUltraGroupGetConversationNotificationLevel = 'RCUltraGroup-GetConversationNotificationLevel';
   static const String RCUltraGroupSetConversationTypeNotificationLevel = 'RCUltraGroup-SetConversationTypeNotificationLevel';
   static const String RCUltraGroupGetConversationTypeNotificationLevel = 'RCUltraGroup-GetConversationTypeNotificationLevel';
   static const String RCUltraGroupSetConversationDefaultNotificationLevel = 'RCUltraGroup-SetConversationDefaultNotificationLevel';
@@ -134,8 +136,6 @@ class RCMethodKey {
   static const String RCUltraGroupGetUltraGroupUnreadCount = 'RCUltraGroup-GetUltraGroupUnreadCount';
   static const String RCUltraGroupGetUltraGroupAllUnreadCount = 'RCUltraGroup-GetUltraGroupAllUnreadCount';
   static const String RCUltraGroupGetUltraGroupAllUnreadMentionedCount = 'RCUltraGroup-GetUltraGroupAllUnreadMentionedCount';
-
-
 }
 
 //callback list //native 会触发此方法

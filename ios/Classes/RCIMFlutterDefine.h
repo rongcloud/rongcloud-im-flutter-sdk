@@ -149,6 +149,9 @@ static NSString *RCUltraGroupGetUltraGroupAllUnreadCount = @"RCUltraGroup-GetUlt
 static NSString *RCUltraGroupGetUltraGroupAllUnreadMentionedCount = @"RCUltraGroup-GetUltraGroupAllUnreadMentionedCount";
 static NSString *RCUltraGroupConversationListDidSync = @"RCUltraGroup-ConversationListDidSync";
 
+static NSString *RCUltraGroupSetConversationNotificationLevel = @"RCUltraGroup-SetConversationNotificationLevel";
+static NSString *RCUltraGroupGetConversationNotificationLevel = @"RCUltraGroup-GetConversationNotificationLevel";
+
 
 //callback iOS 通知 flutter
 static NSString *RCMethodCallBackKeySendMessage = @"sendMessageCallBack";

@@ -118,6 +118,8 @@ public class RCMethodList {
     static String RCUltraGroupGetUltraGroupUnreadCount = "RCUltraGroup-GetUltraGroupUnreadCount";
     static String RCUltraGroupGetUltraGroupAllUnreadCount = "RCUltraGroup-GetUltraGroupAllUnreadCount";
     static String RCUltraGroupGetUltraGroupAllUnreadMentionedCount = "RCUltraGroup-GetUltraGroupAllUnreadMentionedCount";
+    static String RCUltraGroupSetConversationNotificationLevel = "RCUltraGroup-SetConversationNotificationLevel";
+    static String RCUltraGroupGetConversationNotificationLevel = "RCUltraGroup-GetConversationNotificationLevel";
 
     static String RCUltraGroupConversationListDidSync = "RCUltraGroup-ConversationListDidSync";
 

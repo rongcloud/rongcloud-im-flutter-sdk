@@ -9,17 +9,33 @@ class RCConversationType {
 
 // 会话类型
 class RCPushNotificationQuietHoursLevel {
-  static const int AllMessage = -1;
+  /// 未设置（向上查询群或者APP级别设置）
   static const int Default = 0;
+
+  /// 群聊超级群仅@消息通知，单聊代表消息不通知
+  static const int Mention = 1;
+
+  /// 消息通知被屏蔽，即不接收消息通知
   static const int Blocked = 5;
 }
 
 class RCPushNotificationLevel {
+  /// 全部消息通知（接收全部消息通知 -- 显示指定关闭免打扰功能）
   static const int AllMessage = -1;
+
+  /// 未设置（向上查询群或者APP级别设置）,存量数据中0表示未设置
   static const int Default = 0;
+
+  /// 群聊，超级群 @所有人 或者 @成员列表有自己 时通知；单聊代表消息不通知
   static const int Mention = 1;
+
+  /// 群聊，超级群 @成员列表有自己时通知，@所有人不通知；单聊代表消息不通知
   static const int MentionUsers = 2;
+
+  /// 群聊，超级群 @所有人通知，其他情况都不通知；单聊代表消息不通知
   static const int MentionAll = 4;
+
+  /// 消息通知被屏蔽，即不接收消息通知
   static const int Blocked = 5;
 }
 

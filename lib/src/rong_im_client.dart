@@ -1170,6 +1170,7 @@ class RongIMClient {
   /// [targetId] 会话 id
   ///
   /// [finished] 回调结果，status 参见 [RCConversationNotificationStatus]，code 为 0 代表正常
+  @Deprecated("Use `setConversationChannelNotificationLevel()` method instead")
   static Future<void> setConversationNotificationStatus(
     int conversationType,
     String targetId,
@@ -1191,6 +1192,7 @@ class RongIMClient {
   /// [targetId] 会话 id
   ///
   /// [finished] 回调结果，status 参见 [RCConversationNotificationStatus]，code 为 0 代表正常
+  @Deprecated("Use `getConversationChannelNotificationLevel()` method instead")
   static Future<void> getConversationNotificationStatus(
     int conversationType,
     String targetId,
@@ -1450,6 +1452,7 @@ class RongIMClient {
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   ///
   /// 此方法设置的屏蔽时间会在每天该时间段时生效。
+  @Deprecated("Use `setNotificationQuietHoursLevel()` method instead")
   static Future<void> setNotificationQuietHours(String startTime, int spanMins, Function(int? code)? finished) async {
     Map map = {"startTime": startTime, "spanMins": spanMins};
     int? result = await _channel.invokeMethod(RCMethodKey.SetNotificationQuietHours, map);
@@ -1462,6 +1465,7 @@ class RongIMClient {
   ///
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败
   ///
+  @Deprecated("Use `setNotificationQuietHoursLevel()` method instead")
   static Future<void> removeNotificationQuietHours(Function(int? code)? finished) async {
     int? result = await _channel.invokeMethod(RCMethodKey.RemoveNotificationQuietHours);
     if (finished != null) {
@@ -1473,6 +1477,7 @@ class RongIMClient {
   ///
   /// [finished] 回调结果，code 为 0 代表操作成功，其他值代表失败；startTime 代表已设置的屏蔽开始时间，spansMin 代表已设置的屏蔽时间分钟数，0 < spansMin < 1440
   ///
+  @Deprecated("Use `getNotificationQuietHoursLevel()` method instead")
   static Future<void> getNotificationQuietHours(Function(int? code, String? startTime, int? spansMin)? finished) async {
     Map result = await _channel.invokeMethod(RCMethodKey.GetNotificationQuietHours);
     int? code = result["code"];
@@ -2692,6 +2697,10 @@ class RongIMClient {
     }
   }
 
+  /// 设置关闭push时间
+  /// startTime 关闭起始时间 格式 HH:MM:SS
+  /// spanMins  间隔分钟数 0 < t < 1440
+  /// level  消息通知级别 [RCPushNotificationQuietHoursLevel]
   static Future<void> setNotificationQuietHoursLevel(String startTime, int spanMins, int pushNotificationQuietHoursLevel, Function(int? code)? callback) async {
     Map arguments = {
       "startTime": startTime,
@@ -2704,6 +2713,7 @@ class RongIMClient {
     callback(code);
   }
 
+  /// 查询push设置
   static Future<void> getNotificationQuietHoursLevel(Function(int? code, String? startTime, int? spanMins, int? pushNotificationQuietHoursLevel)? callback) async {
     Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupGetNotificationQuietHoursLevel);
     if (callback == null) return;
@@ -2734,6 +2744,7 @@ class RongIMClient {
     callback(code);
   }
 
+  /// 查询消息通知级别
   static Future<void> getConversationChannelNotificationLevel(
     int conversationType,
     String targetId,
@@ -2754,6 +2765,46 @@ class RongIMClient {
     }
     callback(code, result['pushNotificationLevel']);
   }
+
+  /// 查询消息通知级别
+  static Future<void> getConversationNotificationLevel(
+    int conversationType,
+    String targetId,
+    Function(int? code, int? pushNotificationLevel)? callback,
+  ) async {
+    Map arguments = {
+      "conversationType": conversationType,
+      "targetId": targetId,
+    };
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupGetConversationNotificationLevel, arguments);
+    if (callback == null) return;
+    int code = result["code"];
+    if (code != 0) {
+      callback(code, null);
+      return;
+    }
+    callback(code, result['pushNotificationLevel']);
+  }
+
+  static Future<void> setConversationNotificationLevel(
+    int conversationType,
+    String targetId,
+    int pushNotificationLevel,
+    Function(int? code)? callback,
+  ) async {
+    Map arguments = {
+      "conversationType": conversationType,
+      "targetId": targetId,
+      "pushNotificationLevel": pushNotificationLevel,
+    };
+    Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupSetConversationNotificationLevel, arguments);
+    if (callback == null) return;
+    int code = result["code"];
+    callback(code);
+  }
+
+  static const String RCUltraGroupSetConversationNotificationLevel = 'RCUltraGroup-SetConversationNotificationLevel';
+  static const String RCUltraGroupGetConversationNotificationLevel = 'RCUltraGroup-GetConversationNotificationLevel';
 
   static Future<void> setConversationTypeNotificationLevel(
     int conversationType,
