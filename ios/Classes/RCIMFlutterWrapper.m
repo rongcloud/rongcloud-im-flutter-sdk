@@ -2897,8 +2897,9 @@ static NSString * const VER = @"5.1.8";
         [dic setObject:@(nLeft) forKey:@"left"];
         [dic setObject:@(offline) forKey:@"offline"];
         [dic setObject:@(hasPackage) forKey:@"hasPackage"];
-        
-        [self.channel invokeMethod:RCMethodCallBackKeyReceiveMessage arguments:dic];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.channel invokeMethod:RCMethodCallBackKeyReceiveMessage arguments:dic];
+        });
     }
 }
 

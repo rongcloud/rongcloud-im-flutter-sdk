@@ -14,7 +14,10 @@
 }
 
 - (void)detachFromEngineForRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-    [[RCIMFlutterWrapper sharedWrapper] setFlutterChannel:nil];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[RCIMFlutterWrapper sharedWrapper] setFlutterChannel:nil];
+    });
+    
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
