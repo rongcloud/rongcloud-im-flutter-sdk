@@ -1202,54 +1202,24 @@ static NSString * const VER = @"5.1.8";
         option.count = count;
         option.recordTime = recordTime;
         option.order = order;
-        //        [[RCCoreClient sharedCoreClient] getMessages:type targetId:targetId option:option complete:^(NSArray *messages, RCErrorCode code) {
-        //
-        //        }];
-        
-//        [[RCChannelClient sharedChannelManager] getMessages:type targetId:targetId channelId:channelId option:option complete:^(NSArray *messages, RCErrorCode code) {
-//            NSMutableDictionary *callbackDic = [NSMutableDictionary new];
-//            if (code == 0) {
-//                [RCLog i:[NSString stringWithFormat:@"%@, success",LOG_TAG]];
-//                NSMutableArray *msgsArray = [NSMutableArray new];
-//                if (messages &&messages.count > 0) {
-//                    for(RCMessage *message in messages) {
-//                        NSString *jsonString = [RCFlutterMessageFactory message2String:message];
-//                        [msgsArray addObject:jsonString];
-//                    }
-//                }
-//                [callbackDic setObject:@(0) forKey:@"code"];
-//                [callbackDic setObject:msgsArray.copy forKey:@"messages"];
-//                result(callbackDic);
-//            }else {
-//                [callbackDic setObject:@(code) forKey:@"code"];
-//                [callbackDic setObject:@[] forKey:@"messages"];
-//
-//            }
-//
-//        }];
         
         [[RCChannelClient sharedChannelManager] getMessages:type targetId:targetId channelId:channelId option:option complete:^(NSArray *messages, long long timestamp, BOOL isRemaining, RCErrorCode code) {
             NSMutableDictionary *callbackDic = [NSMutableDictionary new];
             
-            if (code == 0) {
-                [RCLog i:[NSString stringWithFormat:@"%@, success",LOG_TAG]];
-                NSMutableArray *msgsArray = [NSMutableArray new];
-                if (messages &&messages.count > 0) {
-                    for(RCMessage *message in messages) {
-                        NSString *jsonString = [RCFlutterMessageFactory message2String:message];
-                        [msgsArray addObject:jsonString];
-                    }
+            
+            [RCLog i:[NSString stringWithFormat:@"%@, success",LOG_TAG]];
+            NSMutableArray *msgsArray = [NSMutableArray new];
+            if (messages &&messages.count > 0) {
+                for(RCMessage *message in messages) {
+                    NSString *jsonString = [RCFlutterMessageFactory message2String:message];
+                    [msgsArray addObject:jsonString];
                 }
-                [callbackDic setObject:@(0) forKey:@"code"];
-                [callbackDic setObject:msgsArray.copy forKey:@"messages"];
-                [callbackDic setObject:@(timestamp) forKey:@"timestamp"];
-                [callbackDic setObject:@(isRemaining) forKey:@"isRemaining"];
-                result(callbackDic);
-            }else {
-                [callbackDic setObject:@(code) forKey:@"code"];
-                [callbackDic setObject:@[] forKey:@"messages"];
-                result(callbackDic);
             }
+            [callbackDic setObject:@(code) forKey:@"code"];
+            [callbackDic setObject:msgsArray.copy forKey:@"messages"];
+            [callbackDic setObject:@(timestamp) forKey:@"timestamp"];
+            [callbackDic setObject:@(isRemaining) forKey:@"isRemaining"];
+            result(callbackDic);
         } error:^(RCErrorCode status) {
             NSMutableDictionary *callbackDic = [NSMutableDictionary new];
             [callbackDic setObject:@(status) forKey:@"code"];

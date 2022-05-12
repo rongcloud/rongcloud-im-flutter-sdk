@@ -850,31 +850,25 @@ class RongIMClient {
     int? code = resultMap["code"];
     int? timestamp = resultMap["timestamp"];
     bool? isRemaining = resultMap["isRemaining"];
-    if (code == 0) {
-      List? msgStrList = resultMap["messages"];
-      if (msgStrList == null) {
-        if (finished != null) {
-          finished(null, timestamp, isRemaining, code);
-        }
-        return;
-      }
-      List l = [];
-      for (String msgStr in msgStrList) {
-        Message? m = MessageFactory.instance!.string2Message(msgStr);
-        l.add(m);
-      }
+
+    List? msgStrList = resultMap["messages"];
+    if (msgStrList == null) {
       if (finished != null) {
-        finished(l, timestamp, isRemaining, code);
+        finished(null, timestamp, isRemaining, code);
       }
-    } else {
-      if (finished != null) {
-        finished(null, null, null, code);
-      }
+      return;
+    }
+    List l = [];
+    for (String msgStr in msgStrList) {
+      Message? m = MessageFactory.instance!.string2Message(msgStr);
+      l.add(m);
+    }
+    if (finished != null) {
+      finished(l, timestamp, isRemaining, code);
     }
   }
 
 //  获取历史消息
-
 //  [conversationType]    会话类型
 //  [targetId]           会话 ID
 //  [option]            可配置的参数
