@@ -2713,7 +2713,11 @@ class RongIMClient {
     callback(code);
   }
 
-  /// 查询push设置
+  /// 查询已设置的时间段消息提醒屏蔽
+  ///
+  /// startTime:已设置的屏蔽开始时间,
+  /// spanMins:已设置的屏蔽时间分钟数，0 < spanMins < 1440]，
+  /// level:pushNotificationQuietHoursLevel [RCPushNotificationQuietHoursLevel]
   static Future<void> getNotificationQuietHoursLevel(Function(int? code, String? startTime, int? spanMins, int? pushNotificationQuietHoursLevel)? callback) async {
     Map result = await _channel.invokeMethod(RCMethodKey.RCUltraGroupGetNotificationQuietHoursLevel);
     if (callback == null) return;
@@ -2725,6 +2729,7 @@ class RongIMClient {
     callback(code, result['startTime'], result['spanMins'], result['pushNotificationQuietHoursLevel']);
   }
 
+  /// 设置会话的消息提醒状态
   static Future<void> setConversationChannelNotificationLevel(
     int conversationType,
     String targetId,
@@ -2766,7 +2771,7 @@ class RongIMClient {
     callback(code, result['pushNotificationLevel']);
   }
 
-  /// 查询消息通知级别
+  /// 获取会话的消息提醒状态
   static Future<void> getConversationNotificationLevel(
     int conversationType,
     String targetId,
@@ -2786,6 +2791,7 @@ class RongIMClient {
     callback(code, result['pushNotificationLevel']);
   }
 
+  /// 设置会话的消息提醒状态
   static Future<void> setConversationNotificationLevel(
     int conversationType,
     String targetId,
@@ -2803,9 +2809,7 @@ class RongIMClient {
     callback(code);
   }
 
-  static const String RCUltraGroupSetConversationNotificationLevel = 'RCUltraGroup-SetConversationNotificationLevel';
-  static const String RCUltraGroupGetConversationNotificationLevel = 'RCUltraGroup-GetConversationNotificationLevel';
-
+  /// 设置会话类型的消息提醒状态
   static Future<void> setConversationTypeNotificationLevel(
     int conversationType,
     int pushNotificationLevel,
@@ -2821,6 +2825,7 @@ class RongIMClient {
     callback(code);
   }
 
+  /// 获取会话类型的消息提醒状态
   static Future<void> getConversationTypeNotificationLevel(
     int conversationType,
     Function(int? code, int? pushNotificationLevel)? callback,
@@ -2838,6 +2843,11 @@ class RongIMClient {
     callback(code, result['pushNotificationLevel']);
   }
 
+  /// 设置超级群的默认消息状态
+  ///
+  /// 所有用户操作的为同一份数据，建议在业务层的管理员状态下操作
+  ///
+  /// 如果用户设置了单独的提醒状态，以用户设置的优先
   static Future<void> setUltraGroupConversationDefaultNotificationLevel(
     String targetId,
     int pushNotificationLevel,
@@ -2853,6 +2863,9 @@ class RongIMClient {
     callback(code);
   }
 
+  /// 获取超级群的默认消息状态
+  ///
+  /// 如果用户设置了单独的提醒状态，以用户设置的优先
   static Future<void> getUltraGroupConversationDefaultNotificationLevel(
     String targetId,
     Function(int? code, int? pushNotificationLevel)? callback,
@@ -2870,6 +2883,11 @@ class RongIMClient {
     callback(code, result['pushNotificationLevel']);
   }
 
+  /// 设置超级群频道的默认消息状态
+  ///
+  /// 所有用户操作的为同一份数据，建议在业务层的管理员状态下操作
+  ///
+  /// 如果用户设置了单独的提醒状态，以用户设置的优先
   static Future<void> setUltraGroupConversationChannelDefaultNotificationLevel(
     String targetId,
     String channelId,
@@ -2887,6 +2905,9 @@ class RongIMClient {
     callback(code);
   }
 
+  /// 获取超级群频道的默认消息状态
+  ///
+  /// 如果用户设置了单独的提醒状态，以用户设置的优先
   static Future<void> getUltraGroupConversationChannelDefaultNotificationLevel(
     String targetId,
     String channelId,
@@ -2906,6 +2927,7 @@ class RongIMClient {
     callback(code, result['pushNotificationLevel']);
   }
 
+  /// 获取指定超级群下所有频道的未读消息总数
   static Future<void> getUltraGroupUnreadCount(
     String targetId,
     Function(int? code, int? count)? callback,
@@ -2923,6 +2945,7 @@ class RongIMClient {
     callback(code, result['count']);
   }
 
+  /// 获取超级群会话类型的所有未读消息数
   static Future<void> getUltraGroupAllUnreadCount(
     Function(int? code, int? count)? callback,
   ) async {
@@ -2936,6 +2959,7 @@ class RongIMClient {
     callback(code, result['count']);
   }
 
+  /// 获取超级群会话类型的@消息未读数接口
   static Future<void> getUltraGroupAllUnreadMentionedCount(
     Function(int? code, int? count)? callback,
   ) async {
