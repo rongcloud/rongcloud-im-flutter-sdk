@@ -23,7 +23,7 @@ if (flutterVersionName == null) {
 
 apply plugin: 'com.android.application'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
-//project.setProperty('target-platform', 'android-arm')
+project.setProperty('target-platform', 'android-arm')
 
 android {
     compileSdkVersion 31
@@ -41,9 +41,9 @@ android {
         versionName flutterVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
-        // ndk {
-        //     abiFilters "armeabi-v7a"
-        // }
+        ndk {
+            abiFilters "armeabi-v7a" , 'arm64-v8a', 'x86' , 'x86_64'
+        }
         //,"x86"
     }
 
