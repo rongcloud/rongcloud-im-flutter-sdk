@@ -38,7 +38,7 @@ android {
 
 dependencies {
 //    api fileTree(dir: 'libs', include: ['*.jar','*.aar'])
-     api 'cn.rongcloud.sdk:im_libcore:5.2.2'
-     api 'cn.rongcloud.sdk:im_chatroom:5.2.2'
+     api 'cn.rongcloud.sdk:im_libcore:5.2.2.1'
+     api 'cn.rongcloud.sdk:im_chatroom:5.2.2.1'
 
 }

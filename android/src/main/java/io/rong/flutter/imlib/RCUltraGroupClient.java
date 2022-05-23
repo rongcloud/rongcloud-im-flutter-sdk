@@ -417,32 +417,32 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
         Log.d(TAG, "getConversationTypeNotificationLevel: " + arguments);
         Integer t = (Integer) arguments.get("conversationType");
         Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
-        // ChannelClient.getInstance().getConversationTypeNotificationLevel(type, new IRongCoreCallback.ResultCallback<IRongCoreEnum.PushNotificationLevel>() {
-        //     @Override
-        //     public void onSuccess(IRongCoreEnum.PushNotificationLevel pushNotificationLevel) {
-        //         final HashMap<String,Object> msgMap = new HashMap<>();
-        //         msgMap.put("code", 0);
-        //         msgMap.put("pushNotificationLevel",pushNotificationLevel.getValue());
-        //         mMainHandler.post(new Runnable() {
-        //             @Override
-        //             public void run() {
-        //                 result.success(msgMap);
-        //             }
-        //         });
-        //     }
+        ChannelClient.getInstance().getConversationTypeNotificationLevel(type, new IRongCoreCallback.ResultCallback<IRongCoreEnum.PushNotificationLevel>() {
+            @Override
+            public void onSuccess(IRongCoreEnum.PushNotificationLevel pushNotificationLevel) {
+                final HashMap<String,Object> msgMap = new HashMap<>();
+                msgMap.put("code", 0);
+                msgMap.put("pushNotificationLevel",pushNotificationLevel.getValue());
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(msgMap);
+                    }
+                });
+            }
 
-        //     @Override
-        //     public void onError(IRongCoreEnum.CoreErrorCode e) {
-        //         final HashMap<String,Object> msgMap = new HashMap<>();
-        //         msgMap.put("code", e.getValue());
-        //         mMainHandler.post(new Runnable() {
-        //             @Override
-        //             public void run() {
-        //                 result.success(msgMap);
-        //             }
-        //         });
-        //     }
-        // });
+            @Override
+            public void onError(IRongCoreEnum.CoreErrorCode e) {
+                final HashMap<String,Object> msgMap = new HashMap<>();
+                msgMap.put("code", e.getValue());
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(msgMap);
+                    }
+                });
+            }
+        });
     }
 
     private void setConversationTypeNotificationLevel(HashMap<String, Object> arguments, final MethodChannel.Result result) {
@@ -451,31 +451,31 @@ public class RCUltraGroupClient implements IRongCoreListener.UltraGroupMessageCh
         Conversation.ConversationType type = Conversation.ConversationType.setValue(t.intValue());
         Integer l = (Integer) arguments.get("pushNotificationLevel");
         IRongCoreEnum.PushNotificationLevel pushNotificationLevel = IRongCoreEnum.PushNotificationLevel.setValue(l);
-        // ChannelClient.getInstance().setConversationTypeNotificationLevel(type, pushNotificationLevel, new IRongCoreCallback.OperationCallback() {
-        //     @Override
-        //     public void onSuccess() {
-        //         final HashMap<String,Object> msgMap = new HashMap<>();
-        //         msgMap.put("code", 0);
-        //         mMainHandler.post(new Runnable() {
-        //             @Override
-        //             public void run() {
-        //                 result.success(msgMap);
-        //             }
-        //         });
-        //     }
+        ChannelClient.getInstance().setConversationTypeNotificationLevel(type, pushNotificationLevel, new IRongCoreCallback.OperationCallback() {
+            @Override
+            public void onSuccess() {
+                final HashMap<String,Object> msgMap = new HashMap<>();
+                msgMap.put("code", 0);
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(msgMap);
+                    }
+                });
+            }
 
-        //     @Override
-        //     public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
-        //         final HashMap<String,Object> msgMap = new HashMap<>();
-        //         msgMap.put("code", coreErrorCode.getValue());
-        //         mMainHandler.post(new Runnable() {
-        //             @Override
-        //             public void run() {
-        //                 result.success(msgMap);
-        //             }
-        //         });
-        //     }
-        // });
+            @Override
+            public void onError(IRongCoreEnum.CoreErrorCode coreErrorCode) {
+                final HashMap<String,Object> msgMap = new HashMap<>();
+                msgMap.put("code", coreErrorCode.getValue());
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success(msgMap);
+                    }
+                });
+            }
+        });
     }
 
     private void getConversationChannelNotificationLevel(HashMap<String, Object> arguments, final MethodChannel.Result result) {
