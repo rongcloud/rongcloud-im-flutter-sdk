@@ -158,6 +158,7 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
     }
 
     public void releaseListener() {
+        if (listenerImpl == null) return;
         RongCoreClient.removeOnReceiveMessageListener(listenerImpl.receiveMessageWrapperListener);
         RongChatRoomClient.getInstance().removeKVStatusListener(listenerImpl.kvStatusListener);
         RongCoreClient.removeConnectionStatusListener(listenerImpl.connectionStatusListener);
@@ -3055,7 +3056,13 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
             public void onError(IRongCoreEnum.CoreErrorCode code, Map<String, IRongCoreEnum.CoreErrorCode> errors) {
                 Map<String, Object> map = new HashMap<>();
                 map.put("code", code.getValue());
-                map.put("errors", errors);
+                if (errors != null) {
+                    Map<String, Integer> errorMap = new HashMap<>();
+                    for (String key : errors.keySet()) {
+                        errorMap.put(key, errors.get(key).getValue());
+                    }
+                    map.put("errors", errorMap);
+                }
                 result.success(map);
             }
         });

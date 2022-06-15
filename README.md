@@ -25,7 +25,7 @@
       flutter:
         sdk: flutter
     
-    rongcloud_im_plugin: ^5.1.8+4
+    rongcloud_im_plugin: ^5.1.8+5
     ```
 
 2. 在项目路径下，下载插件：
@@ -102,7 +102,6 @@ onSendGifMessage() async {
   }
 ```
 
-发送小视频消息，请参见[小视频消息文档](https://github.com/rongcloud/rongcloud-im-flutter-sdk/blob/master/doc/%E5%B0%8F%E8%A7%86%E9%A2%91.md)。
 
 发送文件消息
 
@@ -416,7 +415,7 @@ RongIMClient.onReceiveReadReceipt = (Map map) {
 
 ### 群组已读回执
 
-[如何实现群组已读回执](https://github.com/rongcloud/rongcloud-im-flutter-sdk/blob/master/doc/%E7%BE%A4%E7%BB%84%E5%B7%B2%E8%AF%BB%E5%9B%9E%E6%89%A7.md)
+[如何实现群组已读回执](https://doc.rongcloud.cn/im/Flutter/5.X/noui/message/receiptGroup)
 
 
 ### 消息撤回
@@ -436,19 +435,10 @@ void _recallMessage(Message message) async {
   }
 ```
 
-### 草稿
-
-
-### 输入状态监听
-
-
 ### 聊天室属性自定义
 
-详细参见[聊天室存储相关接口](https://github.com/rongcloud/rongcloud-im-flutter-sdk/blob/master/doc/%E8%81%8A%E5%A4%A9%E5%AE%A4%E5%B1%9E%E6%80%A7%E8%87%AA%E5%AE%9A%E4%B9%89.md)
+详细参见[聊天室存储相关接口](https://doc.rongcloud.cn/im/Flutter/5.X/noui/chatroom/chatroomKV)
 
-### 多端阅读消息数同步
-
-详细参见[多端阅读消息数同步](https://github.com/rongcloud/rongcloud-im-flutter-sdk/blob/master/doc/%E5%90%8C%E6%AD%A5%E4%BC%9A%E8%AF%9D%E5%B7%B2%E8%AF%BB%E7%8A%B6%E6%80%81.md)
 
 ### 消息搜索
 
@@ -673,21 +663,16 @@ int duration = await RongIMClient.getOfflineMessageDuration();
 
 ## 文档
 
-- GitHub：[融云即时通讯 Flutter 参考文档](https://github.com/rongcloud/rongcloud-im-flutter-sdk/tree/master/doc)
+- GitHub：[融云即时通讯 Flutter 参考文档](https://doc.rongcloud.cn/im/Flutter/5.X/noui/quick_integration)
 
-- 官网：[融云 iOS 文档集成](https://docs.rongcloud.cn/v4/views/im/noui/guide/private/connection/connect/ios.html)
+- 官网：[融云 iOS 文档集成](https://doc.rongcloud.cn/im/IOS/5.X/noui/quick_integration)
 
-- 官网：[融云 Android 文档集成](https://docs.rongcloud.cn/v4/views/im/noui/guide/private/connection/connect/android.html)
+- 官网：[融云 Android 文档集成](https://doc.rongcloud.cn/im/Android/5.X/noui/quick_integration)
 
-- 官网：[设置 Android 端推送](https://github.com/rongcloud/rongcloud-im-flutter-sdk/blob/release/doc/Android%20推送.md)
+- 官网：[设置 Android 端推送](https://doc.rongcloud.cn/im/Android/5.X/noui/push/summary)
 
 
 ## 支持
 
 
-源码地址 [Github](https://github.com/rongcloud/rongcloud-im-flutter-sdk)，任何问题可以通过 Github Issues 提问。
-
-<!--更多接口请[参考](https://github.com/rongcloud/rongcloud-im-flutter-sdk)
-
-[常见问题](https://github.com/rongcloud/rongcloud-im-flutter-sdk/tree/master/doc)
---> 
+源码地址 [Github](https://github.com/rongcloud/rongcloud-im-flutter-sdk)。
