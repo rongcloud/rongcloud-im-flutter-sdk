@@ -25,7 +25,7 @@
       flutter:
         sdk: flutter
     
-    rongcloud_im_plugin: ^5.1.8+5
+    rongcloud_im_plugin: ^5.1.8+6
     ```
 
 2. 在项目路径下，下载插件：
