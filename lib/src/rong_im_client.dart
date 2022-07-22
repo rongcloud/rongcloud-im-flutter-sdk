@@ -2183,6 +2183,11 @@ class RongIMClient {
   ///[status] 参见枚举 [RCOperationStatus]
   static Function(String? targetId, int? status)? onJoinChatRoom;
 
+  ///开始加入聊天室的回调
+  ///
+  ///[targetId] 聊天室 id
+  static Function(String? targetId)? onJoiningChatRoom;
+
   ///加入聊天室成功，但是聊天室被重置。接收到此回调后，还会收到 onChatRoomJoined 回调。
   ///
   ///[targetId] 聊天室 id
@@ -2334,7 +2339,13 @@ class RongIMClient {
           onJoinChatRoom!(targetId, status);
         }
         break;
-
+      case RCMethodCallBackKey.JoiningChatRoom:
+        if (onJoiningChatRoom != null) {
+          Map map = call.arguments;
+          String? targetId = map["targetId"];
+          onJoiningChatRoom!(targetId);
+        }
+        break;
       case RCMethodCallBackKey.QuitChatRoom:
         if (onQuitChatRoom != null) {
           Map map = call.arguments;

@@ -5,16 +5,21 @@
 @implementation RongcloudImPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  FlutterMethodChannel* channel = [FlutterMethodChannel methodChannelWithName:@"rongcloud_im_plugin"
-                                                              binaryMessenger:[registrar messenger]];
-  RongcloudImPlugin* instance = [[RongcloudImPlugin alloc] init];
-  [registrar addApplicationDelegate:instance];
-  [registrar addMethodCallDelegate:instance channel:channel];
-  [[RCIMFlutterWrapper sharedWrapper] setFlutterChannel:channel];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        FlutterMethodChannel* channel = [FlutterMethodChannel methodChannelWithName:@"rongcloud_im_plugin"
+                                                                    binaryMessenger:[registrar messenger]];
+        RongcloudImPlugin* instance = [[RongcloudImPlugin alloc] init];
+        [registrar addApplicationDelegate:instance];
+        [registrar addMethodCallDelegate:instance channel:channel];
+        [[RCIMFlutterWrapper sharedWrapper] setFlutterChannel:channel];
+    });
 }
 
 - (void)detachFromEngineForRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-    [[RCIMFlutterWrapper sharedWrapper] setFlutterChannel:nil];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[RCIMFlutterWrapper sharedWrapper] setFlutterChannel:nil];
+    });
+    
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {

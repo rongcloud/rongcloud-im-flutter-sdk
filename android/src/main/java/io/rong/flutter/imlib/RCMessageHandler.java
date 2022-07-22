@@ -418,7 +418,7 @@ public class RCMessageHandler {
             }
         }
         try {
-            if (model.getLocalPath() == null) {
+            if (model.getLocalPath() == null && model.getLocalPath().getScheme() != null && model.getLocalPath().getScheme().equals("file")) {
                 return;
             }
             String videoPath = model.getLocalPath().toString().substring(5);

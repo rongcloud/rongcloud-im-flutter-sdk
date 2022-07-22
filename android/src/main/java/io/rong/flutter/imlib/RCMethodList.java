@@ -118,6 +118,8 @@ public class RCMethodList {
     static String MethodCallBackKeyRefreshUserInfo = "refreshUserInfoCallBack";
     static String MethodCallBackKeyReceiveMessage = "receiveMessageCallBack";
     static String MethodCallBackKeyJoinChatRoom = "joinChatRoomCallBack";
+    static String MethodCallBackKeyJoiningChatRoom = "joiningChatRoomCallBack";
+
     static String MethodCallBackKeyQuitChatRoom = "quitChatRoomCallBack";
     static String MethodCallBackKeyChatRoomReset = "onChatRoomResetCallBack";
     static String MethodCallBackKeyChatRoomDestroyed = "onChatRoomDestroyedCallBack";

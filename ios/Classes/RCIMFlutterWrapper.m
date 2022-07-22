@@ -1043,19 +1043,13 @@ static NSString * const VER = @"5.1.8";
         NSString *targetId = dic[@"targetId"];
         int msgCount = [dic[@"messageCount"] intValue];
         
-        __weak typeof(self) ws = self;
         [[RCChatRoomClient sharedChatRoomClient] joinChatRoom:targetId messageCount:msgCount success:^{
             [RCLog i:[NSString stringWithFormat:@"%@ ,success",LOG_TAG]];
-            NSMutableDictionary *callbackDic = [NSMutableDictionary new];
-            [callbackDic setValue:targetId forKey:@"targetId"];
-            [callbackDic setValue:@(0) forKey:@"status"];
-            [ws.channel invokeMethod:RCMethodCallBackKeyJoinChatRoom arguments:callbackDic];
+            // 直接使用监听，这里不进行处理
+
         } error:^(RCErrorCode status) {
             [RCLog e:[NSString stringWithFormat:@"%@, %@",LOG_TAG,@(status)]];
-            NSMutableDictionary *callbackDic = [NSMutableDictionary new];
-            [callbackDic setValue:targetId forKey:@"targetId"];
-            [callbackDic setValue:@(status) forKey:@"status"];
-            [ws.channel invokeMethod:RCMethodCallBackKeyJoinChatRoom arguments:callbackDic];
+            // 直接使用监听，这里不进行处理
         }];
     }
 }
@@ -1073,19 +1067,12 @@ static NSString * const VER = @"5.1.8";
             return;
         }
         
-        __weak typeof(self) ws = self;
         [[RCChatRoomClient sharedChatRoomClient] joinExistChatRoom:targetId messageCount:msgCount success:^{
             [RCLog i:[NSString stringWithFormat:@"%@, success",LOG_TAG]];
-            NSMutableDictionary *callbackDic = [NSMutableDictionary new];
-            [callbackDic setValue:targetId forKey:@"targetId"];
-            [callbackDic setValue:@(0) forKey:@"status"];
-            [ws.channel invokeMethod:RCMethodCallBackKeyJoinChatRoom arguments:callbackDic];
+            // 直接使用监听，这里不进行处理
         } error:^(RCErrorCode status) {
             [RCLog e:[NSString stringWithFormat:@"%@, %@",LOG_TAG,@(status)]];
-            NSMutableDictionary *callbackDic = [NSMutableDictionary new];
-            [callbackDic setValue:targetId forKey:@"targetId"];
-            [callbackDic setValue:@(status) forKey:@"status"];
-            [ws.channel invokeMethod:RCMethodCallBackKeyJoinChatRoom arguments:callbackDic];
+            // 直接使用监听，这里不进行处理
         }];
     }
 }
@@ -2124,6 +2111,27 @@ static NSString * const VER = @"5.1.8";
     [self.channel invokeMethod:RCMethodCallBackKeyOnChatRoomReset arguments:statusDic];
 }
 
+- (void)onChatRoomJoined:(NSString *)chatroomId{
+    NSMutableDictionary *callbackDic = [NSMutableDictionary new];
+    [callbackDic setValue:chatroomId forKey:@"targetId"];
+    [callbackDic setValue:@(0) forKey:@"status"];
+    [self.channel invokeMethod:RCMethodCallBackKeyJoinChatRoom arguments:callbackDic];
+}
+
+- (void)onChatRoomJoining:(NSString *)chatroomId{
+    NSMutableDictionary *callbackDic = [NSMutableDictionary new];
+    [callbackDic setValue:chatroomId forKey:@"chatroomId"];
+    [self.channel invokeMethod:RCMethodCallBackKeyJoiningChatRoom arguments:callbackDic];
+}
+
+- (void)onChatRoomJoinFailed:(NSString *)chatroomId errorCode:(RCErrorCode)errorCode{
+    NSMutableDictionary *callbackDic = [NSMutableDictionary new];
+    [callbackDic setValue:chatroomId forKey:@"targetId"];
+    [callbackDic setValue:@(errorCode) forKey:@"status"];
+    [self.channel invokeMethod:RCMethodCallBackKeyJoinChatRoom arguments:callbackDic];
+}
+
+
 #pragma mark - 聊天室状态存储 (使用前必须先联系商务开通)
 - (void)setChatRoomEntry:(id)arg result:(FlutterResult)result {
     NSString *LOG_TAG = @"setChatRoomEntry";
@@ -2745,8 +2753,9 @@ static NSString * const VER = @"5.1.8";
         [dic setObject:@(nLeft) forKey:@"left"];
         [dic setObject:@(offline) forKey:@"offline"];
         [dic setObject:@(hasPackage) forKey:@"hasPackage"];
-        
-        [self.channel invokeMethod:RCMethodCallBackKeyReceiveMessage arguments:dic];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.channel invokeMethod:RCMethodCallBackKeyReceiveMessage arguments:dic];
+        });
     }
 }
 

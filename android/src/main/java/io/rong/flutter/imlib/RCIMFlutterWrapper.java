@@ -1274,20 +1274,12 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
             RongChatRoomClient.getInstance().joinChatRoom(targetId, msgCount, new IRongCoreCallback.OperationCallback() {
                 @Override
                 public void onSuccess() {
-                    Map callBackMap = new HashMap();
-                    callBackMap.put("targetId", targetId);
-                    callBackMap.put("status", 0);
-                    RCLog.i("[joinChatRoom] onSuccess ");
-                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeyJoinChatRoom, callBackMap);
+
                 }
 
                 @Override
                 public void onError(IRongCoreEnum.CoreErrorCode errorCode) {
-                    Map callBackMap = new HashMap();
-                    callBackMap.put("targetId", targetId);
-                    callBackMap.put("status", errorCode.getValue());
-                    RCLog.e("[joinChatRoom] onError: " + errorCode.getValue());
-                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeyJoinChatRoom, callBackMap);
+
                 }
             });
         }
@@ -1305,21 +1297,21 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
             RongChatRoomClient.getInstance().joinExistChatRoom(targetId, msgCount, new IRongCoreCallback.OperationCallback() {
                 @Override
                 public void onSuccess() {
-                    Map callBackMap = new HashMap();
-                    callBackMap.put("targetId", targetId);
-                    callBackMap.put("status", 0);
-                    RCLog.i("[joinExitChatRoom] onSuccess: ");
-                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeyJoinChatRoom, callBackMap);
+//                    Map callBackMap = new HashMap();
+//                    callBackMap.put("targetId", targetId);
+//                    callBackMap.put("status", 0);
+//                    RCLog.i("[joinExitChatRoom] onSuccess: ");
+//                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeyJoinChatRoom, callBackMap);
                 }
 
                 @Override
                 public void onError(IRongCoreEnum.CoreErrorCode errorCode) {
                     RCLog.e(LOG_TAG + String.valueOf(errorCode.getValue()));
-                    Map callBackMap = new HashMap();
-                    callBackMap.put("targetId", targetId);
-                    callBackMap.put("status", errorCode.getValue());
-                    RCLog.e("[joinExitChatRoom] onError:" + errorCode.getValue());
-                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeyJoinChatRoom, callBackMap);
+//                    Map callBackMap = new HashMap();
+//                    callBackMap.put("targetId", targetId);
+//                    callBackMap.put("status", errorCode.getValue());
+//                    RCLog.e("[joinExitChatRoom] onError:" + errorCode.getValue());
+//                    mChannel.invokeMethod(RCMethodList.MethodCallBackKeyJoinChatRoom, callBackMap);
                 }
             });
         }
@@ -2369,13 +2361,31 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
     private void setChatRoomAdvancedActionListener() {
         RongChatRoomClient.setChatRoomAdvancedActionListener(new RongChatRoomClient.ChatRoomAdvancedActionListener() {
             @Override
-            public void onJoining(String s) {
+            public void onJoining(final String s) {
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Map callBackMap = new HashMap();
+                        callBackMap.put("targetId", s);
+                        RCLog.e("[joinChatRoom] onJoining");
+                        mChannel.invokeMethod(RCMethodList.MethodCallBackKeyJoiningChatRoom, callBackMap);
+                    }
+                });
 
             }
 
             @Override
-            public void onJoined(String s) {
-
+            public void onJoined(final String s) {
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Map callBackMap = new HashMap();
+                        callBackMap.put("targetId", s);
+                        callBackMap.put("status", 0);
+                        RCLog.i("[joinChatRoom] onSuccess ");
+                        mChannel.invokeMethod(RCMethodList.MethodCallBackKeyJoinChatRoom, callBackMap);
+                    }
+                });
             }
 
             @Override
@@ -2409,8 +2419,17 @@ public class RCIMFlutterWrapper implements MethodChannel.MethodCallHandler {
             }
 
             @Override
-            public void onError(String s, IRongCoreEnum.CoreErrorCode coreErrorCode) {
-
+            public void onError(final String s, final IRongCoreEnum.CoreErrorCode coreErrorCode) {
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Map callBackMap = new HashMap();
+                        callBackMap.put("targetId", s);
+                        callBackMap.put("status", coreErrorCode.getValue());
+                        RCLog.e("[joinChatRoom] onError: " + coreErrorCode.getValue());
+                        mChannel.invokeMethod(RCMethodList.MethodCallBackKeyJoinChatRoom, callBackMap);
+                    }
+                });
             }
         });
     }
