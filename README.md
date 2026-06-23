@@ -1,5 +1,7 @@
 # 融云即时通讯 Flutter 插件
 
+融云 IM Flutter 插件，基于 iOS/Android 原生 IMLib SDK 封装，为 Flutter 应用提供跨平台即时通讯能力。
+
 本存储库为融云即时通讯的 [Flutter](https://flutter.dev/) 插件。插件基于融云 iOS/Android 平台的 IMLib SDK。
 
 ## 更新提示
